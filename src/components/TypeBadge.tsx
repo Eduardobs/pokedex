@@ -4,6 +4,7 @@ import {
   Snowflake, Sparkles, WandSparkles, Waves, Wind, Zap,
 } from 'lucide-react'
 import { prettyName } from '../lib/api'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const typeIcons: Record<string, LucideIcon> = {
   normal: Circle,
@@ -30,6 +31,12 @@ const typeIcons: Record<string, LucideIcon> = {
 }
 
 export function TypeBadge({ type }: { type: string }) {
+  const { language } = useLanguage()
   const Icon = typeIcons[type] ?? CircleHelp
-  return <span className={`type-badge type-${type}`}><Icon size={12} aria-hidden="true" />{prettyName(type)}</span>
+  const labels: Record<string, Record<string, string>> = {
+    'pt-BR': { fire: 'Fogo', water: 'Água', electric: 'Elétrico', grass: 'Planta', ice: 'Gelo', fighting: 'Lutador', poison: 'Veneno', ground: 'Terrestre', flying: 'Voador', psychic: 'Psíquico', bug: 'Inseto', rock: 'Pedra', ghost: 'Fantasma', dragon: 'Dragão', dark: 'Sombrio', steel: 'Metal', fairy: 'Fada', stellar: 'Estelar', shadow: 'Sombra', unknown: 'Desconhecido' },
+    en: {},
+    es: { fire: 'Fuego', water: 'Agua', electric: 'Eléctrico', grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno', ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho', rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro', steel: 'Acero', fairy: 'Hada', stellar: 'Estelar', shadow: 'Sombra', unknown: 'Desconocido' },
+  }
+  return <span className={`type-badge type-${type}`}><Icon size={12} aria-hidden="true" />{labels[language][type] ?? prettyName(type)}</span>
 }

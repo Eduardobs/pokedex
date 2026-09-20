@@ -5,7 +5,8 @@ Uma Pokédex moderna e responsiva construída com React, TypeScript e a [PokéAP
 ## Recursos
 
 - Pokédex Nacional paginada, com busca e filtro por tipo;
-- páginas detalhadas com atributos, biologia, habilidades, variantes shiny, linha evolutiva, golpes e áreas de encontro;
+- páginas detalhadas com atributos, biologia, habilidades, variantes shiny, formas regionais, Mega Evoluções, Gigantamax, linha evolutiva, golpes e áreas de encontro;
+- catálogo dedicado exclusivamente a variações regionais, Mega Formas e Gigantamax;
 - favoritos persistidos no navegador;
 - explorador de todas as coleções documentadas da PokéAPI v2, incluindo itens, berries, movimentos, regiões, versões, concursos e evoluções;
 - layout responsivo, estados de carregamento/erro e suporte a movimento reduzido;

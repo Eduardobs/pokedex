@@ -60,6 +60,34 @@ export interface EvolutionNode {
   evolution_details: Array<Record<string, unknown>>
 }
 
+export interface PokemonForm {
+  id: number
+  name: string
+  order: number
+  form_order: number
+  is_default: boolean
+  is_battle_only: boolean
+  is_mega: boolean
+  form_name: string
+  pokemon: NamedResource
+  types: { slot: number; type: NamedResource }[]
+  sprites: {
+    front_default: string | null
+    front_shiny: string | null
+    back_default: string | null
+    back_shiny: string | null
+  }
+  version_group: NamedResource | null
+  names: { name: string; language: NamedResource }[]
+  form_names: { name: string; language: NamedResource }[]
+  trigger_conditions?: {
+    trigger: string
+    name: string | null
+    url: string | null
+    base_form: NamedResource | null
+  }[]
+}
+
 export interface Encounter {
   location_area: NamedResource
   version_details: { version: NamedResource; max_chance: number; encounter_details: unknown[] }[]

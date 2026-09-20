@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
 import { TypeBadge } from '../components/TypeBadge'
+import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { formatNumber, pokemonListItems } from '../lib/api'
 import type { ApiList, NamedResource, Pokemon, PokemonListItem } from '../types'
@@ -11,6 +12,7 @@ const LIMIT = 24
 const types = ['all', 'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
 
 export function PokedexPage() {
+  const { language, t } = useLanguage()
   const [offset, setOffset] = useState(0)
   const [query, setQuery] = useState('')
   const [type, setType] = useState('all')
@@ -91,16 +93,16 @@ export function PokedexPage() {
 
   return (
     <section className="page content-width">
-      <div className="page-title"><div><span className="eyebrow">POKÉDEX NACIONAL</span><h1>Encontre seu Pokémon</h1><p>Explore cada espécie descoberta e seus dados completos.</p></div><div className="result-count"><b>{formatNumber(total || 1302)}</b><span>espécies registradas</span></div></div>
+      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count"><b>{formatNumber(total || 1302, language)}</b><span>{t('pokedex.registered')}</span></div></div>
       <div className="filter-panel">
-        <label className="search-field"><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value.toLowerCase())} placeholder="Filtrar Pokémon carregados por nome ou número" /></label>
-        <div className="type-filter"><SlidersHorizontal size={18} /><div>{types.map((item) => <button key={item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? 'Todos' : <TypeBadge type={item} />}</button>)}</div></div>
+        <label className="search-field"><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value.toLowerCase())} placeholder={t('pokedex.filter')} /></label>
+        <div className="type-filter"><SlidersHorizontal size={18} /><div>{types.map((item) => <button key={item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? t('pokedex.all') : <TypeBadge type={item} />}</button>)}</div></div>
       </div>
-      {loading && !visiblePokemon.length ? <CardSkeleton count={12} /> : error && !visiblePokemon.length ? <p className="inline-error">Não foi possível carregar a Pokédex. Verifique sua conexão.</p> : list.length ? (
+      {loading && !visiblePokemon.length ? <CardSkeleton count={12} /> : error && !visiblePokemon.length ? <p className="inline-error">{t('pokedex.loadError')}</p> : list.length ? (
         <div className="pokemon-grid">{list.map((pokemon) => <PokemonCard key={pokemon.name} {...pokemon} pokemon={details[pokemon.name]} />)}</div>
-      ) : <div className="empty"><Search /><h2>Nenhum Pokémon encontrado</h2><p>Tente outro nome ou número.</p></div>}
-      {!query && hasMore && <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite"><span className="pokeball-spinner" /><button onClick={loadMore} disabled={loading}>{loading ? 'Carregando mais Pokémon...' : 'Carregar mais Pokémon'}</button></div>}
-      {!query && !hasMore && visiblePokemon.length > 0 && <p className="end-of-list">Você chegou ao fim da Pokédex.</p>}
+      ) : <div className="empty"><Search /><h2>{t('pokedex.empty')}</h2><p>{t('pokedex.tryAnother')}</p></div>}
+      {!query && hasMore && <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite"><span className="pokeball-spinner" /><button onClick={loadMore} disabled={loading}>{loading ? t('pokedex.loadingMore') : t('pokedex.loadMore')}</button></div>}
+      {!query && !hasMore && visiblePokemon.length > 0 && <p className="end-of-list">{t('pokedex.end')}</p>}
     </section>
   )
 }

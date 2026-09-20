@@ -1,5 +1,6 @@
 import { ArrowRight, BookOpen, Database, MapPin, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useLanguage } from '../contexts/LanguageContext'
 import { resourceGroups } from '../data/resources'
 
 const featured = [
@@ -10,22 +11,23 @@ const featured = [
 ]
 
 export function HomePage() {
+  const { t } = useLanguage()
   return (
     <>
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow"><Sparkles size={15} /> SEU GUIA PARA O MUNDO POKÉMON</span>
-          <h1>Descubra. Explore.<br /><em>Capture conhecimento.</em></h1>
-          <p>De Kanto a Paldea, conheça espécies, habilidades, evoluções, itens, regiões e cada detalhe deste universo.</p>
+          <span className="eyebrow"><Sparkles size={15} /> {t('home.eyebrow')}</span>
+          <h1>{t('home.title')}<br /><em>{t('home.titleAccent')}</em></h1>
+          <p>{t('home.description')}</p>
           <div className="hero-actions">
-            <Link to="/pokemon" className="button primary">Abrir Pokédex <ArrowRight size={18} /></Link>
-            <Link to="/explorar" className="button secondary">Explorar universo</Link>
+            <Link to="/pokemon" className="button primary">{t('home.openPokedex')} <ArrowRight size={18} /></Link>
+            <Link to="/explorar" className="button secondary">{t('home.explore')}</Link>
           </div>
           <div className="hero-stats">
-            <span><b>1.000+</b> Pokémon</span><span><b>20</b> tipos</span><span><b>9</b> gerações</span>
+            <span><b>1.000+</b> Pokémon</span><span><b>20</b> {t('home.types')}</span><span><b>9</b> {t('home.generations')}</span>
           </div>
         </div>
-        <div className="hero-visual" aria-label="Pokémon em destaque">
+        <div className="hero-visual" aria-label={t('home.featured')}>
           <div className="hero-rings" />
           {featured.map((pokemon, index) => (
             <Link to={`/pokemon/${pokemon.name}`} key={pokemon.name} className={`hero-pokemon p${index + 1}`} style={{ '--accent': pokemon.color } as React.CSSProperties}>
@@ -37,12 +39,12 @@ export function HomePage() {
       </section>
 
       <section className="quick-section content-width">
-        <div className="section-heading"><div><span className="eyebrow">COMECE A EXPLORAR</span><h2>Todo o universo em um só lugar</h2></div><Link to="/explorar">Ver todas as categorias <ArrowRight size={17} /></Link></div>
+        <div className="section-heading"><div><span className="eyebrow">{t('home.start')}</span><h2>{t('home.allInOne')}</h2></div><Link to="/explorar">{t('home.allCategories')} <ArrowRight size={17} /></Link></div>
         <div className="quick-grid">
-          <Link to="/pokemon" className="quick-card red"><div className="quick-icon"><BookOpen /></div><div><h3>Pokédex Nacional</h3><p>Conheça todos os Pokémon, seus atributos e evoluções.</p></div><ArrowRight /></Link>
-          <Link to="/explorar/move" className="quick-card purple"><div className="quick-icon"><Sparkles /></div><div><h3>Golpes e habilidades</h3><p>Compare poder, precisão, efeitos e formas de aprender.</p></div><ArrowRight /></Link>
-          <Link to="/explorar/region" className="quick-card green"><div className="quick-icon"><MapPin /></div><div><h3>Regiões e locais</h3><p>Viaje por regiões, cidades e áreas de encontro.</p></div><ArrowRight /></Link>
-          <Link to="/explorar" className="quick-card blue"><div className="quick-icon"><Database /></div><div><h3>Enciclopédia completa</h3><p>Acesse {resourceGroups.reduce((sum, group) => sum + group.resources.length, 0)} coleções da API.</p></div><ArrowRight /></Link>
+          <Link to="/pokemon" className="quick-card red"><div className="quick-icon"><BookOpen /></div><div><h3>{t('home.nationalDex')}</h3><p>{t('home.nationalDexDesc')}</p></div><ArrowRight /></Link>
+          <Link to="/explorar/move" className="quick-card purple"><div className="quick-icon"><Sparkles /></div><div><h3>{t('home.moves')}</h3><p>{t('home.movesDesc')}</p></div><ArrowRight /></Link>
+          <Link to="/explorar/region" className="quick-card green"><div className="quick-icon"><MapPin /></div><div><h3>{t('home.regions')}</h3><p>{t('home.regionsDesc')}</p></div><ArrowRight /></Link>
+          <Link to="/explorar" className="quick-card blue"><div className="quick-icon"><Database /></div><div><h3>{t('home.encyclopedia')}</h3><p>{t('home.collections', { count: resourceGroups.reduce((sum, group) => sum + group.resources.length, 0) })}</p></div><ArrowRight /></Link>
         </div>
       </section>
     </>
