@@ -1,4 +1,4 @@
-import { Compass, Grid3X3, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
+import { Check, ChevronDown, Compass, Grid3X3, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
 import { Suspense, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
@@ -10,6 +10,7 @@ import { Loading } from './Loading'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [languageOpen, setLanguageOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [theme, setTheme] = useState<'light' | 'dark'>(() =>
     document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
@@ -20,6 +21,7 @@ export function Layout() {
   const headerRef = useRef<HTMLElement>(null)
   const mainRef = useRef<HTMLElement>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const languageRef = useRef<HTMLDivElement>(null)
   const { favorites, notice, clearNotice, toggle } = useFavoritesContext()
   const { language, setLanguage, t } = useLanguage()
 
@@ -79,6 +81,22 @@ export function Layout() {
   }, [menuOpen])
 
   useEffect(() => {
+    if (!languageOpen) return
+    const closeLanguageMenu = (event: PointerEvent) => {
+      if (!languageRef.current?.contains(event.target as Node)) setLanguageOpen(false)
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setLanguageOpen(false)
+    }
+    document.addEventListener('pointerdown', closeLanguageMenu)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeLanguageMenu)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [languageOpen])
+
+  useEffect(() => {
     if (!notice) return
     const timeout = window.setTimeout(clearNotice, 4500)
     return () => window.clearTimeout(timeout)
@@ -119,13 +137,16 @@ export function Layout() {
           <NavLink to="/types-table" onClick={() => setMenuOpen(false)}><Grid3X3 size={17} /> {t('nav.types')}</NavLink>
           <NavLink to="/favoritos" onClick={() => setMenuOpen(false)}><Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span></NavLink>
         </nav>
-        <label className="language-select" title={t('language.label')}>
-          <Languages size={17} aria-hidden="true" />
-          <span className="sr-only">{t('language.label')}</span>
-          <select value={language} onChange={(event) => setLanguage(event.target.value as Language)} aria-label={t('language.label')}>
-            <option value="pt-BR">PT</option><option value="en">EN</option><option value="es">ES</option>
-          </select>
-        </label>
+        <div className="language-select" ref={languageRef}>
+          <button className="language-select-trigger" type="button" aria-label={t('language.label')} aria-haspopup="listbox" aria-expanded={languageOpen} aria-controls="language-options" onClick={() => setLanguageOpen((open) => !open)}>
+            <Languages className="language-icon" size={17} aria-hidden="true" />
+            <span>{language === 'pt-BR' ? 'PT' : language.toUpperCase()}</span>
+            <ChevronDown className={languageOpen ? 'open' : ''} size={14} aria-hidden="true" />
+          </button>
+          {languageOpen && <div className="language-options" id="language-options" role="listbox" aria-label={t('language.label')}>
+            {(['pt-BR', 'en', 'es'] as Language[]).map((item) => <button type="button" role="option" aria-selected={language === item} key={item} onClick={() => { setLanguage(item); setLanguageOpen(false) }}><span className="language-code">{item === 'pt-BR' ? 'PT' : item.toUpperCase()}</span><span>{t(`language.${item}`)}</span>{language === item && <Check size={15} aria-hidden="true" />}</button>)}
+          </div>}
+        </div>
         <button
           className="theme-toggle"
           type="button"

@@ -19,6 +19,15 @@ function multiplierClass(multiplier: DamageMultiplier) {
   return 'neutral'
 }
 
+function resultClass(multiplier: number) {
+  if (multiplier === 0) return 'result-immune'
+  if (multiplier <= 0.25) return 'result-very-resistant'
+  if (multiplier <= 0.5) return 'result-resistant'
+  if (multiplier === 1) return 'result-neutral'
+  if (multiplier <= 2) return 'result-effective'
+  return 'result-very-effective'
+}
+
 export function TypesTablePage() {
   const { language, t } = useLanguage()
   const [hoveredCell, setHoveredCell] = useState<{
@@ -48,7 +57,7 @@ export function TypesTablePage() {
         <label><span>{t('typesTable.attacking')}</span><select value={calculatorAttack} onChange={(event) => setCalculatorAttack(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
         <label><span>{t('typesTable.defenderOne')}</span><select value={calculatorDefense} onChange={(event) => setCalculatorDefense(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
         <label><span>{t('typesTable.defenderTwo')}</span><select value={calculatorSecondDefense} onChange={(event) => setCalculatorSecondDefense(event.target.value as BattleType | '')}><option value="">{t('typesTable.noSecond')}</option>{BATTLE_TYPES.filter((type) => type !== calculatorDefense).map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
-        <output aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
+        <output className={resultClass(calculatorResult)} aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
       </section>
 
       <div className="type-chart-guide">

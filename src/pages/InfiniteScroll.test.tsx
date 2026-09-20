@@ -1,4 +1,4 @@
-import { act, cleanup, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -127,5 +127,28 @@ describe('infinite scroll', () => {
     reachNextPage()
     expect(screen.getByText('pokemon-70-alola')).toBeInTheDocument()
     expect(screen.getByText('Todas as formas desta categoria foram exibidas.')).toBeInTheDocument()
+  })
+})
+
+describe('Pokédex filters', () => {
+  it('suggests matching Pokémon names while typing', () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    render(renderPage(<PokedexPage />))
+    const search = screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })
+
+    fireEvent.change(search, { target: { value: 'pokemon-2' } })
+
+    const suggestions = screen.getByRole('listbox')
+    expect(within(suggestions).getAllByRole('option')[0]).toHaveTextContent('Pokemon 2')
+  })
+
+  it('shows type filters as icons with their name in a tooltip', () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    render(renderPage(<PokedexPage />))
+
+    const fireFilter = screen.getByRole('button', { name: 'Fogo' })
+    expect(fireFilter).toHaveAttribute('title', 'Fogo')
+    expect(fireFilter).not.toHaveTextContent('Fogo')
+    expect(fireFilter.querySelector('.type-badge')).toHaveClass('icon-only')
   })
 })

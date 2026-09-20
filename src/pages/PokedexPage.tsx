@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
-import { TypeBadge } from '../components/TypeBadge'
+import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { formatNumber, pokemonListItems } from '../lib/api'
+import { formatNumber, normalizeSearchText, pokemonListItems, prettyName } from '../lib/api'
 import { fetchPokemonSortDetails } from '../lib/pokemon-catalog'
 import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
 import { POKEMON_CATALOG_LIMIT } from '../config/app'
@@ -28,6 +28,8 @@ export function PokedexPage() {
   const [sortingDetails, setSortingDetails] = useState(false)
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false)
+  const [activeSuggestion, setActiveSuggestion] = useState(-1)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
   const { data, loading, error, retry } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
@@ -37,6 +39,20 @@ export function PokedexPage() {
     return pokemonListItems('results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon))
   }, [data])
   const filteredPokemon = useMemo(() => filterPokemonList(catalog, query), [catalog, query])
+  const suggestions = useMemo(() => {
+    const normalizedQuery = normalizeSearchText(query)
+    if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
+
+    return catalog
+      .filter((pokemon) => normalizeSearchText(pokemon.name).includes(normalizedQuery))
+      .sort((left, right) => {
+        const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
+        const rightStartsWith = normalizeSearchText(right.name).startsWith(normalizedQuery)
+        if (leftStartsWith !== rightStartsWith) return leftStartsWith ? -1 : 1
+        return left.id - right.id
+      })
+      .slice(0, 7)
+  }, [catalog, query])
   const sortedPokemon = useMemo(() => sortPokemonList(
     filteredPokemon,
     sort,
@@ -109,6 +125,31 @@ export function PokedexPage() {
     setVisibleCount(LIMIT)
   }
 
+  const selectSuggestion = (name: string) => {
+    changeQuery(name)
+    setSuggestionsOpen(false)
+    setActiveSuggestion(-1)
+  }
+
+  const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setSuggestionsOpen(false)
+      setActiveSuggestion(-1)
+      return
+    }
+    if (!suggestions.length || !suggestionsOpen) return
+    if (event.key === 'ArrowDown') {
+      event.preventDefault()
+      setActiveSuggestion((current) => (current + 1) % suggestions.length)
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault()
+      setActiveSuggestion((current) => (current <= 0 ? suggestions.length - 1 : current - 1))
+    } else if (event.key === 'Enter' && activeSuggestion >= 0) {
+      event.preventDefault()
+      selectSuggestion(suggestions[activeSuggestion].name)
+    }
+  }
+
   const changeSort = (nextSort: PokemonSortKey) => {
     setSearchParams((current) => {
       const next = new URLSearchParams(current)
@@ -141,7 +182,10 @@ export function PokedexPage() {
       <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{formatNumber(query || type !== 'all' ? filteredPokemon.length : total, language)}</b><span>{query || type !== 'all' ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
       <div className="filter-panel">
         <div className="filter-primary">
-          <div className="search-field"><Search size={20} /><input aria-label={t('pokedex.filter')} value={query} onChange={(event) => changeQuery(event.target.value)} placeholder={t('pokedex.filter')} />{query && <button className="search-clear" type="button" onClick={() => changeQuery('')} aria-label={t('common.clear')}>×</button>}</div>
+          <div className="pokemon-search">
+            <div className="search-field"><Search size={20} /><input role="combobox" aria-autocomplete="list" aria-expanded={suggestionsOpen && suggestions.length > 0} aria-controls="pokemon-suggestions" aria-activedescendant={activeSuggestion >= 0 ? `pokemon-suggestion-${activeSuggestion}` : undefined} aria-label={t('pokedex.filter')} value={query} onChange={(event) => { changeQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1) }} onFocus={() => setSuggestionsOpen(true)} onBlur={() => setSuggestionsOpen(false)} onKeyDown={handleSearchKeyDown} placeholder={t('pokedex.filter')} autoComplete="off" />{query && <button className="search-clear" type="button" onClick={() => { changeQuery(''); setSuggestionsOpen(false) }} aria-label={t('common.clear')}>×</button>}</div>
+            {suggestionsOpen && suggestions.length > 0 && <ul id="pokemon-suggestions" className="pokemon-suggestions" role="listbox">{suggestions.map((pokemon, index) => <li id={`pokemon-suggestion-${index}`} key={pokemon.name} role="option" aria-selected={index === activeSuggestion} className={index === activeSuggestion ? 'active' : ''} onMouseDown={(event) => { event.preventDefault(); selectSuggestion(pokemon.name) }}><span>{prettyName(pokemon.name)}</span><small>#{String(pokemon.id).padStart(4, '0')}</small></li>)}</ul>}
+          </div>
           <label className="sort-field">
             {sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
             <span>{t('pokedex.sort.label')}</span>
@@ -150,7 +194,10 @@ export function PokedexPage() {
             </select>
           </label>
         </div>
-        <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><SlidersHorizontal size={18} /><div>{types.map((item) => <button type="button" key={item} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? t('pokedex.all') : <TypeBadge type={item} />}</button>)}</div></div>
+        <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><SlidersHorizontal size={18} /><div>{types.map((item) => {
+          const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
+          return <button type="button" key={item} aria-label={label} title={label} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? label : <TypeBadge type={item} iconOnly />}</button>
+        })}</div></div>
         <div className="filter-footer"><span>{t('pokedex.scrollTypes')}</span>{(query || type !== 'all' || sort !== 'number') && <button type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}</div>
         {sortingDetails && <p className="sort-status" role="status">{t('pokedex.sort.loading')}</p>}
         {sortError && <p className="sort-status inline-sort-error" role="alert">{t('pokedex.sort.error')}</p>}

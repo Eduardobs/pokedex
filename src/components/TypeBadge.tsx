@@ -15,7 +15,7 @@ export function TypeBadge({ type, iconOnly = false }: { type: string; iconOnly?:
   const { language } = useLanguage()
   const label = typeLabel(type, language)
   return (
-    <span className={`type-badge type-${type}`} aria-label={iconOnly ? label : undefined} title={iconOnly ? label : undefined}>
+    <span className={`type-badge type-${type}${iconOnly ? ' icon-only' : ''}`} aria-label={iconOnly ? label : undefined} title={iconOnly ? label : undefined}>
       <TypeIcon type={type} />
       {!iconOnly && label}
     </span>

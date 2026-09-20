@@ -32,4 +32,20 @@ describe('TypesTablePage', () => {
     expect(fireRow).not.toHaveClass('is-row-highlighted')
     expect(columnHeaders[waterColumn + 1]).not.toHaveClass('is-column-highlighted')
   })
+
+  it('colors the calculator result according to its effectiveness', () => {
+    const { container } = render(
+      <LanguageProvider>
+        <TypesTablePage />
+      </LanguageProvider>,
+    )
+    const output = container.querySelector('output')
+    const defenseSelect = container.querySelectorAll('select')[1]
+
+    expect(output).toHaveClass('result-effective')
+
+    fireEvent.change(defenseSelect, { target: { value: 'water' } })
+
+    expect(output).toHaveClass('result-resistant')
+  })
 })
