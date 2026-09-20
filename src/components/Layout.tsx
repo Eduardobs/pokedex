@@ -1,4 +1,4 @@
-import { Compass, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
+import { Compass, Grid3X3, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
@@ -49,6 +49,7 @@ export function Layout() {
           <NavLink to="/pokemon" onClick={() => setMenuOpen(false)}>{t('nav.pokedex')}</NavLink>
           <NavLink to="/formas" onClick={() => setMenuOpen(false)}><Sparkles size={17} /> {t('nav.forms')}</NavLink>
           <NavLink to="/explorar" onClick={() => setMenuOpen(false)}><Compass size={17} /> {t('nav.explore')}</NavLink>
+          <NavLink to="/types-table" onClick={() => setMenuOpen(false)}><Grid3X3 size={17} /> {t('nav.types')}</NavLink>
           <NavLink to="/favoritos" onClick={() => setMenuOpen(false)}><Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span></NavLink>
         </nav>
         <label className="language-select" title={t('language.label')}>

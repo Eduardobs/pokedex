@@ -12,6 +12,7 @@ const ExplorePage = lazy(() => import('./pages/ExplorePage').then(({ ExplorePage
 const ResourceListPage = lazy(() => import('./pages/ResourceListPage').then(({ ResourceListPage }) => ({ default: ResourceListPage })))
 const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage').then(({ ResourceDetailPage }) => ({ default: ResourceDetailPage })))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(({ FavoritesPage }) => ({ default: FavoritesPage })))
+const TypesTablePage = lazy(() => import('./pages/TypesTablePage').then(({ TypesTablePage }) => ({ default: TypesTablePage })))
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="explorar/:resource" element={<ResourceListPage />} />
             <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
             <Route path="favoritos" element={<FavoritesPage />} />
+            <Route path="types-table" element={<TypesTablePage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>
