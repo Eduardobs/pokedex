@@ -14,6 +14,7 @@ import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { API_BASE, formatDecimal, formatNumber, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
+import { level100StatRange } from '../lib/pokemon-stats'
 import { BATTLE_TYPES, type BattleType } from '../lib/type-chart'
 import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
 import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
@@ -193,7 +194,10 @@ export function PokemonDetailPage() {
       <div className="detail-hero content-width">
         <div className="detail-nav">
           <Link to="/pokemon" className="back-link"><ArrowLeft /> Pokédex</Link>
-          <div>{previousPokemon && <Link to={`/pokemon/${previousPokemon.name}`} aria-label={`${prettyName(previousPokemon.name)} #${previousPokemon.id}`}><ArrowLeft /> #{String(previousPokemon.id).padStart(4, '0')}</Link>}{nextPokemon && <Link to={`/pokemon/${nextPokemon.name}`} aria-label={`${prettyName(nextPokemon.name)} #${nextPokemon.id}`}>#{String(nextPokemon.id).padStart(4, '0')} <ChevronRight /></Link>}</div>
+          <div>
+            {previousPokemon && <Link className="detail-nav-pokemon previous" to={`/pokemon/${previousPokemon.name}`} aria-label={`${prettyName(previousPokemon.name)} #${previousPokemon.id}`}><ArrowLeft /><span><strong>{prettyName(previousPokemon.name)}</strong><small>#{String(previousPokemon.id).padStart(4, '0')}</small></span></Link>}
+            {nextPokemon && <Link className="detail-nav-pokemon next" to={`/pokemon/${nextPokemon.name}`} aria-label={`${prettyName(nextPokemon.name)} #${nextPokemon.id}`}><span><strong>{prettyName(nextPokemon.name)}</strong><small>#{String(nextPokemon.id).padStart(4, '0')}</small></span><ChevronRight /></Link>}
+          </div>
         </div>
         <div className="detail-showcase">
           <div className="detail-copy">
@@ -218,7 +222,21 @@ export function PokemonDetailPage() {
           ['data', t('detail.data'), null],
         ] as const).map(([value, label, count]) => <button type="button" role="tab" id={`tab-${value}`} aria-selected={tab === value} aria-controls={`panel-${value}`} tabIndex={tab === value ? 0 : -1} className={tab === value ? 'active' : ''} onKeyDown={(event) => handleTabKey(event, value)} onClick={() => setTab(value)} key={value}>{label} {count !== null && count !== undefined && <span>{count}</span>}</button>)}</nav>
         {tab === 'about' && <div className="about-grid" role="tabpanel" id="panel-about" aria-labelledby="tab-about">
-          <article className="info-card stats-card"><header><h2>{t('detail.baseStats')}</h2><span>{t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b></span></header><div className="stats-visualization"><BaseStatsRadar stats={pokemon.stats} statNames={statNames} label={t('detail.baseStats')} /><div className="stats-list">{pokemon.stats.map(({ base_stat, stat }) => <div className="stat-row" key={stat.name}><span>{statNames[stat.name] ?? prettyName(stat.name)}</span><b>{base_stat}</b><div><i style={{ width: `${Math.min(100, base_stat / 1.8)}%` }} /></div></div>)}</div></div></article>
+          <article className="info-card stats-card">
+            <header><h2>{t('detail.baseStats')}</h2><span>{t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b></span></header>
+            <div className="stats-visualization">
+              <BaseStatsRadar stats={pokemon.stats} statNames={statNames} label={t('detail.baseStats')} baseLabel={t('detail.base')} level100Label={t('detail.level100')} pokemonName={pokemon.name} />
+              <div className="stats-list">
+                <div className="stat-list-heading" aria-hidden="true"><span /><b>{t('detail.base')}</b><span /><b>{t('detail.level100')}</b></div>
+                {pokemon.stats.map(({ base_stat, stat }) => {
+                  const range = level100StatRange(base_stat, stat.name, pokemon.name)
+                  const rangeLabel = range.minimum === range.maximum ? String(range.minimum) : `${range.minimum}–${range.maximum}`
+                  return <div className="stat-row" key={stat.name}><span>{statNames[stat.name] ?? prettyName(stat.name)}</span><b>{base_stat}</b><div><i style={{ width: `${Math.min(100, base_stat / 1.8)}%` }} /></div><strong aria-label={t('detail.level100Range', { minimum: range.minimum, maximum: range.maximum })}>{rangeLabel}</strong></div>
+                })}
+                <p className="level-100-note">{t('detail.level100Note')}</p>
+              </div>
+            </div>
+          </article>
           <article className="info-card"><h2>{t('detail.biology')}</h2>{speciesLoading ? <p className="muted">{t('detail.loadingSpecies')}</p> : speciesError || !species ? <p className="muted">{t('detail.speciesUnavailable')}</p> : <><dl><div><dt>{t('detail.generation')}</dt><dd>{localizedApiTerm(species.generation.name, language)}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{localizedApiTerm(species.growth_rate.name, language)}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species.capture_rate} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species.base_happiness}</dd></div><div><dt>{t('detail.eggGroups')}</dt><dd>{species.egg_groups.map((group) => localizedApiTerm(group.name, language)).join(', ')}</dd></div></dl><GenderRatio rate={species.gender_rate} /><div className="rarity-tags">{species.is_baby && <span>{t('detail.baby')}</span>}{species.is_legendary && <span>{t('detail.legendary')}</span>}{species.is_mythical && <span>{t('detail.mythical')}</span>}</div></>}</article>
           <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b>{prettyName(ability.name)}</b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
           <article className="info-card weaknesses-card">
