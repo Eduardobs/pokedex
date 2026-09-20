@@ -1,4 +1,4 @@
-import { act, cleanup, render, waitFor } from '@testing-library/react'
+import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { apiFetch } from '../lib/api'
 import { useApi } from './useApi'
@@ -22,6 +22,57 @@ afterEach(() => {
 })
 
 describe('useApi', () => {
+  it('permanece inativo quando não há endpoint', () => {
+    const { result } = renderHook(() => useApi<PokemonSummary>(null))
+
+    expect(result.current).toMatchObject({ data: null, error: null, loading: false })
+    expect(apiFetchMock).not.toHaveBeenCalled()
+  })
+
+  it('expõe os dados quando a requisição termina', async () => {
+    apiFetchMock.mockResolvedValue({ name: 'pikachu' })
+
+    const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu'))
+
+    expect(result.current.loading).toBe(true)
+    await waitFor(() => expect(result.current).toMatchObject({
+      data: { name: 'pikachu' },
+      error: null,
+      loading: false,
+    }))
+  })
+
+  it('expõe falhas e consegue repetir a requisição', async () => {
+    apiFetchMock
+      .mockRejectedValueOnce(new Error('network unavailable'))
+      .mockResolvedValueOnce({ name: 'raichu' })
+    const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/raichu'))
+
+    await waitFor(() => expect(result.current.error).toMatchObject({ message: 'network unavailable' }))
+
+    act(() => result.current.retry())
+
+    expect(result.current.loading).toBe(true)
+    await waitFor(() => expect(result.current.data).toEqual({ name: 'raichu' }))
+    expect(result.current.error).toBeNull()
+    expect(apiFetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('cancela a requisição ao desmontar sem publicar erro', () => {
+    let signal: AbortSignal | undefined
+    apiFetchMock.mockImplementation((_path, requestSignal) => {
+      signal = requestSignal
+      return new Promise(() => undefined)
+    })
+
+    const { unmount } = renderHook(() => useApi<PokemonSummary>('pokemon/mew'))
+    expect(signal?.aborted).toBe(false)
+
+    unmount()
+
+    expect(signal?.aborted).toBe(true)
+  })
+
   it('does not expose data from the previous path during navigation', async () => {
     let resolveFirst: ((value: PokemonSummary) => void) | undefined
     apiFetchMock.mockImplementation((path) => {

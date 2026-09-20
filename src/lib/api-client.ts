@@ -87,6 +87,8 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
     return Promise.reject(error)
   }
 
+  if (signal?.aborted) return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'))
+
   const cached = readCache<T>(url)
   if (cached !== undefined) return observeWithSignal(Promise.resolve(cached), signal)
 
