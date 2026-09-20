@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from './api-client'
-import { parsePokemonSortDetails } from './pokemon-catalog'
+import { parsePokemonRarityDetails, parsePokemonSortDetails } from './pokemon-catalog'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -86,5 +86,63 @@ describe('catálogo de atributos da Pokédex', () => {
     const cancelAssertion = expect(cancelled).rejects.toMatchObject({ name: 'AbortError' })
     controller.abort()
     await cancelAssertion
+  })
+})
+
+describe('catálogo de raridade da Pokédex', () => {
+  const rarityPayload = {
+    data: {
+      pokemonspecies: [
+        {
+          name: 'mewtwo',
+          is_legendary: true,
+          is_mythical: false,
+          pokemons: [{ name: 'mewtwo' }],
+        },
+        {
+          name: 'deoxys',
+          is_legendary: false,
+          is_mythical: true,
+          pokemons: [{ name: 'deoxys-normal' }, { name: 'deoxys-attack' }],
+        },
+      ],
+    },
+  }
+
+  it('aplica a classificação da espécie a todas as suas variedades', () => {
+    expect(parsePokemonRarityDetails(rarityPayload)).toEqual({
+      mewtwo: { isLegendary: true, isMythical: false },
+      'deoxys-normal': { isLegendary: false, isMythical: true },
+      'deoxys-attack': { isLegendary: false, isMythical: true },
+    })
+  })
+
+  it('rejeita respostas parciais e variedades inválidas', () => {
+    expect(() => parsePokemonRarityDetails({ ...rarityPayload, errors: [{ message: 'partial response' }] })).toThrow(ApiError)
+    expect(() => parsePokemonRarityDetails({ data: { pokemonspecies: [] } })).toThrow(ApiError)
+    expect(() => parsePokemonRarityDetails({ data: { pokemonspecies: [{
+      name: 'mewtwo',
+      is_legendary: true,
+      is_mythical: false,
+      pokemons: [{ name: '__proto__' }],
+    }] } })).toThrow(ApiError)
+  })
+
+  it('busca e reutiliza a classificação validada', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(rarityPayload), { status: 200 }),
+    )
+    const { fetchPokemonRarityDetails } = await import('./pokemon-catalog')
+
+    const first = await fetchPokemonRarityDetails()
+    const second = await fetchPokemonRarityDetails()
+
+    expect(second).toBe(first)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body))
+    expect(body).toMatchObject({ operationName: 'PokemonRarityDetails' })
+    expect(body.query).toContain('is_legendary')
+    expect(body.query).toContain('is_mythical')
+    expect(body.query).toContain('pokemons { name }')
   })
 })

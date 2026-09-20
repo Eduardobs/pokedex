@@ -12,8 +12,27 @@ const SORT_DETAILS_QUERY = `query PokemonSortDetails {
   }
 }`
 
+const RARITY_DETAILS_QUERY = `query PokemonRarityDetails {
+  pokemonspecies(
+    limit: ${POKEMON_CATALOG_LIMIT}
+    order_by: { id: asc }
+    where: { _or: [{ is_legendary: { _eq: true } }, { is_mythical: { _eq: true } }] }
+  ) {
+    name
+    is_legendary
+    is_mythical
+    pokemons { name }
+  }
+}`
+
 const STAT_NAMES = new Set(['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'])
 let cachedDetails: Record<string, PokemonSortDetails> | undefined
+let cachedRarityDetails: Record<string, PokemonRarityDetails> | undefined
+
+export type PokemonRarityDetails = {
+  isLegendary: boolean
+  isMythical: boolean
+}
 
 type UnknownRecord = Record<string, unknown>
 
@@ -51,6 +70,31 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
   return details
 }
 
+/** Maps each Pokémon variety to the legendary/mythical flags of its species. */
+export function parsePokemonRarityDetails(payload: unknown): Record<string, PokemonRarityDetails> {
+  if (!isRecord(payload) || (Array.isArray(payload.errors) && payload.errors.length > 0) || !isRecord(payload.data) || !Array.isArray(payload.data.pokemonspecies) || payload.data.pokemonspecies.length === 0) {
+    throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
+  }
+  if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
+    throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+  }
+
+  const details: Record<string, PokemonRarityDetails> = Object.create(null) as Record<string, PokemonRarityDetails>
+  for (const species of payload.data.pokemonspecies) {
+    if (!isRecord(species) || typeof species.name !== 'string' || !/^[a-z0-9-]{1,100}$/.test(species.name) || typeof species.is_legendary !== 'boolean' || typeof species.is_mythical !== 'boolean' || (!species.is_legendary && !species.is_mythical) || !Array.isArray(species.pokemons) || species.pokemons.length === 0) {
+      throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
+    }
+
+    for (const pokemon of species.pokemons) {
+      if (!isRecord(pokemon) || typeof pokemon.name !== 'string' || !/^[a-z0-9-]{1,100}$/.test(pokemon.name) || details[pokemon.name]) {
+        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
+      }
+      details[pokemon.name] = { isLegendary: species.is_legendary, isMythical: species.is_mythical }
+    }
+  }
+  return details
+}
+
 /** Loads every sortable stat in one fixed, field-limited request. */
 export async function fetchPokemonSortDetails(signal?: AbortSignal): Promise<Record<string, PokemonSortDetails>> {
   if (cachedDetails) return cachedDetails
@@ -73,6 +117,39 @@ export async function fetchPokemonSortDetails(signal?: AbortSignal): Promise<Rec
     if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
     cachedDetails = parsePokemonSortDetails(await response.json())
     return cachedDetails
+  } catch (error) {
+    if (controller.signal.aborted && !signal?.aborted) {
+      throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+    }
+    throw error
+  } finally {
+    window.clearTimeout(timeout)
+    signal?.removeEventListener('abort', abort)
+  }
+}
+
+/** Loads and caches the rare-species catalog in one field-limited request. */
+export async function fetchPokemonRarityDetails(signal?: AbortSignal): Promise<Record<string, PokemonRarityDetails>> {
+  if (cachedRarityDetails) return cachedRarityDetails
+  if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
+
+  const controller = new AbortController()
+  const abort = () => controller.abort()
+  signal?.addEventListener('abort', abort, { once: true })
+  const timeout = window.setTimeout(abort, NETWORK.requestTimeoutMs)
+
+  try {
+    const response = await fetch(GRAPHQL_API_URL, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: RARITY_DETAILS_QUERY, operationName: 'PokemonRarityDetails' }),
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+      signal: controller.signal,
+    })
+    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
+    cachedRarityDetails = parsePokemonRarityDetails(await response.json())
+    return cachedRarityDetails
   } catch (error) {
     if (controller.signal.aborted && !signal?.aborted) {
       throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')

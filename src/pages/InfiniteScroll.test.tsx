@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -6,9 +6,16 @@ import type { ApiList, NamedResource } from '../types'
 import { FormsPage } from './FormsPage'
 import { PokedexPage } from './PokedexPage'
 
-const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
+const { fetchPokemonRarityDetailsMock, useApiMock } = vi.hoisted(() => ({
+  fetchPokemonRarityDetailsMock: vi.fn(),
+  useApiMock: vi.fn(),
+}))
 
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
+vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
+  ...await importOriginal<typeof import('../lib/pokemon-catalog')>(),
+  fetchPokemonRarityDetails: fetchPokemonRarityDetailsMock,
+}))
 vi.mock('../components/PokemonCard', () => ({
   PokemonCard: ({ name }: { name: string }) => <div>{name}</div>,
 }))
@@ -81,6 +88,7 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup()
+  fetchPokemonRarityDetailsMock.mockReset()
   useApiMock.mockReset()
   vi.unstubAllGlobals()
 })
@@ -150,5 +158,29 @@ describe('Pokédex filters', () => {
     expect(fireFilter).toHaveAttribute('title', 'Fogo')
     expect(fireFilter).not.toHaveTextContent('Fogo')
     expect(fireFilter.querySelector('.type-badge')).toHaveClass('icon-only')
+  })
+
+  it('filters legendary and mythical Pokémon with unchecked checkboxes by default', async () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    fetchPokemonRarityDetailsMock.mockResolvedValue({
+      'pokemon-1': { isLegendary: true, isMythical: false },
+      'pokemon-2': { isLegendary: false, isMythical: true },
+    })
+    render(renderPage(<PokedexPage />))
+
+    const legendary = screen.getByRole('checkbox', { name: 'Lendário' })
+    const mythical = screen.getByRole('checkbox', { name: 'Mítico' })
+    expect(legendary).not.toBeChecked()
+    expect(mythical).not.toBeChecked()
+    expect(fetchPokemonRarityDetailsMock).not.toHaveBeenCalled()
+
+    fireEvent.click(legendary)
+    await waitFor(() => expect(screen.getByText('pokemon-1')).toBeInTheDocument())
+    expect(screen.queryByText('pokemon-2')).not.toBeInTheDocument()
+
+    fireEvent.click(mythical)
+    await waitFor(() => expect(screen.getByText('pokemon-2')).toBeInTheDocument())
+    expect(screen.getByText('pokemon-1')).toBeInTheDocument()
+    expect(fetchPokemonRarityDetailsMock).toHaveBeenCalledTimes(1)
   })
 })

@@ -7,7 +7,7 @@ import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { formatNumber, normalizeSearchText, pokemonListItems, prettyName } from '../lib/api'
-import { fetchPokemonSortDetails } from '../lib/pokemon-catalog'
+import { fetchPokemonRarityDetails, fetchPokemonSortDetails, type PokemonRarityDetails } from '../lib/pokemon-catalog'
 import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
 import { POKEMON_CATALOG_LIMIT } from '../config/app'
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
@@ -24,7 +24,14 @@ export function PokedexPage() {
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null
   const sortKeys: PokemonSortKey[] = ['number', 'name', 'total', 'hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed']
   const sort = requestedSort && sortKeys.includes(requestedSort) ? requestedSort : 'number'
+  const legendary = searchParams.get('legendary') === 'true'
+  const mythical = searchParams.get('mythical') === 'true'
+  const hasRarityFilter = legendary || mythical
   const [pokemonDetails, setPokemonDetails] = useState<Record<string, PokemonSortDetails>>({})
+  const [rarityDetails, setRarityDetails] = useState<Record<string, PokemonRarityDetails> | null>(null)
+  const [rarityLoading, setRarityLoading] = useState(false)
+  const [rarityError, setRarityError] = useState(false)
+  const [rarityRetry, setRarityRetry] = useState(0)
   const [sortingDetails, setSortingDetails] = useState(false)
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
@@ -38,12 +45,20 @@ export function PokedexPage() {
     if (!data) return []
     return pokemonListItems('results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon))
   }, [data])
-  const filteredPokemon = useMemo(() => filterPokemonList(catalog, query), [catalog, query])
+  const rarityCatalog = useMemo(() => {
+    if (!hasRarityFilter) return catalog
+    if (!rarityDetails) return []
+    return catalog.filter((pokemon) => {
+      const rarity = rarityDetails[pokemon.name]
+      return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))
+    })
+  }, [catalog, hasRarityFilter, legendary, mythical, rarityDetails])
+  const filteredPokemon = useMemo(() => filterPokemonList(rarityCatalog, query), [query, rarityCatalog])
   const suggestions = useMemo(() => {
     const normalizedQuery = normalizeSearchText(query)
     if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
 
-    return catalog
+    return rarityCatalog
       .filter((pokemon) => normalizeSearchText(pokemon.name).includes(normalizedQuery))
       .sort((left, right) => {
         const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
@@ -52,7 +67,7 @@ export function PokedexPage() {
         return left.id - right.id
       })
       .slice(0, 7)
-  }, [catalog, query])
+  }, [query, rarityCatalog])
   const sortedPokemon = useMemo(() => sortPokemonList(
     filteredPokemon,
     sort,
@@ -79,6 +94,31 @@ export function PokedexPage() {
     observer.observe(target)
     return () => observer.disconnect()
   }, [hasMore, loadMore, loading, sortingDetails, visibleCount])
+
+  useEffect(() => {
+    if (!hasRarityFilter) {
+      setRarityLoading(false)
+      setRarityError(false)
+      return
+    }
+    if (rarityDetails) {
+      setRarityLoading(false)
+      return
+    }
+
+    const controller = new AbortController()
+    setRarityLoading(true)
+    setRarityError(false)
+    fetchPokemonRarityDetails(controller.signal)
+      .then((details) => {
+        if (!controller.signal.aborted) setRarityDetails(details)
+      })
+      .catch((reason: unknown) => {
+        if (!(reason instanceof Error && reason.name === 'AbortError')) setRarityError(true)
+      })
+      .finally(() => { if (!controller.signal.aborted) setRarityLoading(false) })
+    return () => controller.abort()
+  }, [hasRarityFilter, rarityDetails, rarityRetry])
 
   useEffect(() => {
     if (!pokemonSortNeedsDetails(sort)) {
@@ -159,6 +199,15 @@ export function PokedexPage() {
     setVisibleCount(LIMIT)
   }
 
+  const changeRarityFilter = (filter: 'legendary' | 'mythical', checked: boolean) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (checked) next.set(filter, 'true'); else next.delete(filter)
+      return next
+    }, { replace: true })
+    setVisibleCount(LIMIT)
+  }
+
   const clearFilters = () => {
     setSearchParams({}, { replace: true })
     setVisibleCount(LIMIT)
@@ -176,10 +225,13 @@ export function PokedexPage() {
     { value: 'speed', label: t('pokedex.sort.speed'), metric: t('stats.speed') },
   ]
   const selectedSortMetric = sortOptions.find((option) => option.value === sort)?.metric ?? ''
+  const hasResultFilter = Boolean(query || type !== 'all' || hasRarityFilter)
+  const hasActiveFilters = hasResultFilter || sort !== 'number'
+  const isRarityPending = hasRarityFilter && !rarityDetails && rarityLoading
 
   return (
     <section className="page content-width">
-      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{formatNumber(query || type !== 'all' ? filteredPokemon.length : total, language)}</b><span>{query || type !== 'all' ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
+      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{isRarityPending ? '…' : formatNumber(hasResultFilter ? filteredPokemon.length : total, language)}</b><span>{hasResultFilter ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
       <div className="filter-panel">
         <div className="filter-primary">
           <div className="pokemon-search">
@@ -198,11 +250,17 @@ export function PokedexPage() {
           const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
           return <button type="button" key={item} aria-label={label} title={label} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? label : <TypeBadge type={item} iconOnly />}</button>
         })}</div></div>
-        <div className="filter-footer"><span>{t('pokedex.scrollTypes')}</span>{(query || type !== 'all' || sort !== 'number') && <button type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}</div>
+        <div className="rarity-filter" role="group" aria-label={t('pokedex.rarity.label')}>
+          <span>{t('pokedex.rarity.label')}</span>
+          <label><input type="checkbox" checked={legendary} onChange={(event) => changeRarityFilter('legendary', event.target.checked)} />{t('pokedex.rarity.legendary')}</label>
+          <label><input type="checkbox" checked={mythical} onChange={(event) => changeRarityFilter('mythical', event.target.checked)} />{t('pokedex.rarity.mythical')}</label>
+        </div>
+        <div className="filter-footer"><span>{t('pokedex.scrollTypes')}</span>{hasActiveFilters && <button type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}</div>
         {sortingDetails && <p className="sort-status" role="status">{t('pokedex.sort.loading')}</p>}
         {sortError && <p className="sort-status inline-sort-error" role="alert">{t('pokedex.sort.error')}</p>}
+        {isRarityPending && <p className="sort-status" role="status">{t('pokedex.rarity.loading')}</p>}
       </div>
-      {loading && !catalog.length ? <CardSkeleton count={12} /> : error && !catalog.length ? <div className="inline-error"><p>{t('pokedex.loadError')}</p><button className="button secondary" type="button" onClick={retry}>{t('common.retry')}</button></div> : visiblePokemon.length ? (
+      {loading && !catalog.length || isRarityPending ? <CardSkeleton count={12} /> : rarityError && hasRarityFilter && !rarityDetails ? <div className="inline-error"><p>{t('pokedex.rarity.error')}</p><button className="button secondary" type="button" onClick={() => setRarityRetry((value) => value + 1)}>{t('common.retry')}</button></div> : error && !catalog.length ? <div className="inline-error"><p>{t('pokedex.loadError')}</p><button className="button secondary" type="button" onClick={retry}>{t('common.retry')}</button></div> : visiblePokemon.length ? (
         <div className="pokemon-grid">{visiblePokemon.map((pokemon) => {
           const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
           const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }
