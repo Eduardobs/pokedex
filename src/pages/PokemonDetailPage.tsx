@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { BaseStatsRadar } from '../components/BaseStatsRadar'
 import { Loading } from '../components/Loading'
-import { MoveCard } from '../components/MoveCard'
+import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
 import { PokemonForms } from '../components/PokemonForms'
 import { ResourceValue } from '../components/ResourceValue'
 import { AbilityBadge, GenderRatio } from '../components/SemanticBadges'
@@ -13,6 +13,7 @@ import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { API_BASE, localizedText, pokemonArtwork, prettyName } from '../lib/api'
+import { groupMovesByLearningMethod } from '../lib/move-learning'
 import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, Species } from '../types'
 
 function evolutionCondition(details: Array<Record<string, unknown>>, t: Translate) {
@@ -122,6 +123,7 @@ export function PokemonDetailPage() {
   const description = species ? localizedText(species.flavor_text_entries, undefined, apiLanguage) : ''
   const genus = species?.genera.find((entry) => entry.language.name === apiLanguage)?.genus ?? species?.genera.find((entry) => entry.language.name === 'en')?.genus
   const statNames: Record<string, string> = { hp: 'HP', attack: t('stats.attack'), defense: t('stats.defense'), 'special-attack': t('stats.specialAttack'), 'special-defense': t('stats.specialDefense'), speed: t('stats.speed') }
+  const moveGroups = groupMovesByLearningMethod(pokemon.moves)
   return (
     <section className={`pokemon-detail type-theme-${pokemon.types[0]?.type.name ?? 'normal'}`}>
       <div className="detail-hero content-width">
@@ -152,7 +154,7 @@ export function PokemonDetailPage() {
           <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{evolutions.length ? <div className="evolution-line">{evolutions.map((item, index) => <div className="evolution-step" key={`${item.name}-${index}`}>{index > 0 && <span className="evolution-arrow"><ChevronRight /><small>{item.condition}</small></span>}<Link to={`/pokemon/${item.name}`}><img src={pokemonArtwork(item.id)} alt={item.name} width="100" height="100" loading="lazy" decoding="async" /><b>{prettyName(item.name)}</b><small>#{String(item.id).padStart(4, '0')}</small></Link></div>)}</div> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
           {species && <PokemonForms species={species} currentPokemon={pokemon} />}
         </div>}
-        {tab === 'moves' && <article className="info-card wide-card"><div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend"><span><i className="physical" />{t('damage.physical')}</span><span><i className="special" />{t('damage.special')}</span><span><i className="status" />{t('damage.status')}</span></div></div><div className="moves-grid">{pokemon.moves.map(({ move, version_group_details }) => { const detail = version_group_details.at(-1); return <MoveCard key={move.name} move={move} method={detail?.move_learn_method.name ?? 'unknown'} level={detail?.level_learned_at ?? 0} /> })}</div></article>}
+        {tab === 'moves' && <article className="info-card wide-card"><div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend"><span><i className="physical" />{t('damage.physical')}</span><span><i className="special" />{t('damage.special')}</span><span><i className="status" />{t('damage.status')}</span></div></div><div className="move-groups">{moveGroups.map((group) => <section className="move-group" key={group.method}><header><h3>{moveLearningMethodLabel(group.method, t)}</h3><span>{t('move.count', { count: group.moves.length })}</span></header><div className="moves-grid">{group.moves.map(({ move, method, level }) => <MoveCard key={move.name} move={move} method={method} level={level} />)}</div></section>)}</div></article>}
         {tab === 'encounters' && <article className="info-card wide-card"><h2>{t('detail.encounterAreas')}</h2>{encounters?.length ? <div className="encounter-list">{encounters.map((entry) => <Link to={`/explorar/location-area/${entry.location_area.name}`} key={entry.location_area.name}><MapPin /><b>{prettyName(entry.location_area.name)}</b><span>{t('detail.chance', { chance: Math.max(...entry.version_details.map((detail) => detail.max_chance)) })}</span><ChevronRight /></Link>)}</div> : <div className="empty"><MapPin /><h3>{t('detail.noEncounters')}</h3></div>}</article>}
         {tab === 'data' && <PokemonDataTab pokemon={pokemon} />}
       </div>
