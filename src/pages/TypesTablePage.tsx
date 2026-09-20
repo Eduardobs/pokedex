@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { ArrowDown, ArrowRight, Grid3X3 } from 'lucide-react'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
-import { BATTLE_TYPES, getDamageMultiplier, type DamageMultiplier } from '../lib/type-chart'
+import { BATTLE_TYPES, getDamageMultiplier, type BattleType, type DamageMultiplier } from '../lib/type-chart'
 
 const multiplierLabels: Record<DamageMultiplier, string> = {
   0: '0×',
@@ -19,6 +20,10 @@ function multiplierClass(multiplier: DamageMultiplier) {
 
 export function TypesTablePage() {
   const { t } = useLanguage()
+  const [hoveredCell, setHoveredCell] = useState<{
+    attackingType: BattleType
+    defendingType: BattleType
+  } | null>(null)
 
   return (
     <section className="page content-width types-table-page">
@@ -44,7 +49,7 @@ export function TypesTablePage() {
       </div>
 
       <div className="type-chart-scroll" tabIndex={0} aria-label={t('typesTable.scrollLabel')}>
-        <table className="type-chart">
+        <table className="type-chart" onMouseLeave={() => setHoveredCell(null)}>
           <caption className="sr-only">{t('typesTable.caption')}</caption>
           <thead>
             <tr>
@@ -54,17 +59,40 @@ export function TypesTablePage() {
                 <ArrowRight size={15} aria-hidden="true" />
                 <span className="sr-only">{t('typesTable.attackDefense')}</span>
               </th>
-              {BATTLE_TYPES.map((type) => <th scope="col" key={type}><TypeBadge type={type} /></th>)}
+              {BATTLE_TYPES.map((type) => (
+                <th
+                  scope="col"
+                  key={type}
+                  className={hoveredCell?.defendingType === type ? 'is-column-highlighted' : undefined}
+                >
+                  <TypeBadge type={type} />
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {BATTLE_TYPES.map((attackingType) => (
-              <tr key={attackingType}>
+              <tr
+                key={attackingType}
+                className={hoveredCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
+              >
                 <th scope="row"><TypeBadge type={attackingType} /></th>
                 {BATTLE_TYPES.map((defendingType) => {
                   const multiplier = getDamageMultiplier(attackingType, defendingType)
+                  const isHovered = hoveredCell?.attackingType === attackingType
+                    && hoveredCell.defendingType === defendingType
+                  const classes = [
+                    multiplierClass(multiplier),
+                    hoveredCell?.defendingType === defendingType && 'is-column-highlighted',
+                    isHovered && 'is-cell-highlighted',
+                  ].filter(Boolean).join(' ')
+
                   return (
-                    <td key={defendingType} className={multiplierClass(multiplier)}>
+                    <td
+                      key={defendingType}
+                      className={classes}
+                      onMouseEnter={() => setHoveredCell({ attackingType, defendingType })}
+                    >
                       <span aria-label={t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}>
                         {multiplierLabels[multiplier]}
                       </span>

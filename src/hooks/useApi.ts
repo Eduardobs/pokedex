@@ -1,25 +1,43 @@
 import { useEffect, useState } from 'react'
 import { apiFetch } from '../lib/api'
 
+type ApiState<T> = {
+  pathOrUrl: string | null
+  data: T | null
+  error: Error | null
+  loading: boolean
+}
+
 export function useApi<T>(pathOrUrl: string | null) {
-  const [data, setData] = useState<T | null>(null)
-  const [error, setError] = useState<Error | null>(null)
-  const [loading, setLoading] = useState(Boolean(pathOrUrl))
+  const [state, setState] = useState<ApiState<T>>({
+    pathOrUrl,
+    data: null,
+    error: null,
+    loading: Boolean(pathOrUrl),
+  })
 
   useEffect(() => {
-    if (!pathOrUrl) { setLoading(false); return }
+    if (!pathOrUrl) {
+      setState({ pathOrUrl, data: null, error: null, loading: false })
+      return
+    }
     const controller = new AbortController()
-    setData(null)
-    setLoading(true)
-    setError(null)
+    setState({ pathOrUrl, data: null, error: null, loading: true })
     apiFetch<T>(pathOrUrl, controller.signal)
-      .then(setData)
-      .catch((reason: unknown) => {
-        if (reason instanceof Error && reason.name !== 'AbortError') setError(reason)
+      .then((data) => {
+        if (!controller.signal.aborted) setState({ pathOrUrl, data, error: null, loading: false })
       })
-      .finally(() => { if (!controller.signal.aborted) setLoading(false) })
+      .catch((reason: unknown) => {
+        if (reason instanceof Error && reason.name !== 'AbortError' && !controller.signal.aborted) {
+          setState({ pathOrUrl, data: null, error: reason, loading: false })
+        }
+      })
     return () => controller.abort()
   }, [pathOrUrl])
 
-  return { data, error, loading }
+  if (state.pathOrUrl !== pathOrUrl) {
+    return { data: null, error: null, loading: Boolean(pathOrUrl) }
+  }
+
+  return { data: state.data, error: state.error, loading: state.loading }
 }
