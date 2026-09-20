@@ -1,6 +1,6 @@
 import type { TypeDamageRelations } from '../types'
 
-export interface TypeWeakness {
+export interface TypeEffectivenessResult {
   type: string
   multiplier: number
 }
@@ -23,7 +23,7 @@ function calculateMultipliers(relations: TypeDamageRelations[]) {
   return multipliers
 }
 
-export function calculateWeaknesses(relations: TypeDamageRelations[]): TypeWeakness[] {
+export function calculateWeaknesses(relations: TypeDamageRelations[]): TypeEffectivenessResult[] {
   const multipliers = calculateMultipliers(relations)
 
   return [...multipliers]
@@ -32,11 +32,20 @@ export function calculateWeaknesses(relations: TypeDamageRelations[]): TypeWeakn
     .sort((left, right) => right.multiplier - left.multiplier || left.type.localeCompare(right.type))
 }
 
-export function calculateImmunities(relations: TypeDamageRelations[]): TypeWeakness[] {
+export function calculateImmunities(relations: TypeDamageRelations[]): TypeEffectivenessResult[] {
   const multipliers = calculateMultipliers(relations)
 
   return [...multipliers]
     .filter(([, multiplier]) => multiplier === 0)
     .map(([type, multiplier]) => ({ type, multiplier }))
     .sort((left, right) => left.type.localeCompare(right.type))
+}
+
+export function calculateResistances(relations: TypeDamageRelations[]): TypeEffectivenessResult[] {
+  const multipliers = calculateMultipliers(relations)
+
+  return [...multipliers]
+    .filter(([, multiplier]) => multiplier > 0 && multiplier < 1)
+    .map(([type, multiplier]) => ({ type, multiplier }))
+    .sort((left, right) => left.multiplier - right.multiplier || left.type.localeCompare(right.type))
 }

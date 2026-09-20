@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { NamedResource, TypeDamageRelations } from '../types'
-import { calculateImmunities, calculateWeaknesses } from './type-effectiveness'
+import { calculateImmunities, calculateResistances, calculateWeaknesses } from './type-effectiveness'
 
 const resources = (...names: string[]): NamedResource[] => names.map((name) => ({
   name,
@@ -67,6 +67,30 @@ describe('calculateWeaknesses', () => {
 
     expect(calculateImmunities([flying, fire])).toEqual([
       { type: 'ground', multiplier: 0 },
+    ])
+  })
+
+  it('returns half-damage resistances without including immunities', () => {
+    const steel = relations({ half: ['normal', 'grass'], none: ['poison'] })
+
+    expect(calculateResistances([steel])).toEqual([
+      { type: 'grass', multiplier: 0.5 },
+      { type: 'normal', multiplier: 0.5 },
+    ])
+  })
+
+  it('combines two resistances into quarter damage', () => {
+    const fire = relations({ half: ['fire', 'grass', 'ice', 'bug', 'steel', 'fairy'] })
+    const flying = relations({ half: ['grass', 'fighting', 'bug'] })
+
+    expect(calculateResistances([fire, flying])).toEqual([
+      { type: 'bug', multiplier: 0.25 },
+      { type: 'grass', multiplier: 0.25 },
+      { type: 'fairy', multiplier: 0.5 },
+      { type: 'fighting', multiplier: 0.5 },
+      { type: 'fire', multiplier: 0.5 },
+      { type: 'ice', multiplier: 0.5 },
+      { type: 'steel', multiplier: 0.5 },
     ])
   })
 })

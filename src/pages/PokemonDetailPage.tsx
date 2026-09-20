@@ -12,9 +12,9 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { API_BASE, localizedText, pokemonArtwork, prettyName } from '../lib/api'
+import { API_BASE, formatNumber, localizedText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
-import { calculateImmunities, calculateWeaknesses } from '../lib/type-effectiveness'
+import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
 import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
 
 function evolutionCondition(details: Array<Record<string, unknown>>, t: Translate) {
@@ -100,7 +100,7 @@ function PokemonDataTab({ pokemon }: { pokemon: Pokemon }) {
 }
 
 export function PokemonDetailPage() {
-  const { apiLanguage, t } = useLanguage()
+  const { apiLanguage, language, t } = useLanguage()
   const { name = '' } = useParams()
   const [tab, setTab] = useState<'about' | 'moves' | 'encounters' | 'data'>('about')
   const [shiny, setShiny] = useState(false)
@@ -123,6 +123,7 @@ export function PokemonDetailPage() {
   const typeRelationsReady = Boolean(pokemon && currentTypeRelations.length === pokemon.types.length)
   const typeRelationsError = primaryTypeError || (pokemon?.types[1] ? secondaryTypeError : null)
   const weaknesses = calculateWeaknesses(currentTypeRelations)
+  const resistances = calculateResistances(currentTypeRelations)
   const immunities = calculateImmunities(currentTypeRelations)
   if (loading) return <Loading label={t('detail.loading')} />
   if (error || !pokemon) return <ErrorState title={t('detail.notFound')} message={t('detail.notFoundDesc', { name })} />
@@ -163,7 +164,7 @@ export function PokemonDetailPage() {
           <article className="info-card"><h2>{t('detail.biology')}</h2><dl><div><dt>{t('detail.generation')}</dt><dd>{prettyName(species?.generation.name ?? '—')}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species?.habitat?.name ? prettyName(species.habitat.name) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{prettyName(species?.growth_rate.name ?? '—')}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species?.capture_rate ?? '—'} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species?.base_happiness ?? '—'}</dd></div><div><dt>{t('detail.eggGroups')}</dt><dd>{species?.egg_groups.map((group) => prettyName(group.name)).join(', ') ?? '—'}</dd></div></dl>{species && <GenderRatio rate={species.gender_rate} />}<div className="rarity-tags">{species?.is_baby && <span>{t('detail.baby')}</span>}{species?.is_legendary && <span>{t('detail.legendary')}</span>}{species?.is_mythical && <span>{t('detail.mythical')}</span>}</div></article>
           <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b>{prettyName(ability.name)}</b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
           <article className="info-card weaknesses-card">
-            <h2><ShieldAlert />{t('detail.weaknessesAndImmunities')}</h2>
+            <h2><ShieldAlert />{t('detail.typeEffectiveness')}</h2>
             {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}
             {typeRelationsError && <p className="muted">{t('detail.weaknessesUnavailable')}</p>}
             {typeRelationsReady && !typeRelationsError && <>
@@ -171,11 +172,15 @@ export function PokemonDetailPage() {
               <div className="effectiveness-groups">
                 <section>
                   <h3>{t('detail.weaknesses')}</h3>
-                  {weaknesses.length ? <div className="effectiveness-list">{weaknesses.map(({ type, multiplier }) => <span className="effectiveness-item" key={type}><TypeBadge type={type} /><b>{multiplier}×</b></span>)}</div> : <p className="muted">{t('detail.noWeaknesses')}</p>}
+                  {weaknesses.length ? <div className="effectiveness-list">{weaknesses.map(({ type, multiplier }) => <span className="effectiveness-item" key={type}><TypeBadge type={type} /><b>{formatNumber(multiplier, language)}×</b></span>)}</div> : <p className="muted">{t('detail.noWeaknesses')}</p>}
+                </section>
+                <section>
+                  <h3>{t('detail.resistances')}</h3>
+                  {resistances.length ? <div className="effectiveness-list">{resistances.map(({ type, multiplier }) => <span className="effectiveness-item resistance" key={type}><TypeBadge type={type} /><b>{formatNumber(multiplier, language)}×</b></span>)}</div> : <p className="muted">{t('detail.noResistances')}</p>}
                 </section>
                 <section>
                   <h3>{t('detail.immunities')}</h3>
-                  {immunities.length ? <div className="effectiveness-list">{immunities.map(({ type, multiplier }) => <span className="effectiveness-item immunity" key={type}><TypeBadge type={type} /><b>{multiplier}×</b></span>)}</div> : <p className="muted">{t('detail.noImmunities')}</p>}
+                  {immunities.length ? <div className="effectiveness-list">{immunities.map(({ type, multiplier }) => <span className="effectiveness-item immunity" key={type}><TypeBadge type={type} /><b>{formatNumber(multiplier, language)}×</b></span>)}</div> : <p className="muted">{t('detail.noImmunities')}</p>}
                 </section>
               </div>
             </>}
