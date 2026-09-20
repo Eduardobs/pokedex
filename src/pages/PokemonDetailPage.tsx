@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Database, ExternalLink, Gamepad2, Heart, History, Image, MapPin, PackageOpen, Ruler, Sparkles, Volume2, Weight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Database, ExternalLink, Gamepad2, Heart, History, Image, MapPin, PackageOpen, Ruler, ShieldAlert, Sparkles, Volume2, Weight } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
@@ -14,7 +14,8 @@ import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { API_BASE, localizedText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
-import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, Species } from '../types'
+import { calculateImmunities, calculateWeaknesses } from '../lib/type-effectiveness'
+import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
 
 function evolutionCondition(details: Array<Record<string, unknown>>, t: Translate) {
   const detail = details[0]
@@ -111,8 +112,18 @@ export function PokemonDetailPage() {
   const nextId = pokemon ? pokemon.id + 1 : null
   const { data: previousPokemon } = useApi<Pokemon>(previousId ? `pokemon/${previousId}` : null)
   const { data: nextPokemon } = useApi<Pokemon>(nextId ? `pokemon/${nextId}` : null)
+  const { data: primaryType, error: primaryTypeError } = useApi<PokemonType>(pokemon?.types[0] ? `type/${encodeURIComponent(pokemon.types[0].type.name)}` : null)
+  const { data: secondaryType, error: secondaryTypeError } = useApi<PokemonType>(pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null)
   const { isFavorite, toggle } = useFavoritesContext()
   const evolutions = useMemo(() => evolution ? flattenEvolution(evolution.chain, t) : [], [evolution, t])
+  const loadedTypes = [primaryType, secondaryType]
+  const currentTypeRelations = (pokemon?.types ?? [])
+    .map(({ type }) => loadedTypes.find((loadedType) => loadedType?.name === type.name)?.damage_relations)
+    .filter((relations): relations is PokemonType['damage_relations'] => Boolean(relations))
+  const typeRelationsReady = Boolean(pokemon && currentTypeRelations.length === pokemon.types.length)
+  const typeRelationsError = primaryTypeError || (pokemon?.types[1] ? secondaryTypeError : null)
+  const weaknesses = calculateWeaknesses(currentTypeRelations)
+  const immunities = calculateImmunities(currentTypeRelations)
   if (loading) return <Loading label={t('detail.loading')} />
   if (error || !pokemon) return <ErrorState title={t('detail.notFound')} message={t('detail.notFoundDesc', { name })} />
   if (name !== pokemon.name) return <Navigate to={`/pokemon/${encodeURIComponent(pokemon.name)}`} replace />
@@ -151,6 +162,24 @@ export function PokemonDetailPage() {
           <article className="info-card stats-card"><header><h2>{t('detail.baseStats')}</h2><span>{t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b></span></header><div className="stats-visualization"><BaseStatsRadar stats={pokemon.stats} statNames={statNames} label={t('detail.baseStats')} /><div className="stats-list">{pokemon.stats.map(({ base_stat, stat }) => <div className="stat-row" key={stat.name}><span>{statNames[stat.name] ?? prettyName(stat.name)}</span><b>{base_stat}</b><div><i style={{ width: `${Math.min(100, base_stat / 1.8)}%` }} /></div></div>)}</div></div></article>
           <article className="info-card"><h2>{t('detail.biology')}</h2><dl><div><dt>{t('detail.generation')}</dt><dd>{prettyName(species?.generation.name ?? '—')}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species?.habitat?.name ? prettyName(species.habitat.name) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{prettyName(species?.growth_rate.name ?? '—')}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species?.capture_rate ?? '—'} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species?.base_happiness ?? '—'}</dd></div><div><dt>{t('detail.eggGroups')}</dt><dd>{species?.egg_groups.map((group) => prettyName(group.name)).join(', ') ?? '—'}</dd></div></dl>{species && <GenderRatio rate={species.gender_rate} />}<div className="rarity-tags">{species?.is_baby && <span>{t('detail.baby')}</span>}{species?.is_legendary && <span>{t('detail.legendary')}</span>}{species?.is_mythical && <span>{t('detail.mythical')}</span>}</div></article>
           <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b>{prettyName(ability.name)}</b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
+          <article className="info-card weaknesses-card">
+            <h2><ShieldAlert />{t('detail.weaknessesAndImmunities')}</h2>
+            {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}
+            {typeRelationsError && <p className="muted">{t('detail.weaknessesUnavailable')}</p>}
+            {typeRelationsReady && !typeRelationsError && <>
+              <p>{t('detail.weaknessesDesc')}</p>
+              <div className="effectiveness-groups">
+                <section>
+                  <h3>{t('detail.weaknesses')}</h3>
+                  {weaknesses.length ? <div className="effectiveness-list">{weaknesses.map(({ type, multiplier }) => <span className="effectiveness-item" key={type}><TypeBadge type={type} /><b>{multiplier}×</b></span>)}</div> : <p className="muted">{t('detail.noWeaknesses')}</p>}
+                </section>
+                <section>
+                  <h3>{t('detail.immunities')}</h3>
+                  {immunities.length ? <div className="effectiveness-list">{immunities.map(({ type, multiplier }) => <span className="effectiveness-item immunity" key={type}><TypeBadge type={type} /><b>{multiplier}×</b></span>)}</div> : <p className="muted">{t('detail.noImmunities')}</p>}
+                </section>
+              </div>
+            </>}
+          </article>
           <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{evolutions.length ? <div className="evolution-line">{evolutions.map((item, index) => <div className="evolution-step" key={`${item.name}-${index}`}>{index > 0 && <span className="evolution-arrow"><ChevronRight /><small>{item.condition}</small></span>}<Link to={`/pokemon/${item.name}`}><img src={pokemonArtwork(item.id)} alt={item.name} width="100" height="100" loading="lazy" decoding="async" /><b>{prettyName(item.name)}</b><small>#{String(item.id).padStart(4, '0')}</small></Link></div>)}</div> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
           {species && <PokemonForms species={species} currentPokemon={pokemon} />}
         </div>}

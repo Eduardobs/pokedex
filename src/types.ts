@@ -34,6 +34,18 @@ export interface Pokemon {
   past_types?: { generation: NamedResource; types: { slot: number; type: NamedResource }[] }[]
 }
 
+export interface TypeDamageRelations {
+  double_damage_from: NamedResource[]
+  half_damage_from: NamedResource[]
+  no_damage_from: NamedResource[]
+}
+
+export interface PokemonType {
+  id: number
+  name: string
+  damage_relations: TypeDamageRelations
+}
+
 export interface Species {
   id: number
   name: string
