@@ -57,8 +57,13 @@ function EvolutionTreeNode({ node, t, root = false }: { node: EvolutionNode; t: 
   )
 }
 
-function PokemonDataTab({ pokemon }: { pokemon: Pokemon }) {
+function PokemonDataTab({ pokemon, species, speciesLoading }: { pokemon: Pokemon; species: Species | null; speciesLoading: boolean }) {
   const { t } = useLanguage()
+  const speciesFlag = (value: boolean | undefined) => speciesLoading
+    ? <span className="muted">{t('common.loadingShort')}</span>
+    : value === undefined
+      ? <span className="muted">—</span>
+      : <span className={`boolean ${value}`}>{t(value ? 'common.yes' : 'common.no')}</span>
   const sprites = [
     { label: `${t('detail.front')} · ${t('detail.normal')}`, url: pokemon.sprites.front_default },
     { label: `${t('detail.front')} · ${t('detail.shiny')}`, url: pokemon.sprites.front_shiny },
@@ -78,6 +83,8 @@ function PokemonDataTab({ pokemon }: { pokemon: Pokemon }) {
           <div><dt>ID</dt><dd>#{String(pokemon.id).padStart(4, '0')}</dd></div>
           <div><dt>{t('detail.apiOrder')}</dt><dd>{pokemon.order}</dd></div>
           <div><dt>{t('detail.defaultForm')}</dt><dd>{t(pokemon.is_default ? 'common.yes' : 'common.no')}</dd></div>
+          <div><dt>{t('detail.legendary')}</dt><dd>{speciesFlag(species?.is_legendary)}</dd></div>
+          <div><dt>{t('detail.mythical')}</dt><dd>{speciesFlag(species?.is_mythical)}</dd></div>
           <div><dt>{t('detail.species')}</dt><dd><ResourceValue value={pokemon.species} /></dd></div>
           <div><dt>{t('detail.forms')}</dt><dd>{pokemon.forms.length}</dd></div>
         </dl>
@@ -277,7 +284,7 @@ export function PokemonDetailPage() {
           {!moveTypeLoading && !moveTypeError && !filteredMoveGroups.length && <div className="empty compact-empty"><Search /><h3>{t('pokedex.empty')}</h3></div>}
         </article>}
         {tab === 'encounters' && <article className="info-card wide-card" role="tabpanel" id="panel-encounters" aria-labelledby="tab-encounters"><h2>{t('detail.encounterAreas')}</h2>{encountersLoading ? <Loading /> : encountersError ? <div className="inline-error"><p>{t('error.message')}</p><button className="button secondary" type="button" onClick={retryEncounters}>{t('common.retry')}</button></div> : encounters?.length ? <div className="encounter-list">{encounters.map((entry) => <Link to={`/explorar/location-area/${entry.location_area.name}`} key={entry.location_area.name}><MapPin /><b>{prettyName(entry.location_area.name)}</b><span>{t('detail.chance', { chance: Math.max(...entry.version_details.map((detail) => detail.max_chance)) })}</span><ChevronRight /></Link>)}</div> : <div className="empty"><MapPin /><h3>{t('detail.noEncounters')}</h3></div>}</article>}
-        {tab === 'data' && <div role="tabpanel" id="panel-data" aria-labelledby="tab-data"><PokemonDataTab pokemon={pokemon} /></div>}
+        {tab === 'data' && <div role="tabpanel" id="panel-data" aria-labelledby="tab-data"><PokemonDataTab pokemon={pokemon} species={species} speciesLoading={speciesLoading} /></div>}
       </div>
     </section>
   )
