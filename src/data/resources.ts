@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import {
-  Activity, Apple, Backpack, BadgeInfo, BookOpen, Boxes, Brain, ChartNoAxesColumn,
+  Activity, Apple, Backpack, BadgeInfo, BookOpen, Boxes, ChartNoAxesColumn,
   CircleDot, Clock3, Crosshair, Dna, Dumbbell, Egg, Footprints, Gamepad2, Gem,
   GitBranch, Globe2, HeartPulse, Languages, Layers3, Leaf, Map, MapPin, Medal,
   Palette, PawPrint, ScanFace, Send, Settings, Shapes, Shield, SlidersHorizontal,

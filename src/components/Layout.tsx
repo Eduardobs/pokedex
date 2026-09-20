@@ -3,6 +3,8 @@ import { Suspense, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Language, useLanguage } from '../contexts/LanguageContext'
+import { STORAGE_KEYS } from '../config/app'
+import { writeStorageString } from '../lib/storage'
 import { Logo } from './Logo'
 import { Loading } from './Loading'
 
@@ -21,7 +23,7 @@ export function Layout() {
     setTheme(nextTheme)
     document.documentElement.dataset.theme = nextTheme
     document.documentElement.style.colorScheme = nextTheme
-    localStorage.setItem('atlas-theme', nextTheme)
+    writeStorageString(STORAGE_KEYS.theme, nextTheme)
     document.querySelector('meta[name="theme-color"]')?.setAttribute(
       'content',
       nextTheme === 'dark' ? '#101419' : '#e33535',
@@ -40,7 +42,7 @@ export function Layout() {
         <NavLink to="/" className="brand"><Logo /></NavLink>
         <form className="global-search" onSubmit={submit} role="search">
           <Search size={18} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('nav.searchPlaceholder')} aria-label={t('nav.searchLabel')} />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('nav.searchPlaceholder')} aria-label={t('nav.searchLabel')} maxLength={64} autoComplete="off" />
           <kbd>↵</kbd>
         </form>
         <nav className={menuOpen ? 'nav open' : 'nav'} aria-label={t('nav.main')}>
@@ -71,7 +73,7 @@ export function Layout() {
       <main><Suspense fallback={<Loading />}><Outlet /></Suspense></main>
       <footer>
         <Logo />
-        <p>{t('footer.text').split('PokéAPI')[0]}<a href="https://pokeapi.co" target="_blank" rel="noreferrer">PokéAPI</a>{t('footer.text').split('PokéAPI')[1]}</p>
+        <p>{t('footer.text').split('PokéAPI')[0]}<a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer">PokéAPI</a>{t('footer.text').split('PokéAPI')[1]}</p>
       </footer>
     </div>
   )

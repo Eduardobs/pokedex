@@ -1,25 +1,34 @@
 import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { API_BASE, prettyName } from '../lib/api'
+import { API_BASE, prettyName, resolveApiUrl } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
 
 function routeFromUrl(url: string) {
-  if (!url.startsWith(API_BASE)) return null
-  const [endpoint, name] = url.slice(API_BASE.length + 1).split('/').filter(Boolean)
-  return endpoint && name ? `/explorar/${endpoint}/${name}` : null
+  try {
+    const trustedUrl = resolveApiUrl(url)
+    const [endpoint, name] = new URL(trustedUrl).pathname.slice(`${new URL(API_BASE).pathname}/`.length).split('/').filter(Boolean)
+    return endpoint && name ? `/explorar/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
+  } catch {
+    return null
+  }
 }
 
 function referenceMeta(value: unknown) {
   if (!value || typeof value !== 'object') return null
   const { name, url } = value as Record<string, unknown>
-  if (typeof name !== 'string' || typeof url !== 'string' || !url.startsWith(API_BASE)) return null
-  const [endpoint, identifier] = url.slice(API_BASE.length + 1).split('/').filter(Boolean)
-  if (!endpoint || !identifier) return null
-  return { endpoint: prettyName(endpoint), identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier) }
+  if (typeof name !== 'string' || typeof url !== 'string') return null
+  try {
+    const trustedUrl = resolveApiUrl(url)
+    const [endpoint, identifier] = new URL(trustedUrl).pathname.slice(`${new URL(API_BASE).pathname}/`.length).split('/').filter(Boolean)
+    if (!endpoint || !identifier) return null
+    return { endpoint: prettyName(endpoint), identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier) }
+  } catch {
+    return null
+  }
 }
 
 function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: number }) {

@@ -16,7 +16,7 @@ Uma Pokédex moderna e responsiva construída com React, TypeScript e a [PokéAP
 
 ## Desenvolvimento
 
-Requer Node.js 22 ou superior.
+Requer Node.js 22.22.2 ou superior.
 
 ```bash
 npm install
@@ -30,6 +30,30 @@ npm test
 npm run lint
 npm run build
 ```
+
+Ou execute todas as verificações com `npm run check`.
+
+## Arquitetura
+
+O código segue fronteiras simples para manter mudanças localizadas:
+
+- `src/config`: configuração imutável da aplicação, rede e persistência;
+- `src/lib/api-client.ts`: transporte HTTP, política de origem, timeout, cache LRU com TTL e deduplicação;
+- `src/lib/api.ts`: fachada estável e transformações específicas do domínio Pokémon;
+- `src/hooks` e `src/contexts`: estado assíncrono e estado compartilhado da interface;
+- `src/pages` e `src/components`: composição de telas e apresentação, sem acesso direto à rede.
+
+As páginas secundárias são carregadas sob demanda. Requisições simultâneas para a mesma URL compartilham o transporte, mas cada consumidor mantém cancelamento independente.
+
+## Segurança e confiabilidade
+
+- somente URLs HTTPS sob `pokeapi.co/api/v2` são aceitas pelo cliente de dados;
+- a Content Security Policy limita scripts, conexões, imagens, fontes e formulários às origens necessárias;
+- parâmetros de rota são codificados antes de compor URLs;
+- dados persistidos no navegador são validados e têm limites de tamanho;
+- falhas de renderização são contidas por uma barreira global;
+- dependências usam versões exatas e o Dependabot acompanha atualizações;
+- lint, testes e build TypeScript são obrigatórios no workflow de publicação.
 
 ## Publicação no GitHub Pages
 

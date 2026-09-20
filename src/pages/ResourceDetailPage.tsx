@@ -30,7 +30,8 @@ export function ResourceDetailPage() {
   const meta = getResourceMeta(resource, language)
   const ResourceIcon = meta?.icon ?? Braces
   const GroupIcon = meta?.groupIcon
-  const { data, loading, error } = useApi<Record<string, unknown>>(valid ? `${resource}/${name}` : null)
+  const resourcePath = valid ? `${encodeURIComponent(resource)}/${encodeURIComponent(name)}` : null
+  const { data, loading, error } = useApi<Record<string, unknown>>(resourcePath)
   if (loading) return <Loading />
   if (error || !data) return <ErrorState title={t('resource.notFound')} message={t('resource.notFoundDesc')} />
   const title = localizedName(data.names, apiLanguage) || (typeof data.name === 'string' ? data.name : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
@@ -46,7 +47,7 @@ export function ResourceDetailPage() {
         <span className="resource-detail-mark"><ResourceIcon /></span>
         {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" />}
         <div><span className="eyebrow">{getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}</span><h1>{prettyName(String(title))}</h1>{description && <p>{description}</p>}<div className="resource-semantic-badges">{resource === 'type' && <TypeBadge type={String(data.name)} />}{moveType && <TypeBadge type={moveType} />}{moveClass && <DamageClassBadge value={moveClass} />}{resource === 'gender' && <GenderBadge value={String(data.name)} />}{resource === 'ability' && <span className="resource-kind-badge"><Zap size={14} />{t('resource.passiveAbility')}</span>}</div></div>
-        <a className="button secondary api-link" href={`https://pokeapi.co/api/v2/${resource}/${name}`} target="_blank" rel="noreferrer">JSON <ExternalLink size={16} /></a>
+        <a className="button secondary api-link" href={`https://pokeapi.co/api/v2/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer">JSON <ExternalLink size={16} /></a>
       </header>
       <div className="resource-detail-grid">{entries.map(([key, value]) => {
         const FieldIcon = fieldIcon(key)

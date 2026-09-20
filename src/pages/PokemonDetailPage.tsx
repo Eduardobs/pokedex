@@ -35,7 +35,7 @@ export function PokemonDetailPage() {
   const { name = '' } = useParams()
   const [tab, setTab] = useState<'about' | 'moves' | 'encounters'>('about')
   const [shiny, setShiny] = useState(false)
-  const { data: pokemon, loading, error } = useApi<Pokemon>(`pokemon/${name}`)
+  const { data: pokemon, loading, error } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
   const { data: species } = useApi<Species>(pokemon?.species.url ?? null)
   const { data: evolution } = useApi<EvolutionChain>(species?.evolution_chain?.url ?? null)
   const { data: encounters } = useApi<Encounter[]>(tab === 'encounters' ? pokemon?.location_area_encounters ?? null : null)

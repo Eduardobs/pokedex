@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { STORAGE_KEYS } from '../config/app'
+import { readStorageString, writeStorageString } from '../lib/storage'
 
 export type Language = 'pt-BR' | 'en' | 'es'
 
@@ -195,13 +197,11 @@ type LanguageContextValue = { language: Language; setLanguage: (language: Langua
 const LanguageContext = createContext<LanguageContextValue | null>(null)
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('atlas-language')
-    return saved === 'en' || saved === 'es' || saved === 'pt-BR' ? saved : 'pt-BR'
-  })
+  const [language, setLanguage] = useState<Language>(() =>
+    readStorageString(STORAGE_KEYS.language, ['pt-BR', 'en', 'es'] as const, 'pt-BR'))
 
   useEffect(() => {
-    localStorage.setItem('atlas-language', language)
+    writeStorageString(STORAGE_KEYS.language, language)
     document.documentElement.lang = language
   }, [language])
 
