@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Pokemon, PokemonListItem } from '../types'
-import { getPokemonSortValue, sortPokemonList } from './pokemon-sort'
+import { filterPokemonList, getPokemonSortValue, sortPokemonList } from './pokemon-sort'
 
 const list: PokemonListItem[] = [
   { id: 6, name: 'charizard', url: 'pokemon/6' },
@@ -21,6 +21,11 @@ const details = {
 }
 
 describe('ordenação da Pokédex', () => {
+  it('filtra por nome parcial ou número no catálogo recebido', () => {
+    expect(filterPokemonList(list, 'saur').map(({ name }) => name)).toEqual(['bulbasaur'])
+    expect(filterPokemonList(list, ' 9 ').map(({ name }) => name)).toEqual(['blastoise'])
+  })
+
   it('ordena por número e por nome em ordem crescente', () => {
     expect(sortPokemonList(list, 'number', details, 'pt-BR').map(({ id }) => id)).toEqual([1, 6, 9])
     expect(sortPokemonList(list, 'name', details, 'pt-BR').map(({ name }) => name)).toEqual(['blastoise', 'bulbasaur', 'charizard'])

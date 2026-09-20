@@ -47,7 +47,7 @@ As páginas secundárias são carregadas sob demanda. Requisições simultâneas
 
 ## Segurança e confiabilidade
 
-- somente URLs HTTPS sob `pokeapi.co/api/v2` são aceitas pelo cliente de dados;
+- somente os endpoints HTTPS fixos da PokéAPI REST e GraphQL são aceitos pelos clientes de dados;
 - a Content Security Policy limita scripts, conexões, imagens, fontes e formulários às origens necessárias;
 - parâmetros de rota são codificados antes de compor URLs;
 - dados persistidos no navegador são validados e têm limites de tamanho;

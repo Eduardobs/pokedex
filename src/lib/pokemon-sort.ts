@@ -1,5 +1,7 @@
 import type { Pokemon, PokemonListItem } from '../types'
 
+export type PokemonSortDetails = Pick<Pokemon, 'stats'>
+
 export type PokemonSortKey =
   | 'number'
   | 'name'
@@ -13,7 +15,13 @@ export type PokemonSortKey =
 
 export const pokemonSortNeedsDetails = (sort: PokemonSortKey) => sort !== 'number' && sort !== 'name'
 
-export function getPokemonSortValue(pokemon: Pokemon | undefined, sort: PokemonSortKey): number | undefined {
+export function filterPokemonList(pokemon: PokemonListItem[], query: string): PokemonListItem[] {
+  const normalizedQuery = query.trim().toLowerCase()
+  if (!normalizedQuery) return pokemon
+  return pokemon.filter((item) => item.name.includes(normalizedQuery) || String(item.id) === normalizedQuery)
+}
+
+export function getPokemonSortValue(pokemon: PokemonSortDetails | undefined, sort: PokemonSortKey): number | undefined {
   if (!pokemon || !pokemonSortNeedsDetails(sort)) return undefined
   if (sort === 'total') return pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0)
   return pokemon.stats.find((stat) => stat.stat.name === sort)?.base_stat
@@ -22,7 +30,7 @@ export function getPokemonSortValue(pokemon: Pokemon | undefined, sort: PokemonS
 export function sortPokemonList(
   pokemon: PokemonListItem[],
   sort: PokemonSortKey,
-  details: Record<string, Pokemon>,
+  details: Record<string, PokemonSortDetails>,
   locale: string,
 ): PokemonListItem[] {
   const collator = new Intl.Collator(locale, { sensitivity: 'base' })
