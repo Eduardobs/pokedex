@@ -20,6 +20,7 @@ export function Layout() {
   const navigationType = useNavigationType()
   const headerRef = useRef<HTMLElement>(null)
   const mainRef = useRef<HTMLElement>(null)
+  const previousPathnameRef = useRef<string | null>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
   const languageRef = useRef<HTMLDivElement>(null)
   const { favorites, notice, clearNotice, toggle } = useFavoritesContext()
@@ -48,6 +49,8 @@ export function Layout() {
   }, [routeDescription, routeTitle])
 
   useEffect(() => {
+    if (previousPathnameRef.current === location.pathname) return
+    previousPathnameRef.current = location.pathname
     setMenuOpen(false)
     if (navigationType !== 'POP') window.scrollTo({ top: 0, behavior: 'auto' })
     window.requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }))
