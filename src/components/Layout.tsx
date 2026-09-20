@@ -1,9 +1,10 @@
 import { Compass, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Language, useLanguage } from '../contexts/LanguageContext'
 import { Logo } from './Logo'
+import { Loading } from './Loading'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -67,7 +68,7 @@ export function Layout() {
         </button>
         <button className="menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label={t('nav.menu')}>{menuOpen ? <X /> : <Menu />}</button>
       </header>
-      <main><Outlet /></main>
+      <main><Suspense fallback={<Loading />}><Outlet /></Suspense></main>
       <footer>
         <Logo />
         <p>{t('footer.text').split('PokéAPI')[0]}<a href="https://pokeapi.co" target="_blank" rel="noreferrer">PokéAPI</a>{t('footer.text').split('PokéAPI')[1]}</p>

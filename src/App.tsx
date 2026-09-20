@@ -1,15 +1,17 @@
+import { lazy } from 'react'
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { ExplorePage } from './pages/ExplorePage'
-import { FavoritesPage } from './pages/FavoritesPage'
-import { FormsPage } from './pages/FormsPage'
 import { HomePage } from './pages/HomePage'
-import { PokedexPage } from './pages/PokedexPage'
-import { PokemonDetailPage } from './pages/PokemonDetailPage'
-import { ResourceDetailPage } from './pages/ResourceDetailPage'
-import { ResourceListPage } from './pages/ResourceListPage'
+
+const PokedexPage = lazy(() => import('./pages/PokedexPage').then(({ PokedexPage }) => ({ default: PokedexPage })))
+const PokemonDetailPage = lazy(() => import('./pages/PokemonDetailPage').then(({ PokemonDetailPage }) => ({ default: PokemonDetailPage })))
+const FormsPage = lazy(() => import('./pages/FormsPage').then(({ FormsPage }) => ({ default: FormsPage })))
+const ExplorePage = lazy(() => import('./pages/ExplorePage').then(({ ExplorePage }) => ({ default: ExplorePage })))
+const ResourceListPage = lazy(() => import('./pages/ResourceListPage').then(({ ResourceListPage }) => ({ default: ResourceListPage })))
+const ResourceDetailPage = lazy(() => import('./pages/ResourceDetailPage').then(({ ResourceDetailPage }) => ({ default: ResourceDetailPage })))
+const FavoritesPage = lazy(() => import('./pages/FavoritesPage').then(({ FavoritesPage }) => ({ default: FavoritesPage })))
 
 export default function App() {
   return (

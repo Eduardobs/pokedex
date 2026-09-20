@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
-import { idFromUrl, localizedName, localizedText, prettyName } from './api'
+import { describe, expect, it, vi } from 'vitest'
+import { apiFetch, idFromUrl, localizedName, localizedText, prettyName } from './api'
 
 describe('utilitários da PokéAPI', () => {
   it('extrai o id de uma URL', () => expect(idFromUrl('https://pokeapi.co/api/v2/pokemon/25/')).toBe(25))
@@ -19,4 +19,54 @@ describe('utilitários da PokéAPI', () => {
     { language: { name: 'en' }, name: 'Thunder Punch' },
     { language: { name: 'es' }, name: 'Puño Trueno' },
   ], 'es')).toBe('Puño Trueno'))
+
+  it('reaproveita uma requisição em andamento para a mesma URL', async () => {
+    const response = { id: 10001, name: 'deduplicated' }
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(response), { status: 200 }),
+    )
+
+    const first = apiFetch<typeof response>('pokemon/10001')
+    const second = apiFetch<typeof response>('pokemon/10001')
+
+    await expect(Promise.all([first, second])).resolves.toEqual([response, response])
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    fetchMock.mockRestore()
+  })
+
+  it('cancela apenas o consumidor, sem descartar a requisição compartilhada', async () => {
+    let finishRequest: ((value: Response) => void) | undefined
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockReturnValue(new Promise((resolve) => { finishRequest = resolve }))
+    const controller = new AbortController()
+    const cancelled = apiFetch<{ id: number }>('pokemon/10002', controller.signal)
+    const active = apiFetch<{ id: number }>('pokemon/10002')
+
+    controller.abort()
+    finishRequest?.(new Response(JSON.stringify({ id: 10002 }), { status: 200 }))
+
+    await expect(cancelled).rejects.toMatchObject({ name: 'AbortError' })
+    await expect(active).resolves.toEqual({ id: 10002 })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    fetchMock.mockRestore()
+  })
+
+  it('interrompe o transporte quando não há mais consumidores', async () => {
+    let transportSignal: AbortSignal | undefined
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      transportSignal = init?.signal ?? undefined
+      return new Promise((_resolve, reject) => {
+        transportSignal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), { once: true })
+      })
+    })
+    const controller = new AbortController()
+    const request = apiFetch('pokemon/10003', controller.signal)
+
+    controller.abort()
+
+    await expect(request).rejects.toMatchObject({ name: 'AbortError' })
+    await Promise.resolve()
+    expect(transportSignal?.aborted).toBe(true)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    fetchMock.mockRestore()
+  })
 })

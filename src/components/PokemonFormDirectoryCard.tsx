@@ -72,7 +72,7 @@ export function PokemonFormDirectoryCard({ resource, category }: { resource: Nam
   return (
     <div ref={cardRef} className={`directory-form-card directory-${category}`}>
       <Link to={`/pokemon/${data.pokemon.name}`}>
-        <div className="directory-form-art"><span /><img src={artwork ?? data.sprites.front_default ?? ''} alt={`${labels.pokemon} — ${labels.variation}`} loading="lazy" />{data.is_battle_only && <small title={t('form.battleOnly')}><Shield size={11} />{t('form.battle')}</small>}</div>
+        <div className="directory-form-art"><span /><img src={artwork ?? data.sprites.front_default ?? ''} alt={`${labels.pokemon} — ${labels.variation}`} width="165" height="165" loading="lazy" decoding="async" />{data.is_battle_only && <small title={t('form.battleOnly')}><Shield size={11} />{t('form.battle')}</small>}</div>
         <div className="directory-form-info">
           <span className="directory-category"><Icon size={13} />{t(config.labelKey as 'form.regional')}</span>
           <h2>{labels.pokemon}</h2>

@@ -6,7 +6,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { formatNumber, pokemonListItems } from '../lib/api'
-import type { ApiList, NamedResource, Pokemon, PokemonListItem } from '../types'
+import type { ApiList, NamedResource, PokemonListItem } from '../types'
 
 const LIMIT = 24
 const types = ['all', 'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
@@ -18,7 +18,6 @@ export function PokedexPage() {
   const [type, setType] = useState('all')
   const [loadedPokemon, setLoadedPokemon] = useState<PokemonListItem[]>([])
   const [visibleCount, setVisibleCount] = useState(LIMIT)
-  const [details, setDetails] = useState<Record<string, Pokemon>>({})
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const endpoint = type === 'all' ? `pokemon?limit=${LIMIT}&offset=${offset}` : `type/${type}`
   const { data, loading, error } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
@@ -77,20 +76,6 @@ export function PokedexPage() {
     setLoadedPokemon([])
   }
 
-  useEffect(() => {
-    const missing = list.filter((item) => !details[item.name])
-    if (!missing.length) return
-    const controller = new AbortController()
-    Promise.all(missing.map(async (item) => {
-      const response = await fetch(item.url, { signal: controller.signal })
-      return response.ok ? response.json() as Promise<Pokemon> : null
-    })).then((results) => {
-      const pokemonResults = results.filter((result): result is Pokemon => result !== null)
-      setDetails((current) => ({ ...current, ...Object.fromEntries(pokemonResults.map((result) => [result.name, result])) }))
-    }).catch(() => undefined)
-    return () => controller.abort()
-  }, [list, details])
-
   return (
     <section className="page content-width">
       <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count"><b>{formatNumber(total || 1302, language)}</b><span>{t('pokedex.registered')}</span></div></div>
@@ -99,7 +84,7 @@ export function PokedexPage() {
         <div className="type-filter"><SlidersHorizontal size={18} /><div>{types.map((item) => <button key={item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? t('pokedex.all') : <TypeBadge type={item} />}</button>)}</div></div>
       </div>
       {loading && !visiblePokemon.length ? <CardSkeleton count={12} /> : error && !visiblePokemon.length ? <p className="inline-error">{t('pokedex.loadError')}</p> : list.length ? (
-        <div className="pokemon-grid">{list.map((pokemon) => <PokemonCard key={pokemon.name} {...pokemon} pokemon={details[pokemon.name]} />)}</div>
+        <div className="pokemon-grid">{list.map((pokemon) => <PokemonCard key={pokemon.name} {...pokemon} />)}</div>
       ) : <div className="empty"><Search /><h2>{t('pokedex.empty')}</h2><p>{t('pokedex.tryAnother')}</p></div>}
       {!query && hasMore && <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite"><span className="pokeball-spinner" /><button onClick={loadMore} disabled={loading}>{loading ? t('pokedex.loadingMore') : t('pokedex.loadMore')}</button></div>}
       {!query && !hasMore && visiblePokemon.length > 0 && <p className="end-of-list">{t('pokedex.end')}</p>}

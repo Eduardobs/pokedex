@@ -50,7 +50,7 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
 
   return (
     <Link className={`form-card form-${presentation.kind} ${active ? 'active' : ''}`} to={`/pokemon/${pokemon.name}`} aria-current={active ? 'page' : undefined}>
-      <div className="form-art"><span /><img src={artwork ?? ''} alt={presentation.label} loading="lazy" />{active && <small>{t('pokemonForms.current')}</small>}</div>
+      <div className="form-art"><span /><img src={artwork ?? ''} alt={presentation.label} width="92" height="92" loading="lazy" decoding="async" />{active && <small>{t('pokemonForms.current')}</small>}</div>
       <div className="form-info"><span className="form-category"><Icon size={13} />{presentation.category}</span><h3>{presentation.label}</h3><p>{prettyName(pokemon.name)}</p><div className="type-row">{(form?.types ?? pokemon.types).map(({ type }) => <TypeBadge key={type.name} type={type.name} />)}</div></div>
     </Link>
   )
