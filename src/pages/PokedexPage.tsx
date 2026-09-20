@@ -57,7 +57,7 @@ export function PokedexPage() {
     }, { rootMargin: '300px 0px' })
     observer.observe(target)
     return () => observer.disconnect()
-  }, [hasMore, loadMore, loading, sortingDetails])
+  }, [hasMore, loadMore, loading, sortingDetails, visibleCount])
 
   useEffect(() => {
     if (!pokemonSortNeedsDetails(sort)) {

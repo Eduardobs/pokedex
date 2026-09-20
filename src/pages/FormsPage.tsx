@@ -71,7 +71,7 @@ export function FormsPage() {
     }, { rootMargin: '300px' })
     observer.observe(target)
     return () => observer.disconnect()
-  }, [filteredLength, hasMore])
+  }, [filteredLength, hasMore, loading, speciesLoading, visibleCount])
 
   const selectCategory = (value: SelectedCategory) => { setCategory(value); setVisibleCount(PAGE_SIZE) }
   const updateQuery = (value: string) => { setQuery(value); setVisibleCount(PAGE_SIZE) }
