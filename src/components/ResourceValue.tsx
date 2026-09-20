@@ -1,14 +1,58 @@
-import { ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_BASE, prettyName } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
+const PAGE_SIZE = 6
 
 function routeFromUrl(url: string) {
   if (!url.startsWith(API_BASE)) return null
   const [endpoint, name] = url.slice(API_BASE.length + 1).split('/').filter(Boolean)
   return endpoint && name ? `/explorar/${endpoint}/${name}` : null
+}
+
+function referenceMeta(value: unknown) {
+  if (!value || typeof value !== 'object') return null
+  const { name, url } = value as Record<string, unknown>
+  if (typeof name !== 'string' || typeof url !== 'string' || !url.startsWith(API_BASE)) return null
+  const [endpoint, identifier] = url.slice(API_BASE.length + 1).split('/').filter(Boolean)
+  if (!endpoint || !identifier) return null
+  return { endpoint: prettyName(endpoint), identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier) }
+}
+
+function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: number }) {
+  const { t } = useLanguage()
+  const [page, setPage] = useState(0)
+  const pageCount = Math.ceil(values.length / PAGE_SIZE)
+  const currentPage = Math.min(page, pageCount - 1)
+  const start = currentPage * PAGE_SIZE
+  const end = Math.min(start + PAGE_SIZE, values.length)
+
+  return (
+    <div className="resource-value-pages">
+      <div className="resource-value-list">
+        {values.slice(start, end).map((item, index) => {
+          const reference = referenceMeta(item)
+          return (
+            <div className="resource-value-item" key={start + index}>
+              <span className="resource-value-index">{String(start + index + 1).padStart(2, '0')}</span>
+              <div>
+                <ResourceValue value={item} depth={depth + 1} />
+                {reference && <small className="resource-value-meta">{reference.endpoint} · {reference.identifier}</small>}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <nav className="resource-value-pagination" aria-label={t('resource.range', { start: start + 1, end, total: values.length })}>
+        <button type="button" disabled={currentPage === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} aria-label={t('resource.previous')}><ChevronLeft /></button>
+        <span>{t('resource.range', { start: start + 1, end, total: values.length })}</span>
+        <button type="button" disabled={currentPage === pageCount - 1} onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))} aria-label={t('resource.next')}><ChevronRight /></button>
+      </nav>
+    </div>
+  )
 }
 
 export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: number }) {
@@ -18,7 +62,7 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   if (typeof value === 'string' || typeof value === 'number') return <span>{typeof value === 'string' ? prettyName(value) : value}</span>
   if (Array.isArray(value)) {
     if (!value.length) return <span className="muted">{t('resource.none')}</span>
-    if (depth > 1 || value.length > 20) return <span>{t('resource.records', { count: value.length })}</span>
+    if (depth > 1 || value.length > 20) return <PaginatedResourceValues values={value} depth={depth} />
     return <div className="value-list">{value.slice(0, 20).map((item, index) => <ResourceValue key={index} value={item} depth={depth + 1} />)}</div>
   }
   const object = value as Record<string, unknown>
@@ -26,7 +70,7 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
     const route = routeFromUrl(object.url)
     return route ? <Link className="resource-chip" to={route}>{prettyName(object.name)} <ExternalLink size={12} /></Link> : <span>{prettyName(object.name)}</span>
   }
-  if (depth > 2) return <span className="muted">{t('resource.related')}</span>
+  if (depth > 3) return <span className="muted">{t('resource.related')}</span>
   return (
     <div className="nested-value">
       {Object.entries(object).filter(([key]) => !excluded.has(key)).slice(0, 16).map(([key, child]) => (
