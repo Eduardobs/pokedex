@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { apiFetch } from '../lib/api'
 
 type ApiState<T> = {
@@ -9,6 +9,7 @@ type ApiState<T> = {
 }
 
 export function useApi<T>(pathOrUrl: string | null) {
+  const [retryCount, setRetryCount] = useState(0)
   const [state, setState] = useState<ApiState<T>>({
     pathOrUrl,
     data: null,
@@ -33,11 +34,13 @@ export function useApi<T>(pathOrUrl: string | null) {
         }
       })
     return () => controller.abort()
-  }, [pathOrUrl])
+  }, [pathOrUrl, retryCount])
+
+  const retry = useCallback(() => setRetryCount((value) => value + 1), [])
 
   if (state.pathOrUrl !== pathOrUrl) {
-    return { data: null, error: null, loading: Boolean(pathOrUrl) }
+    return { data: null, error: null, loading: Boolean(pathOrUrl), retry }
   }
 
-  return { data: state.data, error: state.error, loading: state.loading }
+  return { data: state.data, error: state.error, loading: state.loading, retry }
 }

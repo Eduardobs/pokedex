@@ -1,8 +1,9 @@
 import { ArrowRight, BookOpen, Database, MapPin, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
+import { allResources } from '../data/resources'
 
-const RESOURCE_COLLECTIONS = 48
+const RESOURCE_COLLECTIONS = allResources.length
 
 const featured = [
   { id: 1, name: 'bulbasaur', color: '#74c856' },
@@ -25,7 +26,7 @@ export function HomePage() {
             <Link to="/explorar" className="button secondary">{t('home.explore')}</Link>
           </div>
           <div className="hero-stats">
-            <span><b>1.000+</b> Pokémon</span><span><b>20</b> {t('home.types')}</span><span><b>9</b> {t('home.generations')}</span>
+            <span><b>1.000+</b> Pokémon</span><span><b>18</b> {t('home.types')}</span><span><b>9</b> {t('home.generations')}</span>
           </div>
         </div>
         <div className="hero-visual" aria-label={t('home.featured')}>

@@ -1,11 +1,35 @@
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_BASE, prettyName, resolveApiUrl } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
+import type { Language } from '../contexts/LanguageContext'
+import { getResourceLabel } from '../data/resources'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
+
+const fieldTranslations: Record<Language, Record<string, string>> = {
+  'pt-BR': {
+    is_main_series: 'Série principal', generation: 'Geração', effect_changes: 'Alterações de efeito', pokemon: 'Pokémon',
+    slot: 'Posição', is_hidden: 'Habilidade oculta', version_group: 'Grupo de versões', language: 'Idioma', move: 'Golpe',
+    method: 'Método', level_learned_at: 'Nível de aprendizado', power: 'Poder', accuracy: 'Precisão', pp: 'PP', priority: 'Prioridade',
+    damage_class: 'Classe de dano', type: 'Tipo', target: 'Alvo', effect_chance: 'Chance do efeito', cost: 'Preço', category: 'Categoria',
+    attributes: 'Atributos', held_by_pokemon: 'Pokémon que carregam', machines: 'Máquinas', game_indices: 'Índices nos jogos',
+    contest_type: 'Tipo de concurso', contest_effect: 'Efeito em concurso', super_contest_effect: 'Efeito em superconcurso',
+  },
+  en: {},
+  es: {
+    is_main_series: 'Serie principal', generation: 'Generación', effect_changes: 'Cambios de efecto', pokemon: 'Pokémon',
+    slot: 'Posición', is_hidden: 'Habilidad oculta', version_group: 'Grupo de versiones', language: 'Idioma', move: 'Movimiento',
+    method: 'Método', level_learned_at: 'Nivel de aprendizaje', power: 'Potencia', accuracy: 'Precisión', pp: 'PP', priority: 'Prioridad',
+    damage_class: 'Clase de daño', type: 'Tipo', target: 'Objetivo', effect_chance: 'Probabilidad del efecto', cost: 'Precio', category: 'Categoría',
+    attributes: 'Atributos', held_by_pokemon: 'Pokémon que lo llevan', machines: 'Máquinas', game_indices: 'Índices en los juegos',
+    contest_type: 'Tipo de concurso', contest_effect: 'Efecto de concurso', super_contest_effect: 'Efecto de superconcurso',
+  },
+}
+
+export const resourceFieldLabel = (key: string, language: Language) => fieldTranslations[language][key] ?? prettyName(key)
 
 function routeFromReference(url: string, resourceName: string) {
   try {
@@ -20,7 +44,7 @@ function routeFromReference(url: string, resourceName: string) {
   }
 }
 
-function referenceMeta(value: unknown) {
+function referenceMeta(value: unknown, language: Language) {
   if (!value || typeof value !== 'object') return null
   const { name, url } = value as Record<string, unknown>
   if (typeof name !== 'string' || typeof url !== 'string') return null
@@ -28,14 +52,14 @@ function referenceMeta(value: unknown) {
     const trustedUrl = resolveApiUrl(url)
     const [endpoint, identifier] = new URL(trustedUrl).pathname.slice(`${new URL(API_BASE).pathname}/`.length).split('/').filter(Boolean)
     if (!endpoint || !identifier) return null
-    return { endpoint: prettyName(endpoint), identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier) }
+    return { endpoint: getResourceLabel(endpoint, language), identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier) }
   } catch {
     return null
   }
 }
 
 function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: number }) {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const [page, setPage] = useState(0)
   const pageCount = Math.ceil(values.length / PAGE_SIZE)
   const currentPage = Math.min(page, pageCount - 1)
@@ -46,7 +70,7 @@ function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: 
     <div className="resource-value-pages">
       <div className="resource-value-list">
         {values.slice(start, end).map((item, index) => {
-          const reference = referenceMeta(item)
+          const reference = referenceMeta(item, language)
           return (
             <div className="resource-value-item" key={start + index}>
               <span className="resource-value-index">{String(start + index + 1).padStart(2, '0')}</span>
@@ -68,7 +92,7 @@ function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: 
 }
 
 export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: number }) {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   if (value === null || value === undefined) return <span className="muted">—</span>
   if (typeof value === 'boolean') return <span className={`boolean ${value}`}>{value ? t('common.yes') : t('common.no')}</span>
   if (typeof value === 'string' || typeof value === 'number') return <span>{typeof value === 'string' ? prettyName(value) : value}</span>
@@ -80,13 +104,13 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   const object = value as Record<string, unknown>
   if (typeof object.name === 'string' && typeof object.url === 'string') {
     const route = routeFromReference(object.url, object.name)
-    return route ? <Link className="resource-chip" to={route}>{prettyName(object.name)} <ExternalLink size={12} /></Link> : <span>{prettyName(object.name)}</span>
+    return route ? <Link className="resource-chip" to={route}>{prettyName(object.name)} <ChevronRight size={12} /></Link> : <span>{prettyName(object.name)}</span>
   }
   if (depth > 3) return <span className="muted">{t('resource.related')}</span>
   return (
     <div className="nested-value">
       {Object.entries(object).filter(([key]) => !excluded.has(key)).slice(0, 16).map(([key, child]) => (
-        <div className="nested-row" key={key}><small>{prettyName(key)}</small><ResourceValue value={child} depth={depth + 1} /></div>
+        <div className="nested-row" key={key}><small>{resourceFieldLabel(key, language)}</small><ResourceValue value={child} depth={depth + 1} /></div>
       ))}
     </div>
   )

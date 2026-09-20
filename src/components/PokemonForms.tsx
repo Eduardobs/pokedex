@@ -106,7 +106,7 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
 
   return (
     <article className="info-card forms-card">
-      <header><div><h2>{t('pokemonForms.title')}</h2><p>{t('pokemonForms.description')}</p></div><span>{t('pokemonForms.count', { count: entries.length })}</span></header>
+      <header><div><h2>{t('pokemonForms.title')}</h2><p>{t('pokemonForms.description')}</p></div><span>{entries.length === 1 ? t('pokemonForms.countOne') : t('pokemonForms.count', { count: entries.length })}</span></header>
       <div className="forms-sections">
         {sections.map((section) => {
           const SectionIcon = section.icon

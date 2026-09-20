@@ -1,5 +1,6 @@
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import type { ApiList, NamedResource } from '../types'
 import { FormsPage } from './FormsPage'
@@ -64,7 +65,7 @@ function apiList(results: NamedResource[]): ApiList {
 }
 
 function renderPage(page: React.ReactNode) {
-  return <LanguageProvider>{page}</LanguageProvider>
+  return <MemoryRouter><LanguageProvider>{page}</LanguageProvider></MemoryRouter>
 }
 
 function reachNextPage() {

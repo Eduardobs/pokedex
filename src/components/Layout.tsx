@@ -1,6 +1,6 @@
 import { Compass, Grid3X3, Heart, Languages, Menu, Moon, Search, Sparkles, Sun, X } from 'lucide-react'
-import { Suspense, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Language, useLanguage } from '../contexts/LanguageContext'
 import { STORAGE_KEYS } from '../config/app'
@@ -15,8 +15,74 @@ export function Layout() {
     document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
   )
   const navigate = useNavigate()
-  const { favorites } = useFavoritesContext()
+  const location = useLocation()
+  const navigationType = useNavigationType()
+  const headerRef = useRef<HTMLElement>(null)
+  const mainRef = useRef<HTMLElement>(null)
+  const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const { favorites, notice, clearNotice, toggle } = useFavoritesContext()
   const { language, setLanguage, t } = useLanguage()
+
+  const routeTitle = location.pathname.startsWith('/pokemon/')
+    ? t('pokedex.title')
+    : location.pathname === '/pokemon' ? t('nav.pokedex')
+      : location.pathname === '/formas' ? t('nav.forms')
+        : location.pathname === '/types-table' ? t('typesTable.title')
+          : location.pathname === '/favoritos' ? t('nav.favorites')
+            : location.pathname.startsWith('/explorar') ? t('nav.explore')
+              : location.pathname === '/' ? 'Atlas Pokémon' : t('error.notFoundTitle')
+  const routeDescription = location.pathname.startsWith('/pokemon/')
+    ? t('pokedex.description')
+    : location.pathname === '/pokemon' ? t('pokedex.description')
+      : location.pathname === '/formas' ? t('forms.description')
+        : location.pathname === '/types-table' ? t('typesTable.description')
+          : location.pathname === '/favoritos' ? t('favorites.description')
+            : location.pathname.startsWith('/explorar') ? t('explore.description')
+              : location.pathname === '/' ? t('home.description') : t('error.notFoundDesc')
+
+  useEffect(() => {
+    document.title = routeTitle === 'Atlas Pokémon' ? routeTitle : `${routeTitle} · Atlas Pokémon`
+    document.querySelector('meta[name="description"]')?.setAttribute('content', routeDescription)
+  }, [routeDescription, routeTitle])
+
+  useEffect(() => {
+    setMenuOpen(false)
+    if (navigationType !== 'POP') window.scrollTo({ top: 0, behavior: 'auto' })
+    window.requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }))
+  }, [location.pathname, navigationType])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const nav = document.getElementById('main-navigation')
+    const focusable = Array.from(nav?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
+    window.requestAnimationFrame(() => focusable[0]?.focus())
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+        menuButtonRef.current?.focus()
+      }
+      if (event.key !== 'Tab' || !focusable.length) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+    }
+    const closeOutside = (event: PointerEvent) => {
+      if (!headerRef.current?.contains(event.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    document.addEventListener('pointerdown', closeOutside)
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape)
+      document.removeEventListener('pointerdown', closeOutside)
+    }
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (!notice) return
+    const timeout = window.setTimeout(clearNotice, 4500)
+    return () => window.clearTimeout(timeout)
+  }, [clearNotice, notice])
 
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light'
@@ -32,20 +98,21 @@ export function Layout() {
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault()
-    const value = query.trim().toLowerCase().replace(/\s+/g, '-')
-    if (value) { navigate(`/pokemon/${value}`); setQuery(''); setMenuOpen(false) }
+    const value = query.trim()
+    if (value) { navigate(`/pokemon?q=${encodeURIComponent(value)}`); setQuery(''); setMenuOpen(false) }
   }
 
   return (
     <div className="app-shell">
-      <header className="topbar">
+      <a className="skip-link" href="#main-content">{t('nav.skip')}</a>
+      <header className="topbar" ref={headerRef}>
         <NavLink to="/" className="brand"><Logo /></NavLink>
         <form className="global-search" onSubmit={submit} role="search">
           <Search size={18} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('nav.searchPlaceholder')} aria-label={t('nav.searchLabel')} maxLength={64} autoComplete="off" />
-          <kbd>↵</kbd>
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('nav.searchPlaceholder')} aria-label={t('nav.searchLabel')} maxLength={64} autoComplete="off" enterKeyHint="search" />
+          {query ? <button className="search-clear" type="button" onClick={() => setQuery('')} aria-label={t('common.clear')}><X size={15} /></button> : <kbd>↵</kbd>}
         </form>
-        <nav className={menuOpen ? 'nav open' : 'nav'} aria-label={t('nav.main')}>
+        <nav id="main-navigation" className={menuOpen ? 'nav open' : 'nav'} aria-label={t('nav.main')}>
           <NavLink to="/pokemon" onClick={() => setMenuOpen(false)}>{t('nav.pokedex')}</NavLink>
           <NavLink to="/formas" onClick={() => setMenuOpen(false)}><Sparkles size={17} /> {t('nav.forms')}</NavLink>
           <NavLink to="/explorar" onClick={() => setMenuOpen(false)}><Compass size={17} /> {t('nav.explore')}</NavLink>
@@ -69,9 +136,11 @@ export function Layout() {
         >
           {theme === 'light' ? <Moon size={19} /> : <Sun size={19} />}
         </button>
-        <button className="menu-button" onClick={() => setMenuOpen((value) => !value)} aria-label={t('nav.menu')}>{menuOpen ? <X /> : <Menu />}</button>
+        <button ref={menuButtonRef} className="menu-button" type="button" onClick={() => setMenuOpen((value) => !value)} aria-label={t('nav.menu')} aria-expanded={menuOpen} aria-controls="main-navigation">{menuOpen ? <X /> : <Menu />}</button>
       </header>
-      <main><Suspense fallback={<Loading />}><Outlet /></Suspense></main>
+      <p className="sr-only" aria-live="polite">{routeTitle}</p>
+      <main id="main-content" ref={mainRef} tabIndex={-1}><Suspense fallback={<Loading />}><Outlet /></Suspense></main>
+      {notice && <div className="favorite-toast" role="status"><span>{notice.action === 'limit' ? t('favorites.limit') : t(notice.action === 'added' ? 'favorites.added' : 'favorites.removed', { name: notice.name })}</span>{notice.action !== 'limit' && <button type="button" onClick={() => { toggle(notice.name); clearNotice() }}>{t('favorites.undo')}</button>}<button type="button" className="toast-close" onClick={clearNotice} aria-label={t('common.clear')}><X size={16} /></button></div>}
       <footer>
         <Logo />
         <p>{t('footer.text').split('PokéAPI')[0]}<a href="https://pokeapi.co" target="_blank" rel="noopener noreferrer">PokéAPI</a>{t('footer.text').split('PokéAPI')[1]}</p>

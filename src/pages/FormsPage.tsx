@@ -1,11 +1,11 @@
 import { Gem, Globe2, Layers3, Maximize2, Search, Sparkles } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
-import { Loading } from '../components/Loading'
 import { FormCategory, formCategory, formLabels, PokemonFormDirectoryCard } from '../components/PokemonFormDirectoryCard'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { formatNumber, idFromUrl } from '../lib/api'
+import { formatNumber, idFromUrl, normalizeSearchText } from '../lib/api'
 import type { ApiList, NamedResource } from '../types'
 
 const PAGE_SIZE = 32
@@ -18,12 +18,14 @@ export function FormsPage() {
     { value: 'mega', label: t('forms.mega'), description: t('forms.megaDesc'), icon: Gem },
     { value: 'gmax', label: t('forms.gmax'), description: t('forms.gmaxDesc'), icon: Maximize2 },
   ]
-  const [category, setCategory] = useState<SelectedCategory>('all')
-  const [query, setQuery] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedCategory = searchParams.get('category') as SelectedCategory | null
+  const category: SelectedCategory = requestedCategory && ['regional', 'mega', 'gmax'].includes(requestedCategory) ? requestedCategory : 'all'
+  const query = searchParams.get('q') ?? ''
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const sentinelRef = useRef<HTMLDivElement>(null)
-  const { data, loading, error } = useApi<ApiList>('pokemon-form?limit=2000&offset=0')
-  const { data: speciesData, loading: speciesLoading, error: speciesError } = useApi<ApiList>('pokemon-species?limit=2000&offset=0')
+  const { data, loading, error, retry } = useApi<ApiList>('pokemon-form?limit=2000&offset=0')
+  const { data: speciesData, loading: speciesLoading, error: speciesError, retry: retrySpecies } = useApi<ApiList>('pokemon-species?limit=2000&offset=0')
 
   const grouped = useMemo(() => {
     const groups: Record<FormCategory, NamedResource[]> = { regional: [], mega: [], gmax: [] }
@@ -54,7 +56,13 @@ export function FormsPage() {
     })
   }, [grouped, speciesData])
   const selectedForms = category === 'all' ? specialForms : grouped[category]
-  const filtered = selectedForms.filter((resource) => resource.name.toLowerCase().includes(query.toLowerCase()))
+  const normalizedQuery = normalizeSearchText(query)
+  const filtered = selectedForms.filter((resource) => {
+    const resourceCategory = formCategory(resource.name)
+    const labels = resourceCategory ? formLabels(resource.name, resourceCategory, t) : null
+    return !normalizedQuery || [resource.name, labels?.pokemon ?? '', labels?.variation ?? '']
+      .some((value) => normalizeSearchText(value).includes(normalizedQuery))
+  })
   const visible = filtered.slice(0, visibleCount)
   const hasMore = visibleCount < filtered.length
   const filteredLength = filtered.length
@@ -73,22 +81,36 @@ export function FormsPage() {
     return () => observer.disconnect()
   }, [filteredLength, hasMore, loading, speciesLoading, visibleCount])
 
-  const selectCategory = (value: SelectedCategory) => { setCategory(value); setVisibleCount(PAGE_SIZE) }
-  const updateQuery = (value: string) => { setQuery(value); setVisibleCount(PAGE_SIZE) }
+  const selectCategory = (value: SelectedCategory) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (value === 'all') next.delete('category'); else next.set('category', value)
+      return next
+    }, { replace: true })
+    setVisibleCount(PAGE_SIZE)
+  }
+  const updateQuery = (value: string) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (value) next.set('q', value); else next.delete('q')
+      return next
+    }, { replace: true })
+    setVisibleCount(PAGE_SIZE)
+  }
 
-  if (loading || speciesLoading) return <Loading label={t('forms.loading')} />
-  if (error || speciesError || !data || !speciesData) return <ErrorState title={t('forms.unavailable')} message={t('forms.unavailableDesc')} />
+  if (loading || speciesLoading) return <section className="page content-width forms-directory-page"><div className="page-title"><div><span className="eyebrow"><Sparkles size={14} /> {t('forms.eyebrow')}</span><h1>{t('forms.title')}</h1><p>{t('forms.loading')}</p></div></div><div className="forms-directory-grid">{Array.from({ length: 8 }, (_, index) => <div className="directory-form-card skeleton" key={index} />)}</div></section>
+  if (error || speciesError || !data || !speciesData) return <ErrorState title={t('forms.unavailable')} message={t('forms.unavailableDesc')} retry={() => { retry(); retrySpecies() }} />
 
   return (
     <section className="page content-width forms-directory-page">
       <div className="page-title"><div><span className="eyebrow"><Sparkles size={14} /> {t('forms.eyebrow')}</span><h1>{t('forms.title')}</h1><p>{t('forms.description')}</p></div><div className="result-count"><b>{formatNumber(specialForms.length, language)}</b><span>{t('forms.specialCount')}</span></div></div>
       <div className="forms-directory-toolbar">
-        <div className="forms-category-tabs">{categories.map((item) => { const Icon = item.icon; const count = item.value === 'all' ? specialForms.length : grouped[item.value].length; return <button className={category === item.value ? `active tab-${item.value}` : ''} onClick={() => selectCategory(item.value)} key={item.value}><Icon /><span><b>{item.label}</b><small>{item.description}</small></span><i>{count}</i></button> })}</div>
-        <label className="search-field"><Search size={19} /><input value={query} onChange={(event) => updateQuery(event.target.value)} placeholder={t('forms.search')} /></label>
+        <div className="forms-category-tabs" role="tablist">{categories.map((item) => { const Icon = item.icon; const count = item.value === 'all' ? specialForms.length : grouped[item.value].length; return <button type="button" role="tab" aria-selected={category === item.value} className={category === item.value ? `active tab-${item.value}` : ''} onClick={() => selectCategory(item.value)} key={item.value}><Icon /><span><b>{item.label}</b><small>{item.description}</small></span><i aria-label={String(count)}>{count}</i></button> })}</div>
+        <div className="search-field"><Search size={19} /><input aria-label={t('forms.search')} value={query} onChange={(event) => updateQuery(event.target.value)} placeholder={t('forms.search')} />{query && <button className="search-clear" type="button" onClick={() => updateQuery('')} aria-label={t('common.clear')}>×</button>}</div>
       </div>
-      <div className="directory-summary"><span>{categories.find((item) => item.value === category)?.label}</span><p>{t('forms.results', { count: filtered.length })}</p></div>
+      <div className="directory-summary"><span>{categories.find((item) => item.value === category)?.label}</span><p>{filtered.length === 1 ? t('forms.resultOne') : t('forms.results', { count: filtered.length })}</p></div>
       {visible.length ? <div className="forms-directory-grid">{visible.map((resource) => { const resourceCategory = formCategory(resource.name); return resourceCategory ? <PokemonFormDirectoryCard resource={resource} category={resourceCategory} key={resource.name} /> : null })}</div> : <div className="empty"><Search /><h2>{t('forms.empty')}</h2><p>{t('forms.tryAnother')}</p></div>}
-      {hasMore && <div className="infinite-loader" ref={sentinelRef}><span className="pokeball-spinner" /><button onClick={loadMore}>{t('forms.loadMore')}</button></div>}
+      {hasMore && <div className="infinite-loader" ref={sentinelRef} role="status" aria-live="polite"><span className="pokeball-spinner" /><button onClick={loadMore}>{t('forms.loadMore')}</button></div>}
       {!hasMore && visible.length > PAGE_SIZE && <p className="end-of-list">{t('forms.end')}</p>}
     </section>
   )

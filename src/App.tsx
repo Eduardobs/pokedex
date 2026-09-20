@@ -1,6 +1,7 @@
 import { lazy } from 'react'
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
+import { ErrorState } from './components/ErrorState'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { HomePage } from './pages/HomePage'
@@ -29,7 +30,7 @@ export default function App() {
             <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
             <Route path="favoritos" element={<FavoritesPage />} />
             <Route path="types-table" element={<TypesTablePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<ErrorState titleKey="error.notFoundTitle" messageKey="error.notFoundDesc" home />} />
           </Route>
         </Routes>
       </FavoritesProvider></LanguageProvider>

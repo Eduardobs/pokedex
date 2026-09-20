@@ -17,7 +17,7 @@ export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
   const { t } = useLanguage()
   const cardRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(Boolean(pokemon))
-  const { data: loadedPokemon } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
+  const { data: loadedPokemon, error, retry } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
   const detail = pokemon ?? loadedPokemon
   const favorite = isFavorite(name)
 
@@ -46,9 +46,10 @@ export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
         </div>
         <h3>{prettyName(name)}</h3>
         <div className="type-row">
-          {detail?.types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />) ?? <span className="muted">{t('common.details')}</span>}
+          {detail?.types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />) ?? <span className={error ? 'inline-card-error' : 'muted'}>{error ? t('error.message') : t('common.details')}</span>}
         </div>
       </Link>
+      {error && !pokemon && <button type="button" className="card-retry" onClick={retry}>{t('common.retry')}</button>}
     </article>
   )
 }

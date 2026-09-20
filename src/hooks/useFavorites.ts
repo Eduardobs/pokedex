@@ -10,15 +10,25 @@ const isFavorites = (value: unknown): value is string[] => Array.isArray(value)
 
 export function useFavorites() {
   const [favorites, setFavorites] = useState<string[]>(() => readStorage(STORAGE_KEYS.favorites, isFavorites, []))
+  const [notice, setNotice] = useState<{ name: string; action: 'added' | 'removed' | 'limit' } | null>(null)
   useEffect(() => { writeStorage(STORAGE_KEYS.favorites, favorites) }, [favorites])
 
   const toggle = useCallback((name: string) => {
     if (name.length > 64 || !POKEMON_NAME.test(name)) return
-    setFavorites((current) => current.includes(name)
-      ? current.filter((item) => item !== name)
-      : current.length < FAVORITES_LIMIT ? [...current, name] : current)
-  }, [])
+    if (favorites.includes(name)) {
+      setFavorites((current) => current.filter((item) => item !== name))
+      setNotice({ name, action: 'removed' })
+      return
+    }
+    if (favorites.length >= FAVORITES_LIMIT) {
+      setNotice({ name, action: 'limit' })
+      return
+    }
+    setFavorites((current) => [...current, name])
+    setNotice({ name, action: 'added' })
+  }, [favorites])
   const isFavorite = useCallback((name: string) => favorites.includes(name), [favorites])
+  const clearNotice = useCallback(() => setNotice(null), [])
 
-  return useMemo(() => ({ favorites, toggle, isFavorite }), [favorites, isFavorite, toggle])
+  return useMemo(() => ({ favorites, toggle, isFavorite, notice, clearNotice }), [favorites, isFavorite, toggle, notice, clearNotice])
 }

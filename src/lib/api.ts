@@ -16,21 +16,73 @@ export const itemSprite = (name: string) => `https://raw.githubusercontent.com/P
 export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] => resources.map((item) => ({ ...item, id: idFromUrl(item.url) }))
 
 export const prettyName = (value: string) => value
-  .replace(/-/g, ' ')
+  .replace(/[-_]/g, ' ')
   .replace(/\b\w/g, (letter) => letter.toUpperCase())
 
 export const formatNumber = (value: number, language: Language = 'pt-BR') => new Intl.NumberFormat(language).format(value)
 
-export function localizedText(entries: unknown, keys: string[] = ['flavor_text', 'effect', 'description'], language = 'pt-br'): string {
-  if (!Array.isArray(entries)) return ''
+export const formatDecimal = (value: number, language: Language = 'pt-BR', maximumFractionDigits = 1) =>
+  new Intl.NumberFormat(language, { maximumFractionDigits }).format(value)
+
+export const normalizeSearchText = (value: string) => value
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '')
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, ' ')
+  .trim()
+
+const apiTermTranslations: Record<Language, Record<string, string>> = {
+  'pt-BR': {
+    'generation-i': 'Geração I', 'generation-ii': 'Geração II', 'generation-iii': 'Geração III',
+    'generation-iv': 'Geração IV', 'generation-v': 'Geração V', 'generation-vi': 'Geração VI',
+    'generation-vii': 'Geração VII', 'generation-viii': 'Geração VIII', 'generation-ix': 'Geração IX',
+    grassland: 'Campos', forest: 'Floresta', mountain: 'Montanha', cave: 'Caverna', urban: 'Urbano',
+    'waters-edge': 'Margens de água', sea: 'Mar', 'rough-terrain': 'Terreno acidentado', rare: 'Raro',
+    'medium-slow': 'Médio-lento', medium: 'Médio', slow: 'Lento', fast: 'Rápido',
+    'slow-then-very-fast': 'Lento, depois muito rápido', 'fast-then-very-slow': 'Rápido, depois muito lento',
+    monster: 'Monstro', plant: 'Planta', bug: 'Inseto', flying: 'Voador', field: 'Campo', fairy: 'Fada',
+    humanoid: 'Humanoide', mineral: 'Mineral', amorphous: 'Amorfo', dragon: 'Dragão', water1: 'Água 1',
+    water2: 'Água 2', water3: 'Água 3', ditto: 'Ditto', undiscovered: 'Não descoberto',
+  },
+  en: {},
+  es: {
+    'generation-i': 'Generación I', 'generation-ii': 'Generación II', 'generation-iii': 'Generación III',
+    'generation-iv': 'Generación IV', 'generation-v': 'Generación V', 'generation-vi': 'Generación VI',
+    'generation-vii': 'Generación VII', 'generation-viii': 'Generación VIII', 'generation-ix': 'Generación IX',
+    grassland: 'Pradera', forest: 'Bosque', mountain: 'Montaña', cave: 'Cueva', urban: 'Urbano',
+    'waters-edge': 'Orilla', sea: 'Mar', 'rough-terrain': 'Terreno accidentado', rare: 'Raro',
+    'medium-slow': 'Medio-lento', medium: 'Medio', slow: 'Lento', fast: 'Rápido',
+    'slow-then-very-fast': 'Lento y luego muy rápido', 'fast-then-very-slow': 'Rápido y luego muy lento',
+    monster: 'Monstruo', plant: 'Planta', bug: 'Bicho', flying: 'Volador', field: 'Campo', fairy: 'Hada',
+    humanoid: 'Humanoide', mineral: 'Mineral', amorphous: 'Amorfo', dragon: 'Dragón', water1: 'Agua 1',
+    water2: 'Agua 2', water3: 'Agua 3', ditto: 'Ditto', undiscovered: 'No descubierto',
+  },
+}
+
+export const localizedApiTerm = (value: string, language: Language) =>
+  apiTermTranslations[language][value] ?? prettyName(value)
+
+export type LocalizedTextResult = { text: string; language: string; fallback: boolean }
+
+export function localizedTextResult(entries: unknown, keys: string[] = ['flavor_text', 'effect', 'description'], language = 'pt-br'): LocalizedTextResult {
+  if (!Array.isArray(entries)) return { text: '', language, fallback: false }
   const candidates = entries as Array<Record<string, unknown>>
   const selected = candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === language)
     ?? candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === 'en')
     ?? candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === 'pt-br')
     ?? candidates[0]
-  if (!selected) return ''
+  if (!selected) return { text: '', language, fallback: false }
   const key = keys.find((item) => typeof selected[item] === 'string')
-  return key ? String(selected[key]).replace(/[\n\f]/g, ' ') : ''
+  const selectedLanguage = (selected.language as NamedResource | undefined)?.name ?? language
+  return {
+    text: key ? String(selected[key]).replace(/[\n\f]/g, ' ') : '',
+    language: selectedLanguage,
+    fallback: selectedLanguage !== language,
+  }
+}
+
+export function localizedText(entries: unknown, keys: string[] = ['flavor_text', 'effect', 'description'], language = 'pt-br'): string {
+  return localizedTextResult(entries, keys, language).text
 }
 
 export function localizedName(entries: unknown, language = 'pt-br'): string {

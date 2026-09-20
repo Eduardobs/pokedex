@@ -1,5 +1,6 @@
 import { ArrowUpDown, LoaderCircle, Search, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
 import { TypeBadge } from '../components/TypeBadge'
@@ -16,16 +17,20 @@ const types = ['all', 'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fi
 
 export function PokedexPage() {
   const { language, t } = useLanguage()
-  const [query, setQuery] = useState('')
-  const [type, setType] = useState('all')
-  const [sort, setSort] = useState<PokemonSortKey>('number')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = searchParams.get('q') ?? ''
+  const requestedType = searchParams.get('type') ?? 'all'
+  const type = types.includes(requestedType) ? requestedType : 'all'
+  const requestedSort = searchParams.get('sort') as PokemonSortKey | null
+  const sortKeys: PokemonSortKey[] = ['number', 'name', 'total', 'hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed']
+  const sort = requestedSort && sortKeys.includes(requestedSort) ? requestedSort : 'number'
   const [pokemonDetails, setPokemonDetails] = useState<Record<string, PokemonSortDetails>>({})
   const [sortingDetails, setSortingDetails] = useState(false)
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
   const loadMoreRef = useRef<HTMLDivElement>(null)
   const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
-  const { data, loading, error } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
+  const { data, loading, error, retry } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
 
   const catalog = useMemo<PokemonListItem[]>(() => {
     if (!data) return []
@@ -87,17 +92,34 @@ export function PokedexPage() {
 
   const selectType = (nextType: string) => {
     if (nextType === type) return
-    setType(nextType)
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (nextType === 'all') next.delete('type'); else next.set('type', nextType)
+      return next
+    }, { replace: true })
     setVisibleCount(LIMIT)
   }
 
   const changeQuery = (nextQuery: string) => {
-    setQuery(nextQuery.toLowerCase())
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (nextQuery) next.set('q', nextQuery); else next.delete('q')
+      return next
+    }, { replace: true })
     setVisibleCount(LIMIT)
   }
 
   const changeSort = (nextSort: PokemonSortKey) => {
-    setSort(nextSort)
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (nextSort === 'number') next.delete('sort'); else next.set('sort', nextSort)
+      return next
+    }, { replace: true })
+    setVisibleCount(LIMIT)
+  }
+
+  const clearFilters = () => {
+    setSearchParams({}, { replace: true })
     setVisibleCount(LIMIT)
   }
 
@@ -116,10 +138,10 @@ export function PokedexPage() {
 
   return (
     <section className="page content-width">
-      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count"><b>{formatNumber(total || 1302, language)}</b><span>{t('pokedex.registered')}</span></div></div>
+      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{formatNumber(query || type !== 'all' ? filteredPokemon.length : total, language)}</b><span>{query || type !== 'all' ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
       <div className="filter-panel">
         <div className="filter-primary">
-          <label className="search-field"><Search size={20} /><input value={query} onChange={(event) => changeQuery(event.target.value)} placeholder={t('pokedex.filter')} /></label>
+          <div className="search-field"><Search size={20} /><input aria-label={t('pokedex.filter')} value={query} onChange={(event) => changeQuery(event.target.value)} placeholder={t('pokedex.filter')} />{query && <button className="search-clear" type="button" onClick={() => changeQuery('')} aria-label={t('common.clear')}>×</button>}</div>
           <label className="sort-field">
             {sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
             <span>{t('pokedex.sort.label')}</span>
@@ -128,11 +150,12 @@ export function PokedexPage() {
             </select>
           </label>
         </div>
-        <div className="type-filter"><SlidersHorizontal size={18} /><div>{types.map((item) => <button key={item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? t('pokedex.all') : <TypeBadge type={item} />}</button>)}</div></div>
+        <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><SlidersHorizontal size={18} /><div>{types.map((item) => <button type="button" key={item} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? t('pokedex.all') : <TypeBadge type={item} />}</button>)}</div></div>
+        <div className="filter-footer"><span>{t('pokedex.scrollTypes')}</span>{(query || type !== 'all' || sort !== 'number') && <button type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}</div>
         {sortingDetails && <p className="sort-status" role="status">{t('pokedex.sort.loading')}</p>}
         {sortError && <p className="sort-status inline-sort-error" role="alert">{t('pokedex.sort.error')}</p>}
       </div>
-      {loading && !catalog.length ? <CardSkeleton count={12} /> : error && !catalog.length ? <p className="inline-error">{t('pokedex.loadError')}</p> : visiblePokemon.length ? (
+      {loading && !catalog.length ? <CardSkeleton count={12} /> : error && !catalog.length ? <div className="inline-error"><p>{t('pokedex.loadError')}</p><button className="button secondary" type="button" onClick={retry}>{t('common.retry')}</button></div> : visiblePokemon.length ? (
         <div className="pokemon-grid">{visiblePokemon.map((pokemon) => {
           const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
           const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }

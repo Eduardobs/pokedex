@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowRight, Grid3X3 } from 'lucide-react'
-import { TypeBadge } from '../components/TypeBadge'
+import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { BATTLE_TYPES, getDamageMultiplier, type BattleType, type DamageMultiplier } from '../lib/type-chart'
+import { formatDecimal } from '../lib/api'
 
 const multiplierLabels: Record<DamageMultiplier, string> = {
   0: '0×',
@@ -19,11 +20,18 @@ function multiplierClass(multiplier: DamageMultiplier) {
 }
 
 export function TypesTablePage() {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const [hoveredCell, setHoveredCell] = useState<{
     attackingType: BattleType
     defendingType: BattleType
   } | null>(null)
+  const [selectedCell, setSelectedCell] = useState<{ attackingType: BattleType; defendingType: BattleType } | null>(null)
+  const [calculatorAttack, setCalculatorAttack] = useState<BattleType>('fire')
+  const [calculatorDefense, setCalculatorDefense] = useState<BattleType>('grass')
+  const [calculatorSecondDefense, setCalculatorSecondDefense] = useState<BattleType | ''>('')
+  const activeCell = hoveredCell ?? selectedCell
+  const calculatorResult = getDamageMultiplier(calculatorAttack, calculatorDefense)
+    * (calculatorSecondDefense ? getDamageMultiplier(calculatorAttack, calculatorSecondDefense) : 1)
 
   return (
     <section className="page content-width types-table-page">
@@ -34,6 +42,14 @@ export function TypesTablePage() {
           <p>{t('typesTable.description')}</p>
         </div>
       </div>
+
+      <section className="type-calculator" aria-labelledby="type-calculator-title">
+        <div><h2 id="type-calculator-title">{t('typesTable.calculator')}</h2><p>{t('typesTable.calculatorDesc')}</p></div>
+        <label><span>{t('typesTable.attacking')}</span><select value={calculatorAttack} onChange={(event) => setCalculatorAttack(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+        <label><span>{t('typesTable.defenderOne')}</span><select value={calculatorDefense} onChange={(event) => setCalculatorDefense(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+        <label><span>{t('typesTable.defenderTwo')}</span><select value={calculatorSecondDefense} onChange={(event) => setCalculatorSecondDefense(event.target.value as BattleType | '')}><option value="">{t('typesTable.noSecond')}</option>{BATTLE_TYPES.filter((type) => type !== calculatorDefense).map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+        <output aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
+      </section>
 
       <div className="type-chart-guide">
         <div className="type-chart-axis">
@@ -63,7 +79,7 @@ export function TypesTablePage() {
                 <th
                   scope="col"
                   key={type}
-                  className={hoveredCell?.defendingType === type ? 'is-column-highlighted' : undefined}
+                  className={activeCell?.defendingType === type ? 'is-column-highlighted' : undefined}
                 >
                   <TypeBadge type={type} iconOnly />
                 </th>
@@ -74,16 +90,16 @@ export function TypesTablePage() {
             {BATTLE_TYPES.map((attackingType) => (
               <tr
                 key={attackingType}
-                className={hoveredCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
+                className={activeCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
               >
                 <th scope="row"><TypeBadge type={attackingType} /></th>
                 {BATTLE_TYPES.map((defendingType) => {
                   const multiplier = getDamageMultiplier(attackingType, defendingType)
-                  const isHovered = hoveredCell?.attackingType === attackingType
-                    && hoveredCell.defendingType === defendingType
+                  const isHovered = activeCell?.attackingType === attackingType
+                    && activeCell.defendingType === defendingType
                   const classes = [
                     multiplierClass(multiplier),
-                    hoveredCell?.defendingType === defendingType && 'is-column-highlighted',
+                    activeCell?.defendingType === defendingType && 'is-column-highlighted',
                     isHovered && 'is-cell-highlighted',
                   ].filter(Boolean).join(' ')
 
@@ -92,8 +108,9 @@ export function TypesTablePage() {
                       key={defendingType}
                       className={classes}
                       onMouseEnter={() => setHoveredCell({ attackingType, defendingType })}
+                      onClick={() => setSelectedCell((current) => current?.attackingType === attackingType && current.defendingType === defendingType ? null : { attackingType, defendingType })}
                     >
-                      <span aria-label={t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}>
+                      <span aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}>
                         {multiplierLabels[multiplier]}
                       </span>
                     </td>
@@ -104,6 +121,7 @@ export function TypesTablePage() {
           </tbody>
         </table>
       </div>
+      <p className="type-chart-tap-hint">{t('typesTable.tapHint')}</p>
       <p className="type-chart-note">{t('typesTable.note')}</p>
     </section>
   )

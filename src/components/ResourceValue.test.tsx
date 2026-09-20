@@ -25,7 +25,7 @@ describe('ResourceValue', () => {
     renderValue(values)
 
     expect(screen.getByText('Pokemon 1')).toBeInTheDocument()
-    expect(screen.getAllByText(/Pokemon Species/)).toHaveLength(6)
+    expect(screen.getAllByText(/Espécies/)).toHaveLength(6)
     expect(screen.getByText(/#001/)).toBeInTheDocument()
     expect(screen.getByText('Pokemon 6')).toBeInTheDocument()
     expect(screen.queryByText('Pokemon 7')).not.toBeInTheDocument()
@@ -44,7 +44,7 @@ describe('ResourceValue', () => {
 
     renderValue(values, 2)
 
-    expect(screen.getByText('Slot')).toBeInTheDocument()
+    expect(screen.getByText('Posição')).toBeInTheDocument()
     expect(screen.getByText('1')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Murkrow/ })).toHaveAttribute('href', '/pokemon/murkrow')
     expect(screen.getByText('1–1 de 1')).toBeInTheDocument()
