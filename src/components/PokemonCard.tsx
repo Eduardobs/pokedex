@@ -8,9 +8,11 @@ import { pokemonArtwork, prettyName } from '../lib/api'
 import type { Pokemon } from '../types'
 import { TypeBadge } from './TypeBadge'
 
-type Props = { id: number; name: string; pokemon?: Pokemon }
+type SortMetric = { label: string; value: number }
 
-export function PokemonCard({ id, name, pokemon }: Props) {
+type Props = { id: number; name: string; pokemon?: Pokemon; sortMetric?: SortMetric }
+
+export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
   const { isFavorite, toggle } = useFavoritesContext()
   const { t } = useLanguage()
   const cardRef = useRef<HTMLElement>(null)
@@ -34,6 +36,7 @@ export function PokemonCard({ id, name, pokemon }: Props) {
     <article ref={cardRef} className="pokemon-card">
       <div className="card-top">
         <span className="pokemon-number">#{String(id).padStart(4, '0')}</span>
+        {sortMetric && <span className="sort-metric" title={sortMetric.label}><b>{sortMetric.value}</b> {sortMetric.label}</span>}
         <button className={`favorite-button ${favorite ? 'selected' : ''}`} onClick={() => toggle(name)} aria-label={t(favorite ? 'favorite.remove' : 'favorite.add', { name })}><Heart size={19} fill={favorite ? 'currentColor' : 'none'} /></button>
       </div>
       <Link to={`/pokemon/${name}`} className="pokemon-card-link">
