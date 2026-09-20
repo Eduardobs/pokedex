@@ -1,4 +1,4 @@
-import { Heart } from 'lucide-react'
+import { Heart, Sparkles } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
@@ -17,9 +17,17 @@ export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
   const { t } = useLanguage()
   const cardRef = useRef<HTMLElement>(null)
   const [visible, setVisible] = useState(Boolean(pokemon))
+  const [shiny, setShiny] = useState(false)
   const { data: loadedPokemon, error, retry } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
   const detail = pokemon ?? loadedPokemon
   const favorite = isFavorite(name)
+  const displayName = prettyName(name)
+  const normalArtwork = detail?.sprites.other?.['official-artwork']?.front_default
+    ?? detail?.sprites.front_default
+    ?? pokemonArtwork(id)
+  const shinyArtwork = detail?.sprites.other?.['official-artwork']?.front_shiny
+    ?? detail?.sprites.front_shiny
+  const artwork = shiny && shinyArtwork ? shinyArtwork : normalArtwork
 
   useEffect(() => {
     const target = cardRef.current
@@ -39,12 +47,25 @@ export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
         {sortMetric && <span className="sort-metric" title={sortMetric.label}><b>{sortMetric.value}</b> {sortMetric.label}</span>}
         <button className={`favorite-button ${favorite ? 'selected' : ''}`} onClick={() => toggle(name)} aria-label={t(favorite ? 'favorite.remove' : 'favorite.add', { name })}><Heart size={19} fill={favorite ? 'currentColor' : 'none'} /></button>
       </div>
-      <Link to={`/pokemon/${name}`} className="pokemon-card-link">
-        <div className="pokemon-image-wrap">
+      <div className="pokemon-image-wrap">
+        <Link to={`/pokemon/${name}`} className="pokemon-image-link">
           <span className="card-orb" />
-          <img src={detail?.sprites.other?.['official-artwork']?.front_default ?? pokemonArtwork(id)} alt={prettyName(name)} width="165" height="165" loading="lazy" decoding="async" />
-        </div>
-        <h3>{prettyName(name)}</h3>
+          <img src={artwork} alt={`${displayName} — ${t(shiny ? 'detail.shiny' : 'detail.normal')}`} width="165" height="165" loading="lazy" decoding="async" />
+        </Link>
+        <button
+          type="button"
+          className={`card-shiny-toggle ${shiny ? 'active' : ''}`}
+          aria-label={t(shiny ? 'pokemonCard.showNormal' : 'pokemonCard.showShiny', { name: displayName })}
+          aria-pressed={shiny}
+          disabled={!shinyArtwork}
+          onClick={() => setShiny((value) => !value)}
+        >
+          <Sparkles size={13} />
+          {t(shiny ? 'detail.normal' : 'detail.shiny')}
+        </button>
+      </div>
+      <Link to={`/pokemon/${name}`} className="pokemon-card-link">
+        <h3>{displayName}</h3>
         <div className="type-row">
           {detail?.types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />) ?? <span className={error ? 'inline-card-error' : 'muted'}>{error ? t('error.message') : t('common.details')}</span>}
         </div>
