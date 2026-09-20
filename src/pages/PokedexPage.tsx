@@ -1,0 +1,106 @@
+import { Search, SlidersHorizontal } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { CardSkeleton } from '../components/Loading'
+import { PokemonCard } from '../components/PokemonCard'
+import { TypeBadge } from '../components/TypeBadge'
+import { useApi } from '../hooks/useApi'
+import { formatNumber, pokemonListItems } from '../lib/api'
+import type { ApiList, NamedResource, Pokemon, PokemonListItem } from '../types'
+
+const LIMIT = 24
+const types = ['all', 'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
+
+export function PokedexPage() {
+  const [offset, setOffset] = useState(0)
+  const [query, setQuery] = useState('')
+  const [type, setType] = useState('all')
+  const [loadedPokemon, setLoadedPokemon] = useState<PokemonListItem[]>([])
+  const [visibleCount, setVisibleCount] = useState(LIMIT)
+  const [details, setDetails] = useState<Record<string, Pokemon>>({})
+  const loadMoreRef = useRef<HTMLDivElement>(null)
+  const endpoint = type === 'all' ? `pokemon?limit=${LIMIT}&offset=${offset}` : `type/${type}`
+  const { data, loading, error } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
+
+  useEffect(() => {
+    if (!data || type !== 'all' || !('results' in data)) return
+    const nextPage = pokemonListItems(data.results)
+    setLoadedPokemon((current) => {
+      if (offset === 0) return nextPage
+      const knownNames = new Set(current.map((pokemon) => pokemon.name))
+      return [...current, ...nextPage.filter((pokemon) => !knownNames.has(pokemon.name))]
+    })
+  }, [data, offset, type])
+
+  const typePokemon = useMemo(() => {
+    if (!data || 'results' in data) return []
+    return pokemonListItems(data.pokemon.map((entry) => entry.pokemon))
+  }, [data])
+
+  const visiblePokemon = useMemo(
+    () => type === 'all' ? loadedPokemon : typePokemon.slice(0, visibleCount),
+    [loadedPokemon, type, typePokemon, visibleCount],
+  )
+  const list = useMemo(
+    () => visiblePokemon.filter((item) => !query || item.name.includes(query.toLowerCase()) || String(item.id) === query),
+    [query, visiblePokemon],
+  )
+  const total = type === 'all'
+    ? data && 'results' in data ? data.count : loadedPokemon.length
+    : typePokemon.length
+  const hasMore = type === 'all' ? loadedPokemon.length < total : visibleCount < typePokemon.length
+
+  const loadMore = useCallback(() => {
+    if (loading || !hasMore || query) return
+    if (type === 'all') setOffset((current) => current + LIMIT)
+    else setVisibleCount((current) => Math.min(current + LIMIT, typePokemon.length))
+  }, [hasMore, loading, query, type, typePokemon.length])
+
+  useEffect(() => {
+    const target = loadMoreRef.current
+    if (!target || loading || !hasMore || query || !('IntersectionObserver' in window)) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return
+      observer.disconnect()
+      loadMore()
+    }, { rootMargin: '300px 0px' })
+    observer.observe(target)
+    return () => observer.disconnect()
+  }, [hasMore, loadMore, loading, query])
+
+  const selectType = (nextType: string) => {
+    if (nextType === type) return
+    setType(nextType)
+    setOffset(0)
+    setVisibleCount(LIMIT)
+    setLoadedPokemon([])
+  }
+
+  useEffect(() => {
+    const missing = list.filter((item) => !details[item.name])
+    if (!missing.length) return
+    const controller = new AbortController()
+    Promise.all(missing.map(async (item) => {
+      const response = await fetch(item.url, { signal: controller.signal })
+      return response.ok ? response.json() as Promise<Pokemon> : null
+    })).then((results) => {
+      const pokemonResults = results.filter((result): result is Pokemon => result !== null)
+      setDetails((current) => ({ ...current, ...Object.fromEntries(pokemonResults.map((result) => [result.name, result])) }))
+    }).catch(() => undefined)
+    return () => controller.abort()
+  }, [list, details])
+
+  return (
+    <section className="page content-width">
+      <div className="page-title"><div><span className="eyebrow">POKÉDEX NACIONAL</span><h1>Encontre seu Pokémon</h1><p>Explore cada espécie descoberta e seus dados completos.</p></div><div className="result-count"><b>{formatNumber(total || 1302)}</b><span>espécies registradas</span></div></div>
+      <div className="filter-panel">
+        <label className="search-field"><Search size={20} /><input value={query} onChange={(event) => setQuery(event.target.value.toLowerCase())} placeholder="Filtrar Pokémon carregados por nome ou número" /></label>
+        <div className="type-filter"><SlidersHorizontal size={18} /><div>{types.map((item) => <button key={item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? 'Todos' : <TypeBadge type={item} />}</button>)}</div></div>
+      </div>
+      {loading && !visiblePokemon.length ? <CardSkeleton count={12} /> : error && !visiblePokemon.length ? <p className="inline-error">Não foi possível carregar a Pokédex. Verifique sua conexão.</p> : list.length ? (
+        <div className="pokemon-grid">{list.map((pokemon) => <PokemonCard key={pokemon.name} {...pokemon} pokemon={details[pokemon.name]} />)}</div>
+      ) : <div className="empty"><Search /><h2>Nenhum Pokémon encontrado</h2><p>Tente outro nome ou número.</p></div>}
+      {!query && hasMore && <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite"><span className="pokeball-spinner" /><button onClick={loadMore} disabled={loading}>{loading ? 'Carregando mais Pokémon...' : 'Carregar mais Pokémon'}</button></div>}
+      {!query && !hasMore && visiblePokemon.length > 0 && <p className="end-of-list">Você chegou ao fim da Pokédex.</p>}
+    </section>
+  )
+}

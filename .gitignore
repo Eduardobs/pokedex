@@ -19,3 +19,11 @@
 
 # Go workspace file
 go.work
+
+# Front-end dependencies and output
+node_modules
+dist
+coverage
+*.tsbuildinfo
+.DS_Store
+*.local
