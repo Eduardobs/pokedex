@@ -65,7 +65,7 @@ export function TypesTablePage() {
                   key={type}
                   className={hoveredCell?.defendingType === type ? 'is-column-highlighted' : undefined}
                 >
-                  <TypeBadge type={type} />
+                  <TypeBadge type={type} iconOnly />
                 </th>
               ))}
             </tr>
