@@ -14,6 +14,8 @@ export interface Pokemon {
   sprites: {
     front_default: string | null
     front_shiny: string | null
+    back_default?: string | null
+    back_shiny?: string | null
     other?: {
       ['official-artwork']?: { front_default: string | null; front_shiny: string | null }
       home?: { front_default: string | null; front_shiny: string | null }
@@ -26,6 +28,10 @@ export interface Pokemon {
   species: NamedResource
   forms: NamedResource[]
   game_indices: { game_index: number; version: NamedResource }[]
+  cries?: { latest: string | null; legacy: string | null }
+  held_items?: { item: NamedResource; version_details: { rarity: number; version: NamedResource }[] }[]
+  past_abilities?: { abilities: { ability: NamedResource | null; is_hidden: boolean; slot: number }[]; generation: NamedResource }[]
+  past_types?: { generation: NamedResource; types: { slot: number; type: NamedResource }[] }[]
 }
 
 export interface Species {

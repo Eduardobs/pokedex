@@ -46,7 +46,13 @@ describe('ResourceValue', () => {
 
     expect(screen.getByText('Slot')).toBeInTheDocument()
     expect(screen.getByText('1')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Murkrow/ })).toHaveAttribute('href', '/explorar/pokemon/198')
+    expect(screen.getByRole('link', { name: /Murkrow/ })).toHaveAttribute('href', '/pokemon/murkrow')
     expect(screen.getByText('1–1 de 1')).toBeInTheDocument()
+  })
+
+  it('links Pokemon species references to the canonical Pokemon page', () => {
+    renderValue({ name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` })
+
+    expect(screen.getByRole('link', { name: /Bulbasaur/ })).toHaveAttribute('href', '/pokemon/bulbasaur')
   })
 })

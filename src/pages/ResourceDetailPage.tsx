@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { ResourceValue } from '../components/ResourceValue'
@@ -34,6 +34,9 @@ export function ResourceDetailPage() {
   const { data, loading, error } = useApi<Record<string, unknown>>(resourcePath)
   if (loading) return <Loading />
   if (error || !data) return <ErrorState title={t('resource.notFound')} message={t('resource.notFoundDesc')} />
+  if ((resource === 'pokemon' || resource === 'pokemon-species') && typeof data.name === 'string') {
+    return <Navigate to={`/pokemon/${encodeURIComponent(data.name)}`} replace />
+  }
   const title = localizedName(data.names, apiLanguage) || (typeof data.name === 'string' ? data.name : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
   const description = localizedText(data.flavor_text_entries, undefined, apiLanguage) || localizedText(data.effect_entries, undefined, apiLanguage)
   const entries = Object.entries(data).filter(([key]) => !hidden.has(key))

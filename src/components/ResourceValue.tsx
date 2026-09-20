@@ -7,10 +7,13 @@ import { useLanguage } from '../contexts/LanguageContext'
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
 
-function routeFromUrl(url: string) {
+function routeFromReference(url: string, resourceName: string) {
   try {
     const trustedUrl = resolveApiUrl(url)
     const [endpoint, name] = new URL(trustedUrl).pathname.slice(`${new URL(API_BASE).pathname}/`.length).split('/').filter(Boolean)
+    if ((endpoint === 'pokemon' || endpoint === 'pokemon-species') && resourceName) {
+      return `/pokemon/${encodeURIComponent(resourceName)}`
+    }
     return endpoint && name ? `/explorar/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
   } catch {
     return null
@@ -76,7 +79,7 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   }
   const object = value as Record<string, unknown>
   if (typeof object.name === 'string' && typeof object.url === 'string') {
-    const route = routeFromUrl(object.url)
+    const route = routeFromReference(object.url, object.name)
     return route ? <Link className="resource-chip" to={route}>{prettyName(object.name)} <ExternalLink size={12} /></Link> : <span>{prettyName(object.name)}</span>
   }
   if (depth > 3) return <span className="muted">{t('resource.related')}</span>

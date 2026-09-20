@@ -30,6 +30,9 @@ export function ResourceListPage() {
     return { ...item, name: 'name' in item && item.name ? item.name : id }
   })
   const filtered = items.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))
+  const itemRoute = (name: string) => resource === 'pokemon' || resource === 'pokemon-species'
+    ? `/pokemon/${encodeURIComponent(name)}`
+    : `/explorar/${resource}/${encodeURIComponent(name)}`
   const resourceName = (name: string) => {
     if (resource === 'type') return <TypeBadge type={name} />
     if (resource === 'gender') return <GenderBadge value={name} />
@@ -41,7 +44,7 @@ export function ResourceListPage() {
     <section className="page content-width resource-page" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}>
       <div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span>{meta?.groupTitle && GroupIcon && <><span className="breadcrumb-group"><GroupIcon size={13} />{meta.groupTitle}</span><span>/</span></>}<span>{getResourceLabel(resource, language)}</span></div>
       <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><label className="search-field compact"><Search size={19} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('resource.filter')} /></label></div>
-      <div className="data-list">{filtered.map((item, index) => <Link to={`/explorar/${resource}/${item.name}`} key={item.name}><span className="data-index">{String(offset + index + 1).padStart(3, '0')}</span><span className="data-resource-icon"><ResourceIcon size={17} /></span>{resourceName(item.name)}<span className="data-slug">{item.name}</span><ChevronRight /></Link>)}</div>
+      <div className="data-list">{filtered.map((item, index) => <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{String(offset + index + 1).padStart(3, '0')}</span><span className="data-resource-icon"><ResourceIcon size={17} /></span>{resourceName(item.name)}<span className="data-slug">{item.name}</span><ChevronRight /></Link>)}</div>
       {!filtered.length && <div className="empty"><Search /><h2>{t('resource.emptyPage')}</h2></div>}
       <nav className="pagination"><button disabled={!data.previous} onClick={() => setOffset(Math.max(0, offset - LIMIT))}><ChevronLeft /> {t('resource.previous')}</button><span>{t('resource.range', { start: offset + 1, end: Math.min(offset + LIMIT, data.count), total: data.count })}</span><button disabled={!data.next} onClick={() => setOffset(offset + LIMIT)}>{t('resource.next')} <ChevronRight /></button></nav>
     </section>
