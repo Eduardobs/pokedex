@@ -26,21 +26,25 @@ describe('ordenação da Pokédex', () => {
     expect(filterPokemonList(list, ' 9 ').map(({ name }) => name)).toEqual(['blastoise'])
   })
 
-  it('ordena por número e por nome em ordem crescente', () => {
-    expect(sortPokemonList(list, 'number', details, 'pt-BR').map(({ id }) => id)).toEqual([1, 6, 9])
-    expect(sortPokemonList(list, 'name', details, 'pt-BR').map(({ name }) => name)).toEqual(['blastoise', 'bulbasaur', 'charizard'])
+  it('ordena por número e por nome nas duas direções', () => {
+    expect(sortPokemonList(list, 'number', 'asc', details, 'pt-BR').map(({ id }) => id)).toEqual([1, 6, 9])
+    expect(sortPokemonList(list, 'number', 'desc', details, 'pt-BR').map(({ id }) => id)).toEqual([9, 6, 1])
+    expect(sortPokemonList(list, 'name', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual(['blastoise', 'bulbasaur', 'charizard'])
+    expect(sortPokemonList(list, 'name', 'desc', details, 'pt-BR').map(({ name }) => name)).toEqual(['charizard', 'bulbasaur', 'blastoise'])
   })
 
-  it('ordena atributos do maior para o menor', () => {
-    expect(sortPokemonList(list, 'defense', details, 'pt-BR').map(({ name }) => name)).toEqual(['blastoise', 'charizard', 'bulbasaur'])
+  it('ordena atributos nas duas direções', () => {
+    expect(sortPokemonList(list, 'defense', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual(['bulbasaur', 'charizard', 'blastoise'])
+    expect(sortPokemonList(list, 'defense', 'desc', details, 'pt-BR').map(({ name }) => name)).toEqual(['blastoise', 'charizard', 'bulbasaur'])
   })
 
   it('calcula o total dos seis atributos base', () => {
     expect(getPokemonSortValue(details.charizard, 'total')).toBe(534)
-    expect(sortPokemonList(list, 'total', details, 'pt-BR').map(({ name }) => name)).toEqual(['charizard', 'blastoise', 'bulbasaur'])
+    expect(sortPokemonList(list, 'total', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual(['bulbasaur', 'blastoise', 'charizard'])
   })
 
   it('mantém dados ainda indisponíveis depois dos Pokémon ordenáveis', () => {
-    expect(sortPokemonList(list, 'hp', { charizard: details.charizard }, 'pt-BR').map(({ name }) => name)).toEqual(['charizard', 'bulbasaur', 'blastoise'])
+    expect(sortPokemonList(list, 'hp', 'asc', { charizard: details.charizard }, 'pt-BR').map(({ name }) => name)).toEqual(['charizard', 'bulbasaur', 'blastoise'])
+    expect(sortPokemonList(list, 'hp', 'desc', { charizard: details.charizard }, 'pt-BR').map(({ name }) => name)).toEqual(['charizard', 'bulbasaur', 'blastoise'])
   })
 })

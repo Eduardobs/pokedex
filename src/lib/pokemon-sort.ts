@@ -14,6 +14,8 @@ export type PokemonSortKey =
   | 'special-defense'
   | 'speed'
 
+export type PokemonSortDirection = 'asc' | 'desc'
+
 export const pokemonSortNeedsDetails = (sort: PokemonSortKey) => sort !== 'number' && sort !== 'name'
 
 export function filterPokemonList(pokemon: PokemonListItem[], query: string): PokemonListItem[] {
@@ -31,20 +33,22 @@ export function getPokemonSortValue(pokemon: PokemonSortDetails | undefined, sor
 export function sortPokemonList(
   pokemon: PokemonListItem[],
   sort: PokemonSortKey,
+  direction: PokemonSortDirection,
   details: Record<string, PokemonSortDetails>,
   locale: string,
 ): PokemonListItem[] {
   const collator = new Intl.Collator(locale, { sensitivity: 'base' })
+  const directionMultiplier = direction === 'asc' ? 1 : -1
 
   return [...pokemon].sort((left, right) => {
-    if (sort === 'number') return left.id - right.id
-    if (sort === 'name') return collator.compare(left.name, right.name) || left.id - right.id
+    if (sort === 'number') return (left.id - right.id) * directionMultiplier
+    if (sort === 'name') return collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id
 
     const leftValue = getPokemonSortValue(details[left.name], sort)
     const rightValue = getPokemonSortValue(details[right.name], sort)
     if (leftValue === undefined && rightValue === undefined) return left.id - right.id
     if (leftValue === undefined) return 1
     if (rightValue === undefined) return -1
-    return rightValue - leftValue || left.id - right.id
+    return (leftValue - rightValue) * directionMultiplier || left.id - right.id
   })
 }

@@ -1,4 +1,4 @@
-import { ArrowUpDown, ChevronDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
@@ -11,7 +11,7 @@ import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { formatNumber, normalizeSearchText, pokemonListItems, prettyName } from '../lib/api'
 import { fetchPokemonRarityDetails, fetchPokemonRegionDetails, fetchPokemonSortDetails, POKEMON_REGIONS, type PokemonRarityDetails, type PokemonRegion } from '../lib/pokemon-catalog'
-import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
+import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortDirection, type PokemonSortKey } from '../lib/pokemon-sort'
 import { POKEMON_CATALOG_LIMIT } from '../config/app'
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
 
@@ -31,6 +31,7 @@ export function PokedexPage() {
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null
   const sortKeys: PokemonSortKey[] = ['number', 'name', 'total', 'hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed']
   const sort = requestedSort && sortKeys.includes(requestedSort) ? requestedSort : 'number'
+  const direction: PokemonSortDirection = searchParams.get('order') === 'desc' ? 'desc' : 'asc'
   const legendary = searchParams.get('legendary') === 'true'
   const mythical = searchParams.get('mythical') === 'true'
   const hasRarityFilter = legendary || mythical
@@ -87,9 +88,10 @@ export function PokedexPage() {
   const sortedPokemon = useMemo(() => sortPokemonList(
     filteredPokemon,
     sort,
+    direction,
     pokemonDetails,
     language,
-  ), [filteredPokemon, language, pokemonDetails, sort])
+  ), [direction, filteredPokemon, language, pokemonDetails, sort])
   const visiblePokemon = useMemo(() => sortedPokemon.slice(0, visibleCount), [sortedPokemon, visibleCount])
   const total = catalog.length
   const hasMore = visibleCount < sortedPokemon.length
@@ -234,6 +236,15 @@ export function PokedexPage() {
     setVisibleCount(LIMIT)
   }
 
+  const changeDirection = (nextDirection: PokemonSortDirection) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (nextDirection === 'asc') next.delete('order'); else next.set('order', nextDirection)
+      return next
+    }, { replace: true })
+    setVisibleCount(LIMIT)
+  }
+
   const changeRegion = (nextRegion: string) => {
     setSearchParams((current) => {
       const next = new URLSearchParams(current)
@@ -268,6 +279,10 @@ export function PokedexPage() {
     { value: 'special-defense', label: t('pokedex.sort.specialDefense'), metric: t('stats.specialDefense') },
     { value: 'speed', label: t('pokedex.sort.speed'), metric: t('stats.speed') },
   ]
+  const directionOptions: { value: PokemonSortDirection; label: string }[] = [
+    { value: 'asc', label: t('pokedex.sort.ascending') },
+    { value: 'desc', label: t('pokedex.sort.descending') },
+  ]
   const selectedSortMetric = sortOptions.find((option) => option.value === sort)?.metric ?? ''
   const regionOptions = [
     { value: 'all', label: t('pokedex.region.all') },
@@ -283,7 +298,7 @@ export function PokedexPage() {
     { value: 'paldea', label: t('pokedex.region.paldea') },
   ]
   const hasResultFilter = Boolean(query || type !== 'all' || region !== 'all' || hasRarityFilter)
-  const hasActiveFilters = hasResultFilter || sort !== 'number'
+  const hasActiveFilters = hasResultFilter || sort !== 'number' || direction !== 'asc'
   const additionalFilterCount = Number(type !== 'all') + Number(legendary) + Number(mythical)
   const isRarityPending = hasRarityFilter && !rarityDetails && rarityLoading
   const isRegionPending = region !== 'all' && !regionDetails && regionLoading
@@ -316,7 +331,10 @@ export function PokedexPage() {
             {suggestionsOpen && suggestions.length > 0 && <ul id="pokemon-suggestions" className="pokemon-suggestions" role="listbox">{suggestions.map((pokemon, index) => <li id={`pokemon-suggestion-${index}`} key={pokemon.name} role="option" aria-selected={index === activeSuggestion} className={index === activeSuggestion ? 'active' : ''} onMouseDown={(event) => { event.preventDefault(); selectSuggestion(pokemon.name) }}><span>{prettyName(pokemon.name)}</span><small>#{String(pokemon.id).padStart(4, '0')}</small></li>)}</ul>}
           </div>
           <SelectMenu className="region-field" icon={isRegionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />} label={t('pokedex.region.label')} options={regionOptions} value={region} onChange={changeRegion} />
-          <SelectMenu icon={sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />} label={t('pokedex.sort.label')} options={sortOptions} value={sort} onChange={changeSort} />
+          <div className="sort-controls">
+            <SelectMenu icon={sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />} label={t('pokedex.sort.label')} options={sortOptions} value={sort} onChange={changeSort} />
+            <SelectMenu className="order-field" icon={direction === 'asc' ? <ArrowUp size={18} /> : <ArrowDown size={18} />} label={t('pokedex.sort.direction')} options={directionOptions} value={direction} onChange={changeDirection} />
+          </div>
         </div>
         <div className="filter-actions">
           <button className="filter-toggle" type="button" aria-expanded={additionalFiltersOpen} aria-controls="additional-pokedex-filters" onClick={() => setAdditionalFiltersOpen((open) => !open)}>

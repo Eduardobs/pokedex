@@ -149,6 +149,7 @@ describe('Pokédex filters', () => {
     expect(screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Região' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Ordenar por' })).toBeVisible()
+    expect(screen.getByRole('combobox', { name: 'Ordem' })).toHaveTextContent('Crescente')
     expect(screen.queryByRole('checkbox', { name: 'Lendário' })).not.toBeInTheDocument()
 
     const toggle = screen.getByRole('button', { name: 'Exibir filtros' })
@@ -158,6 +159,21 @@ describe('Pokédex filters', () => {
     expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
     expect(screen.getByRole('button', { name: 'Fogo' })).toBeVisible()
+  })
+
+  it('changes the ordering direction independently from the selected field', () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    render(renderPage(<PokedexPage />))
+
+    expect(screen.getByText('pokemon-1')).toBeInTheDocument()
+    expect(screen.queryByText('pokemon-60')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('combobox', { name: 'Ordem' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Decrescente' }))
+
+    expect(screen.getByText('pokemon-60')).toBeInTheDocument()
+    expect(screen.queryByText('pokemon-1')).not.toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Ordenar por' })).toHaveTextContent('Número')
   })
 
   it('suggests matching Pokémon names while typing', () => {
