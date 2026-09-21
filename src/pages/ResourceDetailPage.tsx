@@ -63,7 +63,7 @@ export function ResourceDetailPage() {
       <header className="resource-detail-header">
         <Link to={`/explorar/${resource}`} className="icon-button" aria-label={t('resource.back')} title={t('resource.back')}><ArrowLeft /></Link>
         <span className="resource-detail-mark"><ResourceIcon /></span>
-        {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" />}
+        {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />}
         <div><span className="eyebrow">{getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}</span><h1>{prettyName(String(title))}</h1>{description && <p>{description}</p>}{descriptionResult.fallback && language !== 'en' && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}<div className="resource-semantic-badges">{resource === 'type' && <TypeBadge type={String(data.name)} />}{moveType && <TypeBadge type={moveType} />}{moveClass && <DamageClassBadge value={moveClass} />}{resource === 'gender' && <GenderBadge value={String(data.name)} />}{resource === 'ability' && <span className="resource-kind-badge"><Zap size={14} />{t('resource.passiveAbility')}</span>}</div></div>
         <a className="button secondary api-link technical-link" href={`https://pokeapi.co/api/v2/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer">JSON <ExternalLink size={16} /></a>
       </header>

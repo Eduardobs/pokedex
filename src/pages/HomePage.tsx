@@ -1,9 +1,7 @@
 import { ArrowRight, BookOpen, Database, MapPin, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
-import { allResources } from '../data/resources'
-
-const RESOURCE_COLLECTIONS = allResources.length
+import { RESOURCE_COLLECTION_COUNT } from '../data/resource-summary'
 
 const featured = [
   { id: 1, name: 'bulbasaur', color: '#74c856' },
@@ -33,7 +31,15 @@ export function HomePage() {
           <div className="hero-rings" />
           {featured.map((pokemon, index) => (
             <Link to={`/pokemon/${pokemon.name}`} key={pokemon.name} className={`hero-pokemon p${index + 1}`} style={{ '--accent': pokemon.color } as React.CSSProperties}>
-              <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`} alt={pokemon.name} width="190" height="190" decoding="async" fetchPriority={index === 0 ? 'high' : 'auto'} />
+              <img
+                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
+                alt={pokemon.name}
+                width="190"
+                height="190"
+                decoding="async"
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : 'low'}
+              />
             </Link>
           ))}
           <div className="hero-ball"><span /></div>
@@ -46,7 +52,7 @@ export function HomePage() {
           <Link to="/pokemon" className="quick-card red"><div className="quick-icon"><BookOpen /></div><div><h3>{t('home.nationalDex')}</h3><p>{t('home.nationalDexDesc')}</p></div><ArrowRight /></Link>
           <Link to="/explorar/move" className="quick-card purple"><div className="quick-icon"><Sparkles /></div><div><h3>{t('home.moves')}</h3><p>{t('home.movesDesc')}</p></div><ArrowRight /></Link>
           <Link to="/explorar/region" className="quick-card green"><div className="quick-icon"><MapPin /></div><div><h3>{t('home.regions')}</h3><p>{t('home.regionsDesc')}</p></div><ArrowRight /></Link>
-          <Link to="/explorar" className="quick-card blue"><div className="quick-icon"><Database /></div><div><h3>{t('home.encyclopedia')}</h3><p>{t('home.collections', { count: RESOURCE_COLLECTIONS })}</p></div><ArrowRight /></Link>
+          <Link to="/explorar" className="quick-card blue"><div className="quick-icon"><Database /></div><div><h3>{t('home.encyclopedia')}</h3><p>{t('home.collections', { count: RESOURCE_COLLECTION_COUNT })}</p></div><ArrowRight /></Link>
         </div>
       </section>
     </>

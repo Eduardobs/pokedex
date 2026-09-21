@@ -19,10 +19,22 @@ export const prettyName = (value: string) => value
   .replace(/[-_]/g, ' ')
   .replace(/\b\w/g, (letter) => letter.toUpperCase())
 
-export const formatNumber = (value: number, language: Language = 'pt-BR') => new Intl.NumberFormat(language).format(value)
+const numberFormatters = new Map<string, Intl.NumberFormat>()
+
+function numberFormatter(language: Language, maximumFractionDigits?: number) {
+  const key = `${language}:${maximumFractionDigits ?? 'default'}`
+  let formatter = numberFormatters.get(key)
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(language, maximumFractionDigits === undefined ? undefined : { maximumFractionDigits })
+    numberFormatters.set(key, formatter)
+  }
+  return formatter
+}
+
+export const formatNumber = (value: number, language: Language = 'pt-BR') => numberFormatter(language).format(value)
 
 export const formatDecimal = (value: number, language: Language = 'pt-BR', maximumFractionDigits = 1) =>
-  new Intl.NumberFormat(language, { maximumFractionDigits }).format(value)
+  numberFormatter(language, maximumFractionDigits).format(value)
 
 export const normalizeSearchText = (value: string) => value
   .normalize('NFD')

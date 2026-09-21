@@ -1,5 +1,5 @@
 import { ArrowUpDown, LoaderCircle, Search, SlidersHorizontal } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
@@ -19,6 +19,7 @@ export function PokedexPage() {
   const { language, t } = useLanguage()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') ?? ''
+  const deferredQuery = useDeferredValue(query)
   const requestedType = searchParams.get('type') ?? 'all'
   const type = types.includes(requestedType) ? requestedType : 'all'
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null
@@ -53,9 +54,9 @@ export function PokedexPage() {
       return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))
     })
   }, [catalog, hasRarityFilter, legendary, mythical, rarityDetails])
-  const filteredPokemon = useMemo(() => filterPokemonList(rarityCatalog, query), [query, rarityCatalog])
+  const filteredPokemon = useMemo(() => filterPokemonList(rarityCatalog, deferredQuery), [deferredQuery, rarityCatalog])
   const suggestions = useMemo(() => {
-    const normalizedQuery = normalizeSearchText(query)
+    const normalizedQuery = normalizeSearchText(deferredQuery)
     if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
 
     return rarityCatalog
@@ -67,7 +68,7 @@ export function PokedexPage() {
         return left.id - right.id
       })
       .slice(0, 7)
-  }, [query, rarityCatalog])
+  }, [deferredQuery, rarityCatalog])
   const sortedPokemon = useMemo(() => sortPokemonList(
     filteredPokemon,
     sort,

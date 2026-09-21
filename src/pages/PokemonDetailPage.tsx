@@ -1,5 +1,5 @@
 import { ArrowLeft, ChevronRight, Database, ExternalLink, Gamepad2, Heart, History, Image, MapPin, PackageOpen, Ruler, Search, ShieldAlert, Sparkles, Volume2, Weight } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { BaseStatsRadar } from '../components/BaseStatsRadar'
@@ -12,12 +12,12 @@ import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { API_BASE, formatDecimal, formatNumber, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
+import { API_BASE, formatDecimal, formatNumber, idFromUrl, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
 import { level100StatRange } from '../lib/pokemon-stats'
 import { BATTLE_TYPES, type BattleType } from '../lib/type-chart'
 import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
-import type { Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
+import type { ApiList, Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
 
 function evolutionCondition(detail: Record<string, unknown>, t: Translate) {
   const conditions: string[] = []
@@ -137,34 +137,73 @@ export function PokemonDetailPage() {
   const [moveQuery, setMoveQuery] = useState('')
   const [moveMethod, setMoveMethod] = useState('all')
   const [moveType, setMoveType] = useState<BattleType | 'all'>('all')
+  const [secondaryDataReady, setSecondaryDataReady] = useState(false)
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
   const { data: species, loading: speciesLoading, error: speciesError } = useApi<Species>(pokemon?.species.url ?? null)
-  const { data: evolution, loading: evolutionLoading, error: evolutionError } = useApi<EvolutionChain>(species?.evolution_chain?.url ?? null)
+  const { data: evolution, loading: evolutionLoading, error: evolutionError } = useApi<EvolutionChain>(secondaryDataReady ? species?.evolution_chain?.url ?? null : null)
   const { data: encounters, loading: encountersLoading, error: encountersError, retry: retryEncounters } = useApi<Encounter[]>(tab === 'encounters' ? pokemon?.location_area_encounters ?? null : null)
   const previousId = pokemon && pokemon.id > 1 ? pokemon.id - 1 : null
   const nextId = pokemon ? pokemon.id + 1 : null
-  const { data: previousPokemon } = useApi<Pokemon>(previousId ? `pokemon/${previousId}` : null)
-  const { data: nextPokemon } = useApi<Pokemon>(nextId ? `pokemon/${nextId}` : null)
-  const { data: primaryType, error: primaryTypeError } = useApi<PokemonType>(pokemon?.types[0] ? `type/${encodeURIComponent(pokemon.types[0].type.name)}` : null)
-  const { data: secondaryType, error: secondaryTypeError } = useApi<PokemonType>(pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null)
+  const neighborOffset = Math.max(0, (pokemon?.id ?? 1) - 2)
+  const { data: neighbors } = useApi<ApiList>(secondaryDataReady && pokemon ? `pokemon?limit=3&offset=${neighborOffset}` : null)
+  const previousResource = previousId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === previousId) : null
+  const nextResource = nextId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === nextId) : null
+  const previousPokemon = previousResource && previousId ? { ...previousResource, id: previousId } : null
+  const nextPokemon = nextResource && nextId ? { ...nextResource, id: nextId } : null
+  const { data: primaryType, error: primaryTypeError } = useApi<PokemonType>(secondaryDataReady && pokemon?.types[0] ? `type/${encodeURIComponent(pokemon.types[0].type.name)}` : null)
+  const { data: secondaryType, error: secondaryTypeError } = useApi<PokemonType>(secondaryDataReady && pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null)
   const { data: selectedMoveType, loading: moveTypeLoading, error: moveTypeError, retry: retryMoveType } = useApi<PokemonType & { moves: Array<{ name: string }> }>(tab === 'moves' && moveType !== 'all' ? `type/${moveType}` : null)
   const { isFavorite, toggle } = useFavoritesContext()
+  const deferredMoveQuery = useDeferredValue(moveQuery)
+  const moveGroups = useMemo(() => groupMovesByLearningMethod(pokemon?.moves ?? []), [pokemon?.moves])
+  const moveMethods = useMemo(() => moveGroups.map((group) => group.method), [moveGroups])
+  const moveNamesForType = useMemo(
+    () => moveType === 'all' ? null : new Set(selectedMoveType?.moves.map((move) => move.name) ?? []),
+    [moveType, selectedMoveType],
+  )
+  const normalizedMoveQuery = useMemo(() => normalizeSearchText(deferredMoveQuery), [deferredMoveQuery])
+  const filteredMoveGroups = useMemo(() => moveGroups
+    .filter((group) => moveMethod === 'all' || group.method === moveMethod)
+    .map((group) => ({
+      ...group,
+      moves: group.moves.filter(({ move }) => normalizeSearchText(move.name).includes(normalizedMoveQuery) && (!moveNamesForType || moveNamesForType.has(move.name))),
+    }))
+    .filter((group) => group.moves.length), [moveGroups, moveMethod, moveNamesForType, normalizedMoveQuery])
+
   useEffect(() => {
+    setSecondaryDataReady(false)
     setTab('about')
     setShiny(false)
     setMoveQuery('')
     setMoveMethod('all')
     setMoveType('all')
   }, [name])
-  const loadedTypes = [primaryType, secondaryType]
-  const currentTypeRelations = (pokemon?.types ?? [])
-    .map(({ type }) => loadedTypes.find((loadedType) => loadedType?.name === type.name)?.damage_relations)
-    .filter((relations): relations is PokemonType['damage_relations'] => Boolean(relations))
+
+  useEffect(() => {
+    setSecondaryDataReady(false)
+    if (!pokemon) return
+
+    const enableSecondaryData = () => setSecondaryDataReady(true)
+    const scheduleIdle = window.requestIdleCallback?.bind(window)
+    if (typeof scheduleIdle === 'function') {
+      const idleId = scheduleIdle(enableSecondaryData, { timeout: 1_200 })
+      return () => window.cancelIdleCallback(idleId)
+    }
+    const timeoutId = window.setTimeout(enableSecondaryData, 200)
+    return () => window.clearTimeout(timeoutId)
+  }, [pokemon])
+
+  const currentTypeRelations = useMemo(() => {
+    const loadedTypes = [primaryType, secondaryType]
+    return (pokemon?.types ?? [])
+      .map(({ type }) => loadedTypes.find((loadedType) => loadedType?.name === type.name)?.damage_relations)
+      .filter((relations): relations is PokemonType['damage_relations'] => Boolean(relations))
+  }, [pokemon, primaryType, secondaryType])
   const typeRelationsReady = Boolean(pokemon && currentTypeRelations.length === pokemon.types.length)
   const typeRelationsError = primaryTypeError || (pokemon?.types[1] ? secondaryTypeError : null)
-  const weaknesses = calculateWeaknesses(currentTypeRelations)
-  const resistances = calculateResistances(currentTypeRelations)
-  const immunities = calculateImmunities(currentTypeRelations)
+  const weaknesses = useMemo(() => calculateWeaknesses(currentTypeRelations), [currentTypeRelations])
+  const resistances = useMemo(() => calculateResistances(currentTypeRelations), [currentTypeRelations])
+  const immunities = useMemo(() => calculateImmunities(currentTypeRelations), [currentTypeRelations])
   if (loading) return <Loading label={t('detail.loading')} />
   if (error || !pokemon) return <ErrorState title={t('detail.notFound')} message={t('detail.notFoundDesc', { name })} retry={retry} />
   if (name !== pokemon.name) return <Navigate to={`/pokemon/${encodeURIComponent(pokemon.name)}`} replace />
@@ -178,13 +217,6 @@ export function PokemonDetailPage() {
   const fallbackGenus = species?.genera.find((entry) => entry.language.name === 'en')
   const genus = localizedGenus?.genus ?? fallbackGenus?.genus
   const statNames: Record<string, string> = { hp: 'HP', attack: t('stats.attack'), defense: t('stats.defense'), 'special-attack': t('stats.specialAttack'), 'special-defense': t('stats.specialDefense'), speed: t('stats.speed') }
-  const moveGroups = groupMovesByLearningMethod(pokemon.moves)
-  const moveMethods = moveGroups.map((group) => group.method)
-  const moveNamesForType = moveType === 'all' ? null : new Set(selectedMoveType?.moves.map((move) => move.name) ?? [])
-  const filteredMoveGroups = moveGroups
-    .filter((group) => moveMethod === 'all' || group.method === moveMethod)
-    .map((group) => ({ ...group, moves: group.moves.filter(({ move }) => normalizeSearchText(move.name).includes(normalizeSearchText(moveQuery)) && (!moveNamesForType || moveNamesForType.has(move.name))) }))
-    .filter((group) => group.moves.length)
   const tabOrder = ['about', 'moves', 'encounters', 'data'] as const
   const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, current: typeof tabOrder[number]) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
@@ -268,7 +300,7 @@ export function PokemonDetailPage() {
               </div>
             </>}
           </article>
-          <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{evolutionLoading ? <p className="muted">{t('common.loading')}</p> : evolutionError ? <p className="muted">{t('detail.evolutionUnavailable')}</p> : evolution ? <ul className="evolution-tree"><EvolutionTreeNode node={evolution.chain} t={t} root /></ul> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
+          <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{!secondaryDataReady || evolutionLoading ? <p className="muted">{t('common.loading')}</p> : evolutionError ? <p className="muted">{t('detail.evolutionUnavailable')}</p> : evolution ? <ul className="evolution-tree"><EvolutionTreeNode node={evolution.chain} t={t} root /></ul> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
           {species && <PokemonForms species={species} currentPokemon={pokemon} />}
         </div>}
         {tab === 'moves' && <article className="info-card wide-card" role="tabpanel" id="panel-moves" aria-labelledby="tab-moves">
