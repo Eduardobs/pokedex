@@ -1,4 +1,4 @@
-import { Gem, Globe2, Maximize2, Shield } from 'lucide-react'
+import { Globe2, Maximize2, Shield } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
 import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
@@ -6,6 +6,7 @@ import { idFromUrl, pokemonArtwork, prettyName } from '../lib/api'
 import type { NamedResource, PokemonForm } from '../types'
 import { TypeBadge } from './TypeBadge'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
+import { MegaEvolutionIcon } from './MegaEvolutionIcon'
 
 export type FormCategory = 'regional' | 'mega' | 'gmax'
 
@@ -18,7 +19,7 @@ export function formCategory(name: string): FormCategory | null {
 
 const categoryConfig = {
   regional: { labelKey: 'form.regional', icon: Globe2 },
-  mega: { labelKey: 'form.mega', icon: Gem },
+  mega: { labelKey: 'form.mega', icon: MegaEvolutionIcon },
   gmax: { labelKey: 'forms.gmax', icon: Maximize2 },
 }
 

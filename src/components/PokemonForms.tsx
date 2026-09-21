@@ -1,10 +1,11 @@
-import { Gem, Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
+import { Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch, prettyName } from '../lib/api'
 import type { Pokemon, PokemonForm, Species } from '../types'
 import { TypeBadge } from './TypeBadge'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
+import { MegaEvolutionIcon } from './MegaEvolutionIcon'
 
 type FormEntry = {
   pokemon: Pokemon
@@ -31,7 +32,7 @@ function formPresentation(entry: FormEntry, speciesName: string, t: Translate, a
     ['alola', 'Alola'], ['galar', 'Galar'], ['hisui', 'Hisui'], ['paldea', 'Paldea'],
   ].find(([key]) => pokemon.name.includes(`-${key}`))
 
-  if (form?.is_mega || pokemon.name.includes('-mega')) return { label: suffix.endsWith('-x') ? 'Mega X' : suffix.endsWith('-y') ? 'Mega Y' : 'Mega', category: t('pokemonForms.megaEvolution'), kind: 'mega', icon: Gem }
+  if (form?.is_mega || pokemon.name.includes('-mega')) return { label: suffix.endsWith('-x') ? 'Mega X' : suffix.endsWith('-y') ? 'Mega Y' : 'Mega', category: t('pokemonForms.megaEvolution'), kind: 'mega', icon: MegaEvolutionIcon }
   if (regional) return { label: localizedFormName(form, apiLanguage) || t('pokemonForms.regionForm', { region: regional[1] }), category: t('pokemonForms.regional'), kind: 'regional', icon: Globe2 }
   if (pokemon.name.includes('-gmax')) return { label: t('forms.gmax'), category: t('pokemonForms.gmax'), kind: 'gmax', icon: Maximize2 }
   if (form?.is_battle_only) return { label: localizedFormName(form, apiLanguage) || prettyName(suffix), category: t('pokemonForms.battle'), kind: 'battle', icon: Shield }
@@ -95,7 +96,7 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
       entries: presented.filter(({ presentation }) => presentation.kind === 'regional'),
     },
     {
-      key: 'mega', title: t('pokemonForms.megaForms'), description: t('pokemonForms.megaDesc'), icon: Gem,
+      key: 'mega', title: t('pokemonForms.megaForms'), description: t('pokemonForms.megaDesc'), icon: MegaEvolutionIcon,
       entries: presented.filter(({ presentation }) => presentation.kind === 'mega'),
     },
     {

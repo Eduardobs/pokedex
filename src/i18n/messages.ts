@@ -96,7 +96,7 @@ export const messages = {
     'typesTable.note': 'Para Pokémon com dois tipos, multiplique os dois valores defensivos. Por exemplo: 2× e 2× resultam em 4×.',
     'typesTable.calculator': 'Calculadora de dano', 'typesTable.calculatorDesc': 'Escolha o ataque e até dois tipos defensores.',
     'typesTable.attacking': 'Tipo atacante', 'typesTable.defenderOne': 'Primeiro tipo defensor', 'typesTable.defenderTwo': 'Segundo tipo defensor',
-    'typesTable.noSecond': 'Sem segundo tipo', 'typesTable.result': 'Multiplicador resultante', 'typesTable.tapHint': 'Toque em uma célula para manter o destaque.',
+    'typesTable.noSecond': 'Sem segundo tipo', 'typesTable.result': 'Multiplicador resultante', 'typesTable.tapHint': 'Toque em uma célula para preencher a calculadora e manter o destaque.',
   },
   en: {
     'language.label': 'Language', 'language.pt-BR': 'Português', 'language.en': 'English', 'language.es': 'Español',
@@ -195,7 +195,7 @@ export const messages = {
     'typesTable.note': 'For dual-type Pokémon, multiply both defensive values. For example: 2× and 2× result in 4×.',
     'typesTable.calculator': 'Damage calculator', 'typesTable.calculatorDesc': 'Choose the attack and up to two defending types.',
     'typesTable.attacking': 'Attacking type', 'typesTable.defenderOne': 'First defending type', 'typesTable.defenderTwo': 'Second defending type',
-    'typesTable.noSecond': 'No second type', 'typesTable.result': 'Resulting multiplier', 'typesTable.tapHint': 'Tap a cell to keep it highlighted.',
+    'typesTable.noSecond': 'No second type', 'typesTable.result': 'Resulting multiplier', 'typesTable.tapHint': 'Tap a cell to fill the calculator and keep it highlighted.',
   },
   es: {
     'language.label': 'Idioma', 'language.pt-BR': 'Português', 'language.en': 'English', 'language.es': 'Español',
@@ -294,6 +294,6 @@ export const messages = {
     'typesTable.note': 'Para Pokémon de dos tipos, multiplica ambos valores defensivos. Por ejemplo: 2× y 2× dan como resultado 4×.',
     'typesTable.calculator': 'Calculadora de daño', 'typesTable.calculatorDesc': 'Elige el ataque y hasta dos tipos defensores.',
     'typesTable.attacking': 'Tipo atacante', 'typesTable.defenderOne': 'Primer tipo defensor', 'typesTable.defenderTwo': 'Segundo tipo defensor',
-    'typesTable.noSecond': 'Sin segundo tipo', 'typesTable.result': 'Multiplicador resultante', 'typesTable.tapHint': 'Toca una celda para mantenerla resaltada.',
+    'typesTable.noSecond': 'Sin segundo tipo', 'typesTable.result': 'Multiplicador resultante', 'typesTable.tapHint': 'Toca una celda para completar la calculadora y mantenerla resaltada.',
   },
 } as const

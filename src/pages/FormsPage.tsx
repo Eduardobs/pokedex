@@ -1,7 +1,8 @@
-import { Gem, Globe2, Layers3, Maximize2, Search, Sparkles } from 'lucide-react'
+import { Globe2, Layers3, Maximize2, Search, Sparkles } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
+import { MegaEvolutionIcon } from '../components/MegaEvolutionIcon'
 import { FormCategory, formCategory, formLabels, PokemonFormDirectoryCard } from '../components/PokemonFormDirectoryCard'
 import { SearchField } from '../components/SearchField'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -14,10 +15,10 @@ const PAGE_SIZE = 32
 type SelectedCategory = 'all' | FormCategory
 export function FormsPage() {
   const { language, t } = useLanguage()
-  const categories: { value: SelectedCategory; label: string; description: string; icon: typeof Sparkles }[] = [
+  const categories: { value: SelectedCategory; label: string; description: string; icon: typeof Sparkles | typeof MegaEvolutionIcon }[] = [
     { value: 'all', label: t('forms.all'), description: t('forms.allDesc'), icon: Layers3 },
     { value: 'regional', label: t('forms.regional'), description: t('forms.regionalDesc'), icon: Globe2 },
-    { value: 'mega', label: t('forms.mega'), description: t('forms.megaDesc'), icon: Gem },
+    { value: 'mega', label: t('forms.mega'), description: t('forms.megaDesc'), icon: MegaEvolutionIcon },
     { value: 'gmax', label: t('forms.gmax'), description: t('forms.gmaxDesc'), icon: Maximize2 },
   ]
   const [searchParams, setSearchParams] = useSearchParams()

@@ -42,6 +42,14 @@ export function TypesTablePage() {
   const calculatorResult = getDamageMultiplier(calculatorAttack, calculatorDefense)
     * (calculatorSecondDefense ? getDamageMultiplier(calculatorAttack, calculatorSecondDefense) : 1)
 
+  function selectMatchup(attackingType: BattleType, defendingType: BattleType) {
+    setCalculatorAttack(attackingType)
+    setCalculatorDefense(defendingType)
+    setSelectedCell((current) => current?.attackingType === attackingType && current.defendingType === defendingType
+      ? null
+      : { attackingType, defendingType })
+  }
+
   return (
     <section className="page content-width types-table-page">
       <div className="page-title types-table-title">
@@ -56,7 +64,7 @@ export function TypesTablePage() {
         <div><h2 id="type-calculator-title">{t('typesTable.calculator')}</h2><p>{t('typesTable.calculatorDesc')}</p></div>
         <label><span>{t('typesTable.attacking')}</span><select value={calculatorAttack} onChange={(event) => setCalculatorAttack(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
         <label><span>{t('typesTable.defenderOne')}</span><select value={calculatorDefense} onChange={(event) => setCalculatorDefense(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
-        <label><span>{t('typesTable.defenderTwo')}</span><select value={calculatorSecondDefense} onChange={(event) => setCalculatorSecondDefense(event.target.value as BattleType | '')}><option value="">{t('typesTable.noSecond')}</option>{BATTLE_TYPES.filter((type) => type !== calculatorDefense).map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+        <label><span>{t('typesTable.defenderTwo')}</span><select value={calculatorSecondDefense} onChange={(event) => setCalculatorSecondDefense(event.target.value as BattleType | '')}><option value="">{t('typesTable.noSecond')}</option>{BATTLE_TYPES.filter((type) => type !== calculatorDefense || type === calculatorSecondDefense).map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
         <output className={resultClass(calculatorResult)} aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
       </section>
 
@@ -117,11 +125,15 @@ export function TypesTablePage() {
                       key={defendingType}
                       className={classes}
                       onMouseEnter={() => setHoveredCell({ attackingType, defendingType })}
-                      onClick={() => setSelectedCell((current) => current?.attackingType === attackingType && current.defendingType === defendingType ? null : { attackingType, defendingType })}
                     >
-                      <span aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}>
-                        {multiplierLabels[multiplier]}
-                      </span>
+                      <button
+                        type="button"
+                        aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}
+                        aria-pressed={selectedCell?.attackingType === attackingType && selectedCell.defendingType === defendingType}
+                        onClick={() => selectMatchup(attackingType, defendingType)}
+                      >
+                        <span aria-hidden="true">{multiplierLabels[multiplier]}</span>
+                      </button>
                     </td>
                   )
                 })}

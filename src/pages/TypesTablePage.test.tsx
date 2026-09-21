@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react'
+import { fireEvent, render, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { BATTLE_TYPES } from '../lib/type-chart'
@@ -47,5 +47,24 @@ describe('TypesTablePage', () => {
     fireEvent.change(defenseSelect, { target: { value: 'water' } })
 
     expect(output).toHaveClass('result-resistant')
+  })
+
+  it('fills the attack and first defender from a matchup without changing the second defender', () => {
+    const { container } = render(
+      <LanguageProvider>
+        <TypesTablePage />
+      </LanguageProvider>,
+    )
+    const view = within(container)
+    const attackSelect = view.getByRole('combobox', { name: 'Tipo atacante' })
+    const firstDefenseSelect = view.getByRole('combobox', { name: 'Primeiro tipo defensor' })
+    const secondDefenseSelect = view.getByRole('combobox', { name: 'Segundo tipo defensor' })
+
+    fireEvent.change(secondDefenseSelect, { target: { value: 'water' } })
+    fireEvent.click(view.getByRole('button', { name: /Elétrico → Água: Dano 2×/ }))
+
+    expect(attackSelect).toHaveValue('electric')
+    expect(firstDefenseSelect).toHaveValue('water')
+    expect(secondDefenseSelect).toHaveValue('water')
   })
 })
