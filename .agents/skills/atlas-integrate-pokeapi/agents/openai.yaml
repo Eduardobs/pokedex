@@ -1,0 +1,3 @@
+interface:
+  display_name: "Atlas · Integrar PokéAPI"
+  short_description: "Integra dados remotos seguros e canceláveis"

@@ -11,18 +11,18 @@ const stats = [
   { base_stat: 45, stat: { name: 'speed' } },
 ]
 
-it('exibe os atributos base e a faixa do nível 100 no radar', () => {
+it('exibe somente os atributos base no radar', () => {
   const { container } = render(<BaseStatsRadar
     stats={stats}
     statNames={{ hp: 'HP', attack: 'Ataque' }}
     label="Atributos base"
     baseLabel="Base"
-    level100Label="Nível 100"
-    pokemonName="bulbasaur"
   />)
 
   expect(screen.getByRole('img', { name: /Atributos base/ })).toBeInTheDocument()
-  expect(container.querySelector('desc')).toHaveTextContent(/Nível 100 200–294/)
-  expect(container.querySelector('.radar-level-100-band')).toBeInTheDocument()
-  expect(screen.getByText('200–294')).toBeInTheDocument()
+  expect(container.querySelector('desc')).toHaveTextContent(/HP: Base 45/)
+  expect(container.querySelector('.radar-area')).toBeInTheDocument()
+  expect(container.querySelector('.radar-level-100-band')).not.toBeInTheDocument()
+  expect(screen.queryByText('Nível 100')).not.toBeInTheDocument()
+  expect(screen.queryByText('200–294')).not.toBeInTheDocument()
 })

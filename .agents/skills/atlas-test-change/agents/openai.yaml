@@ -1,0 +1,3 @@
+interface:
+  display_name: "Atlas · Testar mudança"
+  short_description: "Cria testes úteis e executa os quality gates"

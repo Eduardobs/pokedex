@@ -156,7 +156,7 @@ export function PokemonDetailPage() {
           <article className="info-card stats-card">
             <header><h2>{t('detail.baseStats')}</h2><span>{t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b></span></header>
             <div className="stats-visualization">
-              <BaseStatsRadar stats={pokemon.stats} statNames={statNames} label={t('detail.baseStats')} baseLabel={t('detail.base')} level100Label={t('detail.level100')} pokemonName={pokemon.name} />
+              <BaseStatsRadar stats={pokemon.stats} statNames={statNames} label={t('detail.baseStats')} baseLabel={t('detail.base')} />
               <div className="stats-list">
                 <div className="stat-list-heading" aria-hidden="true"><span /><b>{t('detail.base')}</b><span /><b>{t('detail.level100')}</b></div>
                 {pokemon.stats.map(({ base_stat, stat }) => {
