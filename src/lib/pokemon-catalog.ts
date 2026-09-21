@@ -25,9 +25,33 @@ const RARITY_DETAILS_QUERY = `query PokemonRarityDetails {
   }
 }`
 
+const REGION_DETAILS_QUERY = `query PokemonRegionDetails {
+  pokemonspecies(limit: ${POKEMON_CATALOG_LIMIT}, order_by: { id: asc }) {
+    id
+    name
+    pokemons { name }
+  }
+}`
+
+export const POKEMON_REGIONS = [
+  { name: 'kanto', firstSpecies: 1, lastSpecies: 151 },
+  { name: 'johto', firstSpecies: 152, lastSpecies: 251 },
+  { name: 'hoenn', firstSpecies: 252, lastSpecies: 386 },
+  { name: 'sinnoh', firstSpecies: 387, lastSpecies: 493 },
+  { name: 'unova', firstSpecies: 494, lastSpecies: 649 },
+  { name: 'kalos', firstSpecies: 650, lastSpecies: 721 },
+  { name: 'alola', firstSpecies: 722, lastSpecies: 809 },
+  { name: 'galar', firstSpecies: 810, lastSpecies: 898 },
+  { name: 'hisui', firstSpecies: 899, lastSpecies: 905 },
+  { name: 'paldea', firstSpecies: 906, lastSpecies: 1025 },
+] as const
+
+export type PokemonRegion = typeof POKEMON_REGIONS[number]['name']
+
 const STAT_NAMES = new Set(['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'])
 let cachedDetails: Record<string, PokemonSortDetails> | undefined
 let cachedRarityDetails: Record<string, PokemonRarityDetails> | undefined
+let cachedRegionDetails: Record<string, PokemonRegion> | undefined
 
 export type PokemonRarityDetails = {
   isLegendary: boolean
@@ -95,6 +119,35 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
   return details
 }
 
+/** Maps each Pokémon variety to the region where its species was introduced. */
+export function parsePokemonRegionDetails(payload: unknown): Record<string, PokemonRegion> {
+  if (!isRecord(payload) || (Array.isArray(payload.errors) && payload.errors.length > 0) || !isRecord(payload.data) || !Array.isArray(payload.data.pokemonspecies) || payload.data.pokemonspecies.length === 0) {
+    throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
+  }
+  if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
+    throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+  }
+
+  const details: Record<string, PokemonRegion> = Object.create(null) as Record<string, PokemonRegion>
+  const speciesIds = new Set<number>()
+  for (const species of payload.data.pokemonspecies) {
+    if (!isRecord(species) || !Number.isInteger(species.id) || Number(species.id) < 1 || Number(species.id) > POKEMON_CATALOG_LIMIT || speciesIds.has(Number(species.id)) || typeof species.name !== 'string' || !/^[a-z0-9-]{1,100}$/.test(species.name) || !Array.isArray(species.pokemons) || species.pokemons.length === 0) {
+      throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
+    }
+    speciesIds.add(Number(species.id))
+    const region = POKEMON_REGIONS.find(({ firstSpecies, lastSpecies }) => Number(species.id) >= firstSpecies && Number(species.id) <= lastSpecies)?.name
+    if (!region) throw new ApiError('A PokéAPI retornou uma espécie sem região conhecida.', undefined, 'invalid-response')
+
+    for (const pokemon of species.pokemons) {
+      if (!isRecord(pokemon) || typeof pokemon.name !== 'string' || !/^[a-z0-9-]{1,100}$/.test(pokemon.name) || details[pokemon.name]) {
+        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
+      }
+      details[pokemon.name] = region
+    }
+  }
+  return details
+}
+
 /** Loads every sortable stat in one fixed, field-limited request. */
 export async function fetchPokemonSortDetails(signal?: AbortSignal): Promise<Record<string, PokemonSortDetails>> {
   if (cachedDetails) return cachedDetails
@@ -150,6 +203,39 @@ export async function fetchPokemonRarityDetails(signal?: AbortSignal): Promise<R
     if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
     cachedRarityDetails = parsePokemonRarityDetails(await response.json())
     return cachedRarityDetails
+  } catch (error) {
+    if (controller.signal.aborted && !signal?.aborted) {
+      throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+    }
+    throw error
+  } finally {
+    window.clearTimeout(timeout)
+    signal?.removeEventListener('abort', abort)
+  }
+}
+
+/** Loads and caches the region where every catalog species was introduced. */
+export async function fetchPokemonRegionDetails(signal?: AbortSignal): Promise<Record<string, PokemonRegion>> {
+  if (cachedRegionDetails) return cachedRegionDetails
+  if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
+
+  const controller = new AbortController()
+  const abort = () => controller.abort()
+  signal?.addEventListener('abort', abort, { once: true })
+  const timeout = window.setTimeout(abort, NETWORK.requestTimeoutMs)
+
+  try {
+    const response = await fetch(GRAPHQL_API_URL, {
+      method: 'POST',
+      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: REGION_DETAILS_QUERY, operationName: 'PokemonRegionDetails' }),
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+      signal: controller.signal,
+    })
+    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
+    cachedRegionDetails = parsePokemonRegionDetails(await response.json())
+    return cachedRegionDetails
   } catch (error) {
     if (controller.signal.aborted && !signal?.aborted) {
       throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')

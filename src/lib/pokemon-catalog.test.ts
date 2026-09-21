@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from './api-client'
-import { parsePokemonRarityDetails, parsePokemonSortDetails } from './pokemon-catalog'
+import { parsePokemonRarityDetails, parsePokemonRegionDetails, parsePokemonSortDetails } from './pokemon-catalog'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -143,6 +143,55 @@ describe('catálogo de raridade da Pokédex', () => {
     expect(body).toMatchObject({ operationName: 'PokemonRarityDetails' })
     expect(body.query).toContain('is_legendary')
     expect(body.query).toContain('is_mythical')
+    expect(body.query).toContain('pokemons { name }')
+  })
+})
+
+describe('catálogo de regiões da Pokédex', () => {
+  const regionPayload = {
+    data: {
+      pokemonspecies: [
+        { id: 1, name: 'bulbasaur', pokemons: [{ name: 'bulbasaur' }] },
+        { id: 194, name: 'wooper', pokemons: [{ name: 'wooper' }, { name: 'wooper-paldea' }] },
+        { id: 899, name: 'wyrdeer', pokemons: [{ name: 'wyrdeer' }] },
+      ],
+    },
+  }
+
+  it('associa todas as variedades à região de estreia da espécie', () => {
+    expect(parsePokemonRegionDetails(regionPayload)).toEqual({
+      bulbasaur: 'kanto',
+      wooper: 'johto',
+      'wooper-paldea': 'johto',
+      wyrdeer: 'hisui',
+    })
+  })
+
+  it('rejeita respostas parciais, espécies sem região e variedades duplicadas', () => {
+    expect(() => parsePokemonRegionDetails({ ...regionPayload, errors: [{ message: 'partial response' }] })).toThrow(ApiError)
+    expect(() => parsePokemonRegionDetails({ data: { pokemonspecies: [{
+      id: 1026, name: 'future', pokemons: [{ name: 'future' }],
+    }] } })).toThrow(ApiError)
+    expect(() => parsePokemonRegionDetails({ data: { pokemonspecies: [
+      { id: 1, name: 'one', pokemons: [{ name: 'shared' }] },
+      { id: 152, name: 'two', pokemons: [{ name: 'shared' }] },
+    ] } })).toThrow(ApiError)
+  })
+
+  it('busca e reutiliza a classificação regional validada', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify(regionPayload), { status: 200 }),
+    )
+    const { fetchPokemonRegionDetails } = await import('./pokemon-catalog')
+
+    const first = await fetchPokemonRegionDetails()
+    const second = await fetchPokemonRegionDetails()
+
+    expect(second).toBe(first)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body))
+    expect(body).toMatchObject({ operationName: 'PokemonRegionDetails' })
+    expect(body.query).toContain('id')
     expect(body.query).toContain('pokemons { name }')
   })
 })

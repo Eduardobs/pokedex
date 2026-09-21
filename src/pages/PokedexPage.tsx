@@ -1,4 +1,4 @@
-import { ArrowUpDown, LoaderCircle, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowUpDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
@@ -9,13 +9,14 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { formatNumber, normalizeSearchText, pokemonListItems, prettyName } from '../lib/api'
-import { fetchPokemonRarityDetails, fetchPokemonSortDetails, type PokemonRarityDetails } from '../lib/pokemon-catalog'
+import { fetchPokemonRarityDetails, fetchPokemonRegionDetails, fetchPokemonSortDetails, POKEMON_REGIONS, type PokemonRarityDetails, type PokemonRegion } from '../lib/pokemon-catalog'
 import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
 import { POKEMON_CATALOG_LIMIT } from '../config/app'
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
 
 const LIMIT = 24
 const types = ['all', 'normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy']
+const isPokemonRegion = (value: string): value is PokemonRegion => POKEMON_REGIONS.some((region) => region.name === value)
 
 export function PokedexPage() {
   const { language, t } = useLanguage()
@@ -24,6 +25,8 @@ export function PokedexPage() {
   const deferredQuery = useDeferredValue(query)
   const requestedType = searchParams.get('type') ?? 'all'
   const type = types.includes(requestedType) ? requestedType : 'all'
+  const requestedRegion = searchParams.get('region') ?? 'all'
+  const region = isPokemonRegion(requestedRegion) ? requestedRegion : 'all'
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null
   const sortKeys: PokemonSortKey[] = ['number', 'name', 'total', 'hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed']
   const sort = requestedSort && sortKeys.includes(requestedSort) ? requestedSort : 'number'
@@ -35,6 +38,10 @@ export function PokedexPage() {
   const [rarityLoading, setRarityLoading] = useState(false)
   const [rarityError, setRarityError] = useState(false)
   const [rarityRetry, setRarityRetry] = useState(0)
+  const [regionDetails, setRegionDetails] = useState<Record<string, PokemonRegion> | null>(null)
+  const [regionLoading, setRegionLoading] = useState(false)
+  const [regionError, setRegionError] = useState(false)
+  const [regionRetry, setRegionRetry] = useState(0)
   const [sortingDetails, setSortingDetails] = useState(false)
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
@@ -47,14 +54,19 @@ export function PokedexPage() {
     if (!data) return []
     return pokemonListItems('results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon))
   }, [data])
+  const regionCatalog = useMemo(() => {
+    if (region === 'all') return catalog
+    if (!regionDetails) return []
+    return catalog.filter((pokemon) => regionDetails[pokemon.name] === region)
+  }, [catalog, region, regionDetails])
   const rarityCatalog = useMemo(() => {
-    if (!hasRarityFilter) return catalog
+    if (!hasRarityFilter) return regionCatalog
     if (!rarityDetails) return []
-    return catalog.filter((pokemon) => {
+    return regionCatalog.filter((pokemon) => {
       const rarity = rarityDetails[pokemon.name]
       return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))
     })
-  }, [catalog, hasRarityFilter, legendary, mythical, rarityDetails])
+  }, [hasRarityFilter, legendary, mythical, rarityDetails, regionCatalog])
   const filteredPokemon = useMemo(() => filterPokemonList(rarityCatalog, deferredQuery), [deferredQuery, rarityCatalog])
   const suggestions = useMemo(() => {
     const normalizedQuery = normalizeSearchText(deferredQuery)
@@ -115,6 +127,31 @@ export function PokedexPage() {
       .finally(() => { if (!controller.signal.aborted) setRarityLoading(false) })
     return () => controller.abort()
   }, [hasRarityFilter, rarityDetails, rarityRetry])
+
+  useEffect(() => {
+    if (region === 'all') {
+      setRegionLoading(false)
+      setRegionError(false)
+      return
+    }
+    if (regionDetails) {
+      setRegionLoading(false)
+      return
+    }
+
+    const controller = new AbortController()
+    setRegionLoading(true)
+    setRegionError(false)
+    fetchPokemonRegionDetails(controller.signal)
+      .then((details) => {
+        if (!controller.signal.aborted) setRegionDetails(details)
+      })
+      .catch((reason: unknown) => {
+        if (!(reason instanceof Error && reason.name === 'AbortError')) setRegionError(true)
+      })
+      .finally(() => { if (!controller.signal.aborted) setRegionLoading(false) })
+    return () => controller.abort()
+  }, [region, regionDetails, regionRetry])
 
   useEffect(() => {
     if (!pokemonSortNeedsDetails(sort)) {
@@ -195,6 +232,15 @@ export function PokedexPage() {
     setVisibleCount(LIMIT)
   }
 
+  const changeRegion = (nextRegion: string) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current)
+      if (nextRegion === 'all') next.delete('region'); else next.set('region', nextRegion)
+      return next
+    }, { replace: true })
+    setVisibleCount(LIMIT)
+  }
+
   const changeRarityFilter = (filter: 'legendary' | 'mythical', checked: boolean) => {
     setSearchParams((current) => {
       const next = new URLSearchParams(current)
@@ -221,13 +267,28 @@ export function PokedexPage() {
     { value: 'speed', label: t('pokedex.sort.speed'), metric: t('stats.speed') },
   ]
   const selectedSortMetric = sortOptions.find((option) => option.value === sort)?.metric ?? ''
-  const hasResultFilter = Boolean(query || type !== 'all' || hasRarityFilter)
+  const regionOptions = [
+    { value: 'all', label: t('pokedex.region.all') },
+    { value: 'kanto', label: t('pokedex.region.kanto') },
+    { value: 'johto', label: t('pokedex.region.johto') },
+    { value: 'hoenn', label: t('pokedex.region.hoenn') },
+    { value: 'sinnoh', label: t('pokedex.region.sinnoh') },
+    { value: 'unova', label: t('pokedex.region.unova') },
+    { value: 'kalos', label: t('pokedex.region.kalos') },
+    { value: 'alola', label: t('pokedex.region.alola') },
+    { value: 'galar', label: t('pokedex.region.galar') },
+    { value: 'hisui', label: t('pokedex.region.hisui') },
+    { value: 'paldea', label: t('pokedex.region.paldea') },
+  ]
+  const hasResultFilter = Boolean(query || type !== 'all' || region !== 'all' || hasRarityFilter)
   const hasActiveFilters = hasResultFilter || sort !== 'number'
   const isRarityPending = hasRarityFilter && !rarityDetails && rarityLoading
+  const isRegionPending = region !== 'all' && !regionDetails && regionLoading
+  const isFilterPending = isRarityPending || isRegionPending
 
   return (
     <section className="page content-width">
-      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{isRarityPending ? '…' : formatNumber(hasResultFilter ? filteredPokemon.length : total, language)}</b><span>{hasResultFilter ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
+      <div className="page-title"><div><span className="eyebrow">{t('pokedex.eyebrow')}</span><h1>{t('pokedex.title')}</h1><p>{t('pokedex.description')}</p></div><div className="result-count" aria-live="polite"><b>{isFilterPending ? '…' : formatNumber(hasResultFilter ? filteredPokemon.length : total, language)}</b><span>{hasResultFilter ? t('pokedex.results') : t('pokedex.registered')}</span></div></div>
       <div className="filter-panel">
         <div className="filter-primary">
           <div className="pokemon-search">
@@ -251,6 +312,13 @@ export function PokedexPage() {
             />
             {suggestionsOpen && suggestions.length > 0 && <ul id="pokemon-suggestions" className="pokemon-suggestions" role="listbox">{suggestions.map((pokemon, index) => <li id={`pokemon-suggestion-${index}`} key={pokemon.name} role="option" aria-selected={index === activeSuggestion} className={index === activeSuggestion ? 'active' : ''} onMouseDown={(event) => { event.preventDefault(); selectSuggestion(pokemon.name) }}><span>{prettyName(pokemon.name)}</span><small>#{String(pokemon.id).padStart(4, '0')}</small></li>)}</ul>}
           </div>
+          <label className="sort-field region-field">
+            {isRegionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />}
+            <span>{t('pokedex.region.label')}</span>
+            <select value={region} onChange={(event) => changeRegion(event.target.value)} aria-label={t('pokedex.region.label')}>
+              {regionOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select>
+          </label>
           <label className="sort-field">
             {sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
             <span>{t('pokedex.sort.label')}</span>
@@ -272,8 +340,9 @@ export function PokedexPage() {
         {sortingDetails && <p className="sort-status" role="status">{t('pokedex.sort.loading')}</p>}
         {sortError && <p className="sort-status inline-sort-error" role="alert">{t('pokedex.sort.error')}</p>}
         {isRarityPending && <p className="sort-status" role="status">{t('pokedex.rarity.loading')}</p>}
+        {isRegionPending && <p className="sort-status" role="status">{t('pokedex.region.loading')}</p>}
       </div>
-      {loading && !catalog.length || isRarityPending ? <CardSkeleton count={12} /> : rarityError && hasRarityFilter && !rarityDetails ? <div className="inline-error"><p>{t('pokedex.rarity.error')}</p><button className="button secondary" type="button" onClick={() => setRarityRetry((value) => value + 1)}>{t('common.retry')}</button></div> : error && !catalog.length ? <div className="inline-error"><p>{t('pokedex.loadError')}</p><button className="button secondary" type="button" onClick={retry}>{t('common.retry')}</button></div> : visiblePokemon.length ? (
+      {loading && !catalog.length || isFilterPending ? <CardSkeleton count={12} /> : regionError && region !== 'all' && !regionDetails ? <div className="inline-error"><p>{t('pokedex.region.error')}</p><button className="button secondary" type="button" onClick={() => setRegionRetry((value) => value + 1)}>{t('common.retry')}</button></div> : rarityError && hasRarityFilter && !rarityDetails ? <div className="inline-error"><p>{t('pokedex.rarity.error')}</p><button className="button secondary" type="button" onClick={() => setRarityRetry((value) => value + 1)}>{t('common.retry')}</button></div> : error && !catalog.length ? <div className="inline-error"><p>{t('pokedex.loadError')}</p><button className="button secondary" type="button" onClick={retry}>{t('common.retry')}</button></div> : visiblePokemon.length ? (
         <div className="pokemon-grid">{visiblePokemon.map((pokemon) => {
           const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
           const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }

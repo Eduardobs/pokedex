@@ -6,8 +6,9 @@ import type { ApiList, NamedResource } from '../types'
 import { FormsPage } from './FormsPage'
 import { PokedexPage } from './PokedexPage'
 
-const { fetchPokemonRarityDetailsMock, useApiMock } = vi.hoisted(() => ({
+const { fetchPokemonRarityDetailsMock, fetchPokemonRegionDetailsMock, useApiMock } = vi.hoisted(() => ({
   fetchPokemonRarityDetailsMock: vi.fn(),
+  fetchPokemonRegionDetailsMock: vi.fn(),
   useApiMock: vi.fn(),
 }))
 
@@ -15,6 +16,7 @@ vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
   ...await importOriginal<typeof import('../lib/pokemon-catalog')>(),
   fetchPokemonRarityDetails: fetchPokemonRarityDetailsMock,
+  fetchPokemonRegionDetails: fetchPokemonRegionDetailsMock,
 }))
 vi.mock('../components/PokemonCard', () => ({
   PokemonCard: ({ name }: { name: string }) => <div>{name}</div>,
@@ -89,6 +91,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   fetchPokemonRarityDetailsMock.mockReset()
+  fetchPokemonRegionDetailsMock.mockReset()
   useApiMock.mockReset()
   vi.unstubAllGlobals()
 })
@@ -182,5 +185,26 @@ describe('Pokédex filters', () => {
     await waitFor(() => expect(screen.getByText('pokemon-2')).toBeInTheDocument())
     expect(screen.getByText('pokemon-1')).toBeInTheDocument()
     expect(fetchPokemonRarityDetailsMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('filters Pokémon by region using the region combo', async () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    fetchPokemonRegionDetailsMock.mockResolvedValue({
+      'pokemon-1': 'kanto',
+      'pokemon-2': 'johto',
+      'pokemon-3': 'kanto',
+    })
+    render(renderPage(<PokedexPage />))
+
+    const region = screen.getByRole('combobox', { name: 'Região' })
+    expect(region).toHaveValue('all')
+    expect(fetchPokemonRegionDetailsMock).not.toHaveBeenCalled()
+
+    fireEvent.change(region, { target: { value: 'kanto' } })
+
+    await waitFor(() => expect(screen.getByText('pokemon-1')).toBeInTheDocument())
+    expect(screen.getByText('pokemon-3')).toBeInTheDocument()
+    expect(screen.queryByText('pokemon-2')).not.toBeInTheDocument()
+    expect(fetchPokemonRegionDetailsMock).toHaveBeenCalledTimes(1)
   })
 })
