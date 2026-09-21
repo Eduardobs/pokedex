@@ -1,4 +1,4 @@
-import { ArrowUpDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowUpDown, ChevronDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
@@ -46,6 +46,7 @@ export function PokedexPage() {
   const [sortingDetails, setSortingDetails] = useState(false)
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
+  const [additionalFiltersOpen, setAdditionalFiltersOpen] = useState(false)
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
   const [activeSuggestion, setActiveSuggestion] = useState(-1)
   const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
@@ -283,6 +284,7 @@ export function PokedexPage() {
   ]
   const hasResultFilter = Boolean(query || type !== 'all' || region !== 'all' || hasRarityFilter)
   const hasActiveFilters = hasResultFilter || sort !== 'number'
+  const additionalFilterCount = Number(type !== 'all') + Number(legendary) + Number(mythical)
   const isRarityPending = hasRarityFilter && !rarityDetails && rarityLoading
   const isRegionPending = region !== 'all' && !regionDetails && regionLoading
   const isFilterPending = isRarityPending || isRegionPending
@@ -316,16 +318,26 @@ export function PokedexPage() {
           <SelectMenu className="region-field" icon={isRegionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />} label={t('pokedex.region.label')} options={regionOptions} value={region} onChange={changeRegion} />
           <SelectMenu icon={sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />} label={t('pokedex.sort.label')} options={sortOptions} value={sort} onChange={changeSort} />
         </div>
-        <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><SlidersHorizontal size={18} /><div>{types.map((item) => {
-          const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
-          return <button type="button" key={item} aria-label={label} title={label} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? label : <TypeBadge type={item} iconOnly />}</button>
-        })}</div></div>
-        <div className="rarity-filter" role="group" aria-label={t('pokedex.rarity.label')}>
-          <span>{t('pokedex.rarity.label')}</span>
-          <label><input type="checkbox" checked={legendary} onChange={(event) => changeRarityFilter('legendary', event.target.checked)} />{t('pokedex.rarity.legendary')}</label>
-          <label><input type="checkbox" checked={mythical} onChange={(event) => changeRarityFilter('mythical', event.target.checked)} />{t('pokedex.rarity.mythical')}</label>
+        <div className="filter-actions">
+          <button className="filter-toggle" type="button" aria-expanded={additionalFiltersOpen} aria-controls="additional-pokedex-filters" onClick={() => setAdditionalFiltersOpen((open) => !open)}>
+            <SlidersHorizontal size={18} aria-hidden="true" />
+            <span>{additionalFiltersOpen ? t('pokedex.hideFilters') : t('pokedex.showFilters')}</span>
+            {additionalFilterCount > 0 && <span className="active-filter-count" aria-label={additionalFilterCount === 1 ? t('pokedex.activeFilterOne') : t('pokedex.activeFilterCount', { count: additionalFilterCount })}>{additionalFilterCount}</span>}
+            <ChevronDown className={additionalFiltersOpen ? 'open' : ''} size={17} aria-hidden="true" />
+          </button>
+          {hasActiveFilters && <button className="clear-filters" type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}
         </div>
-        <div className="filter-footer"><span>{t('pokedex.scrollTypes')}</span>{hasActiveFilters && <button type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}</div>
+        <div id="additional-pokedex-filters" className="additional-filters" hidden={!additionalFiltersOpen}>
+          <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><div>{types.map((item) => {
+            const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
+            return <button type="button" key={item} aria-label={label} title={label} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? label : <TypeBadge type={item} iconOnly />}</button>
+          })}</div></div>
+          <div className="rarity-filter" role="group" aria-label={t('pokedex.rarity.label')}>
+            <span>{t('pokedex.rarity.label')}</span>
+            <label><input type="checkbox" checked={legendary} onChange={(event) => changeRarityFilter('legendary', event.target.checked)} />{t('pokedex.rarity.legendary')}</label>
+            <label><input type="checkbox" checked={mythical} onChange={(event) => changeRarityFilter('mythical', event.target.checked)} />{t('pokedex.rarity.mythical')}</label>
+          </div>
+        </div>
         {sortingDetails && <p className="sort-status" role="status">{t('pokedex.sort.loading')}</p>}
         {sortError && <p className="sort-status inline-sort-error" role="alert">{t('pokedex.sort.error')}</p>}
         {isRarityPending && <p className="sort-status" role="status">{t('pokedex.rarity.loading')}</p>}

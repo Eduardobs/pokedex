@@ -142,6 +142,24 @@ describe('infinite scroll', () => {
 })
 
 describe('Pokédex filters', () => {
+  it('keeps primary filters visible and toggles type and rarity filters', () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    render(renderPage(<PokedexPage />))
+
+    expect(screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })).toBeVisible()
+    expect(screen.getByRole('combobox', { name: 'Região' })).toBeVisible()
+    expect(screen.getByRole('combobox', { name: 'Ordenar por' })).toBeVisible()
+    expect(screen.queryByRole('checkbox', { name: 'Lendário' })).not.toBeInTheDocument()
+
+    const toggle = screen.getByRole('button', { name: 'Exibir filtros' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    fireEvent.click(toggle)
+
+    expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Fogo' })).toBeVisible()
+  })
+
   it('suggests matching Pokémon names while typing', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
@@ -156,6 +174,7 @@ describe('Pokédex filters', () => {
   it('shows type filters as icons with their name in a tooltip', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
+    fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
 
     const fireFilter = screen.getByRole('button', { name: 'Fogo' })
     expect(fireFilter).toHaveAttribute('title', 'Fogo')
@@ -170,6 +189,7 @@ describe('Pokédex filters', () => {
       'pokemon-2': { isLegendary: false, isMythical: true },
     })
     render(renderPage(<PokedexPage />))
+    fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
 
     const legendary = screen.getByRole('checkbox', { name: 'Lendário' })
     const mythical = screen.getByRole('checkbox', { name: 'Mítico' })
