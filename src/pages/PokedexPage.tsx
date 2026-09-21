@@ -1,11 +1,12 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowDown, ArrowUp, ArrowUpDown, Check, ChevronDown, Layers3, LoaderCircle, MapPin, Search, SlidersHorizontal } from 'lucide-react'
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
-import { TypeBadge, typeLabel } from '../components/TypeBadge'
+import { typeLabel } from '../components/TypeBadge'
+import { TypeIcon } from '../components/TypeIcon'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
@@ -346,10 +347,19 @@ export function PokedexPage() {
           {hasActiveFilters && <button className="clear-filters" type="button" onClick={clearFilters}>{t('pokedex.clearFilters')}</button>}
         </div>
         <div id="additional-pokedex-filters" className="additional-filters" hidden={!additionalFiltersOpen}>
-          <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><div>{types.map((item) => {
-            const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
-            return <button type="button" key={item} aria-label={label} title={label} aria-pressed={type === item} className={type === item ? 'active' : ''} onClick={() => selectType(item)}>{item === 'all' ? label : <TypeBadge type={item} iconOnly />}</button>
-          })}</div></div>
+          <fieldset className="type-filter" aria-describedby="type-filter-help">
+            <legend>{t('pokedex.type.label')}</legend>
+            <p id="type-filter-help">{t('pokedex.type.help')}</p>
+            <div className="type-filter-grid">{types.map((item) => {
+              const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
+              return <label className={`type-filter-option${item === 'all' ? ' type-all' : ` type-${item}`}`} key={item}>
+                <input type="radio" name="pokemon-type" value={item} checked={type === item} onChange={() => selectType(item)} />
+                <span className="type-filter-icon" aria-hidden="true">{item === 'all' ? <Layers3 /> : <TypeIcon type={item} />}</span>
+                <span>{label}</span>
+                <Check className="type-filter-check" aria-hidden="true" />
+              </label>
+            })}</div>
+          </fieldset>
           <div className="rarity-filter" role="group" aria-label={t('pokedex.rarity.label')}>
             <span>{t('pokedex.rarity.label')}</span>
             <label><input type="checkbox" checked={legendary} onChange={(event) => changeRarityFilter('legendary', event.target.checked)} />{t('pokedex.rarity.legendary')}</label>

@@ -158,7 +158,7 @@ describe('Pokédex filters', () => {
 
     expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
-    expect(screen.getByRole('button', { name: 'Fogo' })).toBeVisible()
+    expect(screen.getByRole('radio', { name: 'Fogo' })).toBeVisible()
   })
 
   it('changes the ordering direction independently from the selected field', () => {
@@ -187,15 +187,22 @@ describe('Pokédex filters', () => {
     expect(within(suggestions).getAllByRole('option')[0]).toHaveTextContent('Pokemon 2')
   })
 
-  it('shows type filters as icons with their name in a tooltip', () => {
+  it('shows every type by name in an exclusive selection group', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
     fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
 
-    const fireFilter = screen.getByRole('button', { name: 'Fogo' })
-    expect(fireFilter).toHaveAttribute('title', 'Fogo')
-    expect(fireFilter).not.toHaveTextContent('Fogo')
-    expect(fireFilter.querySelector('.type-badge')).toHaveClass('icon-only')
+    const typeGroup = screen.getByRole('group', { name: 'Tipo' })
+    const allFilter = within(typeGroup).getByRole('radio', { name: 'Todos' })
+    const fireFilter = within(typeGroup).getByRole('radio', { name: 'Fogo' })
+
+    expect(allFilter).toBeChecked()
+    expect(fireFilter).not.toBeChecked()
+    expect(fireFilter.closest('label')).toHaveTextContent('Fogo')
+
+    fireEvent.click(fireFilter)
+    expect(fireFilter).toBeChecked()
+    expect(allFilter).not.toBeChecked()
   })
 
   it('filters legendary and mythical Pokémon with unchecked checkboxes by default', async () => {
