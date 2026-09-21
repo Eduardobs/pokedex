@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
 import { SearchField } from '../components/SearchField'
+import { SelectMenu } from '../components/SelectMenu'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
@@ -312,20 +313,8 @@ export function PokedexPage() {
             />
             {suggestionsOpen && suggestions.length > 0 && <ul id="pokemon-suggestions" className="pokemon-suggestions" role="listbox">{suggestions.map((pokemon, index) => <li id={`pokemon-suggestion-${index}`} key={pokemon.name} role="option" aria-selected={index === activeSuggestion} className={index === activeSuggestion ? 'active' : ''} onMouseDown={(event) => { event.preventDefault(); selectSuggestion(pokemon.name) }}><span>{prettyName(pokemon.name)}</span><small>#{String(pokemon.id).padStart(4, '0')}</small></li>)}</ul>}
           </div>
-          <label className="sort-field region-field">
-            {isRegionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />}
-            <span>{t('pokedex.region.label')}</span>
-            <select value={region} onChange={(event) => changeRegion(event.target.value)} aria-label={t('pokedex.region.label')}>
-              {regionOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </label>
-          <label className="sort-field">
-            {sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
-            <span>{t('pokedex.sort.label')}</span>
-            <select value={sort} onChange={(event) => changeSort(event.target.value as PokemonSortKey)} aria-label={t('pokedex.sort.label')}>
-              {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select>
-          </label>
+          <SelectMenu className="region-field" icon={isRegionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />} label={t('pokedex.region.label')} options={regionOptions} value={region} onChange={changeRegion} />
+          <SelectMenu icon={sortingDetails ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />} label={t('pokedex.sort.label')} options={sortOptions} value={sort} onChange={changeSort} />
         </div>
         <div className="type-filter" role="group" aria-label={t('pokedex.scrollTypes')}><SlidersHorizontal size={18} /><div>{types.map((item) => {
           const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)

@@ -197,10 +197,13 @@ describe('Pokédex filters', () => {
     render(renderPage(<PokedexPage />))
 
     const region = screen.getByRole('combobox', { name: 'Região' })
-    expect(region).toHaveValue('all')
+    expect(region).toHaveTextContent('Todas as regiões')
+    expect(region).toHaveAttribute('aria-expanded', 'false')
     expect(fetchPokemonRegionDetailsMock).not.toHaveBeenCalled()
 
-    fireEvent.change(region, { target: { value: 'kanto' } })
+    fireEvent.click(region)
+    expect(region).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.click(screen.getByRole('option', { name: 'Kanto' }))
 
     await waitFor(() => expect(screen.getByText('pokemon-1')).toBeInTheDocument())
     expect(screen.getByText('pokemon-3')).toBeInTheDocument()
