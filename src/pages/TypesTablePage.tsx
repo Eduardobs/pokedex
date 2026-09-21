@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ArrowDown, ArrowRight, Grid3X3 } from 'lucide-react'
+import { ArrowDown, ArrowRight, Grid3X3, Shield, ShieldPlus, Swords } from 'lucide-react'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
+import { SelectMenu } from '../components/SelectMenu'
 import { useLanguage } from '../contexts/LanguageContext'
 import { BATTLE_TYPES, getDamageMultiplier, type BattleType, type DamageMultiplier } from '../lib/type-chart'
 import { formatDecimal } from '../lib/api'
@@ -41,6 +42,12 @@ export function TypesTablePage() {
   const activeCell = hoveredCell ?? selectedCell
   const calculatorResult = getDamageMultiplier(calculatorAttack, calculatorDefense)
     * (calculatorSecondDefense ? getDamageMultiplier(calculatorAttack, calculatorSecondDefense) : 1)
+  const typeOptions = BATTLE_TYPES.map((type) => ({ value: type, label: typeLabel(type, language) }))
+  const secondTypeOptions: Array<{ value: BattleType | ''; label: string }> = [
+    { value: '', label: t('typesTable.noSecond') },
+    ...BATTLE_TYPES.filter((type) => type !== calculatorDefense || type === calculatorSecondDefense)
+      .map((type) => ({ value: type, label: typeLabel(type, language) })),
+  ]
 
   function selectMatchup(attackingType: BattleType, defendingType: BattleType) {
     setCalculatorAttack(attackingType)
@@ -62,9 +69,9 @@ export function TypesTablePage() {
 
       <section className="type-calculator" aria-labelledby="type-calculator-title">
         <div><h2 id="type-calculator-title">{t('typesTable.calculator')}</h2><p>{t('typesTable.calculatorDesc')}</p></div>
-        <label><span>{t('typesTable.attacking')}</span><select value={calculatorAttack} onChange={(event) => setCalculatorAttack(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
-        <label><span>{t('typesTable.defenderOne')}</span><select value={calculatorDefense} onChange={(event) => setCalculatorDefense(event.target.value as BattleType)}>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
-        <label><span>{t('typesTable.defenderTwo')}</span><select value={calculatorSecondDefense} onChange={(event) => setCalculatorSecondDefense(event.target.value as BattleType | '')}><option value="">{t('typesTable.noSecond')}</option>{BATTLE_TYPES.filter((type) => type !== calculatorDefense || type === calculatorSecondDefense).map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+        <SelectMenu icon={<Swords size={18} />} label={t('typesTable.attacking')} options={typeOptions} value={calculatorAttack} onChange={setCalculatorAttack} />
+        <SelectMenu icon={<Shield size={18} />} label={t('typesTable.defenderOne')} options={typeOptions} value={calculatorDefense} onChange={setCalculatorDefense} />
+        <SelectMenu icon={<ShieldPlus size={18} />} label={t('typesTable.defenderTwo')} options={secondTypeOptions} value={calculatorSecondDefense} onChange={setCalculatorSecondDefense} />
         <output className={resultClass(calculatorResult)} aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
       </section>
 

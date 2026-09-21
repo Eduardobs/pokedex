@@ -3,6 +3,7 @@ export const API_ORIGIN = new URL(API_BASE_URL).origin
 export const GRAPHQL_API_URL = 'https://graphql.pokeapi.co/v1beta2'
 
 export const POKEMON_CATALOG_LIMIT = 2_000
+export const POKEAPI_ALTERNATE_POKEMON_ID_START = 10_001
 
 export const NETWORK = {
   cacheMaxEntries: 250,

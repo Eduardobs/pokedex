@@ -1,6 +1,6 @@
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
 import type { Language } from '../contexts/LanguageContext'
-import { API_BASE_URL } from '../config/app'
+import { API_BASE_URL, POKEAPI_ALTERNATE_POKEMON_ID_START } from '../config/app'
 import { apiFetch } from './api-client'
 
 export const API_BASE = API_BASE_URL
@@ -13,7 +13,14 @@ export async function listResource(endpoint: string, limit = 24, offset = 0, sig
 export const idFromUrl = (url: string) => Number(url.split('/').filter(Boolean).at(-1))
 export const pokemonArtwork = (id: number) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${encodeURIComponent(String(id))}.png`
 export const itemSprite = (name: string) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${encodeURIComponent(name)}.png`
-export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] => resources.map((item) => ({ ...item, id: idFromUrl(item.url) }))
+export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] => resources.flatMap((item) => {
+  const id = idFromUrl(item.url)
+  // PokéAPI reserves IDs from 10001 onward for alternate varieties such as
+  // regional, Mega and Gigantamax forms. The Pokédex directory lists species.
+  return Number.isInteger(id) && id > 0 && id < POKEAPI_ALTERNATE_POKEMON_ID_START
+    ? [{ ...item, id }]
+    : []
+})
 
 export const prettyName = (value: string) => value
   .replace(/[-_]/g, ' ')

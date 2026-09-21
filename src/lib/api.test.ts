@@ -7,6 +7,7 @@ import {
   localizedText,
   localizedTextResult,
   normalizeSearchText,
+  pokemonListItems,
   prettyName,
   resolveApiUrl,
 } from './api'
@@ -18,6 +19,16 @@ afterEach(() => {
 
 describe('utilitários da PokéAPI', () => {
   it('extrai o id de uma URL', () => expect(idFromUrl('https://pokeapi.co/api/v2/pokemon/25/')).toBe(25))
+  it('mantém apenas as variedades padrão na listagem da Pokédex', () => {
+    expect(pokemonListItems([
+      { name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon/3/' },
+      { name: 'venusaur-mega', url: 'https://pokeapi.co/api/v2/pokemon/10033/' },
+      { name: 'rattata-alola', url: 'https://pokeapi.co/api/v2/pokemon/10091/' },
+      { name: 'charizard-gmax', url: 'https://pokeapi.co/api/v2/pokemon/10196/' },
+    ])).toEqual([
+      { id: 3, name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon/3/' },
+    ])
+  })
   it('formata nomes técnicos', () => expect(prettyName('special-attack')).toBe('Special Attack'))
   it('prioriza tradução em português', () => expect(localizedText([
     { language: { name: 'en' }, flavor_text: 'English' },

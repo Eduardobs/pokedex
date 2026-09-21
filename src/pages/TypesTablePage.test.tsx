@@ -40,11 +40,13 @@ describe('TypesTablePage', () => {
       </LanguageProvider>,
     )
     const output = container.querySelector('output')
-    const defenseSelect = container.querySelectorAll('select')[1]
+    const view = within(container)
+    const defenseSelect = view.getByRole('combobox', { name: 'Primeiro tipo defensor' })
 
     expect(output).toHaveClass('result-effective')
 
-    fireEvent.change(defenseSelect, { target: { value: 'water' } })
+    fireEvent.click(defenseSelect)
+    fireEvent.click(view.getByRole('option', { name: 'Água' }))
 
     expect(output).toHaveClass('result-resistant')
   })
@@ -60,11 +62,12 @@ describe('TypesTablePage', () => {
     const firstDefenseSelect = view.getByRole('combobox', { name: 'Primeiro tipo defensor' })
     const secondDefenseSelect = view.getByRole('combobox', { name: 'Segundo tipo defensor' })
 
-    fireEvent.change(secondDefenseSelect, { target: { value: 'water' } })
+    fireEvent.click(secondDefenseSelect)
+    fireEvent.click(view.getByRole('option', { name: 'Água' }))
     fireEvent.click(view.getByRole('button', { name: /Elétrico → Água: Dano 2×/ }))
 
-    expect(attackSelect).toHaveValue('electric')
-    expect(firstDefenseSelect).toHaveValue('water')
-    expect(secondDefenseSelect).toHaveValue('water')
+    expect(attackSelect).toHaveTextContent('Elétrico')
+    expect(firstDefenseSelect).toHaveTextContent('Água')
+    expect(secondDefenseSelect).toHaveTextContent('Água')
   })
 })

@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Heart, MapPin, Ruler, Search, ShieldAlert, Sparkles, Weight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, GraduationCap, Heart, MapPin, Ruler, Search, Shapes, ShieldAlert, Sparkles, Weight } from 'lucide-react'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
@@ -9,6 +9,7 @@ import { PokemonForms } from '../components/PokemonForms'
 import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
 import { SearchField } from '../components/SearchField'
+import { SelectMenu } from '../components/SelectMenu'
 import { AbilityBadge, GenderRatio } from '../components/SemanticBadges'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
@@ -61,6 +62,14 @@ export function PokemonDetailPage() {
       moves: group.moves.filter(({ move }) => normalizeSearchText(move.name).includes(normalizedMoveQuery) && (!moveNamesForType || moveNamesForType.has(move.name))),
     }))
     .filter((group) => group.moves.length), [moveGroups, moveMethod, moveNamesForType, normalizedMoveQuery])
+  const moveMethodOptions = [
+    { value: 'all', label: t('detail.allMethods') },
+    ...moveMethods.map((method) => ({ value: method, label: moveLearningMethodLabel(method, t) })),
+  ]
+  const moveTypeOptions: Array<{ value: BattleType | 'all'; label: string }> = [
+    { value: 'all', label: t('detail.allTypes') },
+    ...BATTLE_TYPES.map((type) => ({ value: type, label: typeLabel(type, language) })),
+  ]
 
   useEffect(() => {
     setSecondaryDataReady(false)
@@ -199,8 +208,8 @@ export function PokemonDetailPage() {
           <div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend"><span><i className="physical" />{t('damage.physical')}</span><span><i className="special" />{t('damage.special')}</span><span><i className="status" />{t('damage.status')}</span></div></div>
           <div className="move-toolbar">
             <SearchField value={moveQuery} onChange={setMoveQuery} clearLabel={t('common.clear')} iconSize={18} aria-label={t('detail.movesSearch')} placeholder={t('detail.movesSearch')} />
-            <label className="sort-field"><span>{t('move.learning')}</span><select aria-label={t('move.learning')} value={moveMethod} onChange={(event) => setMoveMethod(event.target.value)}><option value="all">{t('detail.allMethods')}</option>{moveMethods.map((method) => <option value={method} key={method}>{moveLearningMethodLabel(method, t)}</option>)}</select></label>
-            <label className="sort-field"><span>{t('detail.moveType')}</span><select aria-label={t('detail.moveType')} value={moveType} onChange={(event) => setMoveType(event.target.value as BattleType | 'all')}><option value="all">{t('detail.allTypes')}</option>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
+            <SelectMenu icon={<GraduationCap size={18} />} label={t('move.learning')} options={moveMethodOptions} value={moveMethod} onChange={setMoveMethod} />
+            <SelectMenu icon={<Shapes size={18} />} label={t('detail.moveType')} options={moveTypeOptions} value={moveType} onChange={setMoveType} />
           </div>
           {moveTypeLoading && <p className="sort-status" role="status">{t('common.loading')}</p>}
           {moveTypeError && <div className="inline-error"><p>{t('error.message')}</p><button className="button secondary" type="button" onClick={retryMoveType}>{t('common.retry')}</button></div>}
