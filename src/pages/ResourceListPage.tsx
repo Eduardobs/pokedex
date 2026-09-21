@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, Database, Search, Swords, Zap } from 'lucide
 import { useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
+import { SearchField } from '../components/SearchField'
 import { GenderBadge } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -56,7 +57,7 @@ export function ResourceListPage() {
   return (
     <section className="page content-width resource-page" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}>
       <div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span>{meta?.groupTitle && GroupIcon && <><span className="breadcrumb-group"><GroupIcon size={13} />{meta.groupTitle}</span><span>/</span></>}<span>{getResourceLabel(resource, language)}</span></div>
-      <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><div className="resource-page-search"><div className="search-field compact"><Search size={19} /><input aria-label={t('resource.filter')} value={query} onChange={(event) => updateParams(offset, event.target.value)} placeholder={t('resource.filter')} />{query && <button className="search-clear" type="button" onClick={() => updateParams(offset, '')} aria-label={t('common.clear')}>×</button>}</div><small>{t('resource.filterScope')}</small></div></div>
+      <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><div className="resource-page-search"><SearchField value={query} onChange={(value) => updateParams(offset, value)} clearLabel={t('common.clear')} compact aria-label={t('resource.filter')} placeholder={t('resource.filter')} /><small>{t('resource.filterScope')}</small></div></div>
       {data.count > LIMIT && pagination('top')}
       <div className="data-list">{filtered.map((item) => { const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''; return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{/^\d+$/.test(itemId) ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon"><ResourceIcon size={17} /></span>{resourceName(item.name)}<span className="data-slug">{item.name}</span><ChevronRight /></Link> })}</div>
       {!filtered.length && <div className="empty"><Search /><h2>{t('resource.emptyPage')}</h2></div>}

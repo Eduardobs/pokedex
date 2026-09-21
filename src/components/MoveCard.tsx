@@ -1,7 +1,7 @@
 import { BookOpen } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
+import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
 import { prettyName } from '../lib/api'
 import type { NamedResource } from '../types'
 import { DamageClassBadge } from './SemanticBadges'
@@ -49,20 +49,8 @@ export function moveLearningMethodLabel(method: string, t: Translate) {
 
 export function MoveCard({ move, method, level }: Props) {
   const { t } = useLanguage()
-  const cardRef = useRef<HTMLAnchorElement>(null)
-  const [visible, setVisible] = useState(false)
+  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(false, '250px')
   const { data } = useApi<MoveDetail>(visible ? move.url : null)
-
-  useEffect(() => {
-    const target = cardRef.current
-    if (!target || visible) return
-    if (!('IntersectionObserver' in window)) { setVisible(true); return }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { rootMargin: '250px' })
-    observer.observe(target)
-    return () => observer.disconnect()
-  }, [visible])
 
   const learning = moveLearningLabel(method, level, t)
   return (

@@ -1,11 +1,13 @@
 import { ArrowUpDown, LoaderCircle, Search, SlidersHorizontal } from 'lucide-react'
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { CardSkeleton } from '../components/Loading'
 import { PokemonCard } from '../components/PokemonCard'
+import { SearchField } from '../components/SearchField'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { formatNumber, normalizeSearchText, pokemonListItems, prettyName } from '../lib/api'
 import { fetchPokemonRarityDetails, fetchPokemonSortDetails, type PokemonRarityDetails } from '../lib/pokemon-catalog'
 import { filterPokemonList, getPokemonSortValue, pokemonSortNeedsDetails, sortPokemonList, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
@@ -38,7 +40,6 @@ export function PokedexPage() {
   const [visibleCount, setVisibleCount] = useState(LIMIT)
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
   const [activeSuggestion, setActiveSuggestion] = useState(-1)
-  const loadMoreRef = useRef<HTMLDivElement>(null)
   const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
   const { data, loading, error, retry } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
 
@@ -84,17 +85,11 @@ export function PokedexPage() {
     setVisibleCount((current) => Math.min(current + LIMIT, sortedPokemon.length))
   }, [hasMore, loading, sortedPokemon.length, sortingDetails])
 
-  useEffect(() => {
-    const target = loadMoreRef.current
-    if (!target || loading || sortingDetails || !hasMore || !('IntersectionObserver' in window)) return
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      observer.disconnect()
-      loadMore()
-    }, { rootMargin: '300px 0px' })
-    observer.observe(target)
-    return () => observer.disconnect()
-  }, [hasMore, loadMore, loading, sortingDetails, visibleCount])
+  const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
+    enabled: hasMore && !loading && !sortingDetails,
+    onLoadMore: loadMore,
+    observationKey: visibleCount,
+  })
 
   useEffect(() => {
     if (!hasRarityFilter) {
@@ -236,7 +231,24 @@ export function PokedexPage() {
       <div className="filter-panel">
         <div className="filter-primary">
           <div className="pokemon-search">
-            <div className="search-field"><Search size={20} /><input role="combobox" aria-autocomplete="list" aria-expanded={suggestionsOpen && suggestions.length > 0} aria-controls="pokemon-suggestions" aria-activedescendant={activeSuggestion >= 0 ? `pokemon-suggestion-${activeSuggestion}` : undefined} aria-label={t('pokedex.filter')} value={query} onChange={(event) => { changeQuery(event.target.value); setSuggestionsOpen(true); setActiveSuggestion(-1) }} onFocus={() => setSuggestionsOpen(true)} onBlur={() => setSuggestionsOpen(false)} onKeyDown={handleSearchKeyDown} placeholder={t('pokedex.filter')} autoComplete="off" />{query && <button className="search-clear" type="button" onClick={() => { changeQuery(''); setSuggestionsOpen(false) }} aria-label={t('common.clear')}>×</button>}</div>
+            <SearchField
+              value={query}
+              onChange={(value) => { changeQuery(value); setSuggestionsOpen(true); setActiveSuggestion(-1) }}
+              onClear={() => { changeQuery(''); setSuggestionsOpen(false) }}
+              clearLabel={t('common.clear')}
+              iconSize={20}
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={suggestionsOpen && suggestions.length > 0}
+              aria-controls="pokemon-suggestions"
+              aria-activedescendant={activeSuggestion >= 0 ? `pokemon-suggestion-${activeSuggestion}` : undefined}
+              aria-label={t('pokedex.filter')}
+              onFocus={() => setSuggestionsOpen(true)}
+              onBlur={() => setSuggestionsOpen(false)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder={t('pokedex.filter')}
+              autoComplete="off"
+            />
             {suggestionsOpen && suggestions.length > 0 && <ul id="pokemon-suggestions" className="pokemon-suggestions" role="listbox">{suggestions.map((pokemon, index) => <li id={`pokemon-suggestion-${index}`} key={pokemon.name} role="option" aria-selected={index === activeSuggestion} className={index === activeSuggestion ? 'active' : ''} onMouseDown={(event) => { event.preventDefault(); selectSuggestion(pokemon.name) }}><span>{prettyName(pokemon.name)}</span><small>#{String(pokemon.id).padStart(4, '0')}</small></li>)}</ul>}
           </div>
           <label className="sort-field">

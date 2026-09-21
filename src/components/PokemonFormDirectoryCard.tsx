@@ -1,7 +1,7 @@
 import { Gem, Globe2, Maximize2, Shield } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
+import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
 import { idFromUrl, pokemonArtwork, prettyName } from '../lib/api'
 import type { NamedResource, PokemonForm } from '../types'
 import { TypeBadge } from './TypeBadge'
@@ -47,20 +47,8 @@ export function formLabels(name: string, category: FormCategory, t?: Translate) 
 
 export function PokemonFormDirectoryCard({ resource, category }: { resource: NamedResource; category: FormCategory }) {
   const { t } = useLanguage()
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [visible, setVisible] = useState(false)
+  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLDivElement>(false, '300px')
   const { data, loading } = useApi<PokemonForm>(visible ? resource.url : null)
-
-  useEffect(() => {
-    const target = cardRef.current
-    if (!target || visible) return
-    if (!('IntersectionObserver' in window)) { setVisible(true); return }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { rootMargin: '300px' })
-    observer.observe(target)
-    return () => observer.disconnect()
-  }, [visible])
 
   const config = categoryConfig[category]
   const Icon = config.icon

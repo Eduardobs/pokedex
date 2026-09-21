@@ -2,6 +2,7 @@ import { ArrowUpDown, Heart, Search } from 'lucide-react'
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { FavoritePokemonCard } from '../components/FavoritePokemonCard'
+import { SearchField } from '../components/SearchField'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { normalizeSearchText, prettyName } from '../lib/api'
@@ -21,7 +22,7 @@ export function FavoritesPage() {
   return (
     <section className="page content-width">
       <div className="page-title"><div><span className="eyebrow">{t('favorites.eyebrow')}</span><h1>{t('favorites.title')}</h1><p>{t('favorites.description')}</p></div>{favorites.length > 0 && <div className="result-count"><b>{favorites.length}</b><span>{favorites.length === 1 ? t('favorites.countOne') : t('favorites.count', { count: favorites.length })}</span></div>}</div>
-      {favorites.length ? <><div className="favorites-toolbar"><div className="search-field"><Search size={19} /><input aria-label={t('favorites.search')} value={query} onChange={(event) => update('q', event.target.value)} placeholder={t('favorites.search')} />{query && <button className="search-clear" type="button" onClick={() => update('q', '')} aria-label={t('common.clear')}>×</button>}</div><label className="sort-field"><ArrowUpDown size={18} /><span>{t('favorites.sort')}</span><select aria-label={t('favorites.sort')} value={sort} onChange={(event) => update('sort', event.target.value, 'recent')}><option value="recent">{t('favorites.sortRecent')}</option><option value="name">{t('favorites.sortName')}</option></select></label></div>{visibleFavorites.length ? <div className="pokemon-grid">{visibleFavorites.map((name) => <FavoritePokemonCard key={name} name={name} />)}</div> : <div className="empty"><Search /><h2>{t('pokedex.empty')}</h2><p>{prettyName(query)}</p></div>}</> : <div className="empty favorites-empty"><Heart /><h2>{t('favorites.empty')}</h2><p>{t('favorites.emptyDesc')}</p><Link to="/pokemon" className="button primary">{t('favorites.explore')}</Link></div>}
+      {favorites.length ? <><div className="favorites-toolbar"><SearchField value={query} onChange={(value) => update('q', value)} clearLabel={t('common.clear')} aria-label={t('favorites.search')} placeholder={t('favorites.search')} /><label className="sort-field"><ArrowUpDown size={18} /><span>{t('favorites.sort')}</span><select aria-label={t('favorites.sort')} value={sort} onChange={(event) => update('sort', event.target.value, 'recent')}><option value="recent">{t('favorites.sortRecent')}</option><option value="name">{t('favorites.sortName')}</option></select></label></div>{visibleFavorites.length ? <div className="pokemon-grid">{visibleFavorites.map((name) => <FavoritePokemonCard key={name} name={name} />)}</div> : <div className="empty"><Search /><h2>{t('pokedex.empty')}</h2><p>{prettyName(query)}</p></div>}</> : <div className="empty favorites-empty"><Heart /><h2>{t('favorites.empty')}</h2><p>{t('favorites.emptyDesc')}</p><Link to="/pokemon" className="button primary">{t('favorites.explore')}</Link></div>}
     </section>
   )
 }

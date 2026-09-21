@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Database, ExternalLink, Gamepad2, Heart, History, Image, MapPin, PackageOpen, Ruler, Search, ShieldAlert, Sparkles, Volume2, Weight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Heart, MapPin, Ruler, Search, ShieldAlert, Sparkles, Weight } from 'lucide-react'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
@@ -6,128 +6,20 @@ import { BaseStatsRadar } from '../components/BaseStatsRadar'
 import { Loading } from '../components/Loading'
 import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
 import { PokemonForms } from '../components/PokemonForms'
-import { ResourceValue } from '../components/ResourceValue'
+import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
+import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
+import { SearchField } from '../components/SearchField'
 import { AbilityBadge, GenderRatio } from '../components/SemanticBadges'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
-import { Translate, useLanguage } from '../contexts/LanguageContext'
+import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { API_BASE, formatDecimal, formatNumber, idFromUrl, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
+import { formatDecimal, formatNumber, idFromUrl, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
 import { level100StatRange } from '../lib/pokemon-stats'
 import { BATTLE_TYPES, type BattleType } from '../lib/type-chart'
 import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
-import type { ApiList, Encounter, EvolutionChain, EvolutionNode, Pokemon, PokemonType, Species } from '../types'
-
-function evolutionCondition(detail: Record<string, unknown>, t: Translate) {
-  const conditions: string[] = []
-  const resourceName = (key: string) => (detail[key] as { name?: string } | null)?.name
-  const trigger = resourceName('trigger')
-  if (trigger === 'trade') conditions.push(t('evolution.trade'))
-  if (detail.min_level) conditions.push(t('evolution.level', { level: String(detail.min_level) }))
-  if (resourceName('item')) conditions.push(prettyName(resourceName('item')!))
-  if (detail.min_happiness) conditions.push(t('evolution.friendship', { value: String(detail.min_happiness) }))
-  if (resourceName('held_item')) conditions.push(t('evolution.holding', { item: prettyName(resourceName('held_item')!) }))
-  if (resourceName('known_move')) conditions.push(t('evolution.knownMove', { move: prettyName(resourceName('known_move')!) }))
-  if (resourceName('known_move_type')) conditions.push(t('evolution.knownType', { type: prettyName(resourceName('known_move_type')!) }))
-  if (resourceName('location')) conditions.push(t('evolution.location', { location: prettyName(resourceName('location')!) }))
-  if (detail.time_of_day) conditions.push(t('evolution.time', { time: prettyName(String(detail.time_of_day)) }))
-  if (detail.needs_overworld_rain) conditions.push(t('evolution.rain'))
-  if (detail.turn_upside_down) conditions.push(t('evolution.upsideDown'))
-  if (!conditions.length && trigger && trigger !== 'level-up') conditions.push(prettyName(trigger))
-  return conditions.length ? conditions.join(' · ') : t('evolution.special')
-}
-
-function evolutionConditions(details: Array<Record<string, unknown>>, t: Translate) {
-  if (!details.length) return t('evolution.basic')
-  return [...new Set(details.map((detail) => evolutionCondition(detail, t)))].join(' / ')
-}
-
-function EvolutionTreeNode({ node, t, root = false }: { node: EvolutionNode; t: Translate; root?: boolean }) {
-  const id = Number(node.species.url.split('/').filter(Boolean).at(-1))
-  return (
-    <li>
-      {!root && <span className="evolution-condition"><ChevronRight /><small>{evolutionConditions(node.evolution_details, t)}</small></span>}
-      <Link to={`/pokemon/${node.species.name}`} className="evolution-pokemon">
-        <img src={pokemonArtwork(id)} alt={prettyName(node.species.name)} width="100" height="100" loading="lazy" decoding="async" />
-        <b>{prettyName(node.species.name)}</b><small>#{String(id).padStart(4, '0')}</small>
-      </Link>
-      {node.evolves_to.length > 0 && <ul>{node.evolves_to.map((child) => <EvolutionTreeNode key={child.species.name} node={child} t={t} />)}</ul>}
-    </li>
-  )
-}
-
-function PokemonDataTab({ pokemon, species, speciesLoading }: { pokemon: Pokemon; species: Species | null; speciesLoading: boolean }) {
-  const { t } = useLanguage()
-  const speciesFlag = (value: boolean | undefined) => speciesLoading
-    ? <span className="muted">{t('common.loadingShort')}</span>
-    : value === undefined
-      ? <span className="muted">—</span>
-      : <span className={`boolean ${value}`}>{t(value ? 'common.yes' : 'common.no')}</span>
-  const sprites = [
-    { label: `${t('detail.front')} · ${t('detail.normal')}`, url: pokemon.sprites.front_default },
-    { label: `${t('detail.front')} · ${t('detail.shiny')}`, url: pokemon.sprites.front_shiny },
-    { label: `${t('detail.back')} · ${t('detail.normal')}`, url: pokemon.sprites.back_default },
-    { label: `${t('detail.back')} · ${t('detail.shiny')}`, url: pokemon.sprites.back_shiny },
-  ].filter((sprite): sprite is { label: string; url: string } => Boolean(sprite.url))
-  const cries = [
-    { label: t('detail.latestCry'), url: pokemon.cries?.latest },
-    { label: t('detail.legacyCry'), url: pokemon.cries?.legacy },
-  ].filter((cry): cry is { label: string; url: string } => Boolean(cry.url))
-
-  return (
-    <div className="technical-data-grid" style={{ '--resource-color': 'var(--theme)' } as React.CSSProperties}>
-      <article className="info-card technical-card registry-card">
-        <h2><Database />{t('detail.registry')}</h2>
-        <dl>
-          <div><dt>ID</dt><dd>#{String(pokemon.id).padStart(4, '0')}</dd></div>
-          <div><dt>{t('detail.apiOrder')}</dt><dd>{pokemon.order}</dd></div>
-          <div><dt>{t('detail.defaultForm')}</dt><dd>{t(pokemon.is_default ? 'common.yes' : 'common.no')}</dd></div>
-          <div><dt>{t('detail.legendary')}</dt><dd>{speciesFlag(species?.is_legendary)}</dd></div>
-          <div><dt>{t('detail.mythical')}</dt><dd>{speciesFlag(species?.is_mythical)}</dd></div>
-          <div><dt>{t('detail.species')}</dt><dd><ResourceValue value={pokemon.species} /></dd></div>
-          <div><dt>{t('detail.forms')}</dt><dd>{pokemon.forms.length}</dd></div>
-        </dl>
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><Volume2 />{t('detail.cries')}</h2>
-        {cries.length ? <div className="cry-list">{cries.map((cry) => <label key={cry.label}><span>{cry.label}</span><audio controls preload="none" src={cry.url} /></label>)}</div> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
-
-      <article className="info-card technical-card sprites-card">
-        <h2><Image />{t('detail.sprites')}</h2>
-        <div className="sprite-grid">{sprites.map((sprite) => <figure key={sprite.label}><img src={sprite.url} alt={sprite.label} width="96" height="96" loading="lazy" /><figcaption>{sprite.label}</figcaption></figure>)}</div>
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><PackageOpen />{t('detail.heldItems')}</h2>
-        {pokemon.held_items?.length ? <ResourceValue value={pokemon.held_items} /> : <p className="muted">{t('detail.noHeldItems')}</p>}
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><Gamepad2 />{t('detail.gameIndices')}</h2>
-        {pokemon.game_indices.length ? <ResourceValue value={pokemon.game_indices} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><History />{t('detail.pastAbilities')}</h2>
-        {pokemon.past_abilities?.length ? <ResourceValue value={pokemon.past_abilities} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><History />{t('detail.pastTypes')}</h2>
-        {pokemon.past_types?.length ? <ResourceValue value={pokemon.past_types} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
-
-      <article className="info-card technical-card api-source-card">
-        <h2><ExternalLink />{t('detail.apiSource')}</h2>
-        <p>{t('detail.apiDataDesc')}</p>
-        <a className="button secondary" href={`${API_BASE}/pokemon/${encodeURIComponent(pokemon.name)}`} target="_blank" rel="noopener noreferrer">JSON <ExternalLink size={15} /></a>
-      </article>
-    </div>
-  )
-}
+import type { ApiList, Encounter, EvolutionChain, Pokemon, PokemonType, Species } from '../types'
 
 export function PokemonDetailPage() {
   const { apiLanguage, language, t } = useLanguage()
@@ -306,7 +198,7 @@ export function PokemonDetailPage() {
         {tab === 'moves' && <article className="info-card wide-card" role="tabpanel" id="panel-moves" aria-labelledby="tab-moves">
           <div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend"><span><i className="physical" />{t('damage.physical')}</span><span><i className="special" />{t('damage.special')}</span><span><i className="status" />{t('damage.status')}</span></div></div>
           <div className="move-toolbar">
-            <div className="search-field"><Search size={18} /><input aria-label={t('detail.movesSearch')} value={moveQuery} onChange={(event) => setMoveQuery(event.target.value)} placeholder={t('detail.movesSearch')} />{moveQuery && <button className="search-clear" type="button" onClick={() => setMoveQuery('')} aria-label={t('common.clear')}>×</button>}</div>
+            <SearchField value={moveQuery} onChange={setMoveQuery} clearLabel={t('common.clear')} iconSize={18} aria-label={t('detail.movesSearch')} placeholder={t('detail.movesSearch')} />
             <label className="sort-field"><span>{t('move.learning')}</span><select aria-label={t('move.learning')} value={moveMethod} onChange={(event) => setMoveMethod(event.target.value)}><option value="all">{t('detail.allMethods')}</option>{moveMethods.map((method) => <option value={method} key={method}>{moveLearningMethodLabel(method, t)}</option>)}</select></label>
             <label className="sort-field"><span>{t('detail.moveType')}</span><select aria-label={t('detail.moveType')} value={moveType} onChange={(event) => setMoveType(event.target.value as BattleType | 'all')}><option value="all">{t('detail.allTypes')}</option>{BATTLE_TYPES.map((type) => <option value={type} key={type}>{typeLabel(type, language)}</option>)}</select></label>
           </div>

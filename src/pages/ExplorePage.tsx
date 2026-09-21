@@ -1,5 +1,6 @@
 import { ArrowRight, Search } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { SearchField } from '../components/SearchField'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getResourceGroups } from '../data/resources'
 import { normalizeSearchText } from '../lib/api'
@@ -22,7 +23,7 @@ export function ExplorePage() {
   const updateQuery = (value: string) => setSearchParams(value ? { q: value } : {}, { replace: true })
   return (
     <section className="page content-width">
-      <div className="page-title explore-title"><div><span className="eyebrow">{t('explore.eyebrow')}</span><h1>{t('explore.title')}</h1><p>{t('explore.description')}</p></div><div className="search-field compact"><Search size={19} /><input aria-label={t('explore.search')} value={query} onChange={(event) => updateQuery(event.target.value)} placeholder={t('explore.search')} />{query && <button className="search-clear" type="button" onClick={() => updateQuery('')} aria-label={t('common.clear')}>×</button>}</div></div>
+      <div className="page-title explore-title"><div><span className="eyebrow">{t('explore.eyebrow')}</span><h1>{t('explore.title')}</h1><p>{t('explore.description')}</p></div><SearchField value={query} onChange={updateQuery} clearLabel={t('common.clear')} compact aria-label={t('explore.search')} placeholder={t('explore.search')} /></div>
       <div className="resource-groups">
         {groups.map((group) => <article className="resource-group" key={group.title} style={{ '--group-color': group.color } as React.CSSProperties}>
           <header><span className="group-icon"><group.icon /></span><div><h2>{group.title}</h2><p>{group.description}</p></div><span className="resource-total">{group.resources.length}</span></header>

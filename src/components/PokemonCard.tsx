@@ -1,9 +1,10 @@
 import { Heart, Sparkles } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
+import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
 import { pokemonArtwork, prettyName } from '../lib/api'
 import type { Pokemon } from '../types'
 import { TypeBadge } from './TypeBadge'
@@ -15,8 +16,7 @@ type Props = { id: number; name: string; pokemon?: Pokemon; sortMetric?: SortMet
 export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
   const { isFavorite, toggle } = useFavoritesContext()
   const { t } = useLanguage()
-  const cardRef = useRef<HTMLElement>(null)
-  const [visible, setVisible] = useState(Boolean(pokemon))
+  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLElement>(Boolean(pokemon))
   const [shiny, setShiny] = useState(false)
   const { data: loadedPokemon, error, retry } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
   const detail = pokemon ?? loadedPokemon
@@ -28,17 +28,6 @@ export function PokemonCard({ id, name, pokemon, sortMetric }: Props) {
   const shinyArtwork = detail?.sprites.other?.['official-artwork']?.front_shiny
     ?? detail?.sprites.front_shiny
   const artwork = shiny && shinyArtwork ? shinyArtwork : normalArtwork
-
-  useEffect(() => {
-    const target = cardRef.current
-    if (!target || visible) return
-    if (!('IntersectionObserver' in window)) { setVisible(true); return }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) { setVisible(true); observer.disconnect() }
-    }, { rootMargin: '200px' })
-    observer.observe(target)
-    return () => observer.disconnect()
-  }, [visible])
 
   return (
     <article ref={cardRef} className="pokemon-card">
