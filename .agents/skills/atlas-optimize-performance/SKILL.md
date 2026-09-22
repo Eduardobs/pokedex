@@ -9,7 +9,7 @@ Optimize an observed bottleneck and preserve a before-and-after signal.
 
 ## Required project context
 
-Before analyzing or changing the project, read [`../PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
+Before analyzing or changing the project, read [`../../PROJECT_CONTEXT.md`](../../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
 
 ## Locate the cost
 
