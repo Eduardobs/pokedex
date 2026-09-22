@@ -62,6 +62,11 @@ const apiTermTranslations: Record<Language, Record<string, string>> = {
     monster: 'Monstro', plant: 'Planta', bug: 'Inseto', flying: 'Voador', field: 'Campo', fairy: 'Fada',
     humanoid: 'Humanoide', mineral: 'Mineral', amorphous: 'Amorfo', dragon: 'Dragão', water1: 'Água 1',
     water2: 'Água 2', water3: 'Água 3', ditto: 'Ditto', undiscovered: 'Não descoberto',
+    black: 'Preto', blue: 'Azul', brown: 'Marrom', gray: 'Cinza', green: 'Verde', pink: 'Rosa',
+    purple: 'Roxo', red: 'Vermelho', white: 'Branco', yellow: 'Amarelo',
+    ball: 'Esférico', squiggle: 'Serpentino', fish: 'Peixe', arms: 'Com braços', blob: 'Amorfo', upright: 'Ereto',
+    legs: 'Com pernas', quadruped: 'Quadrúpede', wings: 'Com asas', tentacles: 'Com tentáculos', heads: 'Múltiplas cabeças',
+    'bug-wings': 'Inseto alado', armor: 'Com armadura',
   },
   en: {},
   es: {
@@ -75,6 +80,11 @@ const apiTermTranslations: Record<Language, Record<string, string>> = {
     monster: 'Monstruo', plant: 'Planta', bug: 'Bicho', flying: 'Volador', field: 'Campo', fairy: 'Hada',
     humanoid: 'Humanoide', mineral: 'Mineral', amorphous: 'Amorfo', dragon: 'Dragón', water1: 'Agua 1',
     water2: 'Agua 2', water3: 'Agua 3', ditto: 'Ditto', undiscovered: 'No descubierto',
+    black: 'Negro', blue: 'Azul', brown: 'Marrón', gray: 'Gris', green: 'Verde', pink: 'Rosa',
+    purple: 'Morado', red: 'Rojo', white: 'Blanco', yellow: 'Amarillo',
+    ball: 'Esférico', squiggle: 'Serpentino', fish: 'Pez', arms: 'Con brazos', blob: 'Amorfo', upright: 'Erguido',
+    legs: 'Con piernas', quadruped: 'Cuadrúpedo', wings: 'Con alas', tentacles: 'Con tentáculos', heads: 'Varias cabezas',
+    'bug-wings': 'Insecto alado', armor: 'Con armadura',
   },
 }
 

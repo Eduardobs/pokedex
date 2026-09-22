@@ -62,6 +62,8 @@ export interface Species {
   capture_rate: number
   base_happiness: number
   hatch_counter: number
+  has_gender_differences: boolean
+  forms_switchable: boolean
   is_baby: boolean
   is_legendary: boolean
   is_mythical: boolean
@@ -70,12 +72,54 @@ export interface Species {
 
 export interface EvolutionChain {
   id: number
+  baby_trigger_item: NamedResource | null
   chain: EvolutionNode
 }
 export interface EvolutionNode {
+  is_baby: boolean
   species: NamedResource
   evolves_to: EvolutionNode[]
-  evolution_details: Array<Record<string, unknown>>
+  evolution_details: EvolutionDetail[]
+}
+
+export interface EvolutionConditionExpression {
+  expression: string
+  percentage_chance: number | null
+  variables: NamedResource[]
+}
+
+export interface EvolutionDetail {
+  version_group?: NamedResource | null
+  is_default?: boolean
+  item: NamedResource | null
+  trigger: NamedResource | null
+  gender: number | null
+  held_item: NamedResource | null
+  known_move: NamedResource | null
+  known_move_type: NamedResource | null
+  location: NamedResource | null
+  min_level: number | null
+  min_happiness: number | null
+  min_beauty: number | null
+  min_affection: number | null
+  near_special_rock: boolean
+  needs_multiplayer?: boolean
+  needs_overworld_rain: boolean
+  party_species: NamedResource | null
+  party_type: NamedResource | null
+  relative_physical_stats: -1 | 0 | 1 | null
+  time_of_day: string
+  trade_species: NamedResource | null
+  turn_upside_down: boolean
+  region?: NamedResource | null
+  required_pokemon_form?: NamedResource | null
+  evolved_pokemon_form?: NamedResource | null
+  used_move?: NamedResource | null
+  min_move_count?: number | null
+  min_steps?: number | null
+  min_damage_taken?: number | null
+  allowed_natures?: NamedResource[] | null
+  condition_expression?: EvolutionConditionExpression | null
 }
 
 export interface PokemonForm {

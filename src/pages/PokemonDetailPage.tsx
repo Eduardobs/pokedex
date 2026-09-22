@@ -8,9 +8,10 @@ import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
 import { PokemonForms } from '../components/PokemonForms'
 import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
+import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
-import { AbilityBadge, GenderRatio } from '../components/SemanticBadges'
+import { AbilityBadge } from '../components/SemanticBadges'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -177,7 +178,8 @@ export function PokemonDetailPage() {
               </div>
             </div>
           </article>
-          <article className="info-card"><h2>{t('detail.biology')}</h2>{speciesLoading ? <p className="muted">{t('detail.loadingSpecies')}</p> : speciesError || !species ? <p className="muted">{t('detail.speciesUnavailable')}</p> : <><dl><div><dt>{t('detail.generation')}</dt><dd>{localizedApiTerm(species.generation.name, language)}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{localizedApiTerm(species.growth_rate.name, language)}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species.capture_rate} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species.base_happiness}</dd></div><div><dt>{t('detail.eggGroups')}</dt><dd>{species.egg_groups.map((group) => localizedApiTerm(group.name, language)).join(', ')}</dd></div></dl><GenderRatio rate={species.gender_rate} /><div className="rarity-tags">{species.is_baby && <span>{t('detail.baby')}</span>}{species.is_legendary && <span>{t('detail.legendary')}</span>}{species.is_mythical && <span>{t('detail.mythical')}</span>}</div></>}</article>
+          <article className="info-card"><h2>{t('detail.biology')}</h2>{speciesLoading ? <p className="muted">{t('detail.loadingSpecies')}</p> : speciesError || !species ? <p className="muted">{t('detail.speciesUnavailable')}</p> : <><dl><div><dt>{t('detail.generation')}</dt><dd>{localizedApiTerm(species.generation.name, language)}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{localizedApiTerm(species.growth_rate.name, language)}</dd></div><div><dt>{t('detail.color')}</dt><dd>{localizedApiTerm(species.color.name, language)}</dd></div><div><dt>{t('detail.shape')}</dt><dd>{species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species.capture_rate} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species.base_happiness}</dd></div></dl><div className="rarity-tags">{species.is_baby && <span>{t('detail.baby')}</span>}{species.is_legendary && <span>{t('detail.legendary')}</span>}{species.is_mythical && <span>{t('detail.mythical')}</span>}</div></>}</article>
+          {species && <TrainingBreedingCard pokemon={pokemon} species={species} />}
           <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b>{prettyName(ability.name)}</b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
           <article className="info-card weaknesses-card">
             <h2><ShieldAlert />{t('detail.typeEffectiveness')}</h2>
@@ -201,7 +203,7 @@ export function PokemonDetailPage() {
               </div>
             </>}
           </article>
-          <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{!secondaryDataReady || evolutionLoading ? <p className="muted">{t('common.loading')}</p> : evolutionError ? <p className="muted">{t('detail.evolutionUnavailable')}</p> : evolution ? <ul className="evolution-tree"><EvolutionTreeNode node={evolution.chain} t={t} root /></ul> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
+          <article className="info-card evolution-card"><h2>{t('detail.evolution')}</h2>{!secondaryDataReady || evolutionLoading ? <p className="muted">{t('common.loading')}</p> : evolutionError ? <p className="muted">{t('detail.evolutionUnavailable')}</p> : evolution ? <><ul className="evolution-tree"><EvolutionTreeNode node={evolution.chain} t={t} language={language} root /></ul>{evolution.baby_trigger_item && <p className="baby-trigger-item">{t('evolution.babyTriggerItem', { item: prettyName(evolution.baby_trigger_item.name) })}</p>}</> : <p className="muted">{t('detail.noEvolution')}</p>}</article>
           {species && <PokemonForms species={species} currentPokemon={pokemon} />}
         </div>}
         {tab === 'moves' && <article className="info-card wide-card" role="tabpanel" id="panel-moves" aria-labelledby="tab-moves">
