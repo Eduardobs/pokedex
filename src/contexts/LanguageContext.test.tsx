@@ -31,7 +31,9 @@ describe('LanguageProvider', () => {
 
     expect(result.current.language).toBe('es')
     expect(result.current.apiLanguage).toBe('es')
-    expect(result.current.t('detail.notFoundDesc', { name: 'MissingNo' })).toBe('No encontramos “MissingNo” en la Pokédex.')
+    expect(result.current.t('detail.notFoundDesc', { name: 'MissingNo' })).toBe(
+      'No encontramos “MissingNo” en la Pokédex.',
+    )
     expect(localStorage.getItem(STORAGE_KEYS.language)).toBe('es')
     expect(document.documentElement.lang).toBe('es')
   })

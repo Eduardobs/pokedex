@@ -22,11 +22,7 @@ export function SearchField({
   return (
     <div className={`search-field${compact ? ' compact' : ''}`}>
       <Search size={iconSize} />
-      <input
-        {...inputProps}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      />
+      <input {...inputProps} value={value} onChange={(event) => onChange(event.target.value)} />
       {value && (
         <button
           className="search-clear"

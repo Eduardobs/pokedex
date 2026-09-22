@@ -19,7 +19,9 @@ describe('ResourceListPage pagination', () => {
     render(
       <MemoryRouter initialEntries={['/explorar/ability?offset=100000']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -47,14 +49,22 @@ describe('ResourceListPage item presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/move-damage-class']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
 
     expect(screen.getByText('Físico')).toBeVisible()
-    expect(container.querySelector('.damage-class-resource-icon img')).toHaveAttribute('src', '/icons/damage-physical.png')
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-physical.png')
+    expect(container.querySelector('.damage-class-resource-icon img')).toHaveAttribute(
+      'src',
+      '/icons/damage-physical.png',
+    )
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
+      'src',
+      '/icons/damage-physical.png',
+    )
   })
 
   it.each([
@@ -76,7 +86,9 @@ describe('ResourceListPage item presentation', () => {
     render(
       <MemoryRouter initialEntries={['/explorar/pokemon-species']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -100,7 +112,9 @@ describe('ResourceListPage item presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/pokemon']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -108,7 +122,10 @@ describe('ResourceListPage item presentation', () => {
     const pokemonLink = screen.getByRole('link', { name: /Bulbasaur/ })
     const pokemonImage = pokemonLink.querySelector('img')
 
-    expect(pokemonImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png')
+    expect(pokemonImage).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+    )
     expect(pokemonImage).toHaveClass('pokemon-artwork')
     expect(pokemonImage).toHaveAttribute('width', '30')
     expect(pokemonImage).toHaveAttribute('height', '30')
@@ -131,7 +148,9 @@ describe('ResourceListPage item presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/item']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -139,7 +158,10 @@ describe('ResourceListPage item presentation', () => {
     const itemLink = screen.getByRole('link', { name: /Master Ball/ })
     const itemImage = itemLink.querySelector('img')
 
-    expect(itemImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png')
+    expect(itemImage).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png',
+    )
     expect(itemImage).toHaveAttribute('width', '30')
     expect(itemImage).toHaveAttribute('height', '30')
     expect(container.querySelector('.data-resource-icon svg')).not.toBeInTheDocument()
@@ -161,7 +183,9 @@ describe('ResourceListPage item presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/berry']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -169,7 +193,10 @@ describe('ResourceListPage item presentation', () => {
     const berryLink = screen.getByRole('link', { name: /Cheri/ })
     const berryImage = berryLink.querySelector('img')
 
-    expect(berryImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cheri-berry.png')
+    expect(berryImage).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cheri-berry.png',
+    )
     expect(berryImage).toHaveAttribute('width', '30')
     expect(berryImage).toHaveAttribute('height', '30')
     expect(container.querySelector('.data-resource-icon svg')).not.toBeInTheDocument()

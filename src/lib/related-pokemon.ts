@@ -23,9 +23,18 @@ function pokemonReference(value: unknown) {
   try {
     const pathname = new URL(resolveApiUrl(url)).pathname
     if (!pathname.startsWith(`${apiBasePath}/`)) return null
-    const [endpoint, rawId, ...remaining] = pathname.slice(apiBasePath.length + 1).split('/').filter(Boolean)
+    const [endpoint, rawId, ...remaining] = pathname
+      .slice(apiBasePath.length + 1)
+      .split('/')
+      .filter(Boolean)
     const id = Number(rawId)
-    if (remaining.length || (endpoint !== 'pokemon' && endpoint !== 'pokemon-species') || !Number.isSafeInteger(id) || id <= 0) return null
+    if (
+      remaining.length ||
+      (endpoint !== 'pokemon' && endpoint !== 'pokemon-species') ||
+      !Number.isSafeInteger(id) ||
+      id <= 0
+    )
+      return null
     return { id, name }
   } catch {
     return null
@@ -43,10 +52,16 @@ function relatedPokemon(value: unknown): RelatedPokemon | null {
   const reference = pokemonReference(record[referenceKey])
   if (!reference) return null
 
-  const details = Object.entries(record).flatMap(([key, detail]) => {
-    if (key === referenceKey || (typeof detail !== 'string' && typeof detail !== 'number' && typeof detail !== 'boolean')) return []
-    return [{ key, value: detail }]
-  }).slice(0, 4)
+  const details = Object.entries(record)
+    .flatMap(([key, detail]) => {
+      if (
+        key === referenceKey ||
+        (typeof detail !== 'string' && typeof detail !== 'number' && typeof detail !== 'boolean')
+      )
+        return []
+      return [{ key, value: detail }]
+    })
+    .slice(0, 4)
 
   return { ...reference, details }
 }

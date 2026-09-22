@@ -18,13 +18,25 @@ describe('LocalizedResourceName', () => {
     useApiMock.mockReturnValue({
       data: {
         names: [
-          { name: 'Lightning Rod', language: { name: 'en', url: 'https://pokeapi.co/api/v2/language/9/' } },
-          { name: 'Pararrayos', language: { name: 'es', url: 'https://pokeapi.co/api/v2/language/7/' } },
+          {
+            name: 'Lightning Rod',
+            language: { name: 'en', url: 'https://pokeapi.co/api/v2/language/9/' },
+          },
+          {
+            name: 'Pararrayos',
+            language: { name: 'es', url: 'https://pokeapi.co/api/v2/language/7/' },
+          },
         ],
       },
     })
 
-    render(<LanguageProvider><LocalizedResourceName resource={{ name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }} /></LanguageProvider>)
+    render(
+      <LanguageProvider>
+        <LocalizedResourceName
+          resource={{ name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }}
+        />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText('Pararrayos')).toBeInTheDocument()
   })

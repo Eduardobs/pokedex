@@ -12,12 +12,14 @@ const stats = [
 ]
 
 it('exibe somente os atributos base no radar', () => {
-  const { container } = render(<BaseStatsRadar
-    stats={stats}
-    statNames={{ hp: 'HP', attack: 'Ataque' }}
-    label="Atributos base"
-    baseLabel="Base"
-  />)
+  const { container } = render(
+    <BaseStatsRadar
+      stats={stats}
+      statNames={{ hp: 'HP', attack: 'Ataque' }}
+      label="Atributos base"
+      baseLabel="Base"
+    />,
+  )
 
   expect(screen.getByRole('img', { name: /Atributos base/ })).toBeInTheDocument()
   expect(container.querySelector('desc')).toHaveTextContent(/HP: Base 45/)
@@ -28,29 +30,25 @@ it('exibe somente os atributos base no radar', () => {
 })
 
 it('organiza os atributos na ordem definida para o radar', () => {
-  const { container } = render(<BaseStatsRadar
-    stats={stats}
-    statNames={{
-      hp: 'HP',
-      attack: 'Ataque',
-      defense: 'Defesa',
-      speed: 'Velocidade',
-      'special-attack': 'Atq. Especial',
-      'special-defense': 'Def. Especial',
-    }}
-    label="Atributos base"
-    baseLabel="Base"
-  />)
+  const { container } = render(
+    <BaseStatsRadar
+      stats={stats}
+      statNames={{
+        hp: 'HP',
+        attack: 'Ataque',
+        defense: 'Defesa',
+        speed: 'Velocidade',
+        'special-attack': 'Atq. Especial',
+        'special-defense': 'Def. Especial',
+      }}
+      label="Atributos base"
+      baseLabel="Base"
+    />,
+  )
 
-  const labels = [...container.querySelectorAll('.radar-labels text')]
-    .map((element) => element.firstElementChild?.textContent)
+  const labels = [...container.querySelectorAll('.radar-labels text')].map(
+    (element) => element.firstElementChild?.textContent,
+  )
 
-  expect(labels).toEqual([
-    'HP',
-    'Ataque',
-    'Defesa',
-    'Velocidade',
-    'Def. Especial',
-    'Atq. Especial',
-  ])
+  expect(labels).toEqual(['HP', 'Ataque', 'Defesa', 'Velocidade', 'Def. Especial', 'Atq. Especial'])
 })

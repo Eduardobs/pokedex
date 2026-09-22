@@ -13,7 +13,11 @@ describe('GenderBadge localization', () => {
   it('translates the genderless API value', () => {
     localStorage.setItem(STORAGE_KEYS.language, 'es')
 
-    render(<LanguageProvider><GenderBadge value="genderless" /></LanguageProvider>)
+    render(
+      <LanguageProvider>
+        <GenderBadge value="genderless" />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText('Sin género')).toBeVisible()
     expect(screen.queryByText('Genderless')).not.toBeInTheDocument()
@@ -26,14 +30,25 @@ describe('DamageClassBadge', () => {
     ['special', 'Especial'],
     ['status', 'Status'],
   ])('renders the semantic icon and label for %s damage', (value, label) => {
-    const { container } = render(<LanguageProvider><DamageClassBadge value={value} /></LanguageProvider>)
+    const { container } = render(
+      <LanguageProvider>
+        <DamageClassBadge value={value} />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText(label)).toBeVisible()
-    expect(container.querySelector(`.damage-${value} img`)).toHaveAttribute('src', `/icons/damage-${value}.png`)
+    expect(container.querySelector(`.damage-${value} img`)).toHaveAttribute(
+      'src',
+      `/icons/damage-${value}.png`,
+    )
   })
 
   it('uses the status treatment for an unknown API value', () => {
-    const { container } = render(<LanguageProvider><DamageClassBadge value="unknown" /></LanguageProvider>)
+    const { container } = render(
+      <LanguageProvider>
+        <DamageClassBadge value="unknown" />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText('Status')).toBeVisible()
     expect(container.querySelector('.damage-status')).toBeInTheDocument()

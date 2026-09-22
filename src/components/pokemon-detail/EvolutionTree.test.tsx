@@ -19,7 +19,9 @@ const labels: Partial<Record<TranslationKey, string>> = {
 
 const t: Translate = (key, variables) => {
   let text = labels[key] ?? key
-  Object.entries(variables ?? {}).forEach(([name, value]) => { text = text.replaceAll(`{${name}}`, String(value)) })
+  Object.entries(variables ?? {}).forEach(([name, value]) => {
+    text = text.replaceAll(`{${name}}`, String(value))
+  })
   return text
 }
 
@@ -48,7 +50,12 @@ function evolutionDetail(overrides: Partial<EvolutionDetail> = {}): EvolutionDet
   }
 }
 
-function evolutionNode(name: string, id: number, evolvesTo: EvolutionNode[] = [], details: EvolutionDetail[] = []): EvolutionNode {
+function evolutionNode(
+  name: string,
+  id: number,
+  evolvesTo: EvolutionNode[] = [],
+  details: EvolutionDetail[] = [],
+): EvolutionNode {
   return {
     is_baby: false,
     species: { name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` },
@@ -59,27 +66,41 @@ function evolutionNode(name: string, id: number, evolvesTo: EvolutionNode[] = []
 
 describe('evolutionCondition', () => {
   it('preserva a relação de atributos zero e condições clássicas', () => {
-    expect(evolutionCondition(evolutionDetail({
-      min_level: 20,
-      min_beauty: 170,
-      relative_physical_stats: 0,
-    }), t)).toBe('Nível 20 · Beleza 170+ · Ataque igual à Defesa')
+    expect(
+      evolutionCondition(
+        evolutionDetail({
+          min_level: 20,
+          min_beauty: 170,
+          relative_physical_stats: 0,
+        }),
+        t,
+      ),
+    ).toBe('Nível 20 · Beleza 170+ · Ataque igual à Defesa')
   })
 
   it('explica condições modernas combinadas retornadas pela API', () => {
-    expect(evolutionCondition(evolutionDetail({
-      needs_multiplayer: true,
-      used_move: { name: 'rage-fist', url: 'https://pokeapi.co/api/v2/move/889/' },
-      min_move_count: 20,
-      min_steps: 1_000,
-      min_damage_taken: 49,
-    }), t)).toBe('Em sessão multijogador · Usar Rage Fist 20 vezes · Caminhar 1.000 passos · Sofrer ao menos 49 de dano')
+    expect(
+      evolutionCondition(
+        evolutionDetail({
+          needs_multiplayer: true,
+          used_move: { name: 'rage-fist', url: 'https://pokeapi.co/api/v2/move/889/' },
+          min_move_count: 20,
+          min_steps: 1_000,
+          min_damage_taken: 49,
+        }),
+        t,
+      ),
+    ).toBe(
+      'Em sessão multijogador · Usar Rage Fist 20 vezes · Caminhar 1.000 passos · Sofrer ao menos 49 de dano',
+    )
   })
 
   it('remove alternativas repetidas sem esconder condições diferentes', () => {
     const level20 = evolutionDetail({ min_level: 20 })
-    expect(evolutionConditions([level20, level20, evolutionDetail({ min_level: 30 })], t))
-      .toEqual(['Nível 20', 'Nível 30'])
+    expect(evolutionConditions([level20, level20, evolutionDetail({ min_level: 30 })], t)).toEqual([
+      'Nível 20',
+      'Nível 30',
+    ])
   })
 })
 
@@ -88,26 +109,63 @@ describe('EvolutionTreeNode', () => {
     ['wormadam', 413, '/pokemon/wormadam-plant'],
     ['meowstic', 678, '/pokemon/meowstic-male'],
   ])('links the %s species to its canonical default variety', (name, id, href) => {
-    render(<MemoryRouter><ul><EvolutionTreeNode node={evolutionNode(name, id)} t={t} language="pt-BR" root /></ul></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <ul>
+          <EvolutionTreeNode node={evolutionNode(name, id)} t={t} language="pt-BR" root />
+        </ul>
+      </MemoryRouter>,
+    )
 
     expect(screen.getByRole('link', { name: new RegExp(name, 'i') })).toHaveAttribute('href', href)
   })
 
   it('mantém evoluções alternativas como ramos irmãos do mesmo Pokémon', () => {
     const chain = evolutionNode('oddish', 43, [
-      evolutionNode('gloom', 44, [
-        evolutionNode('vileplume', 45, [], [evolutionDetail({
-          trigger: { name: 'use-item', url: 'https://pokeapi.co/api/v2/evolution-trigger/3/' },
-          item: { name: 'leaf-stone', url: 'https://pokeapi.co/api/v2/item/85/' },
-        })]),
-        evolutionNode('bellossom', 182, [], [evolutionDetail({
-          trigger: { name: 'use-item', url: 'https://pokeapi.co/api/v2/evolution-trigger/3/' },
-          item: { name: 'sun-stone', url: 'https://pokeapi.co/api/v2/item/80/' },
-        })]),
-      ], [evolutionDetail({ min_level: 21 })]),
+      evolutionNode(
+        'gloom',
+        44,
+        [
+          evolutionNode(
+            'vileplume',
+            45,
+            [],
+            [
+              evolutionDetail({
+                trigger: {
+                  name: 'use-item',
+                  url: 'https://pokeapi.co/api/v2/evolution-trigger/3/',
+                },
+                item: { name: 'leaf-stone', url: 'https://pokeapi.co/api/v2/item/85/' },
+              }),
+            ],
+          ),
+          evolutionNode(
+            'bellossom',
+            182,
+            [],
+            [
+              evolutionDetail({
+                trigger: {
+                  name: 'use-item',
+                  url: 'https://pokeapi.co/api/v2/evolution-trigger/3/',
+                },
+                item: { name: 'sun-stone', url: 'https://pokeapi.co/api/v2/item/80/' },
+              }),
+            ],
+          ),
+        ],
+        [evolutionDetail({ min_level: 21 })],
+      ),
     ])
 
-    render(<MemoryRouter><ul className="evolution-tree"><EvolutionTreeNode node={chain} t={t} language="pt-BR" root /></ul></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <ul className="evolution-tree">
+          <EvolutionTreeNode node={chain} t={t} language="pt-BR" root />
+        </ul>
+      </MemoryRouter>,
+    )
 
     const gloomItem = screen.getByRole('link', { name: /Gloom/ }).closest('li')
     const branches = gloomItem?.querySelector(':scope > .evolution-children')

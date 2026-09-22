@@ -14,10 +14,20 @@ describe('ResourceDetailPage berry presentation', () => {
         id: 283,
         name: 'celadon-city-area',
         game_index: 100,
-        encounter_method_rates: [{
-          encounter_method: { name: 'old-rod', url: 'https://pokeapi.co/api/v2/encounter-method/2/' },
-          version_details: [{ rate: 10, version: { name: 'firered', url: 'https://pokeapi.co/api/v2/version/10/' } }],
-        }],
+        encounter_method_rates: [
+          {
+            encounter_method: {
+              name: 'old-rod',
+              url: 'https://pokeapi.co/api/v2/encounter-method/2/',
+            },
+            version_details: [
+              {
+                rate: 10,
+                version: { name: 'firered', url: 'https://pokeapi.co/api/v2/version/10/' },
+              },
+            ],
+          },
+        ],
         location: { name: 'celadon-city', url: 'https://pokeapi.co/api/v2/location/67/' },
         pokemon_encounters: [],
       },
@@ -29,7 +39,9 @@ describe('ResourceDetailPage berry presentation', () => {
     render(
       <MemoryRouter initialEntries={['/explorar/location-area/283']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -54,14 +66,22 @@ describe('ResourceDetailPage berry presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/move-damage-class/special']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
 
     expect(screen.getByText('Especial')).toBeVisible()
-    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute('src', '/icons/damage-special.png')
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-special.png')
+    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute(
+      'src',
+      '/icons/damage-special.png',
+    )
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
+      'src',
+      '/icons/damage-special.png',
+    )
   })
 
   it('shows the berry sprite instead of the generic resource icon', () => {
@@ -75,14 +95,19 @@ describe('ResourceDetailPage berry presentation', () => {
     const { container } = render(
       <MemoryRouter initialEntries={['/explorar/berry/cheri']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )
 
     const berryImage = container.querySelector('.resource-detail-header img')
 
-    expect(berryImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cheri-berry.png')
+    expect(berryImage).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cheri-berry.png',
+    )
     expect(berryImage).toHaveAttribute('width', '72')
     expect(berryImage).toHaveAttribute('height', '72')
     expect(container.querySelector('.resource-detail-mark')).not.toBeInTheDocument()
@@ -93,7 +118,9 @@ describe('ResourceDetailPage berry presentation', () => {
       data: {
         id: 1,
         name: 'black',
-        pokemon_species: [{ name: 'murkrow', url: 'https://pokeapi.co/api/v2/pokemon-species/198/' }],
+        pokemon_species: [
+          { name: 'murkrow', url: 'https://pokeapi.co/api/v2/pokemon-species/198/' },
+        ],
       },
       loading: false,
       error: null,
@@ -103,7 +130,9 @@ describe('ResourceDetailPage berry presentation', () => {
     render(
       <MemoryRouter initialEntries={['/explorar/pokemon-color/black']}>
         <LanguageProvider>
-          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
         </LanguageProvider>
       </MemoryRouter>,
     )

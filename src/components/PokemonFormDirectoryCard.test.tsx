@@ -18,12 +18,20 @@ describe('PokemonFormDirectoryCard', () => {
   })
 
   it('shows a recoverable error instead of an endless skeleton', () => {
-    useApiMock.mockReturnValue({ data: null, loading: false, error: new Error('offline'), retry: retryMock })
+    useApiMock.mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error('offline'),
+      retry: retryMock,
+    })
     render(
       <MemoryRouter>
         <LanguageProvider>
           <PokemonFormDirectoryCard
-            resource={{ name: 'charizard-mega-x', url: 'https://pokeapi.co/api/v2/pokemon-form/10034/' }}
+            resource={{
+              name: 'charizard-mega-x',
+              url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+            }}
             category="mega"
           />
         </LanguageProvider>

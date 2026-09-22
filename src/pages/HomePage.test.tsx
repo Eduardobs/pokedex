@@ -14,7 +14,13 @@ describe('HomePage localization', () => {
   it('formats the Pokémon total for the selected language', () => {
     localStorage.setItem(STORAGE_KEYS.language, 'en')
 
-    render(<MemoryRouter><LanguageProvider><HomePage /></LanguageProvider></MemoryRouter>)
+    render(
+      <MemoryRouter>
+        <LanguageProvider>
+          <HomePage />
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
 
     expect(screen.getByText('1,000+ Pokémon')).toBeVisible()
   })

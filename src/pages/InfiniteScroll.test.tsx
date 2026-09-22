@@ -6,15 +6,17 @@ import type { ApiList, NamedResource } from '../types'
 import { FormsPage } from './FormsPage'
 import { PokedexPage } from './PokedexPage'
 
-const { fetchPokemonRarityDetailsMock, fetchPokemonRegionDetailsMock, useApiMock } = vi.hoisted(() => ({
-  fetchPokemonRarityDetailsMock: vi.fn(),
-  fetchPokemonRegionDetailsMock: vi.fn(),
-  useApiMock: vi.fn(),
-}))
+const { fetchPokemonRarityDetailsMock, fetchPokemonRegionDetailsMock, useApiMock } = vi.hoisted(
+  () => ({
+    fetchPokemonRarityDetailsMock: vi.fn(),
+    fetchPokemonRegionDetailsMock: vi.fn(),
+    useApiMock: vi.fn(),
+  }),
+)
 
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
-  ...await importOriginal<typeof import('../lib/pokemon-catalog')>(),
+  ...(await importOriginal<typeof import('../lib/pokemon-catalog')>()),
   fetchPokemonRarityDetails: fetchPokemonRarityDetailsMock,
   fetchPokemonRegionDetails: fetchPokemonRegionDetailsMock,
 }))
@@ -25,7 +27,9 @@ vi.mock('../components/PokemonFormDirectoryCard', async (importOriginal) => {
   const original = await importOriginal<typeof import('../components/PokemonFormDirectoryCard')>()
   return {
     ...original,
-    PokemonFormDirectoryCard: ({ resource }: { resource: NamedResource }) => <div>{resource.name}</div>,
+    PokemonFormDirectoryCard: ({ resource }: { resource: NamedResource }) => (
+      <div>{resource.name}</div>
+    ),
   }
 })
 
@@ -42,9 +46,15 @@ class IntersectionObserverMock implements IntersectionObserver {
     IntersectionObserverMock.instances.push(this)
   }
 
-  observe = (target: Element) => { this.targets.add(target) }
-  unobserve = (target: Element) => { this.targets.delete(target) }
-  disconnect = () => { this.targets.clear() }
+  observe = (target: Element) => {
+    this.targets.add(target)
+  }
+  unobserve = (target: Element) => {
+    this.targets.delete(target)
+  }
+  disconnect = () => {
+    this.targets.clear()
+  }
   takeRecords = () => []
 
   trigger() {
@@ -74,7 +84,11 @@ function apiList(results: NamedResource[]): ApiList {
 }
 
 function renderPage(page: React.ReactNode) {
-  return <MemoryRouter><LanguageProvider>{page}</LanguageProvider></MemoryRouter>
+  return (
+    <MemoryRouter>
+      <LanguageProvider>{page}</LanguageProvider>
+    </MemoryRouter>
+  )
 }
 
 function reachNextPage() {
@@ -146,7 +160,9 @@ describe('Pokédex filters', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
 
-    expect(screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })).toBeVisible()
+    expect(
+      screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' }),
+    ).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Região' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Ordenar por' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Ordem' })).toHaveTextContent('Crescente')
@@ -156,7 +172,10 @@ describe('Pokédex filters', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(toggle)
 
-    expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
     expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
     expect(screen.getByRole('radio', { name: 'Fogo' })).toBeVisible()
   })
@@ -179,7 +198,9 @@ describe('Pokédex filters', () => {
   it('suggests matching Pokémon names while typing', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
-    const search = screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })
+    const search = screen.getByRole('combobox', {
+      name: 'Filtrar todos os Pokémon por nome ou número',
+    })
 
     fireEvent.change(search, { target: { value: 'pokemon-2' } })
 

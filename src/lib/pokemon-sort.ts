@@ -16,15 +16,23 @@ export type PokemonSortKey =
 
 export type PokemonSortDirection = 'asc' | 'desc'
 
-export const pokemonSortNeedsDetails = (sort: PokemonSortKey) => sort !== 'number' && sort !== 'name'
+export const pokemonSortNeedsDetails = (sort: PokemonSortKey) =>
+  sort !== 'number' && sort !== 'name'
 
 export function filterPokemonList(pokemon: PokemonListItem[], query: string): PokemonListItem[] {
   const normalizedQuery = normalizeSearchText(query)
   if (!normalizedQuery) return pokemon
-  return pokemon.filter((item) => normalizeSearchText(item.name).includes(normalizedQuery) || String(item.id) === normalizedQuery)
+  return pokemon.filter(
+    (item) =>
+      normalizeSearchText(item.name).includes(normalizedQuery) ||
+      String(item.id) === normalizedQuery,
+  )
 }
 
-export function getPokemonSortValue(pokemon: PokemonSortDetails | undefined, sort: PokemonSortKey): number | undefined {
+export function getPokemonSortValue(
+  pokemon: PokemonSortDetails | undefined,
+  sort: PokemonSortKey,
+): number | undefined {
   if (!pokemon || !pokemonSortNeedsDetails(sort)) return undefined
   if (sort === 'total') return pokemon.stats.reduce((total, stat) => total + stat.base_stat, 0)
   return pokemon.stats.find((stat) => stat.stat.name === sort)?.base_stat
@@ -42,7 +50,8 @@ export function sortPokemonList(
 
   return [...pokemon].sort((left, right) => {
     if (sort === 'number') return (left.id - right.id) * directionMultiplier
-    if (sort === 'name') return collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id
+    if (sort === 'name')
+      return collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id
 
     const leftValue = getPokemonSortValue(details[left.name], sort)
     const rightValue = getPokemonSortValue(details[right.name], sort)

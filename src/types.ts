@@ -1,7 +1,17 @@
-export interface NamedResource { name: string; url: string }
-export interface ApiList<T = NamedResource> { count: number; next: string | null; previous: string | null; results: T[] }
+export interface NamedResource {
+  name: string
+  url: string
+}
+export interface ApiList<T = NamedResource> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}
 
-export interface PokemonListItem extends NamedResource { id: number }
+export interface PokemonListItem extends NamedResource {
+  id: number
+}
 export interface Pokemon {
   id: number
   name: string
@@ -24,14 +34,30 @@ export interface Pokemon {
   types: { slot: number; type: NamedResource }[]
   stats: { base_stat: number; effort: number; stat: NamedResource }[]
   abilities: { is_hidden: boolean; slot: number; ability: NamedResource }[]
-  moves: { move: NamedResource; version_group_details: { level_learned_at: number; move_learn_method: NamedResource; version_group: NamedResource }[] }[]
+  moves: {
+    move: NamedResource
+    version_group_details: {
+      level_learned_at: number
+      move_learn_method: NamedResource
+      version_group: NamedResource
+    }[]
+  }[]
   species: NamedResource
   forms: NamedResource[]
   game_indices: { game_index: number; version: NamedResource }[]
   cries?: { latest: string | null; legacy: string | null }
-  held_items?: { item: NamedResource; version_details: { rarity: number; version: NamedResource }[] }[]
-  past_abilities?: { abilities: { ability: NamedResource | null; is_hidden: boolean; slot: number }[]; generation: NamedResource }[]
-  past_stats?: { generation: NamedResource; stats: { base_stat: number; effort: number; stat: NamedResource }[] }[]
+  held_items?: {
+    item: NamedResource
+    version_details: { rarity: number; version: NamedResource }[]
+  }[]
+  past_abilities?: {
+    abilities: { ability: NamedResource | null; is_hidden: boolean; slot: number }[]
+    generation: NamedResource
+  }[]
+  past_stats?: {
+    generation: NamedResource
+    stats: { base_stat: number; effort: number; stat: NamedResource }[]
+  }[]
   past_types?: { generation: NamedResource; types: { slot: number; type: NamedResource }[] }[]
 }
 

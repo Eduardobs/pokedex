@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { captureRatePercentage, defaultPokemonNameForSpecies, pokemonColorHex } from './pokemon-species'
+import {
+  captureRatePercentage,
+  defaultPokemonNameForSpecies,
+  pokemonColorHex,
+} from './pokemon-species'
 
 describe('captureRatePercentage', () => {
   it('converts the PokéAPI capture scale to a percentage', () => {

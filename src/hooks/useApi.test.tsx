@@ -35,16 +35,20 @@ describe('useApi', () => {
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu'))
 
     expect(result.current.loading).toBe(true)
-    await waitFor(() => expect(result.current).toMatchObject({
-      data: { name: 'pikachu' },
-      error: null,
-      loading: false,
-    }))
+    await waitFor(() =>
+      expect(result.current).toMatchObject({
+        data: { name: 'pikachu' },
+        error: null,
+        loading: false,
+      }),
+    )
   })
 
   it('valida e transforma uma resposta antes de publicá-la', async () => {
     apiFetchMock.mockResolvedValue({ name: 'PIKACHU' })
-    const parse = (value: unknown): PokemonSummary => ({ name: String((value as PokemonSummary).name).toLowerCase() })
+    const parse = (value: unknown): PokemonSummary => ({
+      name: String((value as PokemonSummary).name).toLowerCase(),
+    })
 
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu', parse))
 
@@ -53,7 +57,9 @@ describe('useApi', () => {
 
   it('expõe como falha uma resposta rejeitada pelo parser', async () => {
     apiFetchMock.mockResolvedValue({ invalid: true })
-    const parse = (): PokemonSummary => { throw new Error('invalid response') }
+    const parse = (): PokemonSummary => {
+      throw new Error('invalid response')
+    }
 
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu', parse))
 
@@ -67,7 +73,9 @@ describe('useApi', () => {
       .mockResolvedValueOnce({ name: 'raichu' })
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/raichu'))
 
-    await waitFor(() => expect(result.current.error).toMatchObject({ message: 'network unavailable' }))
+    await waitFor(() =>
+      expect(result.current.error).toMatchObject({ message: 'network unavailable' }),
+    )
 
     act(() => result.current.retry())
 
@@ -96,7 +104,9 @@ describe('useApi', () => {
     let resolveFirst: ((value: PokemonSummary) => void) | undefined
     apiFetchMock.mockImplementation((path) => {
       if (path === 'pokemon/bulbasaur') {
-        return new Promise((resolve) => { resolveFirst = resolve })
+        return new Promise((resolve) => {
+          resolveFirst = resolve
+        })
       }
       return new Promise(() => undefined)
     })

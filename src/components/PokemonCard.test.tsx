@@ -45,11 +45,17 @@ describe('PokemonCard', () => {
 
     fireEvent.click(toggle)
 
-    expect(screen.getByRole('img', { name: 'Bulbasaur — Shiny' })).toHaveAttribute('src', 'shiny-artwork.png')
+    expect(screen.getByRole('img', { name: 'Bulbasaur — Shiny' })).toHaveAttribute(
+      'src',
+      'shiny-artwork.png',
+    )
     const normalToggle = screen.getByRole('button', { name: 'Exibir versão normal de Bulbasaur' })
     expect(normalToggle).toHaveAttribute('aria-pressed', 'true')
 
     fireEvent.click(normalToggle)
-    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute('src', 'normal-artwork.png')
+    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute(
+      'src',
+      'normal-artwork.png',
+    )
   })
 })

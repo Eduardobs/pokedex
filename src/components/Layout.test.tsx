@@ -13,10 +13,9 @@ function SearchPage() {
     <input
       aria-label="Filtrar Pokémon"
       value={query}
-      onChange={(event) => setSearchParams(
-        event.target.value ? { q: event.target.value } : {},
-        { replace: true },
-      )}
+      onChange={(event) =>
+        setSearchParams(event.target.value ? { q: event.target.value } : {}, { replace: true })
+      }
     />
   )
 }

@@ -15,11 +15,14 @@ export function useIntersectionVisibility<T extends Element>(
       return
     }
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      setVisible(true)
-      observer.disconnect()
-    }, { rootMargin })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        setVisible(true)
+        observer.disconnect()
+      },
+      { rootMargin },
+    )
 
     observer.observe(target)
     return () => observer.disconnect()

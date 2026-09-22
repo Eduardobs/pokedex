@@ -16,19 +16,49 @@ export function PokemonBiologyCard({ species }: Props) {
     <article className="info-card biology-card">
       <h2>{t('detail.biology')}</h2>
       <dl>
-        <div><dt>{t('detail.generation')}</dt><dd>{localizedApiTerm(species.generation.name, language)}</dd></div>
-        <div><dt>{t('detail.habitat')}</dt><dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd></div>
-        <div><dt>{t('detail.growth')}</dt><dd>{localizedApiTerm(species.growth_rate.name, language)}</dd></div>
+        <div>
+          <dt>{t('detail.generation')}</dt>
+          <dd>{localizedApiTerm(species.generation.name, language)}</dd>
+        </div>
+        <div>
+          <dt>{t('detail.habitat')}</dt>
+          <dd>
+            {species.habitat?.name
+              ? localizedApiTerm(species.habitat.name, language)
+              : t('detail.unknown')}
+          </dd>
+        </div>
+        <div>
+          <dt>{t('detail.growth')}</dt>
+          <dd>{localizedApiTerm(species.growth_rate.name, language)}</dd>
+        </div>
         <div>
           <dt>{t('detail.color')}</dt>
           <dd className="pokemon-color-value">
-            <span className="pokemon-color-swatch" style={{ backgroundColor: pokemonColorHex(species.color.name) }} aria-hidden="true" />
+            <span
+              className="pokemon-color-swatch"
+              style={{ backgroundColor: pokemonColorHex(species.color.name) }}
+              aria-hidden="true"
+            />
             {colorName}
           </dd>
         </div>
-        <div><dt>{t('detail.shape')}</dt><dd>{species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}</dd></div>
-        <div><dt>{t('detail.captureRate')}</dt><dd>{species.capture_rate} / 255 ({capturePercentage}%)</dd></div>
-        <div><dt>{t('detail.baseHappiness')}</dt><dd>{species.base_happiness}</dd></div>
+        <div>
+          <dt>{t('detail.shape')}</dt>
+          <dd>
+            {species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}
+          </dd>
+        </div>
+        <div>
+          <dt>{t('detail.captureRate')}</dt>
+          <dd>
+            {species.capture_rate} / 255 ({capturePercentage}%)
+          </dd>
+        </div>
+        <div>
+          <dt>{t('detail.baseHappiness')}</dt>
+          <dd>{species.base_happiness}</dd>
+        </div>
       </dl>
       <div className="rarity-tags">
         {species.is_baby && <span>{t('detail.baby')}</span>}

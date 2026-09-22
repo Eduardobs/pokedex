@@ -8,7 +8,11 @@ export type StatRange = {
  * The minimum uses 0 IVs/EVs and a hindering nature; the maximum uses 31 IVs,
  * 252 EVs and a beneficial nature. Nature does not affect HP.
  */
-export function level100StatRange(baseStat: number, statName: string, pokemonName?: string): StatRange {
+export function level100StatRange(
+  baseStat: number,
+  statName: string,
+  pokemonName?: string,
+): StatRange {
   if (statName === 'hp') {
     if (pokemonName === 'shedinja') return { minimum: 1, maximum: 1 }
     return {

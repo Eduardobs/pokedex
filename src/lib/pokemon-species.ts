@@ -56,7 +56,7 @@ const POKEMON_COLOR_HEX: Record<string, string> = {
 }
 
 export function captureRatePercentage(captureRate: number) {
-  return Math.min(MAX_CAPTURE_RATE, Math.max(0, captureRate)) / MAX_CAPTURE_RATE * 100
+  return (Math.min(MAX_CAPTURE_RATE, Math.max(0, captureRate)) / MAX_CAPTURE_RATE) * 100
 }
 
 export function pokemonColorHex(color: string) {

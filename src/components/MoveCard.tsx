@@ -52,18 +52,47 @@ export function moveLearningMethodLabel(method: string, t: Translate) {
 
 export function MoveCard({ move, method, level }: Props) {
   const { apiLanguage, t } = useLanguage()
-  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(false, '250px')
+  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(
+    false,
+    '250px',
+  )
   const { data } = useApi<MoveDetail>(visible ? move.url : null)
 
   const learning = moveLearningLabel(method, level, t)
   return (
-    <Link ref={cardRef} className={`move-card ${data ? `damage-border-${data.damage_class.name}` : ''}`} to={`/explorar/move/${move.name}`}>
-      <div className="move-card-title"><b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>{data && <DamageClassBadge value={data.damage_class.name} />}</div>
+    <Link
+      ref={cardRef}
+      className={`move-card ${data ? `damage-border-${data.damage_class.name}` : ''}`}
+      to={`/explorar/move/${move.name}`}
+    >
+      <div className="move-card-title">
+        <b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>
+        {data && <DamageClassBadge value={data.damage_class.name} />}
+      </div>
       <div className="move-card-meta">
-        <div className="move-learning"><BookOpen aria-hidden="true" /><span>{t('move.learning')}</span><strong>{learning}</strong></div>
+        <div className="move-learning">
+          <BookOpen aria-hidden="true" />
+          <span>{t('move.learning')}</span>
+          <strong>{learning}</strong>
+        </div>
         {data ? <TypeBadge type={data.type.name} /> : <i className="move-meta-placeholder" />}
       </div>
-      {data && <div className="move-numbers"><span>{t('move.power')} <b>{data.power ?? '—'}</b></span><span>{t('move.accuracy')} <b>{data.accuracy ?? '—'}</b></span><span>{t('move.pp')} <b>{data.pp ?? '—'}</b></span><span>{t('move.priority')} <b>{data.priority}</b></span></div>}
+      {data && (
+        <div className="move-numbers">
+          <span>
+            {t('move.power')} <b>{data.power ?? '—'}</b>
+          </span>
+          <span>
+            {t('move.accuracy')} <b>{data.accuracy ?? '—'}</b>
+          </span>
+          <span>
+            {t('move.pp')} <b>{data.pp ?? '—'}</b>
+          </span>
+          <span>
+            {t('move.priority')} <b>{data.priority}</b>
+          </span>
+        </div>
+      )}
     </Link>
   )
 }

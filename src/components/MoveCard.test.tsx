@@ -47,7 +47,11 @@ describe('MoveCard', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
-          <MoveCard move={{ name: 'thunder-shock', url: 'https://example.test/move/84' }} method="level-up" level={5} />
+          <MoveCard
+            move={{ name: 'thunder-shock', url: 'https://example.test/move/84' }}
+            method="level-up"
+            level={5}
+          />
         </LanguageProvider>
       </MemoryRouter>,
     )
@@ -57,21 +61,30 @@ describe('MoveCard', () => {
   })
 
   it('renders PP and preserves zero priority from the move details', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({
-      name: 'thunder-shock',
-      names: [],
-      type: { name: 'electric', url: 'https://pokeapi.co/api/v2/type/13/' },
-      damage_class: { name: 'special', url: 'https://pokeapi.co/api/v2/move-damage-class/3/' },
-      power: 40,
-      accuracy: 100,
-      pp: 30,
-      priority: 0,
-    }), { status: 200, headers: { 'content-type': 'application/json' } }))
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          name: 'thunder-shock',
+          names: [],
+          type: { name: 'electric', url: 'https://pokeapi.co/api/v2/type/13/' },
+          damage_class: { name: 'special', url: 'https://pokeapi.co/api/v2/move-damage-class/3/' },
+          power: 40,
+          accuracy: 100,
+          pp: 30,
+          priority: 0,
+        }),
+        { status: 200, headers: { 'content-type': 'application/json' } },
+      ),
+    )
 
     const { container } = render(
       <MemoryRouter>
         <LanguageProvider>
-          <MoveCard move={{ name: 'thunder-shock', url: 'https://pokeapi.co/api/v2/move/84/' }} method="level-up" level={5} />
+          <MoveCard
+            move={{ name: 'thunder-shock', url: 'https://pokeapi.co/api/v2/move/84/' }}
+            method="level-up"
+            level={5}
+          />
         </LanguageProvider>
       </MemoryRouter>,
     )

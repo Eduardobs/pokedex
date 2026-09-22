@@ -31,7 +31,7 @@ export function useApi<T>(pathOrUrl: string | null, parse?: (value: unknown) => 
     setState({ pathOrUrl, data: null, error: null, loading: true })
     apiFetch<unknown>(pathOrUrl, controller.signal)
       .then((value) => {
-        const data = parseRef.current ? parseRef.current(value) : value as T
+        const data = parseRef.current ? parseRef.current(value) : (value as T)
         if (!controller.signal.aborted) setState({ pathOrUrl, data, error: null, loading: false })
       })
       .catch((reason: unknown) => {

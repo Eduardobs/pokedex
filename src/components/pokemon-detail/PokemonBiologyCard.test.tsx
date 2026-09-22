@@ -21,14 +21,24 @@ const species = {
 
 describe('PokemonBiologyCard', () => {
   it('shows a color swatch beside the localized color name', () => {
-    const { container } = render(<LanguageProvider><PokemonBiologyCard species={species} /></LanguageProvider>)
+    const { container } = render(
+      <LanguageProvider>
+        <PokemonBiologyCard species={species} />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText('Verde')).toBeVisible()
-    expect(container.querySelector('.pokemon-color-swatch')).toHaveStyle({ backgroundColor: '#55a868' })
+    expect(container.querySelector('.pokemon-color-swatch')).toHaveStyle({
+      backgroundColor: '#55a868',
+    })
   })
 
   it('keeps the raw capture rate and adds its localized percentage', () => {
-    render(<LanguageProvider><PokemonBiologyCard species={species} /></LanguageProvider>)
+    render(
+      <LanguageProvider>
+        <PokemonBiologyCard species={species} />
+      </LanguageProvider>,
+    )
 
     expect(screen.getByText('45 / 255 (17,65%)')).toBeVisible()
   })

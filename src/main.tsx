@@ -9,6 +9,8 @@ if (!root) throw new Error('Elemento raiz da aplicação não encontrado')
 
 createRoot(root).render(
   <StrictMode>
-    <AppErrorBoundary><App /></AppErrorBoundary>
+    <AppErrorBoundary>
+      <App />
+    </AppErrorBoundary>
   </StrictMode>,
 )

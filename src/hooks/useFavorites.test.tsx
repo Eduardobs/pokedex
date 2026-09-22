@@ -18,7 +18,12 @@ describe('useFavorites', () => {
     expect(result.current.favorites).toEqual(['eevee', 'pikachu'])
     expect(result.current.notice).toEqual({ name: 'pikachu', action: 'added' })
     expect(result.current.isFavorite('pikachu')).toBe(true)
-    await waitFor(() => expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites) ?? '')).toEqual(['eevee', 'pikachu']))
+    await waitFor(() =>
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.favorites) ?? '')).toEqual([
+        'eevee',
+        'pikachu',
+      ]),
+    )
   })
 
   it('descarta toda a coleção persistida se ela contiver dados inválidos', () => {

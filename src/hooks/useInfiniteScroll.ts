@@ -19,11 +19,14 @@ export function useInfiniteScroll<T extends Element>({
     const target = sentinelRef.current
     if (!target || !enabled || !('IntersectionObserver' in window)) return
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return
-      observer.disconnect()
-      onLoadMore()
-    }, { rootMargin })
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        observer.disconnect()
+        onLoadMore()
+      },
+      { rootMargin },
+    )
 
     observer.observe(target)
     return () => observer.disconnect()

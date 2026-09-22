@@ -5,11 +5,13 @@ import { groupMovesByLearningMethod } from './move-learning'
 function pokemonMove(name: string, method: string, level = 0): Pokemon['moves'][number] {
   return {
     move: { name, url: `https://example.test/move/${name}` },
-    version_group_details: [{
-      level_learned_at: level,
-      move_learn_method: { name: method, url: `https://example.test/method/${method}` },
-      version_group: { name: 'latest', url: 'https://example.test/version/latest' },
-    }],
+    version_group_details: [
+      {
+        level_learned_at: level,
+        move_learn_method: { name: method, url: `https://example.test/method/${method}` },
+        version_group: { name: 'latest', url: 'https://example.test/version/latest' },
+      },
+    ],
   }
 }
 
