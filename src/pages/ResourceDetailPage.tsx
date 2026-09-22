@@ -10,6 +10,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
 import { berrySprite, itemSprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
+import { isRelatedPokemonList } from '../lib/related-pokemon'
 
 const hidden = new Set(['id', 'name', 'names', 'flavor_text_entries', 'effect_entries', 'sprites'])
 const summaryFields: Record<string, string[]> = {
@@ -72,9 +73,9 @@ export function ResourceDetailPage() {
       </header>
       <section className="resource-summary" aria-labelledby="resource-summary-title"><h2 id="resource-summary-title">{t('resource.summary')}</h2><div className="resource-detail-grid">{summaryEntries.map(([key, value]) => {
         const FieldIcon = fieldIcon(key)
-        return <article className="detail-field" key={key}><h3><span className="detail-field-icon"><FieldIcon size={15} /></span>{resourceFieldLabel(key, language)}</h3><ResourceValue value={value} /></article>
+        return <article className={`detail-field${isRelatedPokemonList(value) ? ' related-pokemon-field' : ''}`} key={key}><h3><span className="detail-field-icon"><FieldIcon size={15} /></span>{resourceFieldLabel(key, language)}</h3><ResourceValue value={value} /></article>
       })}</div></section>
-      {technicalEntries.length > 0 && <details className="technical-details"><summary><span><Braces size={18} />{t('resource.technicalData')}</span><small>{t('resource.showTechnical')}</small></summary><div className="resource-detail-grid">{technicalEntries.map(([key, value]) => { const FieldIcon = fieldIcon(key); return <article className="detail-field" key={key}><h3><span className="detail-field-icon"><FieldIcon size={15} /></span>{resourceFieldLabel(key, language)}</h3><ResourceValue value={value} /></article> })}</div></details>}
+      {technicalEntries.length > 0 && <details className="technical-details"><summary><span><Braces size={18} />{t('resource.technicalData')}</span><small>{t('resource.showTechnical')}</small></summary><div className="resource-detail-grid">{technicalEntries.map(([key, value]) => { const FieldIcon = fieldIcon(key); return <article className={`detail-field${isRelatedPokemonList(value) ? ' related-pokemon-field' : ''}`} key={key}><h3><span className="detail-field-icon"><FieldIcon size={15} /></span>{resourceFieldLabel(key, language)}</h3><ResourceValue value={value} /></article> })}</div></details>}
     </section>
   )
 }

@@ -22,7 +22,7 @@ describe('ResourceValue', () => {
     expect(resourceFieldLabel('fling_effect', 'pt-BR')).toBe('Efeito de lançamento')
   })
 
-  it('shows large arrays as a paginated summary instead of a record count', () => {
+  it('shows Pokémon arrays as paginated visual cards with artwork, name, and Pokédex number', () => {
     const values = Array.from({ length: 21 }, (_, index) => ({
       name: `pokemon-${index + 1}`,
       url: `${API_BASE}/pokemon-species/${index + 1}/`,
@@ -31,8 +31,9 @@ describe('ResourceValue', () => {
     renderValue(values)
 
     expect(screen.getByText('Pokemon 1')).toBeInTheDocument()
-    expect(screen.getAllByText(/Espécies/)).toHaveLength(6)
-    expect(screen.getByText(/#001/)).toBeInTheDocument()
+    expect(screen.getByText('#0001')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Pokemon 1' })).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png')
+    expect(screen.getByRole('link', { name: 'Abrir Pokemon 1, Pokémon número 1' })).toHaveAttribute('href', '/pokemon/pokemon-1')
     expect(screen.getByText('Pokemon 6')).toBeInTheDocument()
     expect(screen.queryByText('Pokemon 7')).not.toBeInTheDocument()
     expect(screen.queryByText('21 registros')).not.toBeInTheDocument()
@@ -45,15 +46,28 @@ describe('ResourceValue', () => {
     expect(screen.getByText('7–12 de 21')).toBeInTheDocument()
   })
 
-  it('keeps useful fields visible for paginated nested records', () => {
-    const values = [{ slot: 1, pokemon: { name: 'murkrow', url: `${API_BASE}/pokemon/198/` } }]
+  it('keeps related data visible for nested Pokémon records', () => {
+    const values = [{ slot: 1, is_hidden: false, pokemon: { name: 'murkrow', url: `${API_BASE}/pokemon/198/` } }]
 
     renderValue(values, 2)
 
     expect(screen.getByText('Posição')).toBeInTheDocument()
     expect(screen.getByText('1')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Murkrow/ })).toHaveAttribute('href', '/pokemon/murkrow')
-    expect(screen.getByText('1–1 de 1')).toBeInTheDocument()
+    expect(screen.getByText('Habilidade oculta')).toBeInTheDocument()
+    expect(screen.getByText('Não')).toBeInTheDocument()
+    expect(screen.getByText('#0198')).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Murkrow' })).toHaveAttribute('width', '58')
+    expect(screen.getByRole('link', { name: 'Abrir Murkrow, Pokémon número 198' })).toHaveAttribute('href', '/pokemon/murkrow')
+    expect(screen.queryByText('1–1 de 1')).not.toBeInTheDocument()
+  })
+
+  it('shows the relationship rate used by gender resource pages', () => {
+    renderValue([{ rate: 4, pokemon_species: { name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` } }])
+
+    expect(screen.getByText('Taxa')).toBeInTheDocument()
+    expect(screen.getByText('4')).toBeInTheDocument()
+    expect(screen.getByText('Bulbasaur')).toBeInTheDocument()
+    expect(screen.getByText('#0001')).toBeInTheDocument()
   })
 
   it('links Pokemon species references to the canonical Pokemon page', () => {

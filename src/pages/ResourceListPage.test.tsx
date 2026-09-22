@@ -31,6 +31,37 @@ describe('ResourceListPage pagination', () => {
 })
 
 describe('ResourceListPage item presentation', () => {
+  it('shows each Pokémon artwork instead of the generic resource icon', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explorar/pokemon']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const pokemonLink = screen.getByRole('link', { name: /Bulbasaur/ })
+    const pokemonImage = pokemonLink.querySelector('img')
+
+    expect(pokemonImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png')
+    expect(pokemonImage).toHaveClass('pokemon-artwork')
+    expect(pokemonImage).toHaveAttribute('width', '30')
+    expect(pokemonImage).toHaveAttribute('height', '30')
+    expect(container.querySelector('.data-resource-icon svg')).not.toBeInTheDocument()
+  })
+
   it('shows each item sprite instead of the generic resource icon', () => {
     useApiMock.mockReturnValue({
       data: {

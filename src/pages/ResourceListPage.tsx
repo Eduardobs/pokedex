@@ -9,7 +9,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import { berrySprite, formatNumber, itemSprite, normalizeSearchText, prettyName } from '../lib/api'
+import { berrySprite, formatNumber, itemSprite, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import type { ApiList, NamedResource } from '../types'
 
 const LIMIT = 40
@@ -82,8 +82,16 @@ export function ResourceListPage() {
       {data.count > LIMIT && pagination('top')}
       <div className="data-list">{filtered.map((item) => {
         const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''
-        const sprite = resource === 'item' ? itemSprite(item.name) : resource === 'berry' ? berrySprite(item.name) : undefined
-        return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{/^\d+$/.test(itemId) ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon">{sprite ? <img src={sprite} alt="" width="30" height="30" loading="lazy" decoding="async" /> : <ResourceIcon size={17} />}</span>{resourceName(item.name)}<ChevronRight /></Link>
+        const numericId = /^\d+$/.test(itemId) ? Number(itemId) : 0
+        const hasValidId = Number.isSafeInteger(numericId) && numericId > 0
+        const sprite = resource === 'item'
+          ? itemSprite(item.name)
+          : resource === 'berry'
+            ? berrySprite(item.name)
+            : resource === 'pokemon' && hasValidId
+              ? pokemonArtwork(numericId)
+              : undefined
+        return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{hasValidId ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon">{sprite ? <img className={resource === 'pokemon' ? 'pokemon-artwork' : undefined} src={sprite} alt="" width="30" height="30" loading="lazy" decoding="async" /> : <ResourceIcon size={17} />}</span>{resourceName(item.name)}<ChevronRight /></Link>
       })}</div>
       {!filtered.length && <div className="empty"><Search /><h2>{t('resource.emptyPage')}</h2></div>}
       {data.count > LIMIT && pagination('bottom')}

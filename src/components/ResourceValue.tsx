@@ -1,10 +1,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { API_BASE, prettyName, resolveApiUrl } from '../lib/api'
+import { API_BASE, formatNumber, pokemonArtwork, prettyName, resolveApiUrl } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
 import type { Language } from '../contexts/LanguageContext'
 import { getResourceLabel } from '../data/resources'
+import { parseRelatedPokemonList } from '../lib/related-pokemon'
+import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
@@ -20,6 +22,8 @@ const fieldTranslations: Record<Language, Record<string, string>> = {
     size: 'Tamanho', growth_time: 'Tempo de crescimento', max_harvest: 'Colheita máxima', natural_gift_power: 'Poder do Dom Natural', natural_gift_type: 'Tipo do Dom Natural',
     fling_power: 'Poder de lançamento', fling_effect: 'Efeito de lançamento', move_damage_class: 'Classe de dano dos golpes', main_generation: 'Geração principal',
     locations: 'Locais', pokedexes: 'Pokédex', effect_entries: 'Efeitos', flavor_text_entries: 'Descrições',
+    pokemon_species: 'Espécies de Pokémon', pokemon_species_details: 'Espécies de Pokémon', learned_by_pokemon: 'Pokémon que aprendem',
+    pokemon_entries: 'Entradas da Pokédex', pokemon_encounters: 'Pokémon encontrados', entry_number: 'Número na Pokédex', rate: 'Taxa', base_score: 'Pontuação base',
   },
   en: {
     is_main_series: 'Main series', generation: 'Generation', effect_changes: 'Effect changes', pokemon: 'Pokémon', slot: 'Slot', is_hidden: 'Hidden ability',
@@ -29,6 +33,8 @@ const fieldTranslations: Record<Language, Record<string, string>> = {
     contest_effect: 'Contest effect', super_contest_effect: 'Super contest effect', size: 'Size', growth_time: 'Growth time', max_harvest: 'Maximum harvest',
     natural_gift_power: 'Natural Gift power', natural_gift_type: 'Natural Gift type', fling_power: 'Fling power', fling_effect: 'Fling effect',
     move_damage_class: 'Move damage class', main_generation: 'Main generation', locations: 'Locations', pokedexes: 'Pokédexes', effect_entries: 'Effects', flavor_text_entries: 'Descriptions',
+    pokemon_species: 'Pokémon species', pokemon_species_details: 'Pokémon species', learned_by_pokemon: 'Pokémon that learn it',
+    pokemon_entries: 'Pokédex entries', pokemon_encounters: 'Pokémon encounters', entry_number: 'Pokédex number', rate: 'Rate', base_score: 'Base score',
   },
   es: {
     is_main_series: 'Serie principal', generation: 'Generación', effect_changes: 'Cambios de efecto', pokemon: 'Pokémon',
@@ -40,6 +46,8 @@ const fieldTranslations: Record<Language, Record<string, string>> = {
     size: 'Tamaño', growth_time: 'Tiempo de crecimiento', max_harvest: 'Cosecha máxima', natural_gift_power: 'Potencia de Don Natural', natural_gift_type: 'Tipo de Don Natural',
     fling_power: 'Potencia de lanzamiento', fling_effect: 'Efecto de lanzamiento', move_damage_class: 'Clase de daño de los movimientos', main_generation: 'Generación principal',
     locations: 'Lugares', pokedexes: 'Pokédex', effect_entries: 'Efectos', flavor_text_entries: 'Descripciones',
+    pokemon_species: 'Especies de Pokémon', pokemon_species_details: 'Especies de Pokémon', learned_by_pokemon: 'Pokémon que lo aprenden',
+    pokemon_entries: 'Entradas de la Pokédex', pokemon_encounters: 'Pokémon encontrados', entry_number: 'Número en la Pokédex', rate: 'Tasa', base_score: 'Puntuación base',
   },
 }
 
@@ -105,6 +113,52 @@ function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: 
   )
 }
 
+function relatedDatumValue(detail: RelatedPokemonDatum, language: Language, yes: string, no: string) {
+  if (typeof detail.value === 'boolean') return detail.value ? yes : no
+  if (typeof detail.value === 'number') return formatNumber(detail.value, language)
+  return prettyName(detail.value)
+}
+
+function RelatedPokemonValues({ values }: { values: RelatedPokemon[] }) {
+  const { language, t } = useLanguage()
+  const [page, setPage] = useState(0)
+  const pageCount = Math.ceil(values.length / PAGE_SIZE)
+  const currentPage = Math.min(page, pageCount - 1)
+  const start = currentPage * PAGE_SIZE
+  const end = Math.min(start + PAGE_SIZE, values.length)
+  const yes = t('common.yes')
+  const no = t('common.no')
+
+  return (
+    <div className="related-pokemon-pages">
+      <ul className="related-pokemon-list">
+        {values.slice(start, end).map((pokemon) => {
+          const displayName = prettyName(pokemon.name)
+          const displayNumber = `#${String(pokemon.id).padStart(4, '0')}`
+          return (
+            <li key={`${pokemon.id}-${pokemon.name}`}>
+              <Link className="related-pokemon-card" to={`/pokemon/${encodeURIComponent(pokemon.name)}`} aria-label={t('resource.openPokemon', { name: displayName, number: formatNumber(pokemon.id, language) })}>
+                <span className="related-pokemon-art"><img src={pokemonArtwork(pokemon.id)} alt={displayName} width="58" height="58" loading="lazy" decoding="async" /></span>
+                <span className="related-pokemon-copy">
+                  <small>{displayNumber}</small>
+                  <strong>{displayName}</strong>
+                  {pokemon.details.length > 0 && <dl className="related-pokemon-details">{pokemon.details.map((detail) => <div key={detail.key}><dt>{resourceFieldLabel(detail.key, language)}</dt><dd>{relatedDatumValue(detail, language, yes, no)}</dd></div>)}</dl>}
+                </span>
+                <ChevronRight className="related-pokemon-chevron" aria-hidden="true" />
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+      {pageCount > 1 && <nav className="resource-value-pagination" aria-label={t('resource.range', { start: start + 1, end, total: values.length })}>
+        <button type="button" disabled={currentPage === 0} onClick={() => setPage((value) => Math.max(0, value - 1))} aria-label={t('resource.previous')}><ChevronLeft /></button>
+        <span aria-live="polite">{t('resource.range', { start: start + 1, end, total: values.length })}</span>
+        <button type="button" disabled={currentPage === pageCount - 1} onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))} aria-label={t('resource.next')}><ChevronRight /></button>
+      </nav>}
+    </div>
+  )
+}
+
 export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: number }) {
   const { language, t } = useLanguage()
   if (value === null || value === undefined) return <span className="muted">—</span>
@@ -112,6 +166,8 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   if (typeof value === 'string' || typeof value === 'number') return <span>{typeof value === 'string' ? prettyName(value) : value}</span>
   if (Array.isArray(value)) {
     if (!value.length) return <span className="muted">{t('resource.none')}</span>
+    const relatedPokemon = parseRelatedPokemonList(value)
+    if (relatedPokemon) return <RelatedPokemonValues values={relatedPokemon} />
     if (depth > 1 || value.length > 20) return <PaginatedResourceValues values={value} depth={depth} />
     return <div className="value-list">{value.slice(0, 20).map((item, index) => <ResourceValue key={index} value={item} depth={depth + 1} />)}</div>
   }

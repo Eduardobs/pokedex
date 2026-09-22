@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -30,5 +30,31 @@ describe('ResourceDetailPage berry presentation', () => {
     expect(berryImage).toHaveAttribute('width', '72')
     expect(berryImage).toHaveAttribute('height', '72')
     expect(container.querySelector('.resource-detail-mark')).not.toBeInTheDocument()
+  })
+
+  it('gives related Pokémon lists the full-width standardized presentation', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 1,
+        name: 'black',
+        pokemon_species: [{ name: 'murkrow', url: 'https://pokeapi.co/api/v2/pokemon-species/198/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/pokemon-color/black']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const heading = screen.getByRole('heading', { name: 'Espécies de Pokémon' })
+    expect(heading.closest('article')).toHaveClass('related-pokemon-field')
+    expect(screen.getByRole('img', { name: 'Murkrow' })).toBeInTheDocument()
+    expect(screen.getByText('#0198')).toBeInTheDocument()
   })
 })
