@@ -63,14 +63,14 @@ export function SelectMenu<T extends string>({ className = '', icon, label, opti
   }
 
   return (
-    <div className={`catalog-select ${className}`.trim()} ref={rootRef}>
+    <div className={`catalog-select ${className}`.trim()} ref={rootRef} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false) }}>
       <button ref={triggerRef} className="catalog-select-trigger" type="button" role="combobox" aria-label={label} aria-haspopup="listbox" aria-expanded={open} aria-controls={optionsId} onClick={() => open ? setOpen(false) : openAndFocusSelected()} onKeyDown={handleTriggerKeyDown}>
         <span className="catalog-select-icon" aria-hidden="true">{icon}</span>
         <span className="catalog-select-copy"><small>{label}</small><strong>{selected.label}</strong></span>
         <ChevronDown className={open ? 'open' : ''} size={16} aria-hidden="true" />
       </button>
       {open && <div className="catalog-select-options" id={optionsId} role="listbox" aria-label={label} onKeyDown={handleOptionsKeyDown}>
-        {options.map((option) => <button ref={option.value === value ? selectedRef : undefined} type="button" role="option" aria-selected={option.value === value} key={option.value} onClick={() => { onChange(option.value); setOpen(false); triggerRef.current?.focus() }}><span>{option.label}</span>{option.value === value && <Check size={15} aria-hidden="true" />}</button>)}
+        {options.map((option) => <button ref={option.value === value ? selectedRef : undefined} type="button" role="option" aria-selected={option.value === value} tabIndex={option.value === value ? 0 : -1} key={option.value} onClick={() => { onChange(option.value); setOpen(false); triggerRef.current?.focus() }}><span>{option.label}</span>{option.value === value && <Check size={15} aria-hidden="true" />}</button>)}
       </div>}
     </div>
   )

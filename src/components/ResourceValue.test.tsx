@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { API_BASE } from '../lib/api'
-import { ResourceValue } from './ResourceValue'
+import { ResourceValue, resourceFieldLabel } from './ResourceValue'
 
 afterEach(cleanup)
 
@@ -16,6 +16,12 @@ function renderValue(value: unknown, depth = 0) {
 }
 
 describe('ResourceValue', () => {
+  it('localizes summary fields used by berry and item resources', () => {
+    expect(resourceFieldLabel('growth_time', 'pt-BR')).toBe('Tempo de crescimento')
+    expect(resourceFieldLabel('natural_gift_power', 'es')).toBe('Potencia de Don Natural')
+    expect(resourceFieldLabel('fling_effect', 'pt-BR')).toBe('Efeito de lançamento')
+  })
+
   it('shows large arrays as a paginated summary instead of a record count', () => {
     const values = Array.from({ length: 21 }, (_, index) => ({
       name: `pokemon-${index + 1}`,

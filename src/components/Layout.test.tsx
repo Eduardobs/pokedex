@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom'
 import { FavoritesProvider } from '../contexts/FavoritesContext'
@@ -47,6 +47,7 @@ describe('Layout focus management', () => {
   })
 
   afterEach(() => {
+    cleanup()
     vi.restoreAllMocks()
   })
 
@@ -59,5 +60,21 @@ describe('Layout focus management', () => {
 
     await waitFor(() => expect(search).toHaveFocus())
     expect(search).toHaveValue('p')
+  })
+
+  it('moves focus through language options and restores it on Escape', () => {
+    renderLayout()
+    const trigger = screen.getByRole('button', { name: 'Idioma' })
+
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+    const portuguese = screen.getByRole('option', { name: /Português/ })
+    expect(portuguese).toHaveFocus()
+
+    fireEvent.keyDown(portuguese, { key: 'ArrowDown' })
+    expect(screen.getByRole('option', { name: /English/ })).toHaveFocus()
+
+    fireEvent.keyDown(document.activeElement!, { key: 'Escape' })
+    expect(trigger).toHaveFocus()
+    expect(screen.queryByRole('listbox', { name: 'Idioma' })).not.toBeInTheDocument()
   })
 })

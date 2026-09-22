@@ -4,6 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { BaseStatsRadar } from '../components/BaseStatsRadar'
 import { Loading } from '../components/Loading'
+import { LocalizedResourceName } from '../components/LocalizedResourceName'
 import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
 import { PokemonForms } from '../components/PokemonForms'
 import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
@@ -112,9 +113,12 @@ export function PokemonDetailPage() {
   if (error || !pokemon) return <ErrorState title={t('detail.notFound')} message={t('detail.notFoundDesc', { name })} retry={retry} />
   if (name !== pokemon.name) return <Navigate to={`/pokemon/${encodeURIComponent(pokemon.name)}`} replace />
 
-  const artwork = shiny
-    ? pokemon.sprites.other?.['official-artwork']?.front_shiny
-    : pokemon.sprites.other?.['official-artwork']?.front_default
+  const normalArtwork = pokemon.sprites.other?.['official-artwork']?.front_default
+    ?? pokemon.sprites.front_default
+    ?? pokemonArtwork(pokemon.id)
+  const shinyArtwork = pokemon.sprites.other?.['official-artwork']?.front_shiny
+    ?? pokemon.sprites.front_shiny
+  const artwork = shiny && shinyArtwork ? shinyArtwork : normalArtwork
   const descriptionResult = species ? localizedTextResult(species.flavor_text_entries, undefined, apiLanguage) : { text: '', language: apiLanguage, fallback: false }
   const description = descriptionResult.text
   const localizedGenus = species?.genera.find((entry) => entry.language.name === apiLanguage)
@@ -152,7 +156,7 @@ export function PokemonDetailPage() {
             {descriptionResult.fallback && language !== 'en' && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}
             <div className="physical-stats"><span><Ruler /> <b>{formatDecimal(pokemon.height / 10, language)} m</b><small>{t('detail.height')}</small></span><span><Weight /> <b>{formatDecimal(pokemon.weight / 10, language)} kg</b><small>{t('detail.weight')}</small></span><span><Sparkles /> <b>{pokemon.base_experience ?? '—'}</b><small>{t('detail.baseExp')}</small></span></div>
           </div>
-          <div className="detail-art"><span className="giant-number">{String(pokemon.id).padStart(3, '0')}</span><span className="detail-orb" /><img src={artwork ?? pokemonArtwork(pokemon.id)} alt={`${prettyName(pokemon.name)}${shiny ? ` — ${t('detail.shiny')}` : ''}`} width="420" height="420" decoding="async" fetchPriority="high" /><button type="button" aria-pressed={shiny} className={`shiny-toggle ${shiny ? 'active' : ''}`} onClick={() => setShiny((value) => !value)}><Sparkles size={16} /> {shiny ? t('detail.shinyVersion') : t('detail.showShiny')}</button></div>
+          <div className="detail-art"><span className="giant-number">{String(pokemon.id).padStart(3, '0')}</span><span className="detail-orb" /><img src={artwork} alt={`${prettyName(pokemon.name)}${shiny ? ` — ${t('detail.shiny')}` : ''}`} width="420" height="420" decoding="async" fetchPriority="high" /><button type="button" aria-pressed={shiny} className={`shiny-toggle ${shiny ? 'active' : ''}`} disabled={!shinyArtwork} title={!shinyArtwork ? t('detail.shinyUnavailable') : undefined} onClick={() => setShiny((value) => !value)}><Sparkles size={16} /> {shiny ? t('detail.shinyVersion') : t('detail.showShiny')}</button></div>
           <button type="button" className={`detail-favorite ${isFavorite(pokemon.name) ? 'selected' : ''}`} onClick={() => toggle(pokemon.name)} aria-label={t(isFavorite(pokemon.name) ? 'favorite.remove' : 'favorite.add', { name: prettyName(pokemon.name) })}><Heart fill={isFavorite(pokemon.name) ? 'currentColor' : 'none'} /></button>
         </div>
       </div>
@@ -182,7 +186,7 @@ export function PokemonDetailPage() {
           </article>
           <article className="info-card"><h2>{t('detail.biology')}</h2>{speciesLoading ? <p className="muted">{t('detail.loadingSpecies')}</p> : speciesError || !species ? <p className="muted">{t('detail.speciesUnavailable')}</p> : <><dl><div><dt>{t('detail.generation')}</dt><dd>{localizedApiTerm(species.generation.name, language)}</dd></div><div><dt>{t('detail.habitat')}</dt><dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.growth')}</dt><dd>{localizedApiTerm(species.growth_rate.name, language)}</dd></div><div><dt>{t('detail.color')}</dt><dd>{localizedApiTerm(species.color.name, language)}</dd></div><div><dt>{t('detail.shape')}</dt><dd>{species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}</dd></div><div><dt>{t('detail.captureRate')}</dt><dd>{species.capture_rate} / 255</dd></div><div><dt>{t('detail.baseHappiness')}</dt><dd>{species.base_happiness}</dd></div></dl><div className="rarity-tags">{species.is_baby && <span>{t('detail.baby')}</span>}{species.is_legendary && <span>{t('detail.legendary')}</span>}{species.is_mythical && <span>{t('detail.mythical')}</span>}</div></>}</article>
           {species && <TrainingBreedingCard pokemon={pokemon} species={species} />}
-          <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b>{prettyName(ability.name)}</b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
+          <article className="info-card abilities-card"><h2>{t('detail.abilities')}</h2>{pokemon.abilities.map(({ ability, is_hidden }) => <Link key={ability.name} to={`/explorar/ability/${ability.name}`}><div><b><LocalizedResourceName resource={ability} /></b><AbilityBadge hidden={is_hidden} /></div><ChevronRight /></Link>)}</article>
           <article className="info-card weaknesses-card">
             <h2><ShieldAlert />{t('detail.typeEffectiveness')}</h2>
             {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}

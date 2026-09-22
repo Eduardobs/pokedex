@@ -49,10 +49,11 @@ export function formLabels(name: string, category: FormCategory, t?: Translate) 
 export function PokemonFormDirectoryCard({ resource, category }: { resource: NamedResource; category: FormCategory }) {
   const { t } = useLanguage()
   const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLDivElement>(false, '300px')
-  const { data, loading } = useApi<PokemonForm>(visible ? resource.url : null)
+  const { data, loading, error, retry } = useApi<PokemonForm>(visible ? resource.url : null)
 
   const config = categoryConfig[category]
   const Icon = config.icon
+  if (error) return <article ref={cardRef} className="directory-form-card directory-form-card-error" role="alert"><Shield aria-hidden="true" /><h2>{prettyName(resource.name)}</h2><p>{t('forms.cardUnavailable')}</p><button type="button" onClick={retry}>{t('common.retry')}</button></article>
   if (!data || loading) return <div ref={cardRef} className="directory-form-card skeleton" aria-label={`${t('common.loadingShort')} ${resource.name}`} />
 
   const pokemonId = idFromUrl(data.pokemon.url)

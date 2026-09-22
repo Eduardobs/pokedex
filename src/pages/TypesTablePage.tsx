@@ -45,13 +45,19 @@ export function TypesTablePage() {
   const typeOptions = BATTLE_TYPES.map((type) => ({ value: type, label: typeLabel(type, language) }))
   const secondTypeOptions: Array<{ value: BattleType | ''; label: string }> = [
     { value: '', label: t('typesTable.noSecond') },
-    ...BATTLE_TYPES.filter((type) => type !== calculatorDefense || type === calculatorSecondDefense)
+    ...BATTLE_TYPES.filter((type) => type !== calculatorDefense)
       .map((type) => ({ value: type, label: typeLabel(type, language) })),
   ]
+
+  function changeFirstDefense(type: BattleType) {
+    setCalculatorDefense(type)
+    if (calculatorSecondDefense === type) setCalculatorSecondDefense('')
+  }
 
   function selectMatchup(attackingType: BattleType, defendingType: BattleType) {
     setCalculatorAttack(attackingType)
     setCalculatorDefense(defendingType)
+    if (calculatorSecondDefense === defendingType) setCalculatorSecondDefense('')
     setSelectedCell((current) => current?.attackingType === attackingType && current.defendingType === defendingType
       ? null
       : { attackingType, defendingType })
@@ -70,7 +76,7 @@ export function TypesTablePage() {
       <section className="type-calculator" aria-labelledby="type-calculator-title">
         <div><h2 id="type-calculator-title">{t('typesTable.calculator')}</h2><p>{t('typesTable.calculatorDesc')}</p></div>
         <SelectMenu icon={<Swords size={18} />} label={t('typesTable.attacking')} options={typeOptions} value={calculatorAttack} onChange={setCalculatorAttack} />
-        <SelectMenu icon={<Shield size={18} />} label={t('typesTable.defenderOne')} options={typeOptions} value={calculatorDefense} onChange={setCalculatorDefense} />
+        <SelectMenu icon={<Shield size={18} />} label={t('typesTable.defenderOne')} options={typeOptions} value={calculatorDefense} onChange={changeFirstDefense} />
         <SelectMenu icon={<ShieldPlus size={18} />} label={t('typesTable.defenderTwo')} options={secondTypeOptions} value={calculatorSecondDefense} onChange={setCalculatorSecondDefense} />
         <output className={resultClass(calculatorResult)} aria-live="polite"><span>{t('typesTable.result')}</span><b>{formatDecimal(calculatorResult, language)}×</b></output>
       </section>

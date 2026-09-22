@@ -9,6 +9,12 @@ export const NETWORK = {
   cacheMaxEntries: 250,
   cacheTtlMs: 5 * 60 * 1000,
   requestTimeoutMs: 15_000,
+  maxResponseBytes: 8 * 1024 * 1024,
+  maxJsonNodes: 200_000,
+  maxJsonDepth: 24,
+  maxArrayItems: 10_000,
+  maxObjectKeys: 5_000,
+  maxStringLength: 100_000,
 } as const
 
 export const STORAGE_KEYS = {

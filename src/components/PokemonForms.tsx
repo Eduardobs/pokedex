@@ -61,10 +61,13 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
   const { apiLanguage, t } = useLanguage()
   const [entries, setEntries] = useState<FormEntry[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     const controller = new AbortController()
     setLoading(true)
+    setError(false)
     Promise.all(species.varieties.map(async (variety) => {
       const pokemon = await apiFetch<Pokemon>(variety.pokemon.url, controller.signal)
       const forms = await Promise.all(pokemon.forms.map((resource) =>
@@ -76,13 +79,17 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
     }))
       .then((groups) => setEntries(groups.flat().sort((a, b) => (a.form?.form_order ?? 0) - (b.form?.form_order ?? 0))))
       .catch((reason: unknown) => {
-        if (!(reason instanceof Error) || reason.name !== 'AbortError') setEntries([])
+        if (!(reason instanceof Error) || reason.name !== 'AbortError') {
+          setEntries([])
+          setError(true)
+        }
       })
       .finally(() => { if (!controller.signal.aborted) setLoading(false) })
     return () => controller.abort()
-  }, [species])
+  }, [retryCount, species])
 
   if (loading) return <article className="info-card forms-card forms-loading"><div><span className="pokeball-spinner" /><p>{t('pokemonForms.loading')}</p></div></article>
+  if (error) return <article className="info-card forms-card inline-error" role="alert"><h2>{t('pokemonForms.title')}</h2><p>{t('pokemonForms.unavailable')}</p><button className="button secondary" type="button" onClick={() => setRetryCount((count) => count + 1)}>{t('common.retry')}</button></article>
   if (entries.length <= 1) return null
 
   const presented: PresentedForm[] = entries.map((entry) => ({ ...entry, presentation: formPresentation(entry, species.name, t, apiLanguage) }))

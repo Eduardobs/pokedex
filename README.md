@@ -105,6 +105,7 @@ Atlas Pokémon reads data from the following fixed endpoints:
 - GraphQL: `https://graphql.pokeapi.co/v1beta2`
 
 REST responses use an in-memory LRU-style cache with a maximum of 250 entries and a five-minute TTL. Concurrent requests for the same URL share one underlying request, while each consumer retains independent cancellation. Requests time out after 15 seconds.
+REST payloads are limited to 8 MiB and checked for a JSON content type and bounded nesting, collection sizes, object keys, and strings before being cached or rendered.
 
 The browser's `localStorage` stores favorites, language, and theme preferences. Stored values are validated before use, and storage failures gracefully fall back to in-memory defaults. Clearing site data removes these preferences and favorites.
 
@@ -116,6 +117,7 @@ The browser's `localStorage` stores favorites, language, and theme preferences. 
 - Invalid API responses, timeouts, and unavailable resources produce user-facing error states.
 - A top-level error boundary prevents an isolated rendering failure from taking down the whole page.
 - The application does not require API keys or expose private configuration.
+- GitHub Actions are pinned to exact commits, and Pages/OIDC write permissions are isolated to the deployment job.
 
 ## Deployment to GitHub Pages
 

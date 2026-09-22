@@ -17,8 +17,19 @@ const fieldTranslations: Record<Language, Record<string, string>> = {
     damage_class: 'Classe de dano', type: 'Tipo', target: 'Alvo', effect_chance: 'Chance do efeito', cost: 'Preço', category: 'Categoria',
     attributes: 'Atributos', held_by_pokemon: 'Pokémon que carregam', machines: 'Máquinas', game_indices: 'Índices nos jogos',
     contest_type: 'Tipo de concurso', contest_effect: 'Efeito em concurso', super_contest_effect: 'Efeito em superconcurso',
+    size: 'Tamanho', growth_time: 'Tempo de crescimento', max_harvest: 'Colheita máxima', natural_gift_power: 'Poder do Dom Natural', natural_gift_type: 'Tipo do Dom Natural',
+    fling_power: 'Poder de lançamento', fling_effect: 'Efeito de lançamento', move_damage_class: 'Classe de dano dos golpes', main_generation: 'Geração principal',
+    locations: 'Locais', pokedexes: 'Pokédex', effect_entries: 'Efeitos', flavor_text_entries: 'Descrições',
   },
-  en: {},
+  en: {
+    is_main_series: 'Main series', generation: 'Generation', effect_changes: 'Effect changes', pokemon: 'Pokémon', slot: 'Slot', is_hidden: 'Hidden ability',
+    version_group: 'Version group', language: 'Language', move: 'Move', method: 'Method', level_learned_at: 'Learning level', power: 'Power', accuracy: 'Accuracy',
+    pp: 'PP', priority: 'Priority', damage_class: 'Damage class', type: 'Type', target: 'Target', effect_chance: 'Effect chance', cost: 'Cost', category: 'Category',
+    attributes: 'Attributes', held_by_pokemon: 'Held by Pokémon', machines: 'Machines', game_indices: 'Game indices', contest_type: 'Contest type',
+    contest_effect: 'Contest effect', super_contest_effect: 'Super contest effect', size: 'Size', growth_time: 'Growth time', max_harvest: 'Maximum harvest',
+    natural_gift_power: 'Natural Gift power', natural_gift_type: 'Natural Gift type', fling_power: 'Fling power', fling_effect: 'Fling effect',
+    move_damage_class: 'Move damage class', main_generation: 'Main generation', locations: 'Locations', pokedexes: 'Pokédexes', effect_entries: 'Effects', flavor_text_entries: 'Descriptions',
+  },
   es: {
     is_main_series: 'Serie principal', generation: 'Generación', effect_changes: 'Cambios de efecto', pokemon: 'Pokémon',
     slot: 'Posición', is_hidden: 'Habilidad oculta', version_group: 'Grupo de versiones', language: 'Idioma', move: 'Movimiento',
@@ -26,6 +37,9 @@ const fieldTranslations: Record<Language, Record<string, string>> = {
     damage_class: 'Clase de daño', type: 'Tipo', target: 'Objetivo', effect_chance: 'Probabilidad del efecto', cost: 'Precio', category: 'Categoría',
     attributes: 'Atributos', held_by_pokemon: 'Pokémon que lo llevan', machines: 'Máquinas', game_indices: 'Índices en los juegos',
     contest_type: 'Tipo de concurso', contest_effect: 'Efecto de concurso', super_contest_effect: 'Efecto de superconcurso',
+    size: 'Tamaño', growth_time: 'Tiempo de crecimiento', max_harvest: 'Cosecha máxima', natural_gift_power: 'Potencia de Don Natural', natural_gift_type: 'Tipo de Don Natural',
+    fling_power: 'Potencia de lanzamiento', fling_effect: 'Efecto de lanzamiento', move_damage_class: 'Clase de daño de los movimientos', main_generation: 'Generación principal',
+    locations: 'Lugares', pokedexes: 'Pokédex', effect_entries: 'Efectos', flavor_text_entries: 'Descripciones',
   },
 }
 

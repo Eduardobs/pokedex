@@ -380,3 +380,22 @@ footer{min-height:100px;border-top:1px solid #e1e4e7;background:white;display:fl
 @media(max-width:720px){.type-chart-tap-hint{display:block}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 .evolution-condition{max-width:240px}.evolution-condition-options{display:grid;gap:4px}.evolution-condition small{white-space:normal;text-align:center;line-height:1.35}.baby-trigger-item{width:max-content;max-width:100%;margin:14px auto 0;padding:7px 10px;border-radius:9px;background:var(--surface-soft);color:var(--muted);font-size:11px;text-align:center}.hatch-note{margin:12px 0 0;color:var(--muted);font-size:10px;line-height:1.45}.training-card .gender-ratio{margin-top:16px}
+
+/* Legibilidade, estados de erro e densidade responsiva */
+.data-list a{grid-template-columns:48px 38px minmax(180px,1fr) 24px}
+.catalog-select-copy small,.type-calculator label>span,.type-calculator output>span{font-size:11px}
+.detail-nav-pokemon small,.physical-stats small,.tabs button span,.stat-list-heading,.radar-legend{font-size:11px}
+.card-shiny-toggle{min-height:44px;font-size:11px}
+.shiny-toggle:disabled{cursor:not-allowed;opacity:.55}
+.form-art small,.form-category,.form-info .type-badge,.directory-form-art small,.directory-category,.directory-form-info .type-badge{font-size:10px}
+.form-info>p,.directory-form-info>p,.forms-category-tabs button small,.forms-category-tabs button i{font-size:11px}
+.move-card-meta .type-badge,.move-learning>span,.move-numbers span,.move-group>header span{font-size:10px}
+.directory-form-card-error{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center;content-visibility:visible}
+.directory-form-card-error>svg{color:var(--red)}
+.directory-form-card-error h2,.directory-form-card-error p{margin:0}
+.directory-form-card-error p{color:var(--muted);font-size:13px}
+.directory-form-card-error button{min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--red);font-weight:700}
+:root[data-theme='dark'] .directory-form-card-error button{background:#202731}
+
+@media(max-width:720px){.type-chart-legend span{font-size:11px}.data-list a{grid-template-columns:34px 34px minmax(0,1fr) 20px}}
+@media(max-width:340px){.pokemon-grid{grid-template-columns:1fr}.pokemon-card{padding:16px}.pokemon-image-wrap img{width:150px;height:150px}}

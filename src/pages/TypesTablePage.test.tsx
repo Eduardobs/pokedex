@@ -51,7 +51,7 @@ describe('TypesTablePage', () => {
     expect(output).toHaveClass('result-resistant')
   })
 
-  it('fills the attack and first defender from a matchup without changing the second defender', () => {
+  it('clears a duplicate second defender when a matchup changes the first defender', () => {
     const { container } = render(
       <LanguageProvider>
         <TypesTablePage />
@@ -68,6 +68,25 @@ describe('TypesTablePage', () => {
 
     expect(attackSelect).toHaveTextContent('Elétrico')
     expect(firstDefenseSelect).toHaveTextContent('Água')
-    expect(secondDefenseSelect).toHaveTextContent('Água')
+    expect(secondDefenseSelect).toHaveTextContent('Sem segundo tipo')
+    expect(container.querySelector('output')).toHaveTextContent('2×')
+  })
+
+  it('clears a duplicate second defender when the first selector changes', () => {
+    const { container } = render(
+      <LanguageProvider>
+        <TypesTablePage />
+      </LanguageProvider>,
+    )
+    const view = within(container)
+    const firstDefenseSelect = view.getByRole('combobox', { name: 'Primeiro tipo defensor' })
+    const secondDefenseSelect = view.getByRole('combobox', { name: 'Segundo tipo defensor' })
+
+    fireEvent.click(secondDefenseSelect)
+    fireEvent.click(view.getByRole('option', { name: 'Água' }))
+    fireEvent.click(firstDefenseSelect)
+    fireEvent.click(view.getByRole('option', { name: 'Água' }))
+
+    expect(secondDefenseSelect).toHaveTextContent('Sem segundo tipo')
   })
 })

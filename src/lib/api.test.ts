@@ -81,7 +81,7 @@ describe('utilitários da PokéAPI', () => {
   it('reaproveita respostas em cache depois que o transporte termina', async () => {
     const response = { id: 10004, name: 'cached' }
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify(response), { status: 200 }),
+      new Response(JSON.stringify(response), { status: 200, headers: { 'content-type': 'application/json' } }),
     )
 
     await expect(apiFetch<typeof response>('pokemon/10004')).resolves.toEqual(response)
@@ -98,7 +98,7 @@ describe('utilitários da PokéAPI', () => {
     const response = { id: 10005, name: 'retry-success' }
     const fetchMock = vi.spyOn(globalThis, 'fetch')
       .mockResolvedValueOnce(new Response('{}', { status: 503 }))
-      .mockResolvedValueOnce(new Response(JSON.stringify(response), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(response), { status: 200, headers: { 'content-type': 'application/json' } }))
 
     await expect(apiFetch('pokemon/10005')).rejects.toMatchObject({ status: 503, code: 'http' })
     await expect(apiFetch<typeof response>('pokemon/10005')).resolves.toEqual(response)
@@ -117,6 +117,24 @@ describe('utilitários da PokéAPI', () => {
       code: 'http',
     })
     await expect(apiFetch('pokemon/10007')).rejects.toMatchObject({ code: 'invalid-response' })
+  })
+
+  it('rejeita respostas REST declaradas como grandes demais antes de processar o corpo', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}', {
+      status: 200,
+      headers: { 'content-length': String(9 * 1024 * 1024), 'content-type': 'application/json' },
+    }))
+
+    await expect(apiFetch('pokemon/10010')).rejects.toMatchObject({ code: 'invalid-response' })
+  })
+
+  it('rejeita conteúdo explicitamente incompatível com JSON', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('<html></html>', {
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    }))
+
+    await expect(apiFetch('pokemon/10011')).rejects.toMatchObject({ code: 'invalid-response' })
   })
 
   it('não inicia o transporte para um consumidor já cancelado', async () => {
@@ -143,7 +161,7 @@ describe('utilitários da PokéAPI', () => {
   it('reaproveita uma requisição em andamento para a mesma URL', async () => {
     const response = { id: 10001, name: 'deduplicated' }
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
-      new Response(JSON.stringify(response), { status: 200 }),
+      new Response(JSON.stringify(response), { status: 200, headers: { 'content-type': 'application/json' } }),
     )
 
     const first = apiFetch<typeof response>('pokemon/10001')
@@ -161,7 +179,7 @@ describe('utilitários da PokéAPI', () => {
     const active = apiFetch<{ id: number }>('pokemon/10002')
 
     controller.abort()
-    finishRequest?.(new Response(JSON.stringify({ id: 10002 }), { status: 200 }))
+    finishRequest?.(new Response(JSON.stringify({ id: 10002 }), { status: 200, headers: { 'content-type': 'application/json' } }))
 
     await expect(cancelled).rejects.toMatchObject({ name: 'AbortError' })
     await expect(active).resolves.toEqual({ id: 10002 })
