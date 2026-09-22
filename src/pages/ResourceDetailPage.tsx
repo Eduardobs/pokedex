@@ -9,7 +9,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import { itemSprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
+import { berrySprite, itemSprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
 
 const hidden = new Set(['id', 'name', 'names', 'flavor_text_entries', 'effect_entries', 'sprites'])
 const summaryFields: Record<string, string[]> = {
@@ -57,12 +57,15 @@ export function ResourceDetailPage() {
   const technicalEntries = entries.filter(([key]) => !preferredKeys.includes(key))
   const moveType = resource === 'move' && data.type && typeof data.type === 'object' ? (data.type as { name?: string }).name : undefined
   const moveClass = resource === 'move' && data.damage_class && typeof data.damage_class === 'object' ? (data.damage_class as { name?: string }).name : undefined
+  const berryName = resource === 'berry' && typeof data.name === 'string' ? data.name : null
   return (
     <section className="page content-width detail-resource-page" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}>
       <div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span>{meta?.groupTitle && GroupIcon && <><span className="breadcrumb-group"><GroupIcon size={13} />{meta.groupTitle}</span><span>/</span></>}<Link to={`/explorar/${resource}`}>{getResourceLabel(resource, language)}</Link><span>/</span><span>{prettyName(String(title))}</span></div>
       <header className="resource-detail-header">
         <Link to={`/explorar/${resource}`} className="icon-button" aria-label={t('resource.back')} title={t('resource.back')}><ArrowLeft /></Link>
-        <span className="resource-detail-mark"><ResourceIcon /></span>
+        {berryName
+          ? <img src={berrySprite(berryName)} alt="" width="72" height="72" loading="lazy" decoding="async" />
+          : <span className="resource-detail-mark"><ResourceIcon /></span>}
         {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />}
         <div><span className="eyebrow">{getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}</span><h1>{prettyName(String(title))}</h1>{description && <p>{description}</p>}{descriptionResult.fallback && language !== 'en' && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}<div className="resource-semantic-badges">{resource === 'type' && <TypeBadge type={String(data.name)} />}{moveType && <TypeBadge type={moveType} />}{moveClass && <DamageClassBadge value={moveClass} />}{resource === 'gender' && <GenderBadge value={String(data.name)} />}{resource === 'ability' && <span className="resource-kind-badge"><Zap size={14} />{t('resource.passiveAbility')}</span>}</div></div>
         <a className="button secondary api-link technical-link" href={`https://pokeapi.co/api/v2/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer">JSON <ExternalLink size={16} /></a>
