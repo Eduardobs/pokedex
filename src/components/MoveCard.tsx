@@ -15,6 +15,8 @@ type MoveDetail = {
   damage_class: NamedResource
   power: number | null
   accuracy: number | null
+  pp: number | null
+  priority: number
 }
 
 type Props = {
@@ -61,7 +63,7 @@ export function MoveCard({ move, method, level }: Props) {
         <div className="move-learning"><BookOpen aria-hidden="true" /><span>{t('move.learning')}</span><strong>{learning}</strong></div>
         {data ? <TypeBadge type={data.type.name} /> : <i className="move-meta-placeholder" />}
       </div>
-      {data && <div className="move-numbers"><span>{t('move.power')} <b>{data.power ?? '—'}</b></span><span>{t('move.accuracy')} <b>{data.accuracy ?? '—'}</b></span></div>}
+      {data && <div className="move-numbers"><span>{t('move.power')} <b>{data.power ?? '—'}</b></span><span>{t('move.accuracy')} <b>{data.accuracy ?? '—'}</b></span><span>{t('move.pp')} <b>{data.pp ?? '—'}</b></span><span>{t('move.priority')} <b>{data.priority}</b></span></div>}
     </Link>
   )
 }
