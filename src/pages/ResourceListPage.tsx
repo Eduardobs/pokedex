@@ -9,7 +9,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import { formatNumber, normalizeSearchText, prettyName } from '../lib/api'
+import { berrySprite, formatNumber, itemSprite, normalizeSearchText, prettyName } from '../lib/api'
 import type { ApiList, NamedResource } from '../types'
 
 const LIMIT = 40
@@ -80,7 +80,11 @@ export function ResourceListPage() {
       <div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span>{meta?.groupTitle && GroupIcon && <><span className="breadcrumb-group"><GroupIcon size={13} />{meta.groupTitle}</span><span>/</span></>}<span>{getResourceLabel(resource, language)}</span></div>
       <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><div className="resource-page-search"><SearchField value={query} onChange={(value) => updateParams(offset, value)} clearLabel={t('common.clear')} compact aria-label={t('resource.filter')} placeholder={t('resource.filter')} /><small>{t('resource.filterScope')}</small></div></div>
       {data.count > LIMIT && pagination('top')}
-      <div className="data-list">{filtered.map((item) => { const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''; return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{/^\d+$/.test(itemId) ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon"><ResourceIcon size={17} /></span>{resourceName(item.name)}<ChevronRight /></Link> })}</div>
+      <div className="data-list">{filtered.map((item) => {
+        const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''
+        const sprite = resource === 'item' ? itemSprite(item.name) : resource === 'berry' ? berrySprite(item.name) : undefined
+        return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{/^\d+$/.test(itemId) ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon">{sprite ? <img src={sprite} alt="" width="30" height="30" loading="lazy" decoding="async" /> : <ResourceIcon size={17} />}</span>{resourceName(item.name)}<ChevronRight /></Link>
+      })}</div>
       {!filtered.length && <div className="empty"><Search /><h2>{t('resource.emptyPage')}</h2></div>}
       {data.count > LIMIT && pagination('bottom')}
     </section>

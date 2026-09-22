@@ -13,6 +13,7 @@ export async function listResource(endpoint: string, limit = 24, offset = 0, sig
 export const idFromUrl = (url: string) => Number(url.split('/').filter(Boolean).at(-1))
 export const pokemonArtwork = (id: number) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${encodeURIComponent(String(id))}.png`
 export const itemSprite = (name: string) => `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${encodeURIComponent(name)}.png`
+export const berrySprite = (name: string) => itemSprite(`${name}-berry`)
 export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] => resources.flatMap((item) => {
   const id = idFromUrl(item.url)
   // PokéAPI reserves IDs from 10001 onward for alternate varieties such as

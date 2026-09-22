@@ -1,7 +1,9 @@
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import type { Translate, TranslationKey } from '../../contexts/LanguageContext'
-import type { EvolutionDetail } from '../../types'
-import { evolutionCondition, evolutionConditions } from './EvolutionTree'
+import type { EvolutionDetail, EvolutionNode } from '../../types'
+import { EvolutionTreeNode, evolutionCondition, evolutionConditions } from './EvolutionTree'
 
 const labels: Partial<Record<TranslationKey, string>> = {
   'evolution.level': 'Nível {level}',
@@ -11,6 +13,7 @@ const labels: Partial<Record<TranslationKey, string>> = {
   'evolution.useMoveTimes': 'Usar {move} {count} vezes',
   'evolution.steps': 'Caminhar {count} passos',
   'evolution.damageTaken': 'Sofrer ao menos {amount} de dano',
+  'evolution.useItem': 'Usar {item}',
   'evolution.special': 'Condição especial',
 }
 
@@ -45,6 +48,15 @@ function evolutionDetail(overrides: Partial<EvolutionDetail> = {}): EvolutionDet
   }
 }
 
+function evolutionNode(name: string, id: number, evolvesTo: EvolutionNode[] = [], details: EvolutionDetail[] = []): EvolutionNode {
+  return {
+    is_baby: false,
+    species: { name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` },
+    evolves_to: evolvesTo,
+    evolution_details: details,
+  }
+}
+
 describe('evolutionCondition', () => {
   it('preserva a relação de atributos zero e condições clássicas', () => {
     expect(evolutionCondition(evolutionDetail({
@@ -68,5 +80,35 @@ describe('evolutionCondition', () => {
     const level20 = evolutionDetail({ min_level: 20 })
     expect(evolutionConditions([level20, level20, evolutionDetail({ min_level: 30 })], t))
       .toEqual(['Nível 20', 'Nível 30'])
+  })
+})
+
+describe('EvolutionTreeNode', () => {
+  it('mantém evoluções alternativas como ramos irmãos do mesmo Pokémon', () => {
+    const chain = evolutionNode('oddish', 43, [
+      evolutionNode('gloom', 44, [
+        evolutionNode('vileplume', 45, [], [evolutionDetail({
+          trigger: { name: 'use-item', url: 'https://pokeapi.co/api/v2/evolution-trigger/3/' },
+          item: { name: 'leaf-stone', url: 'https://pokeapi.co/api/v2/item/85/' },
+        })]),
+        evolutionNode('bellossom', 182, [], [evolutionDetail({
+          trigger: { name: 'use-item', url: 'https://pokeapi.co/api/v2/evolution-trigger/3/' },
+          item: { name: 'sun-stone', url: 'https://pokeapi.co/api/v2/item/80/' },
+        })]),
+      ], [evolutionDetail({ min_level: 21 })]),
+    ])
+
+    render(<MemoryRouter><ul className="evolution-tree"><EvolutionTreeNode node={chain} t={t} language="pt-BR" root /></ul></MemoryRouter>)
+
+    const gloomItem = screen.getByRole('link', { name: /Gloom/ }).closest('li')
+    const branches = gloomItem?.querySelector(':scope > .evolution-children')
+    const vileplumeItem = screen.getByRole('link', { name: /Vileplume/ }).closest('li')
+    const bellossomItem = screen.getByRole('link', { name: /Bellossom/ }).closest('li')
+
+    expect(branches).toHaveClass('is-branching')
+    expect(vileplumeItem?.parentElement).toBe(branches)
+    expect(bellossomItem?.parentElement).toBe(branches)
+    expect(screen.getByText('Usar Leaf Stone')).toBeInTheDocument()
+    expect(screen.getByText('Usar Sun Stone')).toBeInTheDocument()
   })
 })

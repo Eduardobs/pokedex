@@ -69,17 +69,22 @@ type Props = {
 
 export function EvolutionTreeNode({ node, t, language, root = false }: Props) {
   const id = Number(node.species.url.split('/').filter(Boolean).at(-1))
+  const hasBranches = node.evolves_to.length > 1
 
   return (
-    <li>
-      {!root && <span className="evolution-condition"><ChevronRight aria-hidden="true" /><span className="evolution-condition-options">{evolutionConditions(node.evolution_details, t, language).map((condition) => <small key={condition}>{condition}</small>)}</span></span>}
-      <Link to={`/pokemon/${node.species.name}`} className="evolution-pokemon">
-        <img src={pokemonArtwork(id)} alt={prettyName(node.species.name)} width="100" height="100" loading="lazy" decoding="async" />
-        <b>{prettyName(node.species.name)}</b>
-        <small>#{String(id).padStart(4, '0')}</small>
-      </Link>
+    <li className="evolution-node">
+      <div className="evolution-entry">
+        {!root && <span className="evolution-condition"><ChevronRight aria-hidden="true" /><span className="evolution-condition-options">{evolutionConditions(node.evolution_details, t, language).map((condition) => <small key={condition}>{condition}</small>)}</span></span>}
+        <Link to={`/pokemon/${node.species.name}`} className="evolution-pokemon">
+          <img src={pokemonArtwork(id)} alt={prettyName(node.species.name)} width="100" height="100" loading="lazy" decoding="async" />
+          <b>{prettyName(node.species.name)}</b>
+          <small>#{String(id).padStart(4, '0')}</small>
+        </Link>
+      </div>
       {node.evolves_to.length > 0 && (
-        <ul>{node.evolves_to.map((child) => <EvolutionTreeNode key={child.species.name} node={child} t={t} language={language} />)}</ul>
+        <ul className={`evolution-children${hasBranches ? ' is-branching' : ''}`}>
+          {node.evolves_to.map((child) => <EvolutionTreeNode key={child.species.name} node={child} t={t} language={language} />)}
+        </ul>
       )}
     </li>
   )
