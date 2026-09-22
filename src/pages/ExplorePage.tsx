@@ -1,6 +1,7 @@
 import { ArrowRight, Search } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { SearchField } from '../components/SearchField'
+import { DamageClassIconSet } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getResourceGroups } from '../data/resources'
 import { normalizeSearchText } from '../lib/api'
@@ -29,7 +30,7 @@ export function ExplorePage() {
           <header><span className="group-icon"><group.icon /></span><div><h2>{group.title}</h2><p>{group.description}</p></div><span className="resource-total">{group.resources.length}</span></header>
           <div className="resource-links">{group.resources.map((resource) => {
             const ResourceIcon = resource.icon
-            return <Link key={resource.endpoint} to={`/explorar/${resource.endpoint}`}><span className="resource-link-icon"><ResourceIcon size={17} /></span><span>{resource.label}</span><ArrowRight size={16} /></Link>
+            return <Link key={resource.endpoint} to={`/explorar/${resource.endpoint}`}><span className="resource-link-icon">{resource.endpoint === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon size={17} />}</span><span>{resource.label}</span><ArrowRight size={16} /></Link>
           })}</div>
         </article>)}
       </div>

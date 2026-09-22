@@ -75,4 +75,11 @@ describe('ResourceValue', () => {
 
     expect(screen.getByRole('link', { name: /Bulbasaur/ })).toHaveAttribute('href', '/pokemon/bulbasaur')
   })
+
+  it('renders damage-class references with the shared icon and color treatment', () => {
+    const { container } = renderValue({ name: 'status', url: `${API_BASE}/move-damage-class/1/` })
+
+    expect(screen.getByRole('link', { name: /Status/ })).toHaveAttribute('href', '/explorar/move-damage-class/1')
+    expect(container.querySelector('.damage-status img')).toHaveAttribute('src', '/icons/damage-status.png')
+  })
 })

@@ -4,7 +4,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { ResourceValue, resourceFieldLabel } from '../components/ResourceValue'
-import { DamageClassBadge, GenderBadge } from '../components/SemanticBadges'
+import { DamageClassBadge, DamageClassIcon, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
@@ -58,6 +58,7 @@ export function ResourceDetailPage() {
   const technicalEntries = entries.filter(([key]) => !preferredKeys.includes(key))
   const moveType = resource === 'move' && data.type && typeof data.type === 'object' ? (data.type as { name?: string }).name : undefined
   const moveClass = resource === 'move' && data.damage_class && typeof data.damage_class === 'object' ? (data.damage_class as { name?: string }).name : undefined
+  const damageClass = resource === 'move-damage-class' && typeof data.name === 'string' ? normalizedDamageClass(data.name) : undefined
   const berryName = resource === 'berry' && typeof data.name === 'string' ? data.name : null
   return (
     <section className="page content-width detail-resource-page" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}>
@@ -66,9 +67,11 @@ export function ResourceDetailPage() {
         <Link to={`/explorar/${resource}`} className="icon-button" aria-label={t('resource.back')} title={t('resource.back')}><ArrowLeft /></Link>
         {berryName
           ? <img src={berrySprite(berryName)} alt="" width="72" height="72" loading="lazy" decoding="async" />
-          : <span className="resource-detail-mark"><ResourceIcon /></span>}
+          : damageClass
+            ? <span className={`resource-detail-mark damage-class-detail-icon damage-${damageClass}`}><DamageClassIcon value={damageClass} width="42" height="34" /></span>
+            : <span className="resource-detail-mark"><ResourceIcon /></span>}
         {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />}
-        <div><span className="eyebrow">{getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}</span><h1>{prettyName(String(title))}</h1>{description && <p>{description}</p>}{descriptionResult.fallback && language !== 'en' && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}<div className="resource-semantic-badges">{resource === 'type' && <TypeBadge type={String(data.name)} />}{moveType && <TypeBadge type={moveType} />}{moveClass && <DamageClassBadge value={moveClass} />}{resource === 'gender' && <GenderBadge value={String(data.name)} />}{resource === 'ability' && <span className="resource-kind-badge"><Zap size={14} />{t('resource.passiveAbility')}</span>}</div></div>
+        <div><span className="eyebrow">{getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}</span><h1>{prettyName(String(title))}</h1>{description && <p>{description}</p>}{descriptionResult.fallback && language !== 'en' && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}<div className="resource-semantic-badges">{resource === 'type' && <TypeBadge type={String(data.name)} />}{moveType && <TypeBadge type={moveType} />}{moveClass && <DamageClassBadge value={moveClass} />}{damageClass && <DamageClassBadge value={damageClass} />}{resource === 'gender' && <GenderBadge value={String(data.name)} />}{resource === 'ability' && <span className="resource-kind-badge"><Zap size={14} />{t('resource.passiveAbility')}</span>}</div></div>
         <a className="button secondary api-link technical-link" href={`https://pokeapi.co/api/v2/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`} target="_blank" rel="noopener noreferrer">JSON <ExternalLink size={16} /></a>
       </header>
       <section className="resource-summary" aria-labelledby="resource-summary-title"><h2 id="resource-summary-title">{t('resource.summary')}</h2><div className="resource-detail-grid">{summaryEntries.map(([key, value]) => {

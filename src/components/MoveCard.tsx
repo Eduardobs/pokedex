@@ -56,7 +56,7 @@ export function MoveCard({ move, method, level }: Props) {
   const learning = moveLearningLabel(method, level, t)
   return (
     <Link ref={cardRef} className={`move-card ${data ? `damage-border-${data.damage_class.name}` : ''}`} to={`/explorar/move/${move.name}`}>
-      <div className="move-card-title"><b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>{data && <DamageClassBadge value={data.damage_class.name} compact />}</div>
+      <div className="move-card-title"><b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>{data && <DamageClassBadge value={data.damage_class.name} />}</div>
       <div className="move-card-meta">
         <div className="move-learning"><BookOpen aria-hidden="true" /><span>{t('move.learning')}</span><strong>{learning}</strong></div>
         {data ? <TypeBadge type={data.type.name} /> : <i className="move-meta-placeholder" />}

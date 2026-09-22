@@ -4,7 +4,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { SearchField } from '../components/SearchField'
-import { GenderBadge } from '../components/SemanticBadges'
+import { DamageClassBadge, DamageClassIcon, DamageClassIconSet, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
@@ -57,7 +57,7 @@ export function ResourceListPage() {
     setSearchParams(next, { replace: true })
   }
   if (!valid) return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
-  if (loading) return <section className="page content-width resource-page" aria-busy="true" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}><div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span><span>{getResourceLabel(resource, language)}</span></div><div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.loading', { name: getResourceLabel(resource, language).toLowerCase() })}</p></div></div></div><div className="data-list resource-list-skeleton" aria-label={t('common.loadingShort')}>{Array.from({ length: 8 }, (_, index) => <div className="data-row-skeleton skeleton" key={index} />)}</div></section>
+  if (loading) return <section className="page content-width resource-page" aria-busy="true" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}><div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span><span>{getResourceLabel(resource, language)}</span></div><div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon">{resource === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon />}</span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.loading', { name: getResourceLabel(resource, language).toLowerCase() })}</p></div></div></div><div className="data-list resource-list-skeleton" aria-label={t('common.loadingShort')}>{Array.from({ length: 8 }, (_, index) => <div className="data-row-skeleton skeleton" key={index} />)}</div></section>
   if (error || !data) return <ErrorState message={t('resource.loadError')} retry={retry} />
   if (offset > 0 && offset >= data.count) return <Loading />
   const items = data.results.map((item) => {
@@ -73,6 +73,7 @@ export function ResourceListPage() {
   const resourceName = (name: string) => {
     if (resource === 'type') return <TypeBadge type={name} />
     if (resource === 'gender') return <GenderBadge value={name} />
+    if (resource === 'move-damage-class') return <DamageClassBadge value={name} />
     if (resource === 'move') return <span className="named-resource move"><Swords size={15} />{prettyName(name)}</span>
     if (resource === 'ability') return <span className="named-resource ability"><Zap size={15} />{prettyName(name)}</span>
     return <b>{prettyName(name)}</b>
@@ -81,7 +82,7 @@ export function ResourceListPage() {
   return (
     <section className="page content-width resource-page" style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}>
       <div className="breadcrumbs"><Link to="/explorar">{t('explore.breadcrumb')}</Link><span>/</span>{meta?.groupTitle && GroupIcon && <><span className="breadcrumb-group"><GroupIcon size={13} />{meta.groupTitle}</span><span>/</span></>}<span>{getResourceLabel(resource, language)}</span></div>
-      <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon"><ResourceIcon /></span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><div className="resource-page-search"><SearchField value={query} onChange={(value) => updateParams(offset, value)} clearLabel={t('common.clear')} compact aria-label={t('resource.filter')} placeholder={t('resource.filter')} /><small>{t('resource.filterScope')}</small></div></div>
+      <div className="page-title resource-list-hero"><div className="resource-title-lockup"><span className="resource-page-icon">{resource === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon />}</span><div><span className="eyebrow"><Database size={14} /> {t('resource.apiCollection')}</span><h1>{getResourceLabel(resource, language)}</h1><p>{t('resource.available', { count: formatNumber(data.count, language) })}</p></div></div><div className="resource-page-search"><SearchField value={query} onChange={(value) => updateParams(offset, value)} clearLabel={t('common.clear')} compact aria-label={t('resource.filter')} placeholder={t('resource.filter')} /><small>{t('resource.filterScope')}</small></div></div>
       {data.count > LIMIT && pagination('top')}
       <div className="data-list">{filtered.map((item) => {
         const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''
@@ -94,7 +95,8 @@ export function ResourceListPage() {
             : resource === 'pokemon' && hasValidId
               ? pokemonArtwork(numericId)
               : undefined
-        return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{hasValidId ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className="data-resource-icon">{sprite ? <img className={resource === 'pokemon' ? 'pokemon-artwork' : undefined} src={sprite} alt="" width="30" height="30" loading="lazy" decoding="async" /> : <ResourceIcon size={17} />}</span>{resourceName(item.name)}<ChevronRight /></Link>
+        const damageClass = resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
+        return <Link to={itemRoute(item.name)} key={item.name}><span className="data-index">{hasValidId ? `#${itemId.padStart(3, '0')}` : '—'}</span><span className={`data-resource-icon${damageClass ? ` damage-class-resource-icon damage-${damageClass}` : ''}`}>{damageClass ? <DamageClassIcon value={damageClass} width="25" height="20" /> : sprite ? <img className={resource === 'pokemon' ? 'pokemon-artwork' : undefined} src={sprite} alt="" width="30" height="30" loading="lazy" decoding="async" /> : <ResourceIcon size={17} />}</span>{resourceName(item.name)}<ChevronRight /></Link>
       })}</div>
       {!filtered.length && <div className="empty"><Search /><h2>{t('resource.emptyPage')}</h2></div>}
       {data.count > LIMIT && pagination('bottom')}

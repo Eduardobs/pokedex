@@ -31,6 +31,32 @@ describe('ResourceListPage pagination', () => {
 })
 
 describe('ResourceListPage item presentation', () => {
+  it('uses the referenced Scarlet/Violet icon and badge for damage classes', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 3,
+        previous: null,
+        next: null,
+        results: [{ name: 'physical', url: 'https://pokeapi.co/api/v2/move-damage-class/2/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explorar/move-damage-class']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Físico')).toBeVisible()
+    expect(container.querySelector('.damage-class-resource-icon img')).toHaveAttribute('src', '/icons/damage-physical.png')
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-physical.png')
+  })
+
   it.each([
     ['wormadam', '/pokemon/wormadam-plant'],
     ['meowstic', '/pokemon/meowstic-male'],

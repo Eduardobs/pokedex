@@ -7,6 +7,7 @@ import type { Language } from '../contexts/LanguageContext'
 import { getResourceLabel } from '../data/resources'
 import { parseRelatedPokemonList } from '../lib/related-pokemon'
 import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
+import { DamageClassBadge } from './SemanticBadges'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
@@ -174,6 +175,7 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   const object = value as Record<string, unknown>
   if (typeof object.name === 'string' && typeof object.url === 'string') {
     const route = routeFromReference(object.url, object.name)
+    if (route?.startsWith('/explorar/move-damage-class/')) return <Link className="damage-class-link" to={route}><DamageClassBadge value={object.name} /></Link>
     return route ? <Link className="resource-chip" to={route}>{prettyName(object.name)} <ChevronRight size={12} /></Link> : <span>{prettyName(object.name)}</span>
   }
   if (depth > 3) return <span className="muted">{t('resource.related')}</span>

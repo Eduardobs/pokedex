@@ -1,17 +1,39 @@
-import { Activity, EyeOff, Mars, Sparkles, Swords, Venus, Zap } from 'lucide-react'
+import type { ImgHTMLAttributes } from 'react'
+import { EyeOff, Mars, Venus, Zap } from 'lucide-react'
 import { prettyName } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
 
+type DamageClass = 'physical' | 'special' | 'status'
+
+export function normalizedDamageClass(value: string): DamageClass {
+  return value === 'physical' || value === 'special' ? value : 'status'
+}
+
+const damageClassIcons: Record<DamageClass, string> = {
+  physical: '/icons/damage-physical.png',
+  special: '/icons/damage-special.png',
+  status: '/icons/damage-status.png',
+}
+
+export function DamageClassIcon({ value, ...props }: ImgHTMLAttributes<HTMLImageElement> & { value: string }) {
+  const damageClass = normalizedDamageClass(value)
+  return <img src={damageClassIcons[damageClass]} alt="" aria-hidden="true" {...props} />
+}
+
+export function DamageClassIconSet() {
+  return <span className="damage-class-icon-set" aria-hidden="true"><i className="damage-physical"><DamageClassIcon value="physical" /></i><i className="damage-special"><DamageClassIcon value="special" /></i><i className="damage-status"><DamageClassIcon value="status" /></i></span>
+}
+
 export function DamageClassBadge({ value, compact = false }: { value: string; compact?: boolean }) {
   const { t } = useLanguage()
+  const normalizedValue = normalizedDamageClass(value)
   const damageClass = {
-    physical: { label: t('damage.physical'), icon: Swords },
-    special: { label: t('damage.special'), icon: Sparkles },
-    status: { label: t('damage.status'), icon: Activity },
+    physical: t('damage.physical'),
+    special: t('damage.special'),
+    status: t('damage.status'),
   }
-  const config = damageClass[value as keyof typeof damageClass] ?? damageClass.status
-  const Icon = config.icon
-  return <span className={`damage-badge damage-${value}`} title={t('damage.class', { name: config.label })}><Icon size={compact ? 13 : 15} aria-hidden="true" />{!compact && config.label}</span>
+  const label = damageClass[normalizedValue]
+  return <span className={`damage-badge damage-${normalizedValue}`} title={t('damage.class', { name: label })}><DamageClassIcon value={normalizedValue} width={compact ? 18 : 20} height={compact ? 14 : 16} />{!compact && label}</span>
 }
 
 export function AbilityBadge({ hidden }: { hidden: boolean }) {

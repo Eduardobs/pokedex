@@ -14,7 +14,7 @@ import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounter
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
-import { AbilityBadge } from '../components/SemanticBadges'
+import { AbilityBadge, DamageClassBadge } from '../components/SemanticBadges'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -218,7 +218,7 @@ export function PokemonDetailPage() {
           {species && <PokemonForms species={species} currentPokemon={pokemon} />}
         </div>}
         {tab === 'moves' && <article className="info-card wide-card" role="tabpanel" id="panel-moves" aria-labelledby="tab-moves">
-          <div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend"><span><i className="physical" />{t('damage.physical')}</span><span><i className="special" />{t('damage.special')}</span><span><i className="status" />{t('damage.status')}</span></div></div>
+          <div className="table-heading"><div><h2>{t('detail.compatibleMoves')}</h2><p>{t('detail.movesDesc')}</p></div><div className="damage-legend" aria-label={t('damage.class', { name: `${t('damage.physical')}, ${t('damage.special')}, ${t('damage.status')}` })}><DamageClassBadge value="physical" /><DamageClassBadge value="special" /><DamageClassBadge value="status" /></div></div>
           <div className="move-toolbar">
             <SearchField value={moveQuery} onChange={setMoveQuery} clearLabel={t('common.clear')} iconSize={18} aria-label={t('detail.movesSearch')} placeholder={t('detail.movesSearch')} />
             <SelectMenu icon={<GraduationCap size={18} />} label={t('move.learning')} options={moveMethodOptions} value={moveMethod} onChange={setMoveMethod} />

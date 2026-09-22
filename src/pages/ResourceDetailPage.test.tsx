@@ -8,6 +8,27 @@ const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 
 describe('ResourceDetailPage berry presentation', () => {
+  it('uses the referenced damage-class treatment on its catalog detail page', () => {
+    useApiMock.mockReturnValue({
+      data: { id: 2, name: 'special', names: [] },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explorar/move-damage-class/special']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('Especial')).toBeVisible()
+    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute('src', '/icons/damage-special.png')
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-special.png')
+  })
+
   it('shows the berry sprite instead of the generic resource icon', () => {
     useApiMock.mockReturnValue({
       data: { id: 1, name: 'cheri' },
