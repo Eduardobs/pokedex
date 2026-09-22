@@ -103,6 +103,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
     pending = { promise: Promise.resolve(), controller, consumers: 0, settled: false }
     pending.promise = fetch(url, {
       headers: { Accept: 'application/json' },
+      credentials: 'omit',
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })

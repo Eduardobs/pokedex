@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, GraduationCap, Heart, MapPin, Ruler, Search, Shapes, ShieldAlert, Sparkles, Weight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, GraduationCap, Heart, Ruler, Search, Shapes, ShieldAlert, Sparkles, Weight } from 'lucide-react'
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
@@ -8,6 +8,7 @@ import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
 import { PokemonForms } from '../components/PokemonForms'
 import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
+import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounters'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
@@ -18,6 +19,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { formatDecimal, formatNumber, idFromUrl, localizedApiTerm, localizedTextResult, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import { groupMovesByLearningMethod } from '../lib/move-learning'
+import { parsePokemonEncounters } from '../lib/pokemon-encounters'
 import { level100StatRange } from '../lib/pokemon-stats'
 import { BATTLE_TYPES, type BattleType } from '../lib/type-chart'
 import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
@@ -35,7 +37,7 @@ export function PokemonDetailPage() {
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
   const { data: species, loading: speciesLoading, error: speciesError } = useApi<Species>(pokemon?.species.url ?? null)
   const { data: evolution, loading: evolutionLoading, error: evolutionError } = useApi<EvolutionChain>(secondaryDataReady ? species?.evolution_chain?.url ?? null : null)
-  const { data: encounters, loading: encountersLoading, error: encountersError, retry: retryEncounters } = useApi<Encounter[]>(tab === 'encounters' ? pokemon?.location_area_encounters ?? null : null)
+  const { data: encounters, loading: encountersLoading, error: encountersError, retry: retryEncounters } = useApi<Encounter[]>(tab === 'encounters' ? pokemon?.location_area_encounters ?? null : null, parsePokemonEncounters)
   const previousId = pokemon && pokemon.id > 1 ? pokemon.id - 1 : null
   const nextId = pokemon ? pokemon.id + 1 : null
   const neighborOffset = Math.max(0, (pokemon?.id ?? 1) - 2)
@@ -218,7 +220,7 @@ export function PokemonDetailPage() {
           <div className="move-groups">{!moveTypeLoading && !moveTypeError && filteredMoveGroups.map((group) => <section className="move-group" key={group.method}><header><h3>{moveLearningMethodLabel(group.method, t)}</h3><span>{group.moves.length === 1 ? t('move.countOne') : t('move.count', { count: group.moves.length })}</span></header><div className="moves-grid">{group.moves.map(({ move, method, level }) => <MoveCard key={move.name} move={move} method={method} level={level} />)}</div></section>)}</div>
           {!moveTypeLoading && !moveTypeError && !filteredMoveGroups.length && <div className="empty compact-empty"><Search /><h3>{t('pokedex.empty')}</h3></div>}
         </article>}
-        {tab === 'encounters' && <article className="info-card wide-card" role="tabpanel" id="panel-encounters" aria-labelledby="tab-encounters"><h2>{t('detail.encounterAreas')}</h2>{encountersLoading ? <Loading /> : encountersError ? <div className="inline-error"><p>{t('error.message')}</p><button className="button secondary" type="button" onClick={retryEncounters}>{t('common.retry')}</button></div> : encounters?.length ? <div className="encounter-list">{encounters.map((entry) => <Link to={`/explorar/location-area/${entry.location_area.name}`} key={entry.location_area.name}><MapPin /><b>{prettyName(entry.location_area.name)}</b><span>{t('detail.chance', { chance: Math.max(...entry.version_details.map((detail) => detail.max_chance)) })}</span><ChevronRight /></Link>)}</div> : <div className="empty"><MapPin /><h3>{t('detail.noEncounters')}</h3></div>}</article>}
+        {tab === 'encounters' && <article className="info-card wide-card" role="tabpanel" id="panel-encounters" aria-labelledby="tab-encounters">{encountersLoading ? <Loading /> : encountersError ? <div className="inline-error"><p>{t('error.message')}</p><button className="button secondary" type="button" onClick={retryEncounters}>{t('common.retry')}</button></div> : <PokemonEncounters encounters={encounters ?? []} />}</article>}
         {tab === 'data' && <div role="tabpanel" id="panel-data" aria-labelledby="tab-data"><PokemonDataTab pokemon={pokemon} species={species} speciesLoading={speciesLoading} /></div>}
       </div>
     </section>

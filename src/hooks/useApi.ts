@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../lib/api'
 
 type ApiState<T> = {
@@ -8,8 +8,9 @@ type ApiState<T> = {
   loading: boolean
 }
 
-export function useApi<T>(pathOrUrl: string | null) {
+export function useApi<T>(pathOrUrl: string | null, parse?: (value: unknown) => T) {
   const [retryCount, setRetryCount] = useState(0)
+  const parseRef = useRef(parse)
   const [state, setState] = useState<ApiState<T>>({
     pathOrUrl,
     data: null,
@@ -18,14 +19,19 @@ export function useApi<T>(pathOrUrl: string | null) {
   })
 
   useEffect(() => {
+    parseRef.current = parse
+  }, [parse])
+
+  useEffect(() => {
     if (!pathOrUrl) {
       setState({ pathOrUrl, data: null, error: null, loading: false })
       return
     }
     const controller = new AbortController()
     setState({ pathOrUrl, data: null, error: null, loading: true })
-    apiFetch<T>(pathOrUrl, controller.signal)
-      .then((data) => {
+    apiFetch<unknown>(pathOrUrl, controller.signal)
+      .then((value) => {
+        const data = parseRef.current ? parseRef.current(value) : value as T
         if (!controller.signal.aborted) setState({ pathOrUrl, data, error: null, loading: false })
       })
       .catch((reason: unknown) => {

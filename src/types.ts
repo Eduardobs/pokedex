@@ -31,6 +31,7 @@ export interface Pokemon {
   cries?: { latest: string | null; legacy: string | null }
   held_items?: { item: NamedResource; version_details: { rarity: number; version: NamedResource }[] }[]
   past_abilities?: { abilities: { ability: NamedResource | null; is_hidden: boolean; slot: number }[]; generation: NamedResource }[]
+  past_stats?: { generation: NamedResource; stats: { base_stat: number; effort: number; stat: NamedResource }[] }[]
   past_types?: { generation: NamedResource; types: { slot: number; type: NamedResource }[] }[]
 }
 
@@ -152,5 +153,15 @@ export interface PokemonForm {
 
 export interface Encounter {
   location_area: NamedResource
-  version_details: { version: NamedResource; max_chance: number; encounter_details: unknown[] }[]
+  version_details: {
+    version: NamedResource
+    max_chance: number
+    encounter_details: {
+      min_level: number
+      max_level: number
+      chance: number
+      method: NamedResource
+      condition_values: NamedResource[]
+    }[]
+  }[]
 }

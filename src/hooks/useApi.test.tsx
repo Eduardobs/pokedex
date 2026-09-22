@@ -42,6 +42,25 @@ describe('useApi', () => {
     }))
   })
 
+  it('valida e transforma uma resposta antes de publicá-la', async () => {
+    apiFetchMock.mockResolvedValue({ name: 'PIKACHU' })
+    const parse = (value: unknown): PokemonSummary => ({ name: String((value as PokemonSummary).name).toLowerCase() })
+
+    const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu', parse))
+
+    await waitFor(() => expect(result.current.data).toEqual({ name: 'pikachu' }))
+  })
+
+  it('expõe como falha uma resposta rejeitada pelo parser', async () => {
+    apiFetchMock.mockResolvedValue({ invalid: true })
+    const parse = (): PokemonSummary => { throw new Error('invalid response') }
+
+    const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu', parse))
+
+    await waitFor(() => expect(result.current).toMatchObject({ data: null, loading: false }))
+    expect(result.current.error).toMatchObject({ message: 'invalid response' })
+  })
+
   it('expõe falhas e consegue repetir a requisição', async () => {
     apiFetchMock
       .mockRejectedValueOnce(new Error('network unavailable'))

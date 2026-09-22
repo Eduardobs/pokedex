@@ -88,6 +88,10 @@ describe('utilitários da PokéAPI', () => {
     await expect(apiFetch<typeof response>('pokemon/10004')).resolves.toEqual(response)
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      credentials: 'omit',
+      referrerPolicy: 'no-referrer',
+    }))
   })
 
   it('não armazena falhas em cache e permite tentar novamente', async () => {

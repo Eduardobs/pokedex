@@ -1,8 +1,9 @@
-import { Database, ExternalLink, Gamepad2, History, Image, PackageOpen, Volume2 } from 'lucide-react'
+import { Database, ExternalLink, Gamepad2, Image, PackageOpen, Volume2 } from 'lucide-react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { API_BASE } from '../../lib/api'
 import type { Pokemon, Species } from '../../types'
 import { ResourceValue } from '../ResourceValue'
+import { PokemonHistoryCard } from './PokemonHistoryCard'
 
 type Props = {
   pokemon: Pokemon
@@ -63,15 +64,7 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
         {pokemon.game_indices.length ? <ResourceValue value={pokemon.game_indices} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
       </article>
 
-      <article className="info-card technical-card">
-        <h2><History />{t('detail.pastAbilities')}</h2>
-        {pokemon.past_abilities?.length ? <ResourceValue value={pokemon.past_abilities} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
-
-      <article className="info-card technical-card">
-        <h2><History />{t('detail.pastTypes')}</h2>
-        {pokemon.past_types?.length ? <ResourceValue value={pokemon.past_types} /> : <p className="muted">{t('detail.noHistoricalData')}</p>}
-      </article>
+      <PokemonHistoryCard pokemon={pokemon} />
 
       <article className="info-card technical-card api-source-card">
         <h2><ExternalLink />{t('detail.apiSource')}</h2>
