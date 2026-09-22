@@ -6,6 +6,11 @@ import { MAP_TOTAL } from '../data/kanto-map'
 
 export function MapsPage() {
   const { language, t } = useLanguage()
+  const scarletVioletMaps = [
+    { label: t('maps.paldeaRegion'), to: '/mapas/paldea' },
+    { label: t('maps.kitakamiRegion'), to: '/mapas/kitakami' },
+    { label: t('maps.terarium'), to: '/mapas/terrarium' },
+  ]
 
   return (
     <section className="page content-width maps-page">
@@ -45,6 +50,43 @@ export function MapsPage() {
             </span>
           </div>
         </Link>
+
+        <article className="game-map-card game-map-card--scarlet-violet">
+          <div className="game-map-cover">
+            <img
+              src={`${import.meta.env.BASE_URL}maps/scarlet-violet-cover.webp`}
+              alt={t('maps.scarletVioletCoverAlt')}
+              width="420"
+              height="560"
+            />
+            <span className="game-map-generation">{t('maps.scarletVioletGeneration')}</span>
+          </div>
+          <div className="game-map-card-copy">
+            <span className="game-map-platform">
+              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch
+            </span>
+            <h2>Pokémon Scarlet &amp; Violet</h2>
+            <p>{t('maps.scarletVioletDescription')}</p>
+
+            <div className="game-map-regions" aria-labelledby="scarlet-violet-regions">
+              <p id="scarlet-violet-regions" className="game-map-region-label">
+                {t('maps.chooseRegion')}
+              </p>
+              <div className="game-map-region-options">
+                {scarletVioletMaps.map((region) => (
+                  <Link key={region.label} to={region.to}>
+                    <span>
+                      <MapPinned size={17} aria-hidden="true" /> {region.label}
+                    </span>
+                    <small>
+                      {t('maps.openRegionMap')} <ArrowRight size={14} aria-hidden="true" />
+                    </small>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
   )

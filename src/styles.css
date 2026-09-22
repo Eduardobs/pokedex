@@ -6082,6 +6082,7 @@ footer a {
 .game-map-grid {
   display: grid;
   grid-template-columns: minmax(0, 760px);
+  gap: 24px;
 }
 .game-map-card {
   min-height: 390px;
@@ -6097,10 +6098,14 @@ footer a {
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 }
-.game-map-card:hover {
+.game-map-card[href]:hover {
   transform: translateY(-5px);
   border-color: color-mix(in srgb, var(--red) 34%, var(--line));
   box-shadow: 0 24px 60px #23313f20;
+}
+.game-map-card[href]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--red) 42%, transparent);
+  outline-offset: 4px;
 }
 .game-map-cover {
   min-height: 390px;
@@ -6126,6 +6131,14 @@ footer a {
   position: relative;
   z-index: 1;
   filter: drop-shadow(0 18px 20px #15171966);
+}
+.game-map-card--scarlet-violet .game-map-cover {
+  background:
+    radial-gradient(circle at 20% 16%, #ffae6670 0 9%, transparent 10%),
+    linear-gradient(145deg, #a72b34 0 49%, #5d3a91 51% 100%);
+}
+.game-map-card--scarlet-violet .game-map-cover img {
+  width: min(100%, 225px);
 }
 .game-map-generation {
   position: absolute;
@@ -6199,11 +6212,83 @@ footer a {
 .game-map-open svg {
   transition: transform 0.18s ease;
 }
-.game-map-card:hover .game-map-open svg {
+.game-map-card[href]:hover .game-map-open svg {
   transform: translateX(4px);
 }
+.game-map-regions {
+  width: 100%;
+  margin-top: 22px;
+}
+.game-map-card-copy .game-map-region-label {
+  margin: 0 0 9px;
+  color: var(--ink);
+  font: 750 12px Outfit;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.game-map-region-options {
+  display: grid;
+  gap: 8px;
+}
+.game-map-region-options a,
+.game-map-region-options button {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+.game-map-region-options a {
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+.game-map-region-options a:hover {
+  border-color: color-mix(in srgb, var(--red) 38%, var(--line));
+  background: color-mix(in srgb, var(--red) 6%, var(--surface));
+}
+.game-map-region-options a:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--red) 32%, transparent);
+  outline-offset: 2px;
+}
+.game-map-region-options button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+.game-map-region-options a > span,
+.game-map-region-options button > span,
+.game-map-region-options small {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.game-map-region-options a > span,
+.game-map-region-options button > span {
+  font-size: 12px;
+  font-weight: 750;
+}
+.game-map-region-options a > span svg,
+.game-map-region-options button > span svg {
+  color: var(--red);
+}
+.game-map-region-options small {
+  flex: none;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+.game-map-region-options a small {
+  color: var(--red);
+}
 
-.kanto-map-page {
+.game-map-page {
   padding: 30px 0 52px;
 }
 .map-page-header {
@@ -6726,6 +6811,57 @@ footer a {
   border-color: #46564c;
   background-color: #34221f;
 }
+.game-map-page--paldea .map-header-stats .map-region-chip {
+  border-color: #9c8ad0;
+  background: #f2effc;
+  color: #624c9e;
+}
+.game-map-page--paldea .map-viewport,
+.game-map-page--paldea .map-canvas,
+:root[data-theme='dark'] .game-map-page--paldea .map-viewport,
+:root[data-theme='dark'] .game-map-page--paldea .map-canvas {
+  border-color: #55718c;
+  background-color: #1c3552;
+}
+:root[data-theme='dark'] .game-map-page--paldea .map-header-stats .map-region-chip {
+  border-color: #69589d;
+  background: #2d2643;
+  color: #c3b7ec;
+}
+.game-map-page--kitakami .map-header-stats .map-region-chip {
+  border-color: #79ac8a;
+  background: #eaf7ee;
+  color: #2f7547;
+}
+.game-map-page--kitakami .map-viewport,
+.game-map-page--kitakami .map-canvas,
+:root[data-theme='dark'] .game-map-page--kitakami .map-viewport,
+:root[data-theme='dark'] .game-map-page--kitakami .map-canvas {
+  border-color: #4c7d70;
+  background-color: #1d6253;
+}
+:root[data-theme='dark'] .game-map-page--kitakami .map-header-stats .map-region-chip {
+  border-color: #3f7650;
+  background: #203a29;
+  color: #9bd0a9;
+}
+.game-map-page--terrarium .map-header-stats .map-region-chip {
+  border-color: #68a7b8;
+  background: #e7f6f9;
+  color: #246a7d;
+}
+.game-map-page--terrarium .map-viewport,
+.game-map-page--terrarium .map-canvas,
+:root[data-theme='dark'] .game-map-page--terrarium .map-viewport,
+:root[data-theme='dark'] .game-map-page--terrarium .map-canvas {
+  border-color: #4e7f91;
+  background-color: #174c61;
+}
+:root[data-theme='dark'] .game-map-page--terrarium .map-header-stats .map-region-chip {
+  border-color: #39758a;
+  background: #173541;
+  color: #91cada;
+}
 
 @media (max-width: 950px) {
   .map-page-header {
@@ -6759,7 +6895,7 @@ footer a {
   .game-map-card-copy {
     padding: 28px 22px;
   }
-  .kanto-map-page {
+  .game-map-page {
     padding-top: 22px;
   }
   .map-page-header {

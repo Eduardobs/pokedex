@@ -1,0 +1,6258 @@
+[
+  {
+    "id": "302745",
+    "category": "fast-travel",
+    "name": "The Crystal Pool",
+    "area": "Kitakami",
+    "x": 7986.89,
+    "y": 7836.99
+  },
+  {
+    "id": "302746",
+    "category": "fast-travel",
+    "name": "Loyalty Plaza",
+    "area": "Loyalty Plaza",
+    "x": 7208.07,
+    "y": 10848.94
+  },
+  {
+    "id": "302856",
+    "category": "fast-travel",
+    "name": "Bus Stop",
+    "area": "Kitakami Road",
+    "x": 8263.77,
+    "y": 12672.85
+  },
+  {
+    "id": "303608",
+    "category": "fast-travel",
+    "name": "Mossfell Confluence",
+    "area": "Mossful Confluence",
+    "x": 11750.79,
+    "y": 12618.33
+  },
+  {
+    "id": "303632",
+    "category": "fast-travel",
+    "name": "Kitakami Hall",
+    "area": "Kitakami Hall",
+    "x": 11203.62,
+    "y": 9988.17
+  },
+  {
+    "id": "303712",
+    "category": "fast-travel",
+    "name": "Fallen Horn",
+    "area": "Fellhorn Gorge",
+    "x": 12264.17,
+    "y": 7804.82
+  },
+  {
+    "id": "303875",
+    "category": "fast-travel",
+    "name": "Wisteria Pond",
+    "area": "Wistful Fields",
+    "x": 4008.21,
+    "y": 11894.32
+  },
+  {
+    "id": "305210",
+    "category": "fast-travel",
+    "name": "Infernal Pass",
+    "area": "Kitakami",
+    "x": 6472.47,
+    "y": 9597.93
+  },
+  {
+    "id": "305220",
+    "category": "fast-travel",
+    "name": "Gracious Stones",
+    "area": "Kitakami Wilds",
+    "x": 7477.2,
+    "y": 4234.69
+  },
+  {
+    "id": "305426",
+    "category": "fast-travel",
+    "name": "Paradise Barrens",
+    "area": "Paradise Barrens",
+    "x": 4419.03,
+    "y": 4941.46
+  },
+  {
+    "id": "302896",
+    "category": "general-store",
+    "name": "Peachy's",
+    "area": "Mossui Town",
+    "x": 9393.5,
+    "y": 11536.13
+  },
+  {
+    "id": "302893",
+    "category": "pokemon-center",
+    "name": "Community Center",
+    "area": "Mossui Town",
+    "x": 9213.72,
+    "y": 11537.69
+  },
+  {
+    "id": "302747",
+    "category": "tm",
+    "name": "TM 165: Flare Blitz",
+    "area": "Kitakami",
+    "x": 7339.79,
+    "y": 8297.81
+  },
+  {
+    "id": "302751",
+    "category": "tm",
+    "name": "TM 184: Vacuum Wave",
+    "area": "Kitakami",
+    "x": 5753.78,
+    "y": 7459.01
+  },
+  {
+    "id": "302797",
+    "category": "tm",
+    "name": "TM 130: Helping Hand",
+    "area": "Kitakami Hall",
+    "x": 10683.68,
+    "y": 9226.79
+  },
+  {
+    "id": "302853",
+    "category": "tm",
+    "name": "TM 172: Roar",
+    "area": "Kitakami Road",
+    "x": 8769.29,
+    "y": 12870.16
+  },
+  {
+    "id": "302858",
+    "category": "tm",
+    "name": "TM 028: Bulldoze",
+    "area": "Kitakami Road",
+    "x": 8201.5,
+    "y": 13014.25
+  },
+  {
+    "id": "302862",
+    "category": "tm",
+    "name": "TM 137: Grassy Terrain",
+    "area": "Kitakami Road",
+    "x": 7517.25,
+    "y": 12967.25
+  },
+  {
+    "id": "302869",
+    "category": "tm",
+    "name": "TM 109: Trick",
+    "area": "Kitakami Road",
+    "x": 6887.57,
+    "y": 12463.84
+  },
+  {
+    "id": "302871",
+    "category": "tm",
+    "name": "TM 104: Acrobatics",
+    "area": "Kitakami Road",
+    "x": 6576.57,
+    "y": 12527.76
+  },
+  {
+    "id": "302875",
+    "category": "tm",
+    "name": "TM 105: X-Scissor",
+    "area": "Kitakami Road",
+    "x": 7755.03,
+    "y": 12572.57
+  },
+  {
+    "id": "302877",
+    "category": "tm",
+    "name": "TM 015: Struggle Bug",
+    "area": "Kitakami Road",
+    "x": 9450.79,
+    "y": 11924.68
+  },
+  {
+    "id": "302884",
+    "category": "tm",
+    "name": "TM 128: Amnesia",
+    "area": "Mossui Town",
+    "x": 9475.78,
+    "y": 11455.21
+  },
+  {
+    "id": "302899",
+    "category": "tm",
+    "name": "TM 080: Metronome",
+    "area": "Mossui Town",
+    "x": 9203.87,
+    "y": 11142.62
+  },
+  {
+    "id": "302900",
+    "category": "tm",
+    "name": "TM 177: Spite",
+    "area": "Mossui Town",
+    "x": 9670.31,
+    "y": 11574.13
+  },
+  {
+    "id": "302904",
+    "category": "tm",
+    "name": "TM 193: Weather Ball",
+    "area": "Kitakami Road",
+    "x": 10499.25,
+    "y": 12635.13
+  },
+  {
+    "id": "302911",
+    "category": "tm",
+    "name": "TM 140: Nasty Plot",
+    "area": "Apple Hills",
+    "x": 8317,
+    "y": 12285
+  },
+  {
+    "id": "302917",
+    "category": "tm",
+    "name": "TM 055: Dig",
+    "area": "Apple Hills",
+    "x": 8231.4,
+    "y": 11901.12
+  },
+  {
+    "id": "303059",
+    "category": "tm",
+    "name": "TM 175: Toxic",
+    "area": "Loyalty Plaza",
+    "x": 7412.4,
+    "y": 11073.59
+  },
+  {
+    "id": "303096",
+    "category": "tm",
+    "name": "TM 066: Body Slam",
+    "area": "Kitakami Road",
+    "x": 11291.95,
+    "y": 12720.37
+  },
+  {
+    "id": "303100",
+    "category": "tm",
+    "name": "TM 060: U-Turn",
+    "area": "Apple Hills",
+    "x": 6469.16,
+    "y": 10731.12
+  },
+  {
+    "id": "303101",
+    "category": "tm",
+    "name": "TM 194: Grassy Glide",
+    "area": "Loyalty Plaza",
+    "x": 7731.02,
+    "y": 11587.06
+  },
+  {
+    "id": "303102",
+    "category": "tm",
+    "name": "TM 085: Rest",
+    "area": "Apple Hills",
+    "x": 7282.89,
+    "y": 11406.71
+  },
+  {
+    "id": "303103",
+    "category": "tm",
+    "name": "TM 182: Bug Bite",
+    "area": "Apple Hills",
+    "x": 7184.7,
+    "y": 12013.47
+  },
+  {
+    "id": "303104",
+    "category": "tm",
+    "name": "TM 049: Sunny Day",
+    "area": "Apple Hills",
+    "x": 7682.75,
+    "y": 12365
+  },
+  {
+    "id": "303105",
+    "category": "tm",
+    "name": "TM 074: Reflect",
+    "area": "Loyalty Plaza",
+    "x": 8637.11,
+    "y": 11220.11
+  },
+  {
+    "id": "303106",
+    "category": "tm",
+    "name": "TM 148: Sludge Bomb",
+    "area": "Kitakami",
+    "x": 9228.75,
+    "y": 10220
+  },
+  {
+    "id": "303107",
+    "category": "tm",
+    "name": "TM 129: Calm Mind",
+    "area": "Loyalty Plaza",
+    "x": 9379.56,
+    "y": 10448.73
+  },
+  {
+    "id": "303108",
+    "category": "tm",
+    "name": "TM 036: Rock Tomb",
+    "area": "Loyalty Plaza",
+    "x": 9017.8,
+    "y": 10931.47
+  },
+  {
+    "id": "303109",
+    "category": "tm",
+    "name": "TM 173: Charge",
+    "area": "Mossui Town",
+    "x": 9129.54,
+    "y": 11441.63
+  },
+  {
+    "id": "303111",
+    "category": "tm",
+    "name": "TM 077: Waterfall",
+    "area": "Reveler's Road",
+    "x": 9481.14,
+    "y": 10691.67
+  },
+  {
+    "id": "303114",
+    "category": "tm",
+    "name": "TM 119: Energy Ball",
+    "area": "Reveler's Road",
+    "x": 9882.95,
+    "y": 11107.16
+  },
+  {
+    "id": "303747",
+    "category": "tm",
+    "name": "TM 081: Grass Knot",
+    "area": "Reveler's Road",
+    "x": 10615.56,
+    "y": 12094.48
+  },
+  {
+    "id": "303748",
+    "category": "tm",
+    "name": "TM 027: Aerial Ace",
+    "area": "Reveler's Road",
+    "x": 11513.38,
+    "y": 12429.29
+  },
+  {
+    "id": "303749",
+    "category": "tm",
+    "name": "TM 065: Air Slash",
+    "area": "Kitakami",
+    "x": 9065.16,
+    "y": 9488.91
+  },
+  {
+    "id": "303750",
+    "category": "tm",
+    "name": "TM 192: Focus Punch",
+    "area": "Reveler's Road",
+    "x": 11418.15,
+    "y": 10871.82
+  },
+  {
+    "id": "303751",
+    "category": "tm",
+    "name": "TM 185: Lunge",
+    "area": "Reveler's Road",
+    "x": 10790.29,
+    "y": 10551.08
+  },
+  {
+    "id": "303752",
+    "category": "tm",
+    "name": "TM 018: Thief",
+    "area": "Mossful Confluence",
+    "x": 11814.79,
+    "y": 12422.33
+  },
+  {
+    "id": "303753",
+    "category": "tm",
+    "name": "TM 111: Giga Drain",
+    "area": "Mossful Confluence",
+    "x": 12326.79,
+    "y": 12297.19
+  },
+  {
+    "id": "303754",
+    "category": "tm",
+    "name": "TM 010: Ice Fang",
+    "area": "Kitakami",
+    "x": 9259.78,
+    "y": 8979.16
+  },
+  {
+    "id": "303755",
+    "category": "tm",
+    "name": "TM 108: Crunch",
+    "area": "Kitakami",
+    "x": 8109.17,
+    "y": 9540.97
+  },
+  {
+    "id": "303756",
+    "category": "tm",
+    "name": "TM 059: Zen Headbutt",
+    "area": "Kitakami",
+    "x": 8150.95,
+    "y": 9829.57
+  },
+  {
+    "id": "303757",
+    "category": "tm",
+    "name": "TM 183: Super Fang",
+    "area": "Kitakami",
+    "x": 8743.02,
+    "y": 10030.17
+  },
+  {
+    "id": "303758",
+    "category": "tm",
+    "name": "TM 009: Thunder Fang",
+    "area": "Kitakami",
+    "x": 8883.02,
+    "y": 10286.17
+  },
+  {
+    "id": "303759",
+    "category": "tm",
+    "name": "TM 008: Fire Fang",
+    "area": "Kitakami",
+    "x": 9606.96,
+    "y": 9422.97
+  },
+  {
+    "id": "303760",
+    "category": "tm",
+    "name": "TM 043: Fling",
+    "area": "Kitakami",
+    "x": 10008.96,
+    "y": 8878.97
+  },
+  {
+    "id": "303761",
+    "category": "tm",
+    "name": "TM 174: Haze",
+    "area": "Fellhorn Gorge",
+    "x": 13192.52,
+    "y": 9238.85
+  },
+  {
+    "id": "303762",
+    "category": "tm",
+    "name": "TM 042: Night Shade",
+    "area": "Fellhorn Gorge",
+    "x": 13454.52,
+    "y": 9444.44
+  },
+  {
+    "id": "303763",
+    "category": "tm",
+    "name": "TM 110: Liquidation",
+    "area": "Mossful Confluence",
+    "x": 12635.52,
+    "y": 9695.14
+  },
+  {
+    "id": "303764",
+    "category": "tm",
+    "name": "TM 033: Magical Leaf",
+    "area": "Mossful Confluence",
+    "x": 12948.52,
+    "y": 9815.14
+  },
+  {
+    "id": "303765",
+    "category": "tm",
+    "name": "TM 132: Baton Pass",
+    "area": "Mossful Confluence",
+    "x": 12691.52,
+    "y": 10065.91
+  },
+  {
+    "id": "303766",
+    "category": "tm",
+    "name": "TM 083: Poison Jab",
+    "area": "Mossful Confluence",
+    "x": 13047.52,
+    "y": 10222.6
+  },
+  {
+    "id": "303767",
+    "category": "tm",
+    "name": "TM 061: Shadow Claw",
+    "area": "Mossful Confluence",
+    "x": 12890.16,
+    "y": 10971.58
+  },
+  {
+    "id": "303768",
+    "category": "tm",
+    "name": "TM 071: Seed Bomb",
+    "area": "Mossful Confluence",
+    "x": 12810.39,
+    "y": 12398.25
+  },
+  {
+    "id": "303769",
+    "category": "tm",
+    "name": "TM 076: Rock Blast",
+    "area": "Mossful Confluence",
+    "x": 12508.39,
+    "y": 11704.16
+  },
+  {
+    "id": "303770",
+    "category": "tm",
+    "name": "TM 191: Uproar",
+    "area": "Kitakami",
+    "x": 8129.47,
+    "y": 9037.97
+  },
+  {
+    "id": "303771",
+    "category": "tm",
+    "name": "TM 073: Drain Punch",
+    "area": "Kitakami",
+    "x": 8490.41,
+    "y": 9066.97
+  },
+  {
+    "id": "303772",
+    "category": "tm",
+    "name": "TM 088: Swords Dance",
+    "area": "Fellhorn Gorge",
+    "x": 12265.89,
+    "y": 7442.22
+  },
+  {
+    "id": "303773",
+    "category": "tm",
+    "name": "TM 095: Leech Life",
+    "area": "Fellhorn Gorge",
+    "x": 12916.25,
+    "y": 8689.41
+  },
+  {
+    "id": "303774",
+    "category": "tm",
+    "name": "TM 157: Overheat",
+    "area": "Fellhorn Gorge",
+    "x": 11718.33,
+    "y": 8452.93
+  },
+  {
+    "id": "303775",
+    "category": "tm",
+    "name": "TM 197: Dual Wingbeat",
+    "area": "Fellhorn Gorge",
+    "x": 12382.05,
+    "y": 8557.28
+  },
+  {
+    "id": "303776",
+    "category": "tm",
+    "name": "TM 195: Burning Jealously",
+    "area": "Fellhorn Gorge",
+    "x": 12364.05,
+    "y": 8639.28
+  },
+  {
+    "id": "303777",
+    "category": "tm",
+    "name": "TM 142: Hydro Pump",
+    "area": "Fellhorn Gorge",
+    "x": 11779.17,
+    "y": 7908.96
+  },
+  {
+    "id": "303778",
+    "category": "tm",
+    "name": "TM 163: Hyper Beam",
+    "area": "Kitakami",
+    "x": 11194.06,
+    "y": 8125.71
+  },
+  {
+    "id": "303779",
+    "category": "tm",
+    "name": "TM 001: Take Down",
+    "area": "Kitakami",
+    "x": 10386.09,
+    "y": 8748.81
+  },
+  {
+    "id": "303780",
+    "category": "tm",
+    "name": "TM 045: Venoshock",
+    "area": "Kitakami",
+    "x": 10769.27,
+    "y": 8808.17
+  },
+  {
+    "id": "303781",
+    "category": "tm",
+    "name": "TM 003: Fake Tears",
+    "area": "Kitakami Hall",
+    "x": 11104.04,
+    "y": 9486.86
+  },
+  {
+    "id": "303782",
+    "category": "tm",
+    "name": "TM 162: Bug Buzz",
+    "area": "Kitakami Hall",
+    "x": 11351.9,
+    "y": 9864.62
+  },
+  {
+    "id": "303783",
+    "category": "tm",
+    "name": "TM 094: Dark Pulse",
+    "area": "Fellhorn Gorge",
+    "x": 11706.87,
+    "y": 9175.05
+  },
+  {
+    "id": "303784",
+    "category": "tm",
+    "name": "TM 050: Rain Dance",
+    "area": "Fellhorn Gorge",
+    "x": 11787.89,
+    "y": 9033.54
+  },
+  {
+    "id": "303785",
+    "category": "tm",
+    "name": "TM 054: Psyshock",
+    "area": "Reveler's Road",
+    "x": 12225.88,
+    "y": 9622.33
+  },
+  {
+    "id": "303786",
+    "category": "tm",
+    "name": "TM 056: Bullet Seed",
+    "area": "Reveler's Road",
+    "x": 12188.22,
+    "y": 10092.04
+  },
+  {
+    "id": "303787",
+    "category": "tm",
+    "name": "TM 030: Snarl",
+    "area": "Reveler's Road",
+    "x": 11700.93,
+    "y": 10029.28
+  },
+  {
+    "id": "303788",
+    "category": "tm",
+    "name": "TM 198: Poltergeist",
+    "area": "Reveler's Road",
+    "x": 11148.11,
+    "y": 10033.85
+  },
+  {
+    "id": "303789",
+    "category": "tm",
+    "name": "TM 084: Stomping Tantrum",
+    "area": "Reveler's Road",
+    "x": 10913.94,
+    "y": 9737.96
+  },
+  {
+    "id": "303790",
+    "category": "tm",
+    "name": "TM 047: Endure",
+    "area": "Kitakami",
+    "x": 9731.26,
+    "y": 10000.44
+  },
+  {
+    "id": "303890",
+    "category": "tm",
+    "name": "TM 093: Flash Cannon",
+    "area": "Wistful Fields",
+    "x": 5292.52,
+    "y": 9671.44
+  },
+  {
+    "id": "303891",
+    "category": "tm",
+    "name": "TM 168: Solar Beam",
+    "area": "Wistful Fields",
+    "x": 4878.29,
+    "y": 11668.66
+  },
+  {
+    "id": "303892",
+    "category": "tm",
+    "name": "TM 007: Protect",
+    "area": "Wistful Fields",
+    "x": 4522.42,
+    "y": 12405.39
+  },
+  {
+    "id": "303893",
+    "category": "tm",
+    "name": "TM 097: Fly",
+    "area": "Wistful Fields",
+    "x": 3738.42,
+    "y": 12465.39
+  },
+  {
+    "id": "303894",
+    "category": "tm",
+    "name": "TM 138: Psychic Terrain",
+    "area": "Wistful Fields",
+    "x": 4837.22,
+    "y": 12142.32
+  },
+  {
+    "id": "305197",
+    "category": "tm",
+    "name": "TM 082: Thunder Wave",
+    "area": "Kitakami",
+    "x": 6085,
+    "y": 8882.25
+  },
+  {
+    "id": "305198",
+    "category": "tm",
+    "name": "TM 107: Will-O-Wisp",
+    "area": "Kitakami",
+    "x": 6034.91,
+    "y": 7999.4
+  },
+  {
+    "id": "305199",
+    "category": "tm",
+    "name": "TM 041: Stored Power",
+    "area": "Kitakami",
+    "x": 7414.75,
+    "y": 6656.44
+  },
+  {
+    "id": "305200",
+    "category": "tm",
+    "name": "TM 142: Hydro Pump",
+    "area": "Kitakami",
+    "x": 8391.19,
+    "y": 8729.03
+  },
+  {
+    "id": "305202",
+    "category": "tm",
+    "name": "TM 116: Stealth Rock",
+    "area": "Kitakami",
+    "x": 8507.37,
+    "y": 8466.56
+  },
+  {
+    "id": "305204",
+    "category": "tm",
+    "name": "TM 098: Skill Swap",
+    "area": "Kitakami",
+    "x": 8190.5,
+    "y": 8336.37
+  },
+  {
+    "id": "305205",
+    "category": "tm",
+    "name": "TM 101: Power Gem",
+    "area": "Kitakami",
+    "x": 7818.25,
+    "y": 8719.12
+  },
+  {
+    "id": "305206",
+    "category": "tm",
+    "name": "TM 118: Heat Wave",
+    "area": "Kitakami",
+    "x": 6338.5,
+    "y": 9269.5
+  },
+  {
+    "id": "305207",
+    "category": "tm",
+    "name": "TM 176: Sand Tomb",
+    "area": "Kitakami",
+    "x": 5892.75,
+    "y": 9353.5
+  },
+  {
+    "id": "305208",
+    "category": "tm",
+    "name": "TM 125: Flamethrower",
+    "area": "Kitakami",
+    "x": 8122.61,
+    "y": 9668.98
+  },
+  {
+    "id": "305211",
+    "category": "tm",
+    "name": "TM 026: Poison Tail",
+    "area": "Wistful Fields",
+    "x": 4655.37,
+    "y": 10635.5
+  },
+  {
+    "id": "305216",
+    "category": "tm",
+    "name": "TM 123: Surf",
+    "area": "Kitakami Wilds",
+    "x": 8440.75,
+    "y": 4170.25
+  },
+  {
+    "id": "305221",
+    "category": "tm",
+    "name": "Focus Blast",
+    "area": "Kitakami Wilds",
+    "x": 7441.25,
+    "y": 4186.75
+  },
+  {
+    "id": "305231",
+    "category": "tm",
+    "name": "Psychic Fangs",
+    "area": "Kitakami Wilds",
+    "x": 7821.93,
+    "y": 3386.79
+  },
+  {
+    "id": "305238",
+    "category": "tm",
+    "name": "TM 134: Reversal",
+    "area": "Kitakami Wilds",
+    "x": 10363.56,
+    "y": 3716.3
+  },
+  {
+    "id": "305243",
+    "category": "tm",
+    "name": "TM 127: Play Rough",
+    "area": "Kitakami Wilds",
+    "x": 9190.56,
+    "y": 4388.19
+  },
+  {
+    "id": "305247",
+    "category": "tm",
+    "name": "TM 100: Dragon Dance",
+    "area": "Kitakami Wilds",
+    "x": 9880.56,
+    "y": 5221.06
+  },
+  {
+    "id": "305371",
+    "category": "tm",
+    "name": "TM 086: Rock Slide",
+    "area": "Kitakami",
+    "x": 9969.33,
+    "y": 8681.4
+  },
+  {
+    "id": "305372",
+    "category": "tm",
+    "name": "TM 187: Icicle Spear",
+    "area": "Kitakami",
+    "x": 9801.6,
+    "y": 7393.59
+  },
+  {
+    "id": "305808",
+    "category": "tm",
+    "name": "TM 067: Fire Punch",
+    "area": "Wistful Fields",
+    "x": 3572.56,
+    "y": 7858.19
+  },
+  {
+    "id": "305809",
+    "category": "tm",
+    "name": "TM 072: Electro Ball",
+    "area": "Wistful Fields",
+    "x": 3977.56,
+    "y": 9080.31
+  },
+  {
+    "id": "305811",
+    "category": "tm",
+    "name": "TM 180: Gyro Ball",
+    "area": "Kitakami",
+    "x": 8334.97,
+    "y": 6216.86
+  },
+  {
+    "id": "313089",
+    "category": "tm",
+    "name": "TM 034: Icy Wind",
+    "area": "Fellhorn Gorge",
+    "x": 13002.13,
+    "y": 7090.37
+  },
+  {
+    "id": "313090",
+    "category": "tm",
+    "name": "TM 201: Misty Explosion",
+    "area": "Kitakami Wilds",
+    "x": 9143,
+    "y": 5247.5
+  },
+  {
+    "id": "313096",
+    "category": "tm",
+    "name": "TM 011: Water Pulse",
+    "area": "Fellhorn Gorge",
+    "x": 12048.67,
+    "y": 6899.42
+  },
+  {
+    "id": "313098",
+    "category": "tm",
+    "name": "TM 091: Toxic Spikes",
+    "area": "Fellhorn Gorge",
+    "x": 11278.56,
+    "y": 7495.12
+  },
+  {
+    "id": "313101",
+    "category": "tm",
+    "name": "TM 090: Spikes",
+    "area": "Fellhorn Gorge",
+    "x": 11235.2,
+    "y": 6796.28
+  },
+  {
+    "id": "313102",
+    "category": "tm",
+    "name": "TM 099: Iron Head",
+    "area": "Timeless Woods",
+    "x": 10204.5,
+    "y": 5038.87
+  },
+  {
+    "id": "313107",
+    "category": "tm",
+    "name": "TM 087: Taunt",
+    "area": "Paradise Barrens",
+    "x": 3943.78,
+    "y": 5487.27
+  },
+  {
+    "id": "313108",
+    "category": "tm",
+    "name": "TM 024: Fire Spin",
+    "area": "Paradise Barrens",
+    "x": 3751.63,
+    "y": 5740.96
+  },
+  {
+    "id": "313109",
+    "category": "tm",
+    "name": "TM 147: Wild Charge",
+    "area": "Paradise Barrens",
+    "x": 5354,
+    "y": 5035.37
+  },
+  {
+    "id": "313110",
+    "category": "tm",
+    "name": "TM 150: Stone Edge",
+    "area": "Paradise Barrens",
+    "x": 5355.44,
+    "y": 4160.38
+  },
+  {
+    "id": "313111",
+    "category": "tm",
+    "name": "TM 112: Aura Sphere",
+    "area": "Paradise Barrens",
+    "x": 6144,
+    "y": 4312.25
+  },
+  {
+    "id": "313112",
+    "category": "tm",
+    "name": "TM 044: Dragon Tail",
+    "area": "Paradise Barrens",
+    "x": 6623.38,
+    "y": 5316
+  },
+  {
+    "id": "313113",
+    "category": "tm",
+    "name": "TM 104: Iron Defence",
+    "area": "Paradise Barrens",
+    "x": 4624,
+    "y": 6181.25
+  },
+  {
+    "id": "313114",
+    "category": "tm",
+    "name": "TM 068: Thunder Punch",
+    "area": "Wistful Fields",
+    "x": 4200.96,
+    "y": 6412.14
+  },
+  {
+    "id": "313115",
+    "category": "tm",
+    "name": "TM 069: Ice Punch",
+    "area": "Wistful Fields",
+    "x": 3687.62,
+    "y": 6270.87
+  },
+  {
+    "id": "313116",
+    "category": "tm",
+    "name": "TM 117: Hyper Voice",
+    "area": "Kitakami",
+    "x": 10801.63,
+    "y": 6168.5
+  },
+  {
+    "id": "313117",
+    "category": "tm",
+    "name": "TM 189: Heat Crash",
+    "area": "Kitakami",
+    "x": 12169.37,
+    "y": 5555.12
+  },
+  {
+    "id": "313118",
+    "category": "tm",
+    "name": "TM 178: Gravity",
+    "area": "Kitakami",
+    "x": 12346.75,
+    "y": 6285.75
+  },
+  {
+    "id": "313119",
+    "category": "tm",
+    "name": "TM 115: Dragon Pulse",
+    "area": "Kitakami",
+    "x": 12367.75,
+    "y": 6273
+  },
+  {
+    "id": "313121",
+    "category": "tm",
+    "name": "TM 161: Trick Room",
+    "area": "Kitakami",
+    "x": 11237.25,
+    "y": 6014.5
+  },
+  {
+    "id": "313122",
+    "category": "tm",
+    "name": "TM 141: Fire Blast",
+    "area": "Kitakami",
+    "x": 11872.75,
+    "y": 6096.75
+  },
+  {
+    "id": "313123",
+    "category": "tm",
+    "name": "TM 190: Solar Blade",
+    "area": "Kitakami",
+    "x": 10202.37,
+    "y": 6131
+  },
+  {
+    "id": "313124",
+    "category": "tm",
+    "name": "TM 143: Blizzard",
+    "area": "Kitakami",
+    "x": 9771.13,
+    "y": 7336.87
+  },
+  {
+    "id": "313125",
+    "category": "tm",
+    "name": "TM 126: Thunderbolt",
+    "area": "Kitakami",
+    "x": 9965.25,
+    "y": 7586.63
+  },
+  {
+    "id": "313126",
+    "category": "tm",
+    "name": "TM 040: Air Cutter",
+    "area": "Kitakami",
+    "x": 9876.62,
+    "y": 7790.08
+  },
+  {
+    "id": "313127",
+    "category": "tm",
+    "name": "TM 106: Drill Run",
+    "area": "Kitakami",
+    "x": 9738,
+    "y": 7838.88
+  },
+  {
+    "id": "313128",
+    "category": "tm",
+    "name": "TM 188: Scald",
+    "area": "Kitakami",
+    "x": 9018.88,
+    "y": 6695.75
+  },
+  {
+    "id": "313129",
+    "category": "tm",
+    "name": "TM 122: Encore",
+    "area": "Kitakami",
+    "x": 8285.12,
+    "y": 6794.13
+  },
+  {
+    "id": "313130",
+    "category": "tm",
+    "name": "TM 058: Brick Break",
+    "area": "Kitakami",
+    "x": 6055.25,
+    "y": 6216.5
+  },
+  {
+    "id": "313131",
+    "category": "tm",
+    "name": "TM 149: Earthquake",
+    "area": "Kitakami",
+    "x": 7170.75,
+    "y": 5854.25
+  },
+  {
+    "id": "313133",
+    "category": "tm",
+    "name": "TM 160: Hurricane",
+    "area": "Kitakami",
+    "x": 7132.5,
+    "y": 5481.13
+  },
+  {
+    "id": "313134",
+    "category": "tm",
+    "name": "TM 136: Electric Terrain",
+    "area": "Kitakami",
+    "x": 6064,
+    "y": 9437.25
+  },
+  {
+    "id": "313138",
+    "category": "tm",
+    "name": "TM 152: Giga Impact",
+    "area": "Kitakami",
+    "x": 5881.62,
+    "y": 10056.62
+  },
+  {
+    "id": "313148",
+    "category": "tm",
+    "name": "TM 179: Smack Down",
+    "area": "Wistful Fields",
+    "x": 4172.18,
+    "y": 7500.42
+  },
+  {
+    "id": "313149",
+    "category": "tm",
+    "name": "TM 181: Knock Off",
+    "area": "Kitakami",
+    "x": 4536.56,
+    "y": 8330.13
+  },
+  {
+    "id": "313892",
+    "category": "tm",
+    "name": "TM 075: Light Screen",
+    "area": "Reveler's Road",
+    "x": 10655.95,
+    "y": 9683.38
+  },
+  {
+    "id": "325304",
+    "category": "tm",
+    "name": "TM 170: Steel Beam",
+    "area": "Kitakami",
+    "x": 8517.12,
+    "y": 4976.75
+  },
+  {
+    "id": "325306",
+    "category": "tm",
+    "name": "TM 135: Ice Beam",
+    "area": "Timeless Woods",
+    "x": 10095.5,
+    "y": 4698.88
+  },
+  {
+    "id": "325309",
+    "category": "tm",
+    "name": "TM 078: Dragon Claw",
+    "area": "Timeless Woods",
+    "x": 9971.5,
+    "y": 4413
+  },
+  {
+    "id": "325312",
+    "category": "tm",
+    "name": "TM 166: Thunder",
+    "area": "Timeless Woods",
+    "x": 10478.31,
+    "y": 3874.69
+  },
+  {
+    "id": "325327",
+    "category": "tm",
+    "name": "TM 199: Lash Out",
+    "area": "Timeless Woods",
+    "x": 11373.88,
+    "y": 4586
+  },
+  {
+    "id": "325333",
+    "category": "tm",
+    "name": "TM 139 Misty Terrain",
+    "area": "Timeless Woods",
+    "x": 12536,
+    "y": 4641.25
+  },
+  {
+    "id": "325343",
+    "category": "tm",
+    "name": "TM 092: Imprison",
+    "area": "Timeless Woods",
+    "x": 12168.97,
+    "y": 3438.01
+  },
+  {
+    "id": "325346",
+    "category": "tm",
+    "name": "TM 151: Phantom Force",
+    "area": "Timeless Woods",
+    "x": 12671.09,
+    "y": 3773.55
+  },
+  {
+    "id": "325347",
+    "category": "tm",
+    "name": "TM 029: Hex",
+    "area": "Timeless Woods",
+    "x": 12151.64,
+    "y": 3905.94
+  },
+  {
+    "id": "325351",
+    "category": "tm",
+    "name": "TM 103: Substitute",
+    "area": "Timeless Woods",
+    "x": 11893.22,
+    "y": 3819.55
+  },
+  {
+    "id": "325352",
+    "category": "tm",
+    "name": "TM 131: Pollen Puff",
+    "area": "Kitakami",
+    "x": 12736.36,
+    "y": 5022.71
+  },
+  {
+    "id": "325357",
+    "category": "tm",
+    "name": "TM 164: Brave Bird",
+    "area": "Kitakami",
+    "x": 12739.62,
+    "y": 6683.63
+  },
+  {
+    "id": "325358",
+    "category": "tm",
+    "name": "TM 121: Heavy Slam",
+    "area": "Kitakami",
+    "x": 10938.81,
+    "y": 6472.5
+  },
+  {
+    "id": "325362",
+    "category": "tm",
+    "name": "TM 064: Bulk Up",
+    "area": "Loyalty Plaza",
+    "x": 8658.73,
+    "y": 10549.67
+  },
+  {
+    "id": "325369",
+    "category": "tm",
+    "name": "TM 113: Tailwind",
+    "area": "Wistful Fields",
+    "x": 4384.25,
+    "y": 7798.14
+  },
+  {
+    "id": "325378",
+    "category": "tm",
+    "name": "TM 186: High Horsepower",
+    "area": "Paradise Barrens",
+    "x": 4501.12,
+    "y": 4897.75
+  },
+  {
+    "id": "325380",
+    "category": "tm",
+    "name": "TM 089: Body Press",
+    "area": "Paradise Barrens",
+    "x": 3925.74,
+    "y": 4085.34
+  },
+  {
+    "id": "325382",
+    "category": "tm",
+    "name": "TM 013: Acid Spray",
+    "area": "Paradise Barrens",
+    "x": 4714.15,
+    "y": 3738.63
+  },
+  {
+    "id": "325390",
+    "category": "tm",
+    "name": "TM 200: Scale Shot",
+    "area": "Kitakami",
+    "x": 7364.35,
+    "y": 5665.83
+  },
+  {
+    "id": "325394",
+    "category": "tm",
+    "name": "TM 053: Smart Strike",
+    "area": "Kitakami",
+    "x": 6304.48,
+    "y": 8762.36
+  },
+  {
+    "id": "325405",
+    "category": "tm",
+    "name": "TM 133: Earth Power",
+    "area": "Kitakami",
+    "x": 8528.26,
+    "y": 7119.06
+  },
+  {
+    "id": "325409",
+    "category": "tm",
+    "name": "TM 035: Mud Shot",
+    "area": "Kitakami",
+    "x": 9973.66,
+    "y": 8358.38
+  },
+  {
+    "id": "325412",
+    "category": "tm",
+    "name": "TM 196: Flip Turn",
+    "area": "Kitakami",
+    "x": 9457.33,
+    "y": 7284
+  },
+  {
+    "id": "302749",
+    "category": "battle-item",
+    "name": "X Attack",
+    "area": "Mossui Town",
+    "x": 9027.99,
+    "y": 11338.91
+  },
+  {
+    "id": "302867",
+    "category": "battle-item",
+    "name": "Guard Spec.",
+    "area": "Kitakami Road",
+    "x": 6989.5,
+    "y": 12768.5
+  },
+  {
+    "id": "302873",
+    "category": "battle-item",
+    "name": "Rare Candy",
+    "area": "Kitakami Road",
+    "x": 6932.5,
+    "y": 12261
+  },
+  {
+    "id": "302876",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Kitakami Road",
+    "x": 7953.03,
+    "y": 12629.57
+  },
+  {
+    "id": "303056",
+    "category": "battle-item",
+    "name": "X Sp. Atk",
+    "area": "Loyalty Plaza",
+    "x": 8381.25,
+    "y": 10909.99
+  },
+  {
+    "id": "303090",
+    "category": "battle-item",
+    "name": "Dire Hit",
+    "area": "Apple Hills",
+    "x": 7907.5,
+    "y": 12049
+  },
+  {
+    "id": "303099",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Loyalty Plaza",
+    "x": 8094.81,
+    "y": 11387.76
+  },
+  {
+    "id": "303627",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Reveler's Road",
+    "x": 11907.49,
+    "y": 9761.55
+  },
+  {
+    "id": "303650",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Reveler's Road",
+    "x": 10972.88,
+    "y": 10432.39
+  },
+  {
+    "id": "303670",
+    "category": "battle-item",
+    "name": "X Defense",
+    "area": "Kitakami",
+    "x": 7198.5,
+    "y": 9646.5
+  },
+  {
+    "id": "303676",
+    "category": "battle-item",
+    "name": "X Accuracy",
+    "area": "Kitakami",
+    "x": 8047,
+    "y": 9783.5
+  },
+  {
+    "id": "303697",
+    "category": "battle-item",
+    "name": "Guard Spec",
+    "area": "Mossful Confluence",
+    "x": 12872.39,
+    "y": 12018.21
+  },
+  {
+    "id": "303702",
+    "category": "battle-item",
+    "name": "Dire Hit",
+    "area": "Fellhorn Gorge",
+    "x": 12951.89,
+    "y": 7800.14
+  },
+  {
+    "id": "303719",
+    "category": "battle-item",
+    "name": "X Speed",
+    "area": "Kitakami Hall",
+    "x": 10955.25,
+    "y": 9053.25
+  },
+  {
+    "id": "303730",
+    "category": "battle-item",
+    "name": "X Sp. Def",
+    "area": "Reveler's Road",
+    "x": 12373.4,
+    "y": 10816.12
+  },
+  {
+    "id": "305222",
+    "category": "battle-item",
+    "name": "Carbos",
+    "area": "Kitakami Wilds",
+    "x": 7053.2,
+    "y": 3956.69
+  },
+  {
+    "id": "305224",
+    "category": "battle-item",
+    "name": "Poke Doll",
+    "area": "Kitakami Wilds",
+    "x": 6759.2,
+    "y": 3982.69
+  },
+  {
+    "id": "305225",
+    "category": "battle-item",
+    "name": "Fighting Tera Shard x3",
+    "area": "Kitakami Wilds",
+    "x": 6596.28,
+    "y": 3838.69
+  },
+  {
+    "id": "305229",
+    "category": "battle-item",
+    "name": "Exp. Candy XS",
+    "area": "Kitakami Wilds",
+    "x": 8208.67,
+    "y": 3748.22
+  },
+  {
+    "id": "305236",
+    "category": "battle-item",
+    "name": "X Sp. Atk",
+    "area": "Kitakami Wilds",
+    "x": 9929.5,
+    "y": 3623.25
+  },
+  {
+    "id": "305240",
+    "category": "battle-item",
+    "name": "Exp. Candy L",
+    "area": "Kitakami Wilds",
+    "x": 9986.5,
+    "y": 4296.25
+  },
+  {
+    "id": "308378",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Kitakami",
+    "x": 4681,
+    "y": 7832
+  },
+  {
+    "id": "313095",
+    "category": "battle-item",
+    "name": "X Attack",
+    "area": "Fellhorn Gorge",
+    "x": 11726.39,
+    "y": 6688.61
+  },
+  {
+    "id": "313141",
+    "category": "battle-item",
+    "name": "X Sp. Def x1",
+    "area": "Kitakami",
+    "x": 7271.94,
+    "y": 6658.87
+  },
+  {
+    "id": "313144",
+    "category": "battle-item",
+    "name": "X Defense",
+    "area": "Kitakami",
+    "x": 8257.62,
+    "y": 8462.25
+  },
+  {
+    "id": "325356",
+    "category": "battle-item",
+    "name": "Poké Doll",
+    "area": "Kitakami",
+    "x": 12673.31,
+    "y": 5320.63
+  },
+  {
+    "id": "325366",
+    "category": "battle-item",
+    "name": "Poke Doll",
+    "area": "Wistful Fields",
+    "x": 4581.5,
+    "y": 9565.49
+  },
+  {
+    "id": "325376",
+    "category": "battle-item",
+    "name": "X Accuracy",
+    "area": "Paradise Barrens",
+    "x": 4150.41,
+    "y": 5507.6
+  },
+  {
+    "id": "325389",
+    "category": "battle-item",
+    "name": "Protein",
+    "area": "Paradise Barrens",
+    "x": 5626.74,
+    "y": 5464.41
+  },
+  {
+    "id": "302894",
+    "category": "key-item",
+    "name": "Roto-Stick",
+    "area": "Mossui Town",
+    "x": 9165.5,
+    "y": 11566
+  },
+  {
+    "id": "302748",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Mossui Town",
+    "x": 9564.25,
+    "y": 11357.75
+  },
+  {
+    "id": "302793",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Kitakami",
+    "x": 10183.67,
+    "y": 9116.97
+  },
+  {
+    "id": "302794",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami Hall",
+    "x": 10308.05,
+    "y": 9389.56
+  },
+  {
+    "id": "302850",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Mossui Town",
+    "x": 9425.25,
+    "y": 11679.13
+  },
+  {
+    "id": "302852",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Road",
+    "x": 9426.79,
+    "y": 12156.17
+  },
+  {
+    "id": "302854",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami Road",
+    "x": 8658.29,
+    "y": 12782.16
+  },
+  {
+    "id": "302855",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Kitakami Road",
+    "x": 8526.77,
+    "y": 12906.85
+  },
+  {
+    "id": "302857",
+    "category": "medicine",
+    "name": "Potion x2",
+    "area": "Kitakami Road",
+    "x": 8411.75,
+    "y": 12934.75
+  },
+  {
+    "id": "302859",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Kitakami Road",
+    "x": 7691.19,
+    "y": 13159.73
+  },
+  {
+    "id": "302860",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami Road",
+    "x": 9235.79,
+    "y": 12226.32
+  },
+  {
+    "id": "302863",
+    "category": "medicine",
+    "name": "Potion",
+    "area": "Kitakami Road",
+    "x": 7346.25,
+    "y": 12934.25
+  },
+  {
+    "id": "302864",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Road",
+    "x": 7245.19,
+    "y": 13059.28
+  },
+  {
+    "id": "302866",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami Road",
+    "x": 6865.5,
+    "y": 12924.5
+  },
+  {
+    "id": "302868",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Kitakami Road",
+    "x": 7036.5,
+    "y": 12646.5
+  },
+  {
+    "id": "302870",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Apple Hills",
+    "x": 7149.65,
+    "y": 12265.67
+  },
+  {
+    "id": "302874",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami Road",
+    "x": 7411.57,
+    "y": 12534.76
+  },
+  {
+    "id": "302878",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Kitakami Road",
+    "x": 8783.66,
+    "y": 12338.06
+  },
+  {
+    "id": "302879",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Kitakami Road",
+    "x": 8670.66,
+    "y": 12240.31
+  },
+  {
+    "id": "302880",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Kitakami Road",
+    "x": 8838.7,
+    "y": 12118.31
+  },
+  {
+    "id": "302887",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Kitakami Road",
+    "x": 9235.67,
+    "y": 12483.37
+  },
+  {
+    "id": "302889",
+    "category": "medicine",
+    "name": "Potion",
+    "area": "Kitakami Road",
+    "x": 9352.35,
+    "y": 12689.79
+  },
+  {
+    "id": "302897",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Mossui Town",
+    "x": 9277.75,
+    "y": 11400.25
+  },
+  {
+    "id": "302898",
+    "category": "medicine",
+    "name": "Fresh Water",
+    "area": "Mossui Town",
+    "x": 9268.63,
+    "y": 11211.63
+  },
+  {
+    "id": "302901",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Kitakami Road",
+    "x": 9677.75,
+    "y": 11816.5
+  },
+  {
+    "id": "302902",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Kitakami Road",
+    "x": 9898.5,
+    "y": 12320.37
+  },
+  {
+    "id": "302907",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami Road",
+    "x": 9751.13,
+    "y": 12529.62
+  },
+  {
+    "id": "302910",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Kitakami Road",
+    "x": 8187.76,
+    "y": 12402.74
+  },
+  {
+    "id": "303057",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Loyalty Plaza",
+    "x": 8695.31,
+    "y": 10777.17
+  },
+  {
+    "id": "303058",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Loyalty Plaza",
+    "x": 8483.96,
+    "y": 10609.05
+  },
+  {
+    "id": "303060",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Loyalty Plaza",
+    "x": 7304.42,
+    "y": 11206.41
+  },
+  {
+    "id": "303064",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Apple Hills",
+    "x": 7050.62,
+    "y": 10738.85
+  },
+  {
+    "id": "303065",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Apple Hills",
+    "x": 6591.27,
+    "y": 11236.31
+  },
+  {
+    "id": "303066",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Apple Hills",
+    "x": 6603.04,
+    "y": 11731.18
+  },
+  {
+    "id": "303067",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Apple Hills",
+    "x": 6749.14,
+    "y": 11968.22
+  },
+  {
+    "id": "303068",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Apple Hills",
+    "x": 6860.64,
+    "y": 11554.02
+  },
+  {
+    "id": "303071",
+    "category": "medicine",
+    "name": "Potion",
+    "area": "Apple Hills",
+    "x": 7570.97,
+    "y": 12101.27
+  },
+  {
+    "id": "303072",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Apple Hills",
+    "x": 8073.87,
+    "y": 12026.09
+  },
+  {
+    "id": "303073",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Apple Hills",
+    "x": 8416.23,
+    "y": 12047.77
+  },
+  {
+    "id": "303074",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Apple Hills",
+    "x": 8404.82,
+    "y": 11730.52
+  },
+  {
+    "id": "303075",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Apple Hills",
+    "x": 7461.15,
+    "y": 11719.12
+  },
+  {
+    "id": "303076",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Apple Hills",
+    "x": 7860.57,
+    "y": 11700.86
+  },
+  {
+    "id": "303077",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Apple Hills",
+    "x": 7838.88,
+    "y": 11930.24
+  },
+  {
+    "id": "303078",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Apple Hills",
+    "x": 8121.17,
+    "y": 11573.72
+  },
+  {
+    "id": "303079",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Loyalty Plaza",
+    "x": 9130.78,
+    "y": 10907.47
+  },
+  {
+    "id": "303080",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Loyalty Plaza",
+    "x": 9130.78,
+    "y": 11026.15
+  },
+  {
+    "id": "303083",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Apple Hills",
+    "x": 7669.99,
+    "y": 11719.12
+  },
+  {
+    "id": "303087",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Road",
+    "x": 9994.4,
+    "y": 12760.72
+  },
+  {
+    "id": "303088",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Kitakami Road",
+    "x": 9592.67,
+    "y": 12015.63
+  },
+  {
+    "id": "303113",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Reveler's Road",
+    "x": 9581.39,
+    "y": 10891.94
+  },
+  {
+    "id": "303115",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Reveler's Road",
+    "x": 10068.79,
+    "y": 11277.62
+  },
+  {
+    "id": "303116",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Reveler's Road",
+    "x": 9980.47,
+    "y": 11513.41
+  },
+  {
+    "id": "303117",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Reveler's Road",
+    "x": 10031.72,
+    "y": 12138.36
+  },
+  {
+    "id": "303605",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Reveler's Road",
+    "x": 10160.22,
+    "y": 12185.09
+  },
+  {
+    "id": "303606",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Reveler's Road",
+    "x": 10836.46,
+    "y": 12282.87
+  },
+  {
+    "id": "303607",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Reveler's Road",
+    "x": 11092.39,
+    "y": 12522.25
+  },
+  {
+    "id": "303610",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Mossful Confluence",
+    "x": 12030.79,
+    "y": 12843.77
+  },
+  {
+    "id": "303611",
+    "category": "medicine",
+    "name": "Fresh Water x3",
+    "area": "Mossful Confluence",
+    "x": 11906.79,
+    "y": 13037.77
+  },
+  {
+    "id": "303612",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Mossful Confluence",
+    "x": 12363.43,
+    "y": 12863.46
+  },
+  {
+    "id": "303613",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Mossful Confluence",
+    "x": 12045.79,
+    "y": 12610.77
+  },
+  {
+    "id": "303614",
+    "category": "medicine",
+    "name": "Potion x3",
+    "area": "Mossful Confluence",
+    "x": 12328.39,
+    "y": 12554.46
+  },
+  {
+    "id": "303615",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Mossful Confluence",
+    "x": 12475.39,
+    "y": 12690.46
+  },
+  {
+    "id": "303617",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Mossful Confluence",
+    "x": 12911.39,
+    "y": 12427.25
+  },
+  {
+    "id": "303622",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Reveler's Road",
+    "x": 11802.5,
+    "y": 10068.08
+  },
+  {
+    "id": "303623",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Reveler's Road",
+    "x": 11775.11,
+    "y": 10217.57
+  },
+  {
+    "id": "303624",
+    "category": "medicine",
+    "name": "Potion x2",
+    "area": "Reveler's Road",
+    "x": 12317.18,
+    "y": 10350.04
+  },
+  {
+    "id": "303625",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Reveler's Road",
+    "x": 12092.36,
+    "y": 10468.73
+  },
+  {
+    "id": "303626",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Reveler's Road",
+    "x": 11875.54,
+    "y": 10556.6
+  },
+  {
+    "id": "303628",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Fellhorn Gorge",
+    "x": 12008.14,
+    "y": 9622.17
+  },
+  {
+    "id": "303630",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Fellhorn Gorge",
+    "x": 11669.36,
+    "y": 9369.34
+  },
+  {
+    "id": "303634",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Reveler's Road",
+    "x": 10570.8,
+    "y": 9856.65
+  },
+  {
+    "id": "303636",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Kitakami",
+    "x": 9742.67,
+    "y": 9910.28
+  },
+  {
+    "id": "303639",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami",
+    "x": 8142.95,
+    "y": 10021.57
+  },
+  {
+    "id": "303640",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami",
+    "x": 7569.17,
+    "y": 10119.48
+  },
+  {
+    "id": "303642",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Kitakami",
+    "x": 7569.17,
+    "y": 9711.48
+  },
+  {
+    "id": "303645",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Kitakami",
+    "x": 8483.42,
+    "y": 9482.16
+  },
+  {
+    "id": "303646",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami",
+    "x": 9732.96,
+    "y": 9290.97
+  },
+  {
+    "id": "303649",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Reveler's Road",
+    "x": 11040.17,
+    "y": 10053.17
+  },
+  {
+    "id": "303651",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Reveler's Road",
+    "x": 10509.56,
+    "y": 10697.15
+  },
+  {
+    "id": "303652",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Reveler's Road",
+    "x": 10306.42,
+    "y": 10842.59
+  },
+  {
+    "id": "303653",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Reveler's Road",
+    "x": 10568.34,
+    "y": 10834.16
+  },
+  {
+    "id": "303655",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Reveler's Road",
+    "x": 10755.11,
+    "y": 11144.19
+  },
+  {
+    "id": "303658",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Reveler's Road",
+    "x": 11713.09,
+    "y": 11906.47
+  },
+  {
+    "id": "303659",
+    "category": "medicine",
+    "name": "Fresh Water x3",
+    "area": "Reveler's Road",
+    "x": 12017.65,
+    "y": 11899.65
+  },
+  {
+    "id": "303660",
+    "category": "medicine",
+    "name": "Potion x3",
+    "area": "Reveler's Road",
+    "x": 11426.65,
+    "y": 11705.38
+  },
+  {
+    "id": "303661",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Reveler's Road",
+    "x": 11667.45,
+    "y": 11617.62
+  },
+  {
+    "id": "303662",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Reveler's Road",
+    "x": 12272.13,
+    "y": 11515.43
+  },
+  {
+    "id": "303663",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Reveler's Road",
+    "x": 11126.66,
+    "y": 11350.98
+  },
+  {
+    "id": "303665",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Reveler's Road",
+    "x": 10059.8,
+    "y": 11782.35
+  },
+  {
+    "id": "303668",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Kitakami",
+    "x": 7837.42,
+    "y": 9648.16
+  },
+  {
+    "id": "303671",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Kitakami",
+    "x": 8037.17,
+    "y": 9098.08
+  },
+  {
+    "id": "303673",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 7807.17,
+    "y": 9442.08
+  },
+  {
+    "id": "303674",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Kitakami",
+    "x": 7901.17,
+    "y": 9520.08
+  },
+  {
+    "id": "303675",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami",
+    "x": 7935.17,
+    "y": 9858.97
+  },
+  {
+    "id": "303680",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Kitakami",
+    "x": 9177.02,
+    "y": 9618.17
+  },
+  {
+    "id": "303681",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Kitakami",
+    "x": 9033.02,
+    "y": 10062.17
+  },
+  {
+    "id": "303682",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Fellhorn Gorge",
+    "x": 13248.52,
+    "y": 8935.85
+  },
+  {
+    "id": "303685",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Fellhorn Gorge",
+    "x": 12715.52,
+    "y": 9088.85
+  },
+  {
+    "id": "303686",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Fellhorn Gorge",
+    "x": 12922.52,
+    "y": 9498.44
+  },
+  {
+    "id": "303688",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Mossful Confluence",
+    "x": 12704.52,
+    "y": 9618.14
+  },
+  {
+    "id": "303690",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Mossful Confluence",
+    "x": 12727.52,
+    "y": 9936.91
+  },
+  {
+    "id": "303692",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Mossful Confluence",
+    "x": 13269.52,
+    "y": 10002.91
+  },
+  {
+    "id": "303693",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Mossful Confluence",
+    "x": 13166.52,
+    "y": 10174.6
+  },
+  {
+    "id": "303694",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Mossful Confluence",
+    "x": 12762.16,
+    "y": 10451.19
+  },
+  {
+    "id": "303696",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Mossful Confluence",
+    "x": 12998.16,
+    "y": 11391.02
+  },
+  {
+    "id": "303705",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Fellhorn Gorge",
+    "x": 11629.33,
+    "y": 8575.91
+  },
+  {
+    "id": "303706",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Fellhorn Gorge",
+    "x": 12253.05,
+    "y": 8365.28
+  },
+  {
+    "id": "303709",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Fellhorn Gorge",
+    "x": 12423.94,
+    "y": 8010.23
+  },
+  {
+    "id": "303711",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Fellhorn Gorge",
+    "x": 12341.78,
+    "y": 7824.22
+  },
+  {
+    "id": "303713",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Fellhorn Gorge",
+    "x": 12123.81,
+    "y": 7859.6
+  },
+  {
+    "id": "303715",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 10141.87,
+    "y": 8888.03
+  },
+  {
+    "id": "303717",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Kitakami",
+    "x": 11030.6,
+    "y": 8894.9
+  },
+  {
+    "id": "303718",
+    "category": "medicine",
+    "name": "Paralyze Heal x2",
+    "area": "Kitakami Hall",
+    "x": 10723.62,
+    "y": 8926.66
+  },
+  {
+    "id": "303723",
+    "category": "medicine",
+    "name": "Potion x2",
+    "area": "Reveler's Road",
+    "x": 11607.56,
+    "y": 10853.82
+  },
+  {
+    "id": "303724",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Fellhorn Gorge",
+    "x": 12038.96,
+    "y": 9145.38
+  },
+  {
+    "id": "303728",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Reveler's Road",
+    "x": 12154.29,
+    "y": 11129.89
+  },
+  {
+    "id": "303729",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Reveler's Road",
+    "x": 12017.35,
+    "y": 11192.65
+  },
+  {
+    "id": "303732",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Reveler's Road",
+    "x": 12510.34,
+    "y": 11194.94
+  },
+  {
+    "id": "303733",
+    "category": "medicine",
+    "name": "Fresh Water x3",
+    "area": "Mossful Confluence",
+    "x": 12415.93,
+    "y": 11769.91
+  },
+  {
+    "id": "303734",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Reveler's Road",
+    "x": 11920.65,
+    "y": 11420.71
+  },
+  {
+    "id": "303735",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Reveler's Road",
+    "x": 11626.78,
+    "y": 11096.26
+  },
+  {
+    "id": "303738",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Reveler's Road",
+    "x": 9666.8,
+    "y": 11184.8
+  },
+  {
+    "id": "303739",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Reveler's Road",
+    "x": 10107.86,
+    "y": 10585.31
+  },
+  {
+    "id": "303864",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Wistful Fields",
+    "x": 4366.58,
+    "y": 10583.3
+  },
+  {
+    "id": "303865",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Wistful Fields",
+    "x": 4554.58,
+    "y": 10561.3
+  },
+  {
+    "id": "303867",
+    "category": "medicine",
+    "name": "Antidote x2",
+    "area": "Wistful Fields",
+    "x": 4772.52,
+    "y": 10057.3
+  },
+  {
+    "id": "303869",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Wistful Fields",
+    "x": 5344.52,
+    "y": 10302.14
+  },
+  {
+    "id": "303871",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Wistful Fields",
+    "x": 5620.52,
+    "y": 10999.77
+  },
+  {
+    "id": "303873",
+    "category": "medicine",
+    "name": "Awakening x2",
+    "area": "Wistful Fields",
+    "x": 4750.29,
+    "y": 10946.66
+  },
+  {
+    "id": "303874",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Wistful Fields",
+    "x": 4388.42,
+    "y": 12049.39
+  },
+  {
+    "id": "303878",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Wistful Fields",
+    "x": 5343.22,
+    "y": 11812.1
+  },
+  {
+    "id": "303881",
+    "category": "medicine",
+    "name": "Burn Heal x2",
+    "area": "Wistful Fields",
+    "x": 5632.25,
+    "y": 12366.5
+  },
+  {
+    "id": "303882",
+    "category": "medicine",
+    "name": "Antidote x2",
+    "area": "Wistful Fields",
+    "x": 5846.25,
+    "y": 12524.5
+  },
+  {
+    "id": "303884",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Wistful Fields",
+    "x": 6420.25,
+    "y": 12140.5
+  },
+  {
+    "id": "303885",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Wistful Fields",
+    "x": 4512.25,
+    "y": 11431
+  },
+  {
+    "id": "303886",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Wistful Fields",
+    "x": 6016.25,
+    "y": 12228.5
+  },
+  {
+    "id": "303887",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Wistful Fields",
+    "x": 5962.25,
+    "y": 11981.75
+  },
+  {
+    "id": "305215",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Kitakami Wilds",
+    "x": 8889.22,
+    "y": 4640.35
+  },
+  {
+    "id": "305218",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami Wilds",
+    "x": 7842.99,
+    "y": 4168.28
+  },
+  {
+    "id": "305219",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Wilds",
+    "x": 8162.77,
+    "y": 4078.35
+  },
+  {
+    "id": "305223",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Wilds",
+    "x": 6973.2,
+    "y": 4232.69
+  },
+  {
+    "id": "305226",
+    "category": "medicine",
+    "name": "Lemonade x2",
+    "area": "Kitakami Wilds",
+    "x": 7560.6,
+    "y": 3746.69
+  },
+  {
+    "id": "305228",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Wilds",
+    "x": 7022.28,
+    "y": 3630.69
+  },
+  {
+    "id": "305230",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Kitakami Wilds",
+    "x": 8013.93,
+    "y": 3727.22
+  },
+  {
+    "id": "305232",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami Wilds",
+    "x": 9604.13,
+    "y": 3710.22
+  },
+  {
+    "id": "305233",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Kitakami Wilds",
+    "x": 9044.35,
+    "y": 4226.22
+  },
+  {
+    "id": "305234",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Kitakami Wilds",
+    "x": 8896.35,
+    "y": 3941.22
+  },
+  {
+    "id": "305237",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Kitakami Wilds",
+    "x": 10088.56,
+    "y": 3687.3
+  },
+  {
+    "id": "305239",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Kitakami Wilds",
+    "x": 9856.56,
+    "y": 4031.3
+  },
+  {
+    "id": "305241",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Kitakami Wilds",
+    "x": 9666.56,
+    "y": 4276.19
+  },
+  {
+    "id": "305244",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Kitakami Wilds",
+    "x": 9632.56,
+    "y": 4525.38
+  },
+  {
+    "id": "305245",
+    "category": "medicine",
+    "name": "Fresh Water x3",
+    "area": "Kitakami Wilds",
+    "x": 9679.56,
+    "y": 4667.06
+  },
+  {
+    "id": "305248",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami Wilds",
+    "x": 9612.56,
+    "y": 5167.06
+  },
+  {
+    "id": "305250",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Kitakami",
+    "x": 10988.37,
+    "y": 6203.49
+  },
+  {
+    "id": "305252",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Kitakami",
+    "x": 10531.37,
+    "y": 6373.49
+  },
+  {
+    "id": "305253",
+    "category": "medicine",
+    "name": "Ice Heal x2",
+    "area": "Kitakami",
+    "x": 10675.37,
+    "y": 6649.49
+  },
+  {
+    "id": "305254",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Kitakami",
+    "x": 11670.31,
+    "y": 6193.65
+  },
+  {
+    "id": "305255",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Kitakami",
+    "x": 11456.31,
+    "y": 6335.65
+  },
+  {
+    "id": "305256",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Kitakami",
+    "x": 11274.31,
+    "y": 6517.65
+  },
+  {
+    "id": "305257",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami",
+    "x": 10982.31,
+    "y": 5775.55
+  },
+  {
+    "id": "305258",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami",
+    "x": 11428.85,
+    "y": 5707.8
+  },
+  {
+    "id": "305259",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Kitakami",
+    "x": 11744.85,
+    "y": 5786.8
+  },
+  {
+    "id": "305260",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 11404.5,
+    "y": 5322.22
+  },
+  {
+    "id": "305261",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami",
+    "x": 11273.31,
+    "y": 5613.27
+  },
+  {
+    "id": "305262",
+    "category": "medicine",
+    "name": "Paralyze Heal x2",
+    "area": "Kitakami",
+    "x": 12334.63,
+    "y": 5919
+  },
+  {
+    "id": "305263",
+    "category": "medicine",
+    "name": "Soda Pop x2",
+    "area": "Kitakami",
+    "x": 12176.62,
+    "y": 6493.69
+  },
+  {
+    "id": "305264",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 12463.6,
+    "y": 6396.68
+  },
+  {
+    "id": "305265",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami",
+    "x": 10975.31,
+    "y": 6296.06
+  },
+  {
+    "id": "305266",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Kitakami",
+    "x": 12404.6,
+    "y": 5542.12
+  },
+  {
+    "id": "305267",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Kitakami",
+    "x": 11634.6,
+    "y": 5571.1
+  },
+  {
+    "id": "305268",
+    "category": "medicine",
+    "name": "Awakening x2",
+    "area": "Kitakami",
+    "x": 11938.6,
+    "y": 5785.1
+  },
+  {
+    "id": "305269",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Kitakami",
+    "x": 12765.17,
+    "y": 6191.77
+  },
+  {
+    "id": "305270",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami",
+    "x": 12595.17,
+    "y": 5859.61
+  },
+  {
+    "id": "305271",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 12373.75,
+    "y": 6241.62
+  },
+  {
+    "id": "305272",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Fellhorn Gorge",
+    "x": 11576.39,
+    "y": 6687.61
+  },
+  {
+    "id": "305273",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Fellhorn Gorge",
+    "x": 12121.7,
+    "y": 6814.61
+  },
+  {
+    "id": "305274",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Fellhorn Gorge",
+    "x": 12136.7,
+    "y": 7219.66
+  },
+  {
+    "id": "305275",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Fellhorn Gorge",
+    "x": 12520.17,
+    "y": 6969.71
+  },
+  {
+    "id": "305276",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Fellhorn Gorge",
+    "x": 10969.39,
+    "y": 6723.61
+  },
+  {
+    "id": "305277",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami",
+    "x": 12238.74,
+    "y": 5345.5
+  },
+  {
+    "id": "305278",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Kitakami",
+    "x": 8138.43,
+    "y": 8854.29
+  },
+  {
+    "id": "305279",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 8289.05,
+    "y": 8331.29
+  },
+  {
+    "id": "305280",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami",
+    "x": 9604,
+    "y": 7416.56
+  },
+  {
+    "id": "305281",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Kitakami",
+    "x": 9757.42,
+    "y": 7669.78
+  },
+  {
+    "id": "305282",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Kitakami",
+    "x": 10059.42,
+    "y": 7733.78
+  },
+  {
+    "id": "305283",
+    "category": "medicine",
+    "name": "Antidote x2",
+    "area": "Kitakami",
+    "x": 10261.42,
+    "y": 7585.78
+  },
+  {
+    "id": "305284",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 10099.42,
+    "y": 7423.78
+  },
+  {
+    "id": "305285",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Kitakami",
+    "x": 9229.49,
+    "y": 7641.78
+  },
+  {
+    "id": "305286",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 9463.49,
+    "y": 7649.78
+  },
+  {
+    "id": "305287",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Kitakami",
+    "x": 9637.49,
+    "y": 7717.78
+  },
+  {
+    "id": "305288",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Kitakami",
+    "x": 8937.49,
+    "y": 6288.94
+  },
+  {
+    "id": "305289",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 8771.49,
+    "y": 6822.94
+  },
+  {
+    "id": "305290",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Kitakami",
+    "x": 8917.49,
+    "y": 7087.14
+  },
+  {
+    "id": "305291",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Kitakami",
+    "x": 9795.49,
+    "y": 7781.78
+  },
+  {
+    "id": "305292",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami",
+    "x": 9217.49,
+    "y": 6799.14
+  },
+  {
+    "id": "305293",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Kitakami",
+    "x": 6902.56,
+    "y": 6469.75
+  },
+  {
+    "id": "305294",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Kitakami",
+    "x": 6355,
+    "y": 6631
+  },
+  {
+    "id": "305295",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 8054.35,
+    "y": 6311.74
+  },
+  {
+    "id": "305296",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Kitakami",
+    "x": 8578.35,
+    "y": 6301.74
+  },
+  {
+    "id": "305297",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Kitakami",
+    "x": 5468.53,
+    "y": 7663.37
+  },
+  {
+    "id": "305298",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Kitakami",
+    "x": 6026.5,
+    "y": 7225
+  },
+  {
+    "id": "305299",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Kitakami",
+    "x": 5656.53,
+    "y": 6836.87
+  },
+  {
+    "id": "305300",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Kitakami",
+    "x": 6078.82,
+    "y": 6732.87
+  },
+  {
+    "id": "305301",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Kitakami",
+    "x": 4816,
+    "y": 8369
+  },
+  {
+    "id": "305302",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Kitakami",
+    "x": 4718.15,
+    "y": 8930.24
+  },
+  {
+    "id": "305303",
+    "category": "medicine",
+    "name": "Antidote x2",
+    "area": "Kitakami",
+    "x": 5708.75,
+    "y": 9651.25
+  },
+  {
+    "id": "305304",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami",
+    "x": 6104.97,
+    "y": 9549.66
+  },
+  {
+    "id": "305305",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Kitakami",
+    "x": 5958.53,
+    "y": 8975.66
+  },
+  {
+    "id": "305306",
+    "category": "medicine",
+    "name": "Paralyze Heal x2",
+    "area": "Kitakami",
+    "x": 4572,
+    "y": 7942
+  },
+  {
+    "id": "305307",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 4896.15,
+    "y": 9430.85
+  },
+  {
+    "id": "305308",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Wistful Fields",
+    "x": 5154.15,
+    "y": 9684.85
+  },
+  {
+    "id": "305309",
+    "category": "medicine",
+    "name": "Antidote x2",
+    "area": "Kitakami",
+    "x": 6350.04,
+    "y": 9418.23
+  },
+  {
+    "id": "305310",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Kitakami",
+    "x": 6061.49,
+    "y": 9338.05
+  },
+  {
+    "id": "305311",
+    "category": "medicine",
+    "name": "Potion x3",
+    "area": "Kitakami",
+    "x": 6213.49,
+    "y": 9064.05
+  },
+  {
+    "id": "305312",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Kitakami",
+    "x": 5364.6,
+    "y": 9166.01
+  },
+  {
+    "id": "305313",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Paradise Barrens",
+    "x": 5543.38,
+    "y": 4018.19
+  },
+  {
+    "id": "305314",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Paradise Barrens",
+    "x": 5420.7,
+    "y": 4337.81
+  },
+  {
+    "id": "305315",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Kitakami",
+    "x": 6084,
+    "y": 6209.88
+  },
+  {
+    "id": "305316",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Kitakami",
+    "x": 6534.04,
+    "y": 9756.23
+  },
+  {
+    "id": "305317",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Paradise Barrens",
+    "x": 3823,
+    "y": 4129
+  },
+  {
+    "id": "305318",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Paradise Barrens",
+    "x": 4984.7,
+    "y": 4144.81
+  },
+  {
+    "id": "305319",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Paradise Barrens",
+    "x": 5189.26,
+    "y": 4629.21
+  },
+  {
+    "id": "305320",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Paradise Barrens",
+    "x": 4743.26,
+    "y": 4516.21
+  },
+  {
+    "id": "305321",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Paradise Barrens",
+    "x": 5967.45,
+    "y": 4377.12
+  },
+  {
+    "id": "305322",
+    "category": "medicine",
+    "name": "Elixir",
+    "area": "Paradise Barrens",
+    "x": 5817.95,
+    "y": 3505.68
+  },
+  {
+    "id": "305323",
+    "category": "medicine",
+    "name": "Hyper Porion x2",
+    "area": "Paradise Barrens",
+    "x": 4641.81,
+    "y": 4017.13
+  },
+  {
+    "id": "305324",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Paradise Barrens",
+    "x": 4327.31,
+    "y": 4154.13
+  },
+  {
+    "id": "305325",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Paradise Barrens",
+    "x": 3694.31,
+    "y": 3782.12
+  },
+  {
+    "id": "305326",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Paradise Barrens",
+    "x": 7282,
+    "y": 5082
+  },
+  {
+    "id": "305327",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Paradise Barrens",
+    "x": 6352.31,
+    "y": 4519.93
+  },
+  {
+    "id": "305328",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Paradise Barrens",
+    "x": 6557.31,
+    "y": 4204.48
+  },
+  {
+    "id": "305329",
+    "category": "medicine",
+    "name": "Ice Heal",
+    "area": "Paradise Barrens",
+    "x": 6486.33,
+    "y": 3679.85
+  },
+  {
+    "id": "305330",
+    "category": "medicine",
+    "name": "Heal Powder",
+    "area": "Paradise Barrens",
+    "x": 6232.72,
+    "y": 5067.97
+  },
+  {
+    "id": "305331",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Paradise Barrens",
+    "x": 6593.72,
+    "y": 5229.97
+  },
+  {
+    "id": "305332",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Paradise Barrens",
+    "x": 6643.72,
+    "y": 4948.47
+  },
+  {
+    "id": "305333",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Paradise Barrens",
+    "x": 6759.72,
+    "y": 4892.47
+  },
+  {
+    "id": "305334",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Paradise Barrens",
+    "x": 4689.7,
+    "y": 5243.28
+  },
+  {
+    "id": "305335",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Paradise Barrens",
+    "x": 4874.74,
+    "y": 5452.41
+  },
+  {
+    "id": "305336",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Paradise Barrens",
+    "x": 5310.74,
+    "y": 5436.41
+  },
+  {
+    "id": "305337",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Paradise Barrens",
+    "x": 5746.75,
+    "y": 5476.37
+  },
+  {
+    "id": "305338",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Paradise Barrens",
+    "x": 5982.72,
+    "y": 5197.97
+  },
+  {
+    "id": "305339",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Paradise Barrens",
+    "x": 3686,
+    "y": 5586
+  },
+  {
+    "id": "305340",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Paradise Barrens",
+    "x": 3856.39,
+    "y": 5179.94
+  },
+  {
+    "id": "305341",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Paradise Barrens",
+    "x": 3551,
+    "y": 5205
+  },
+  {
+    "id": "305342",
+    "category": "medicine",
+    "name": "Soda Pop",
+    "area": "Paradise Barrens",
+    "x": 3797,
+    "y": 4805
+  },
+  {
+    "id": "305343",
+    "category": "medicine",
+    "name": "Ice Heal x2",
+    "area": "Wistful Fields",
+    "x": 3427,
+    "y": 6842.5
+  },
+  {
+    "id": "305344",
+    "category": "medicine",
+    "name": "Soda Pop x2",
+    "area": "Wistful Fields",
+    "x": 3436.25,
+    "y": 6290.13
+  },
+  {
+    "id": "305345",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Paradise Barrens",
+    "x": 4557.25,
+    "y": 5796.31
+  },
+  {
+    "id": "305346",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Paradise Barrens",
+    "x": 4215.25,
+    "y": 5860.31
+  },
+  {
+    "id": "305347",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Paradise Barrens",
+    "x": 4339.87,
+    "y": 5228.06
+  },
+  {
+    "id": "305348",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Wistful Fields",
+    "x": 4237,
+    "y": 6874
+  },
+  {
+    "id": "305349",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Wistful Fields",
+    "x": 4800.5,
+    "y": 9639
+  },
+  {
+    "id": "305350",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Wistful Fields",
+    "x": 5125.59,
+    "y": 9850.7
+  },
+  {
+    "id": "305351",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Wistful Fields",
+    "x": 4152.7,
+    "y": 8594.64
+  },
+  {
+    "id": "305352",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Wistful Fields",
+    "x": 3965.21,
+    "y": 8321.7
+  },
+  {
+    "id": "305353",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Wistful Fields",
+    "x": 5234.58,
+    "y": 10790.72
+  },
+  {
+    "id": "305354",
+    "category": "medicine",
+    "name": "Potion x3",
+    "area": "Wistful Fields",
+    "x": 4496.58,
+    "y": 10614.72
+  },
+  {
+    "id": "305355",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Wistful Fields",
+    "x": 4282.98,
+    "y": 9429.47
+  },
+  {
+    "id": "305356",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Wistful Fields",
+    "x": 3281,
+    "y": 8013.5
+  },
+  {
+    "id": "325303",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Timeless Woods",
+    "x": 10849.25,
+    "y": 3886
+  },
+  {
+    "id": "325305",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Timeless Woods",
+    "x": 10061.01,
+    "y": 4855.02
+  },
+  {
+    "id": "325308",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Timeless Woods",
+    "x": 10040.62,
+    "y": 4460.5
+  },
+  {
+    "id": "325310",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Timeless Woods",
+    "x": 10351.62,
+    "y": 4373
+  },
+  {
+    "id": "325311",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Timeless Woods",
+    "x": 10350.13,
+    "y": 4105.56
+  },
+  {
+    "id": "325313",
+    "category": "medicine",
+    "name": "Awakening",
+    "area": "Timeless Woods",
+    "x": 10617.67,
+    "y": 4219.06
+  },
+  {
+    "id": "325314",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Timeless Woods",
+    "x": 10279.75,
+    "y": 4775.31
+  },
+  {
+    "id": "325315",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Timeless Woods",
+    "x": 10425,
+    "y": 4905.89
+  },
+  {
+    "id": "325320",
+    "category": "medicine",
+    "name": "Antidote",
+    "area": "Timeless Woods",
+    "x": 11034.61,
+    "y": 5356.37
+  },
+  {
+    "id": "325323",
+    "category": "medicine",
+    "name": "Lemonade",
+    "area": "Timeless Woods",
+    "x": 10660.02,
+    "y": 4756.49
+  },
+  {
+    "id": "325328",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Timeless Woods",
+    "x": 11003.89,
+    "y": 4324.74
+  },
+  {
+    "id": "325330",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Timeless Woods",
+    "x": 11322.42,
+    "y": 4270.61
+  },
+  {
+    "id": "325336",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Timeless Woods",
+    "x": 12627.22,
+    "y": 4319.64
+  },
+  {
+    "id": "325337",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Timeless Woods",
+    "x": 12414.28,
+    "y": 4109.51
+  },
+  {
+    "id": "325339",
+    "category": "medicine",
+    "name": "Energy Root",
+    "area": "Timeless Woods",
+    "x": 12370.27,
+    "y": 4368.15
+  },
+  {
+    "id": "325340",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Timeless Woods",
+    "x": 11706.37,
+    "y": 4092.59
+  },
+  {
+    "id": "325341",
+    "category": "medicine",
+    "name": "Burn Heal",
+    "area": "Timeless Woods",
+    "x": 11394.25,
+    "y": 3754.05
+  },
+  {
+    "id": "325342",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Timeless Woods",
+    "x": 11646.27,
+    "y": 3516.15
+  },
+  {
+    "id": "325345",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Timeless Woods",
+    "x": 12444.45,
+    "y": 3439.69
+  },
+  {
+    "id": "325348",
+    "category": "medicine",
+    "name": "Energy Powder",
+    "area": "Timeless Woods",
+    "x": 12097.48,
+    "y": 3719.64
+  },
+  {
+    "id": "325393",
+    "category": "medicine",
+    "name": "Burn Heal x2",
+    "area": "Kitakami",
+    "x": 5534.62,
+    "y": 8200.85
+  },
+  {
+    "id": "325407",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Kitakami",
+    "x": 9389.11,
+    "y": 7412.94
+  },
+  {
+    "id": "302881",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Kitakami Road",
+    "x": 9022.7,
+    "y": 12111.31
+  },
+  {
+    "id": "302886",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Kitakami Road",
+    "x": 8917.55,
+    "y": 12601.06
+  },
+  {
+    "id": "302905",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Kitakami Road",
+    "x": 10840.75,
+    "y": 12681.37
+  },
+  {
+    "id": "303063",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Apple Hills",
+    "x": 6823.52,
+    "y": 10848.4
+  },
+  {
+    "id": "303081",
+    "category": "other-item",
+    "name": "Carbos",
+    "area": "Mossui Town",
+    "x": 8694.84,
+    "y": 11398.53
+  },
+  {
+    "id": "303085",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Kitakami Road",
+    "x": 11455.16,
+    "y": 12913.99
+  },
+  {
+    "id": "303091",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Apple Hills",
+    "x": 8576,
+    "y": 12209.82
+  },
+  {
+    "id": "303093",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Loyalty Plaza",
+    "x": 8979.47,
+    "y": 10701.85
+  },
+  {
+    "id": "303094",
+    "category": "other-item",
+    "name": "Nugget",
+    "area": "Loyalty Plaza",
+    "x": 9006.38,
+    "y": 10792.21
+  },
+  {
+    "id": "303095",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Mossui Town",
+    "x": 9221.98,
+    "y": 11466.74
+  },
+  {
+    "id": "303097",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Kitakami",
+    "x": 9088.55,
+    "y": 10274.13
+  },
+  {
+    "id": "303601",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Reveler's Road",
+    "x": 10351.3,
+    "y": 11284.79
+  },
+  {
+    "id": "303609",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Mossful Confluence",
+    "x": 11768.79,
+    "y": 12735.77
+  },
+  {
+    "id": "303616",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Mossful Confluence",
+    "x": 12883.39,
+    "y": 12639.25
+  },
+  {
+    "id": "303631",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Kitakami Hall",
+    "x": 11303.75,
+    "y": 9498.81
+  },
+  {
+    "id": "303633",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Kitakami Hall",
+    "x": 11064.1,
+    "y": 9698.18
+  },
+  {
+    "id": "303635",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Reveler's Road",
+    "x": 10423.97,
+    "y": 10033.53
+  },
+  {
+    "id": "303654",
+    "category": "other-item",
+    "name": "Calcium",
+    "area": "Reveler's Road",
+    "x": 10806.85,
+    "y": 10943.71
+  },
+  {
+    "id": "303664",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Reveler's Road",
+    "x": 10432.97,
+    "y": 11843.42
+  },
+  {
+    "id": "303669",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 7916.51,
+    "y": 9416.52
+  },
+  {
+    "id": "303672",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 8183.17,
+    "y": 9098.08
+  },
+  {
+    "id": "303678",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Kitakami",
+    "x": 8338.95,
+    "y": 10191.57
+  },
+  {
+    "id": "303679",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 8801.02,
+    "y": 9378.17
+  },
+  {
+    "id": "303683",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Fellhorn Gorge",
+    "x": 12956.52,
+    "y": 9174.85
+  },
+  {
+    "id": "303687",
+    "category": "other-item",
+    "name": "Moon Stone",
+    "area": "Fellhorn Gorge",
+    "x": 13179.52,
+    "y": 9436.44
+  },
+  {
+    "id": "303695",
+    "category": "other-item",
+    "name": "Flying Tera Shard x3",
+    "area": "Mossful Confluence",
+    "x": 12812.16,
+    "y": 11105.58
+  },
+  {
+    "id": "303699",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Mossful Confluence",
+    "x": 12661.39,
+    "y": 11912.07
+  },
+  {
+    "id": "303701",
+    "category": "other-item",
+    "name": "Water Stone",
+    "area": "Fellhorn Gorge",
+    "x": 13082.89,
+    "y": 7417.72
+  },
+  {
+    "id": "303703",
+    "category": "other-item",
+    "name": "Prism Scale",
+    "area": "Fellhorn Gorge",
+    "x": 13127.25,
+    "y": 8233.87
+  },
+  {
+    "id": "303716",
+    "category": "other-item",
+    "name": "Fire Stone",
+    "area": "Kitakami",
+    "x": 10532.16,
+    "y": 8883.47
+  },
+  {
+    "id": "303720",
+    "category": "other-item",
+    "name": "Fire Tera Shard x3",
+    "area": "Kitakami Hall",
+    "x": 11446.54,
+    "y": 9155.54
+  },
+  {
+    "id": "303722",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Reveler's Road",
+    "x": 12024.09,
+    "y": 11091.19
+  },
+  {
+    "id": "303725",
+    "category": "other-item",
+    "name": "Water Tera Shard x3",
+    "area": "Fellhorn Gorge",
+    "x": 12302.57,
+    "y": 9229.6
+  },
+  {
+    "id": "303727",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Reveler's Road",
+    "x": 12415.62,
+    "y": 10609.09
+  },
+  {
+    "id": "303737",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Reveler's Road",
+    "x": 10000.58,
+    "y": 10261.21
+  },
+  {
+    "id": "303740",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Reveler's Road",
+    "x": 9297.13,
+    "y": 10699.69
+  },
+  {
+    "id": "303868",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Wistful Fields",
+    "x": 4486.5,
+    "y": 10181.5
+  },
+  {
+    "id": "303883",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Wistful Fields",
+    "x": 5213.25,
+    "y": 12174.5
+  },
+  {
+    "id": "305246",
+    "category": "other-item",
+    "name": "Leaf Stone",
+    "area": "Kitakami Wilds",
+    "x": 10116.56,
+    "y": 5475.06
+  },
+  {
+    "id": "305373",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Kitakami",
+    "x": 10980.31,
+    "y": 5745.55
+  },
+  {
+    "id": "305430",
+    "category": "other-item",
+    "name": "Ice Stone",
+    "area": "Kitakami",
+    "x": 9796.6,
+    "y": 7449.35
+  },
+  {
+    "id": "305431",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Kitakami",
+    "x": 10252.42,
+    "y": 7530.78
+  },
+  {
+    "id": "305432",
+    "category": "other-item",
+    "name": "Nugget",
+    "area": "Kitakami",
+    "x": 9969.42,
+    "y": 7577.78
+  },
+  {
+    "id": "305433",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Wistful Fields",
+    "x": 4888.58,
+    "y": 10500.72
+  },
+  {
+    "id": "305434",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Wistful Fields",
+    "x": 4073,
+    "y": 9725
+  },
+  {
+    "id": "313087",
+    "category": "other-item",
+    "name": "Exp. Candy L",
+    "area": "Fellhorn Gorge",
+    "x": 12304.32,
+    "y": 7067.77
+  },
+  {
+    "id": "313091",
+    "category": "other-item",
+    "name": "Reaper Cloth",
+    "area": "Timeless Woods",
+    "x": 11755,
+    "y": 4574.5
+  },
+  {
+    "id": "313094",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Reveler's Road",
+    "x": 10472.91,
+    "y": 9673.65
+  },
+  {
+    "id": "313099",
+    "category": "other-item",
+    "name": "Normal Tera Shard x3",
+    "area": "Kitakami",
+    "x": 8209.31,
+    "y": 6662.56
+  },
+  {
+    "id": "313100",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Paradise Barrens",
+    "x": 4479.88,
+    "y": 4493.5
+  },
+  {
+    "id": "313103",
+    "category": "other-item",
+    "name": "Psychic Tera Shard x3",
+    "area": "Paradise Barrens",
+    "x": 5226.25,
+    "y": 3875.5
+  },
+  {
+    "id": "313104",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Paradise Barrens",
+    "x": 4517.69,
+    "y": 4682.56
+  },
+  {
+    "id": "313105",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Paradise Barrens",
+    "x": 4547.62,
+    "y": 4878.38
+  },
+  {
+    "id": "313106",
+    "category": "other-item",
+    "name": "Unremarkable Teacup",
+    "area": "Paradise Barrens",
+    "x": 4389.87,
+    "y": 5120.69
+  },
+  {
+    "id": "313120",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Kitakami",
+    "x": 12241.13,
+    "y": 6012.19
+  },
+  {
+    "id": "313135",
+    "category": "other-item",
+    "name": "Rare Candy x1",
+    "area": "Kitakami",
+    "x": 4943.25,
+    "y": 6331.5
+  },
+  {
+    "id": "313136",
+    "category": "other-item",
+    "name": "Unremarkable Teacup x1",
+    "area": "Kitakami",
+    "x": 5257.75,
+    "y": 6348.25
+  },
+  {
+    "id": "313137",
+    "category": "other-item",
+    "name": "Exp. Candy M x1",
+    "area": "Kitakami",
+    "x": 5665.5,
+    "y": 5942.25
+  },
+  {
+    "id": "313140",
+    "category": "other-item",
+    "name": "Electric Tera Shards x3",
+    "area": "Kitakami",
+    "x": 4392.38,
+    "y": 8729.06
+  },
+  {
+    "id": "313142",
+    "category": "other-item",
+    "name": "Ice Tera Shard x3",
+    "area": "Kitakami",
+    "x": 7243.37,
+    "y": 8077.75
+  },
+  {
+    "id": "313143",
+    "category": "other-item",
+    "name": "Iron x1",
+    "area": "Kitakami",
+    "x": 5753.25,
+    "y": 7824.75
+  },
+  {
+    "id": "313145",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 6354.13,
+    "y": 6119.13
+  },
+  {
+    "id": "313146",
+    "category": "other-item",
+    "name": "Shiny Stone",
+    "area": "Kitakami",
+    "x": 9865.5,
+    "y": 7598.75
+  },
+  {
+    "id": "313147",
+    "category": "other-item",
+    "name": "Razor Fang",
+    "area": "Wistful Fields",
+    "x": 3439,
+    "y": 7811
+  },
+  {
+    "id": "325319",
+    "category": "other-item",
+    "name": "Masterpiece Teacup",
+    "area": "Kitakami",
+    "x": 10725.81,
+    "y": 5588.5
+  },
+  {
+    "id": "325322",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Timeless Woods",
+    "x": 11148.38,
+    "y": 4806.44
+  },
+  {
+    "id": "325331",
+    "category": "other-item",
+    "name": "Dusk Stone",
+    "area": "Timeless Woods",
+    "x": 11850.27,
+    "y": 4756.15
+  },
+  {
+    "id": "325332",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Timeless Woods",
+    "x": 12042.21,
+    "y": 4721.11
+  },
+  {
+    "id": "325349",
+    "category": "other-item",
+    "name": "Grass Tera Shard x3",
+    "area": "Timeless Woods",
+    "x": 11976.17,
+    "y": 4040.26
+  },
+  {
+    "id": "325353",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 12495.06,
+    "y": 5079.52
+  },
+  {
+    "id": "325354",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Kitakami",
+    "x": 12181,
+    "y": 4983.64
+  },
+  {
+    "id": "325365",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Wistful Fields",
+    "x": 3835,
+    "y": 9835.5
+  },
+  {
+    "id": "325367",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Wistful Fields",
+    "x": 3619,
+    "y": 8276
+  },
+  {
+    "id": "325368",
+    "category": "other-item",
+    "name": "Rock Tera Shard x3",
+    "area": "Wistful Fields",
+    "x": 3920.06,
+    "y": 8077.75
+  },
+  {
+    "id": "325370",
+    "category": "other-item",
+    "name": "Thunder Stone",
+    "area": "Wistful Fields",
+    "x": 3392.19,
+    "y": 7335.69
+  },
+  {
+    "id": "325371",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Wistful Fields",
+    "x": 3381.06,
+    "y": 6741.13
+  },
+  {
+    "id": "325373",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Wistful Fields",
+    "x": 3986.77,
+    "y": 6369.91
+  },
+  {
+    "id": "325379",
+    "category": "other-item",
+    "name": "Exp. Candy S x2",
+    "area": "Paradise Barrens",
+    "x": 3831.49,
+    "y": 4478.31
+  },
+  {
+    "id": "325381",
+    "category": "other-item",
+    "name": "Calcium",
+    "area": "Paradise Barrens",
+    "x": 4111.11,
+    "y": 3813.79
+  },
+  {
+    "id": "325383",
+    "category": "other-item",
+    "name": "Ground Tera Shard x3",
+    "area": "Paradise Barrens",
+    "x": 5313.81,
+    "y": 4208.2
+  },
+  {
+    "id": "325384",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Paradise Barrens",
+    "x": 5801.11,
+    "y": 4218.86
+  },
+  {
+    "id": "325385",
+    "category": "other-item",
+    "name": "Exp. Candy XS",
+    "area": "Paradise Barrens",
+    "x": 6078.5,
+    "y": 4552.19
+  },
+  {
+    "id": "325386",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Paradise Barrens",
+    "x": 5657.91,
+    "y": 4679.16
+  },
+  {
+    "id": "325387",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Paradise Barrens",
+    "x": 6000.37,
+    "y": 4833.25
+  },
+  {
+    "id": "325388",
+    "category": "other-item",
+    "name": "Sun Stone",
+    "area": "Paradise Barrens",
+    "x": 6176.5,
+    "y": 4852.12
+  },
+  {
+    "id": "325391",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 5528.15,
+    "y": 6897
+  },
+  {
+    "id": "325392",
+    "category": "other-item",
+    "name": "Exp. Candy XS x2",
+    "area": "Kitakami",
+    "x": 5780.86,
+    "y": 6987.63
+  },
+  {
+    "id": "325395",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Kitakami",
+    "x": 6600.48,
+    "y": 8522.36
+  },
+  {
+    "id": "325397",
+    "category": "other-item",
+    "name": "Fairy Tera Shard x3",
+    "area": "Kitakami",
+    "x": 7614.37,
+    "y": 8186.25
+  },
+  {
+    "id": "325398",
+    "category": "other-item",
+    "name": "Dragon Tera Shard x3",
+    "area": "Kitakami",
+    "x": 8236.44,
+    "y": 8527.62
+  },
+  {
+    "id": "325400",
+    "category": "other-item",
+    "name": "Exp. Candy S",
+    "area": "Kitakami",
+    "x": 8333.69,
+    "y": 8705.19
+  },
+  {
+    "id": "325403",
+    "category": "other-item",
+    "name": "Steel Tera Shard x3",
+    "area": "Kitakami",
+    "x": 8488.02,
+    "y": 8360.14
+  },
+  {
+    "id": "325404",
+    "category": "other-item",
+    "name": "Poison Tera Shard x3",
+    "area": "Kitakami",
+    "x": 8514.32,
+    "y": 8006.89
+  },
+  {
+    "id": "325406",
+    "category": "other-item",
+    "name": "Dawn Stone",
+    "area": "Kitakami",
+    "x": 9053.32,
+    "y": 7556.38
+  },
+  {
+    "id": "325411",
+    "category": "other-item",
+    "name": "Ghost Tera Shard x3",
+    "area": "Kitakami",
+    "x": 9633.31,
+    "y": 7189
+  },
+  {
+    "id": "302795",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami",
+    "x": 10053.1,
+    "y": 9457.27
+  },
+  {
+    "id": "302851",
+    "category": "poke-ball",
+    "name": "Nest Ball",
+    "area": "Kitakami Road",
+    "x": 9388.56,
+    "y": 11848.35
+  },
+  {
+    "id": "302861",
+    "category": "poke-ball",
+    "name": "Poké Ball",
+    "area": "Kitakami Road",
+    "x": 7395.25,
+    "y": 13114.68
+  },
+  {
+    "id": "302882",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami Road",
+    "x": 8793.33,
+    "y": 12019.02
+  },
+  {
+    "id": "302883",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Mossui Town",
+    "x": 8779.7,
+    "y": 11732.37
+  },
+  {
+    "id": "302885",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Kitakami Road",
+    "x": 8500.29,
+    "y": 12502.93
+  },
+  {
+    "id": "302888",
+    "category": "poke-ball",
+    "name": "Quick Ball",
+    "area": "Kitakami Road",
+    "x": 9369.32,
+    "y": 12449.68
+  },
+  {
+    "id": "302903",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Kitakami Road",
+    "x": 10286.25,
+    "y": 12542.75
+  },
+  {
+    "id": "302908",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami Road",
+    "x": 9634.5,
+    "y": 11794.06
+  },
+  {
+    "id": "302909",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami Road",
+    "x": 6619.5,
+    "y": 12761.5
+  },
+  {
+    "id": "302912",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami Road",
+    "x": 8897.25,
+    "y": 12448
+  },
+  {
+    "id": "302913",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Kitakami Road",
+    "x": 8674.99,
+    "y": 12672.75
+  },
+  {
+    "id": "303062",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Loyalty Plaza",
+    "x": 8397.23,
+    "y": 11092.19
+  },
+  {
+    "id": "303069",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Apple Hills",
+    "x": 6957.64,
+    "y": 11789.63
+  },
+  {
+    "id": "303070",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Apple Hills",
+    "x": 7189.27,
+    "y": 11745.29
+  },
+  {
+    "id": "303089",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Apple Hills",
+    "x": 7980.5,
+    "y": 11850.25
+  },
+  {
+    "id": "303092",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Loyalty Plaza",
+    "x": 8894.55,
+    "y": 10714.64
+  },
+  {
+    "id": "303098",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Apple Hills",
+    "x": 7273.12,
+    "y": 12169.74
+  },
+  {
+    "id": "303604",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Reveler's Road",
+    "x": 10353.74,
+    "y": 12347.92
+  },
+  {
+    "id": "303629",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Fellhorn Gorge",
+    "x": 11835.82,
+    "y": 9445.28
+  },
+  {
+    "id": "303637",
+    "category": "poke-ball",
+    "name": "Net Ball",
+    "area": "Kitakami",
+    "x": 9324.96,
+    "y": 9770.86
+  },
+  {
+    "id": "303638",
+    "category": "poke-ball",
+    "name": "Premier Ball",
+    "area": "Kitakami",
+    "x": 8829.02,
+    "y": 9756.17
+  },
+  {
+    "id": "303641",
+    "category": "poke-ball",
+    "name": "Premier Ball",
+    "area": "Kitakami",
+    "x": 7174.51,
+    "y": 10082.25
+  },
+  {
+    "id": "303644",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Kitakami",
+    "x": 8476.95,
+    "y": 9422.74
+  },
+  {
+    "id": "303647",
+    "category": "poke-ball",
+    "name": "Repeat Ball",
+    "area": "Kitakami Hall",
+    "x": 10743.5,
+    "y": 9510.25
+  },
+  {
+    "id": "303656",
+    "category": "poke-ball",
+    "name": "Timer Ball",
+    "area": "Reveler's Road",
+    "x": 11016.23,
+    "y": 11960.93
+  },
+  {
+    "id": "303657",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Reveler's Road",
+    "x": 11435.78,
+    "y": 12116.29
+  },
+  {
+    "id": "303684",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Kitakami",
+    "x": 9788.96,
+    "y": 8980.97
+  },
+  {
+    "id": "303691",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Mossful Confluence",
+    "x": 12898.52,
+    "y": 9899.91
+  },
+  {
+    "id": "303698",
+    "category": "poke-ball",
+    "name": "Nest Ball x2",
+    "area": "Mossful Confluence",
+    "x": 13022.39,
+    "y": 11720.16
+  },
+  {
+    "id": "303707",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Fellhorn Gorge",
+    "x": 12196.05,
+    "y": 8536.28
+  },
+  {
+    "id": "303870",
+    "category": "poke-ball",
+    "name": "Luxury Ball",
+    "area": "Wistful Fields",
+    "x": 5620.52,
+    "y": 10540.14
+  },
+  {
+    "id": "303876",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Wistful Fields",
+    "x": 4054.21,
+    "y": 11090.93
+  },
+  {
+    "id": "303877",
+    "category": "poke-ball",
+    "name": "Heal Ball",
+    "area": "Wistful Fields",
+    "x": 5255.22,
+    "y": 11636.1
+  },
+  {
+    "id": "303888",
+    "category": "poke-ball",
+    "name": "Ultra Ball x3",
+    "area": "Wistful Fields",
+    "x": 5936.18,
+    "y": 11539.65
+  },
+  {
+    "id": "303889",
+    "category": "poke-ball",
+    "name": "Dusk Ball x2",
+    "area": "Wistful Fields",
+    "x": 5782.52,
+    "y": 10281.73
+  },
+  {
+    "id": "305214",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Kitakami Wilds",
+    "x": 9145.35,
+    "y": 4620.35
+  },
+  {
+    "id": "305217",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Kitakami Wilds",
+    "x": 8230.75,
+    "y": 4360.25
+  },
+  {
+    "id": "305227",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Kitakami Wilds",
+    "x": 7838.6,
+    "y": 3834.69
+  },
+  {
+    "id": "305235",
+    "category": "poke-ball",
+    "name": "Net Ball x2",
+    "area": "Kitakami Wilds",
+    "x": 8689.35,
+    "y": 3786.22
+  },
+  {
+    "id": "305251",
+    "category": "poke-ball",
+    "name": "Premier Ball",
+    "area": "Kitakami",
+    "x": 10965.37,
+    "y": 5919.49
+  },
+  {
+    "id": "305374",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Kitakami",
+    "x": 10367.37,
+    "y": 6161.49
+  },
+  {
+    "id": "305375",
+    "category": "poke-ball",
+    "name": "Nest Ball x2",
+    "area": "Kitakami",
+    "x": 11942.31,
+    "y": 6231.65
+  },
+  {
+    "id": "305376",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Kitakami",
+    "x": 11124.31,
+    "y": 6115.76
+  },
+  {
+    "id": "305377",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Kitakami",
+    "x": 12461.6,
+    "y": 6285.3
+  },
+  {
+    "id": "305378",
+    "category": "poke-ball",
+    "name": "Timer Ball x3",
+    "area": "Kitakami",
+    "x": 11636.6,
+    "y": 5204.12
+  },
+  {
+    "id": "305379",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Fellhorn Gorge",
+    "x": 11245.39,
+    "y": 7365.75
+  },
+  {
+    "id": "305380",
+    "category": "poke-ball",
+    "name": "Luxury Ball",
+    "area": "Fellhorn Gorge",
+    "x": 11317.06,
+    "y": 6935.61
+  },
+  {
+    "id": "305381",
+    "category": "poke-ball",
+    "name": "Dusk Ball",
+    "area": "Kitakami",
+    "x": 11896.6,
+    "y": 5272.12
+  },
+  {
+    "id": "305382",
+    "category": "poke-ball",
+    "name": "Luxury Ball",
+    "area": "Kitakami",
+    "x": 8498.06,
+    "y": 8590.31
+  },
+  {
+    "id": "305383",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Reveler's Road",
+    "x": 9335.21,
+    "y": 10930.73
+  },
+  {
+    "id": "305384",
+    "category": "poke-ball",
+    "name": "Heal Ball x2",
+    "area": "Fellhorn Gorge",
+    "x": 11139.25,
+    "y": 6956.75
+  },
+  {
+    "id": "305385",
+    "category": "poke-ball",
+    "name": "Dusk Ball x3",
+    "area": "Kitakami",
+    "x": 9575.49,
+    "y": 7603.78
+  },
+  {
+    "id": "305386",
+    "category": "poke-ball",
+    "name": "Dive Ball x3",
+    "area": "Kitakami",
+    "x": 9491.87,
+    "y": 7084.86
+  },
+  {
+    "id": "305387",
+    "category": "poke-ball",
+    "name": "Nest Ball x3",
+    "area": "Kitakami",
+    "x": 9682.63,
+    "y": 8134
+  },
+  {
+    "id": "305388",
+    "category": "poke-ball",
+    "name": "Heal Ball",
+    "area": "Kitakami",
+    "x": 8929.29,
+    "y": 6109.11
+  },
+  {
+    "id": "305389",
+    "category": "poke-ball",
+    "name": "Nest Ball x2",
+    "area": "Kitakami",
+    "x": 6660.82,
+    "y": 7288.87
+  },
+  {
+    "id": "305390",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Kitakami",
+    "x": 6866.56,
+    "y": 6727.75
+  },
+  {
+    "id": "305391",
+    "category": "poke-ball",
+    "name": "Net Ball x2",
+    "area": "Kitakami",
+    "x": 7699.97,
+    "y": 6217.74
+  },
+  {
+    "id": "305392",
+    "category": "poke-ball",
+    "name": "Great Ball",
+    "area": "Kitakami",
+    "x": 6166.53,
+    "y": 7256.87
+  },
+  {
+    "id": "305393",
+    "category": "poke-ball",
+    "name": "Quick Ball x2",
+    "area": "Kitakami",
+    "x": 5572.53,
+    "y": 7328.87
+  },
+  {
+    "id": "305394",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Paradise Barrens",
+    "x": 6046.33,
+    "y": 4068.48
+  },
+  {
+    "id": "305395",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Paradise Barrens",
+    "x": 6045.33,
+    "y": 3682.85
+  },
+  {
+    "id": "305396",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Kitakami",
+    "x": 5349.6,
+    "y": 8852.01
+  },
+  {
+    "id": "305397",
+    "category": "poke-ball",
+    "name": "Premier Ball",
+    "area": "Paradise Barrens",
+    "x": 4705.25,
+    "y": 5840.31
+  },
+  {
+    "id": "305398",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Paradise Barrens",
+    "x": 5730.72,
+    "y": 4985.97
+  },
+  {
+    "id": "305399",
+    "category": "poke-ball",
+    "name": "Dusk Ball",
+    "area": "Kitakami Wilds",
+    "x": 6678.31,
+    "y": 4014.46
+  },
+  {
+    "id": "305400",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Wistful Fields",
+    "x": 3493,
+    "y": 7599.5
+  },
+  {
+    "id": "305401",
+    "category": "poke-ball",
+    "name": "Timer Ball x2",
+    "area": "Wistful Fields",
+    "x": 4131.21,
+    "y": 7189.74
+  },
+  {
+    "id": "305402",
+    "category": "poke-ball",
+    "name": "Dusk Ball x2",
+    "area": "Paradise Barrens",
+    "x": 4783.25,
+    "y": 6213.5
+  },
+  {
+    "id": "305403",
+    "category": "poke-ball",
+    "name": "Quick Ball x2",
+    "area": "Wistful Fields",
+    "x": 3780.02,
+    "y": 8590.06
+  },
+  {
+    "id": "305404",
+    "category": "poke-ball",
+    "name": "Timer Ball",
+    "area": "Wistful Fields",
+    "x": 4052,
+    "y": 9157.5
+  },
+  {
+    "id": "305405",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Wistful Fields",
+    "x": 4002.5,
+    "y": 10002
+  },
+  {
+    "id": "325324",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Timeless Woods",
+    "x": 10772.31,
+    "y": 4579.31
+  },
+  {
+    "id": "325326",
+    "category": "poke-ball",
+    "name": "Ultra Ball x3",
+    "area": "Timeless Woods",
+    "x": 11553.31,
+    "y": 4714.07
+  },
+  {
+    "id": "325334",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Timeless Woods",
+    "x": 12976.91,
+    "y": 4557.22
+  },
+  {
+    "id": "325335",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Timeless Woods",
+    "x": 12944.86,
+    "y": 4229.21
+  },
+  {
+    "id": "325338",
+    "category": "poke-ball",
+    "name": "Heal Ball",
+    "area": "Timeless Woods",
+    "x": 12124.12,
+    "y": 4277.89
+  },
+  {
+    "id": "325396",
+    "category": "poke-ball",
+    "name": "Premier Ball",
+    "area": "Kitakami",
+    "x": 6888.48,
+    "y": 8490.36
+  },
+  {
+    "id": "303061",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Loyalty Plaza",
+    "x": 7635,
+    "y": 11509.5
+  },
+  {
+    "id": "303677",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Kitakami",
+    "x": 8488.95,
+    "y": 9790.74
+  },
+  {
+    "id": "303726",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Fellhorn Gorge",
+    "x": 11490.04,
+    "y": 9591.36
+  },
+  {
+    "id": "313088",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Fellhorn Gorge",
+    "x": 12764.17,
+    "y": 7202.71
+  },
+  {
+    "id": "313132",
+    "category": "treasure",
+    "name": "Comet Shard x1",
+    "area": "Kitakami",
+    "x": 5949.5,
+    "y": 8538.25
+  },
+  {
+    "id": "325316",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Timeless Woods",
+    "x": 10582.38,
+    "y": 5106.13
+  },
+  {
+    "id": "325317",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Timeless Woods",
+    "x": 10695.75,
+    "y": 5415
+  },
+  {
+    "id": "325325",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Timeless Woods",
+    "x": 11410.66,
+    "y": 5121.13
+  },
+  {
+    "id": "325329",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Timeless Woods",
+    "x": 11114.79,
+    "y": 4165.66
+  },
+  {
+    "id": "325372",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Wistful Fields",
+    "x": 3821.5,
+    "y": 6614
+  },
+  {
+    "id": "325375",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Wistful Fields",
+    "x": 3703.39,
+    "y": 5934.69
+  },
+  {
+    "id": "325377",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Paradise Barrens",
+    "x": 4155.12,
+    "y": 4975.53
+  },
+  {
+    "id": "325399",
+    "category": "treasure",
+    "name": "Big Nugget",
+    "area": "Kitakami",
+    "x": 8363.06,
+    "y": 8591.31
+  },
+  {
+    "id": "325401",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Kitakami",
+    "x": 8469.05,
+    "y": 8595.29
+  },
+  {
+    "id": "325402",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Kitakami",
+    "x": 8521.31,
+    "y": 8986.01
+  },
+  {
+    "id": "325410",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Kitakami",
+    "x": 10093.66,
+    "y": 8310.38
+  },
+  {
+    "id": "302752",
+    "category": "trainer",
+    "name": "Minami the Festival Girl",
+    "area": "Apple Hills",
+    "x": 7602.5,
+    "y": 11970.5
+  },
+  {
+    "id": "302796",
+    "category": "trainer",
+    "name": "Hiker Miyu",
+    "area": "Kitakami",
+    "x": 9724.67,
+    "y": 9536.4
+  },
+  {
+    "id": "302865",
+    "category": "trainer",
+    "name": "Kazuaki the Festival Boy",
+    "area": "Kitakami Road",
+    "x": 7110.5,
+    "y": 12872.5
+  },
+  {
+    "id": "302890",
+    "category": "trainer",
+    "name": "Mayu the Festival Girl",
+    "area": "Kitakami Road",
+    "x": 9300,
+    "y": 12557
+  },
+  {
+    "id": "302891",
+    "category": "trainer",
+    "name": "Shinsaku the Ruffian",
+    "area": "Kitakami Road",
+    "x": 9479,
+    "y": 12161.5
+  },
+  {
+    "id": "302892",
+    "category": "trainer",
+    "name": "Pokémon Trainer Carmine",
+    "area": "Mossui Town",
+    "x": 9144.63,
+    "y": 11691.5
+  },
+  {
+    "id": "302895",
+    "category": "trainer",
+    "name": "Pokémon Trainer Kieran",
+    "area": "Mossui Town",
+    "x": 9121.75,
+    "y": 11565.88
+  },
+  {
+    "id": "302906",
+    "category": "trainer",
+    "name": "Makoto the Festival Boy",
+    "area": "Kitakami Road",
+    "x": 10391,
+    "y": 12631
+  },
+  {
+    "id": "302915",
+    "category": "trainer",
+    "name": "O'Nare of the Glitterati",
+    "area": "Apple Hills",
+    "x": 8562,
+    "y": 12036
+  },
+  {
+    "id": "302916",
+    "category": "trainer",
+    "name": "Tatsurou the Festival Boy",
+    "area": "Apple Hills",
+    "x": 8127.5,
+    "y": 11768.5
+  },
+  {
+    "id": "302918",
+    "category": "trainer",
+    "name": "Kaya the Delinquent",
+    "area": "Apple Hills",
+    "x": 6939.5,
+    "y": 11237
+  },
+  {
+    "id": "302919",
+    "category": "trainer",
+    "name": "Kaname the Delinquent",
+    "area": "Apple Hills",
+    "x": 6616,
+    "y": 11943
+  },
+  {
+    "id": "302995",
+    "category": "trainer",
+    "name": "Raikiri of the Kitakami Ogre Clan",
+    "area": "Kitakami",
+    "x": 9180.75,
+    "y": 10235.62
+  },
+  {
+    "id": "303110",
+    "category": "trainer",
+    "name": "Kousei the Festival Boy",
+    "area": "Loyalty Plaza",
+    "x": 7893.07,
+    "y": 11545.97
+  },
+  {
+    "id": "303600",
+    "category": "trainer",
+    "name": "Perrin the Photographer",
+    "area": "Mossui Town",
+    "x": 8773.62,
+    "y": 11507.49
+  },
+  {
+    "id": "303602",
+    "category": "trainer",
+    "name": "Kento the Ruffian",
+    "area": "Reveler's Road",
+    "x": 10236.25,
+    "y": 11384.87
+  },
+  {
+    "id": "303603",
+    "category": "trainer",
+    "name": "Rio the Delinquent",
+    "area": "Reveler's Road",
+    "x": 10332.54,
+    "y": 12119.58
+  },
+  {
+    "id": "303618",
+    "category": "trainer",
+    "name": "Minato the Festival Boy",
+    "area": "Reveler's Road",
+    "x": 12112.37,
+    "y": 11634.11
+  },
+  {
+    "id": "303619",
+    "category": "trainer",
+    "name": "Backpacker Kosuke",
+    "area": "Reveler's Road",
+    "x": 12439.59,
+    "y": 11424.32
+  },
+  {
+    "id": "303620",
+    "category": "trainer",
+    "name": "Shizune the Festival Girl",
+    "area": "Reveler's Road",
+    "x": 11832.37,
+    "y": 11021.58
+  },
+  {
+    "id": "303621",
+    "category": "trainer",
+    "name": "Masamune of the Kitakami Ogre Clan",
+    "area": "Reveler's Road",
+    "x": 11950.86,
+    "y": 10266.64
+  },
+  {
+    "id": "303666",
+    "category": "trainer",
+    "name": "Pokemon Trainer Carmine",
+    "area": "Mossui Town",
+    "x": 8767.65,
+    "y": 11011.71
+  },
+  {
+    "id": "303667",
+    "category": "trainer",
+    "name": "Pokemon Trainer Kieran",
+    "area": "Kitakami",
+    "x": 9155.78,
+    "y": 9058.16
+  },
+  {
+    "id": "303700",
+    "category": "trainer",
+    "name": "Kazuhiro the Office Worker",
+    "area": "Mossful Confluence",
+    "x": 12597.39,
+    "y": 12306.31
+  },
+  {
+    "id": "303704",
+    "category": "trainer",
+    "name": "Airi the Dragon Tamer",
+    "area": "Fellhorn Gorge",
+    "x": 12820.25,
+    "y": 8791.41
+  },
+  {
+    "id": "303708",
+    "category": "trainer",
+    "name": "Hasebe of the Kitakami Ogre Clan",
+    "area": "Fellhorn Gorge",
+    "x": 12227.66,
+    "y": 8062.73
+  },
+  {
+    "id": "303721",
+    "category": "trainer",
+    "name": "Tomo the Courier",
+    "area": "Reveler's Road",
+    "x": 11549.36,
+    "y": 10763.66
+  },
+  {
+    "id": "303736",
+    "category": "trainer",
+    "name": "Kensaku the Festival Boy",
+    "area": "Reveler's Road",
+    "x": 10806.47,
+    "y": 11196.69
+  },
+  {
+    "id": "303857",
+    "category": "trainer",
+    "name": "O'Nare of the Glitterati",
+    "area": "Apple Hills",
+    "x": 7599.5,
+    "y": 12186.5
+  },
+  {
+    "id": "303858",
+    "category": "trainer",
+    "name": "Yoshino the Festival Girl",
+    "area": "Kitakami",
+    "x": 9543.32,
+    "y": 7700.71
+  },
+  {
+    "id": "303872",
+    "category": "trainer",
+    "name": "Yoshiaki the Festival Boy",
+    "area": "Wistful Fields",
+    "x": 5606.52,
+    "y": 11271.77
+  },
+  {
+    "id": "303880",
+    "category": "trainer",
+    "name": "Kazuki the Festival Boy",
+    "area": "Wistful Fields",
+    "x": 5488.18,
+    "y": 12190.45
+  },
+  {
+    "id": "305201",
+    "category": "trainer",
+    "name": "Kotetsu of the Kitakami Ogre Clan",
+    "area": "Kitakami",
+    "x": 8215.2,
+    "y": 8325.02
+  },
+  {
+    "id": "305406",
+    "category": "trainer",
+    "name": "Pokemon Trainer Carmine",
+    "area": "Loyalty Plaza",
+    "x": 7727.4,
+    "y": 10955.28
+  },
+  {
+    "id": "305407",
+    "category": "trainer",
+    "name": "Pokemon Trainer Kieran",
+    "area": "Loyalty Plaza",
+    "x": 7739.5,
+    "y": 10944.94
+  },
+  {
+    "id": "305408",
+    "category": "trainer",
+    "name": "Pokemon Trainer Kieran",
+    "area": "Kitakami",
+    "x": 9205.21,
+    "y": 8996.11
+  },
+  {
+    "id": "305411",
+    "category": "trainer",
+    "name": "Mikiya the Ruffian",
+    "area": "Kitakami",
+    "x": 4556.15,
+    "y": 8375.12
+  },
+  {
+    "id": "305412",
+    "category": "trainer",
+    "name": "Kunitsuna of the Kitakami Ogre Clan",
+    "area": "Kitakami",
+    "x": 5015.5,
+    "y": 6908
+  },
+  {
+    "id": "305413",
+    "category": "trainer",
+    "name": "Kanemitsu of the Kitakami Ogre Clan",
+    "area": "Paradise Barrens",
+    "x": 5515.7,
+    "y": 4293.81
+  },
+  {
+    "id": "305414",
+    "category": "trainer",
+    "name": "Hokuto the Black Belt",
+    "area": "Paradise Barrens",
+    "x": 5173.7,
+    "y": 3983.21
+  },
+  {
+    "id": "305415",
+    "category": "trainer",
+    "name": "Nanami the Festival Girl",
+    "area": "Paradise Barrens",
+    "x": 4798.74,
+    "y": 5268.41
+  },
+  {
+    "id": "305416",
+    "category": "trainer",
+    "name": "Pokemon Trainer Kieran",
+    "area": "Paradise Barrens",
+    "x": 4343.03,
+    "y": 4847.46
+  },
+  {
+    "id": "305417",
+    "category": "trainer",
+    "name": "Satoru the Festival Boy",
+    "area": "Paradise Barrens",
+    "x": 4435.25,
+    "y": 5943.31
+  },
+  {
+    "id": "305418",
+    "category": "trainer",
+    "name": "Mutsumi the Delinquent",
+    "area": "Wistful Fields",
+    "x": 4068.7,
+    "y": 8654.64
+  },
+  {
+    "id": "305419",
+    "category": "trainer",
+    "name": "Yoshiyuki the Poke Maniac",
+    "area": "Wistful Fields",
+    "x": 4786.69,
+    "y": 9934.7
+  },
+  {
+    "id": "305837",
+    "category": "trainer",
+    "name": "Munechika of the Kitakami Ogre Clan",
+    "area": "Kitakami",
+    "x": 9534.24,
+    "y": 7233.89
+  },
+  {
+    "id": "325361",
+    "category": "trainer",
+    "name": "Muramasa of the Kitakami Ogre Clan",
+    "area": "Reveler's Road",
+    "x": 11328.75,
+    "y": 10069.75
+  },
+  {
+    "id": "303120",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Loyalty Plaza",
+    "x": 9271.25,
+    "y": 10480
+  },
+  {
+    "id": "303643",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 8057.25,
+    "y": 9278
+  },
+  {
+    "id": "303648",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Reveler's Road",
+    "x": 10939,
+    "y": 10042
+  },
+  {
+    "id": "303689",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Mossful Confluence",
+    "x": 13192.52,
+    "y": 9556.14
+  },
+  {
+    "id": "303710",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Fellhorn Gorge",
+    "x": 12358.96,
+    "y": 8344
+  },
+  {
+    "id": "303714",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Fellhorn Gorge",
+    "x": 11818,
+    "y": 7777
+  },
+  {
+    "id": "303731",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Reveler's Road",
+    "x": 12363.13,
+    "y": 11238.3
+  },
+  {
+    "id": "303866",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Wistful Fields",
+    "x": 4474.5,
+    "y": 10493.5
+  },
+  {
+    "id": "303879",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Wistful Fields",
+    "x": 5157.22,
+    "y": 11910.45
+  },
+  {
+    "id": "305203",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 8411.12,
+    "y": 8412.25
+  },
+  {
+    "id": "305249",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 8503.5,
+    "y": 4965.25
+  },
+  {
+    "id": "305357",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 11048.31,
+    "y": 6365.79
+  },
+  {
+    "id": "305358",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 12548.17,
+    "y": 6066.61
+  },
+  {
+    "id": "305360",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 9951.33,
+    "y": 8700.4
+  },
+  {
+    "id": "305361",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 10675.07,
+    "y": 7468.78
+  },
+  {
+    "id": "305362",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 5881,
+    "y": 9599.75
+  },
+  {
+    "id": "305363",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 5182.65,
+    "y": 6317.03
+  },
+  {
+    "id": "305364",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 9673.49,
+    "y": 7673.78
+  },
+  {
+    "id": "305365",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 5934,
+    "y": 6075.75
+  },
+  {
+    "id": "305366",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 7038.75,
+    "y": 5659
+  },
+  {
+    "id": "305367",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Paradise Barrens",
+    "x": 5986.25,
+    "y": 4840.5
+  },
+  {
+    "id": "305368",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Paradise Barrens",
+    "x": 6585.31,
+    "y": 4090.46
+  },
+  {
+    "id": "305369",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Paradise Barrens",
+    "x": 4377.06,
+    "y": 5125.75
+  },
+  {
+    "id": "305370",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Wistful Fields",
+    "x": 3425.21,
+    "y": 8059.43
+  },
+  {
+    "id": "305919",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Timeless Woods",
+    "x": 12798.59,
+    "y": 4605.12
+  },
+  {
+    "id": "325318",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Timeless Woods",
+    "x": 10716.81,
+    "y": 5588.25
+  },
+  {
+    "id": "325350",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Timeless Woods",
+    "x": 11882.27,
+    "y": 3828.15
+  },
+  {
+    "id": "325364",
+    "category": "cave-entrance",
+    "name": "Cave entrance",
+    "area": "Kitakami Road",
+    "x": 8283.75,
+    "y": 12360.96
+  },
+  {
+    "id": "325408",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Kitakami",
+    "x": 10224.92,
+    "y": 8423.87
+  },
+  {
+    "id": "313093",
+    "category": "miscellaneous",
+    "name": "Ogre Oustin",
+    "area": "Kitakami Hall",
+    "x": 10924,
+    "y": 9148
+  },
+  {
+    "id": "302914",
+    "category": "npc",
+    "name": "Perrin",
+    "area": "Mossui Town",
+    "x": 8806.44,
+    "y": 11507.5
+  },
+  {
+    "id": "302920",
+    "category": "npc",
+    "name": "Software Developer",
+    "area": "Kitakami",
+    "x": 7045.1,
+    "y": 10787.06
+  },
+  {
+    "id": "303599",
+    "category": "npc",
+    "name": "Professor Jacq",
+    "area": "Reveler's Road",
+    "x": 10036.75,
+    "y": 11709.88
+  },
+  {
+    "id": "303791",
+    "category": "npc",
+    "name": "Picnicker",
+    "area": "Kitakami",
+    "x": 11118.12,
+    "y": 10320.88
+  },
+  {
+    "id": "303792",
+    "category": "npc",
+    "name": "Chair Designer",
+    "area": "Kitakami",
+    "x": 11081.14,
+    "y": 10310.31
+  },
+  {
+    "id": "325359",
+    "category": "npc",
+    "name": "Lovey-Dovey Couple",
+    "area": "Mossui Town",
+    "x": 9084.14,
+    "y": 11336.93
+  },
+  {
+    "id": "325360",
+    "category": "npc",
+    "name": "Muramasa of the Kitakami Ogre Clan",
+    "area": "Reveler's Road",
+    "x": 11334.25,
+    "y": 10050.5
+  },
+  {
+    "id": "302753",
+    "category": "legendary-pokemon",
+    "name": "Munkidori",
+    "area": "Wistful Fields",
+    "x": 4046.44,
+    "y": 12152.38
+  },
+  {
+    "id": "305213",
+    "category": "legendary-pokemon",
+    "name": "Ursaluna",
+    "area": "Timeless Woods",
+    "x": 12345,
+    "y": 4697
+  },
+  {
+    "id": "305427",
+    "category": "legendary-pokemon",
+    "name": "Fezandipiti",
+    "area": "Kitakami",
+    "x": 10833.79,
+    "y": 7351.37
+  },
+  {
+    "id": "305428",
+    "category": "legendary-pokemon",
+    "name": "Okidogi",
+    "area": "Paradise Barrens",
+    "x": 4383.39,
+    "y": 3909.37
+  },
+  {
+    "id": "305429",
+    "category": "legendary-pokemon",
+    "name": "Ogerpon",
+    "area": "Kitakami",
+    "x": 9185.21,
+    "y": 9042.11
+  },
+  {
+    "id": "302750",
+    "category": "tera-pokemon",
+    "name": "Slugma",
+    "area": "Kitakami",
+    "x": 5897,
+    "y": 7264
+  },
+  {
+    "id": "302872",
+    "category": "tera-pokemon",
+    "name": "Munchlax",
+    "area": "Kitakami Road",
+    "x": 6837,
+    "y": 12333
+  },
+  {
+    "id": "303741",
+    "category": "tera-pokemon",
+    "name": "Geodude",
+    "area": "Kitakami",
+    "x": 7983.42,
+    "y": 9590.16
+  },
+  {
+    "id": "303742",
+    "category": "tera-pokemon",
+    "name": "Vulpix",
+    "area": "Reveler's Road",
+    "x": 11512,
+    "y": 11488
+  },
+  {
+    "id": "303743",
+    "category": "tera-pokemon",
+    "name": "Poltchageist",
+    "area": "Mossful Confluence",
+    "x": 13115.52,
+    "y": 10125.6
+  },
+  {
+    "id": "303744",
+    "category": "tera-pokemon",
+    "name": "Arbok",
+    "area": "Reveler's Road",
+    "x": 11964.55,
+    "y": 10014.44
+  },
+  {
+    "id": "303745",
+    "category": "tera-pokemon",
+    "name": "Poliwhirl",
+    "area": "Reveler's Road",
+    "x": 12430.16,
+    "y": 9846
+  },
+  {
+    "id": "303746",
+    "category": "tera-pokemon",
+    "name": "Vullaby",
+    "area": "Fellhorn Gorge",
+    "x": 12265,
+    "y": 8684
+  },
+  {
+    "id": "305209",
+    "category": "tera-pokemon",
+    "name": "Sandslash",
+    "area": "Reveler's Road",
+    "x": 11103,
+    "y": 10051
+  },
+  {
+    "id": "305212",
+    "category": "tera-pokemon",
+    "name": "Yanma",
+    "area": "Wistful Fields",
+    "x": 5278,
+    "y": 11643
+  },
+  {
+    "id": "305242",
+    "category": "tera-pokemon",
+    "name": "Swanna",
+    "area": "Kitakami Wilds",
+    "x": 8836,
+    "y": 4322
+  },
+  {
+    "id": "305420",
+    "category": "tera-pokemon",
+    "name": "Vikavolt",
+    "area": "Kitakami",
+    "x": 11757,
+    "y": 5198
+  },
+  {
+    "id": "305421",
+    "category": "tera-pokemon",
+    "name": "Glimmora",
+    "area": "Kitakami",
+    "x": 7411,
+    "y": 8216
+  },
+  {
+    "id": "305422",
+    "category": "tera-pokemon",
+    "name": "Lampent",
+    "area": "Kitakami",
+    "x": 9101,
+    "y": 6793
+  },
+  {
+    "id": "305423",
+    "category": "tera-pokemon",
+    "name": "Hakamo-o",
+    "area": "Kitakami",
+    "x": 6987,
+    "y": 5463
+  },
+  {
+    "id": "305424",
+    "category": "tera-pokemon",
+    "name": "Nosepass",
+    "area": "Paradise Barrens",
+    "x": 5181,
+    "y": 4083
+  },
+  {
+    "id": "305425",
+    "category": "tera-pokemon",
+    "name": "Gurdurr",
+    "area": "Wistful Fields",
+    "x": 3495,
+    "y": 6963
+  },
+  {
+    "id": "313092",
+    "category": "tera-pokemon",
+    "name": "Dusclops",
+    "area": "Timeless Woods",
+    "x": 12784,
+    "y": 4650
+  },
+  {
+    "id": "325307",
+    "category": "tera-pokemon",
+    "name": "Quagsire",
+    "area": "Timeless Woods",
+    "x": 10382,
+    "y": 4526
+  },
+  {
+    "id": "325321",
+    "category": "tera-pokemon",
+    "name": "Trevenant",
+    "area": "Timeless Woods",
+    "x": 11231,
+    "y": 4646
+  },
+  {
+    "id": "325363",
+    "category": "tera-pokemon",
+    "name": "Applin",
+    "area": "Apple Hills",
+    "x": 7726,
+    "y": 12066
+  }
+]

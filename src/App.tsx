@@ -42,6 +42,17 @@ const MapsPage = lazy(() =>
 const KantoMapPage = lazy(() =>
   import('./pages/KantoMapPage').then(({ KantoMapPage }) => ({ default: KantoMapPage })),
 )
+const PaldeaMapPage = lazy(() =>
+  import('./pages/PaldeaMapPage').then(({ PaldeaMapPage }) => ({ default: PaldeaMapPage })),
+)
+const KitakamiMapPage = lazy(() =>
+  import('./pages/KitakamiMapPage').then(({ KitakamiMapPage }) => ({ default: KitakamiMapPage })),
+)
+const TerrariumMapPage = lazy(() =>
+  import('./pages/TerrariumMapPage').then(({ TerrariumMapPage }) => ({
+    default: TerrariumMapPage,
+  })),
+)
 
 export default function App() {
   return (
@@ -61,6 +72,9 @@ export default function App() {
               <Route path="types-table" element={<TypesTablePage />} />
               <Route path="mapas" element={<MapsPage />} />
               <Route path="mapas/kanto" element={<KantoMapPage />} />
+              <Route path="mapas/paldea" element={<PaldeaMapPage />} />
+              <Route path="mapas/kitakami" element={<KitakamiMapPage />} />
+              <Route path="mapas/terrarium" element={<TerrariumMapPage />} />
               <Route
                 path="*"
                 element={

@@ -56,15 +56,21 @@ export function Layout() {
           ? t('typesTable.title')
           : location.pathname === '/mapas/kanto'
             ? t('maps.kantoTitle')
-            : location.pathname === '/mapas'
-              ? t('maps.title')
-              : location.pathname === '/favoritos'
-                ? t('nav.favorites')
-                : location.pathname.startsWith('/explorar')
-                  ? t('nav.explore')
-                  : location.pathname === '/'
-                    ? 'Atlas Pokémon'
-                    : t('error.notFoundTitle')
+            : location.pathname === '/mapas/paldea'
+              ? t('maps.paldeaTitle')
+              : location.pathname === '/mapas/kitakami'
+                ? t('maps.kitakamiTitle')
+                : location.pathname === '/mapas/terrarium'
+                  ? t('maps.terrariumTitle')
+                  : location.pathname === '/mapas'
+                    ? t('maps.title')
+                    : location.pathname === '/favoritos'
+                      ? t('nav.favorites')
+                      : location.pathname.startsWith('/explorar')
+                        ? t('nav.explore')
+                        : location.pathname === '/'
+                          ? 'Atlas Pokémon'
+                          : t('error.notFoundTitle')
   const routeDescription = location.pathname.startsWith('/pokemon/')
     ? t('pokedex.description')
     : location.pathname === '/pokemon'

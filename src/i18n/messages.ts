@@ -51,7 +51,21 @@ export const messages = {
     'maps.region': 'Região de Kanto',
     'maps.pointCount': '{count} pontos catalogados',
     'maps.openMap': 'Abrir mapa interativo',
+    'maps.scarletVioletCoverAlt':
+      'Arte de capa de Pokémon Scarlet e Pokémon Violet com Koraidon e Miraidon',
+    'maps.scarletVioletGeneration': 'Geração IX',
+    'maps.scarletVioletDescription':
+      'Explore a aventura de mundo aberto e suas três áreas em Pokémon Scarlet e Violet.',
+    'maps.chooseRegion': 'Escolha um mapa',
+    'maps.paldeaRegion': 'Região de Paldea',
+    'maps.kitakamiRegion': 'Região de Kitakami',
+    'maps.terarium': 'Terarium',
+    'maps.comingSoon': 'Em breve',
+    'maps.openRegionMap': 'Abrir mapa',
     'maps.kantoTitle': 'Mapa interativo de Kanto',
+    'maps.paldeaTitle': 'Mapa interativo de Paldea',
+    'maps.kitakamiTitle': 'Mapa interativo de Kitakami',
+    'maps.terrariumTitle': 'Mapa interativo do Terarium',
     'maps.points': 'pontos',
     'maps.categories': 'categorias',
     'maps.catalogSummary': 'Resumo do catálogo do mapa',
@@ -69,6 +83,12 @@ export const messages = {
     'maps.dragHint': 'Arraste para mover · use a roda para ampliar',
     'maps.viewportLabel':
       'Mapa de Kanto. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
+    'maps.paldeaViewportLabel':
+      'Mapa de Paldea. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
+    'maps.kitakamiViewportLabel':
+      'Mapa de Kitakami. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
+    'maps.terrariumViewportLabel':
+      'Mapa do Terarium. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
     'maps.zoomControls': 'Controles do mapa',
     'maps.zoomIn': 'Ampliar mapa',
     'maps.zoomOut': 'Reduzir mapa',
@@ -87,6 +107,10 @@ export const messages = {
     'maps.group.items': 'Itens',
     'maps.group.obstacles': 'Obstáculos',
     'maps.group.battles': 'Batalhas',
+    'maps.group.collectibles': 'Colecionáveis',
+    'maps.group.missions': 'Missões',
+    'maps.group.other': 'Outros',
+    'maps.group.specialPokemon': 'Pokémon especiais',
     'maps.category.area': 'Área',
     'maps.category.cave': 'Caverna',
     'maps.category.pokemonCenter': 'Centro Pokémon',
@@ -108,6 +132,34 @@ export const messages = {
     'maps.category.eliteFour': 'Elite dos Quatro',
     'maps.category.gymLeader': 'Líder de Ginásio',
     'maps.category.trainer': 'Treinador',
+    'maps.category.chanseySupply': 'Loja Chansey Supply',
+    'maps.category.clothingStore': 'Loja de roupas',
+    'maps.category.delibirdPresents': 'Delibird Presents',
+    'maps.category.fastTravel': 'Viagem rápida',
+    'maps.category.generalStore': 'Loja geral',
+    'maps.category.foodStore': 'Loja de alimentos',
+    'maps.category.hairdresser': 'Cabeleireiro',
+    'maps.category.location': 'Local',
+    'maps.category.shrine': 'Santuário',
+    'maps.category.watchtower': 'Torre de observação',
+    'maps.category.gimmighoulRoaming': 'Gimmighoul itinerante',
+    'maps.category.ominousStake': 'Estaca sinistra',
+    'maps.category.battleItem': 'Item de batalha',
+    'maps.category.herbaMystica': 'Herba Mystica',
+    'maps.category.medicine': 'Remédio',
+    'maps.category.otherItem': 'Outro item',
+    'maps.category.treasure': 'Tesouro',
+    'maps.category.pathOfLegends': 'Caminho das Lendas',
+    'maps.category.sideMission': 'Missão secundária',
+    'maps.category.starfallStreet': 'Starfall Street',
+    'maps.category.victoryRoad': 'Estrada da Vitória',
+    'maps.category.teamStarBoss': 'Chefe da Equipe Star',
+    'maps.category.caveEntrance': 'Entrada de caverna',
+    'maps.category.miscellaneous': 'Diversos',
+    'maps.category.npc': 'Personagem',
+    'maps.category.gimmighoulChest': 'Gimmighoul de baú',
+    'maps.category.legendaryPokemon': 'Pokémon lendário',
+    'maps.category.teraPokemon': 'Pokémon Terastal',
     'maps.marker.areaSummary': 'Área importante na jornada pela região de Kanto.',
     'maps.marker.centerSummary': 'Local para curar a equipe e acessar serviços essenciais.',
     'maps.marker.gymSummary': 'Batalha de Ginásio necessária para avançar na Liga Pokémon.',
@@ -127,6 +179,38 @@ export const messages = {
     'maps.marker.pokeBallSummary': 'Poké Bola visível contendo um item coletável.',
     'maps.marker.waterfallSummary': 'Única cachoeira catalogada no mapa de Kanto.',
     'maps.marker.eliteSummary': 'Desafio final contra a Elite dos Quatro e o Campeão.',
+    'maps.marker.paldeaLocationSummary':
+      'Local ou serviço útil durante a exploração da região de Paldea.',
+    'maps.marker.paldeaCollectibleSummary':
+      'Colecionável que contribui para a exploração ou progressão em Paldea.',
+    'maps.marker.paldeaItemSummary': 'Item que pode ser obtido neste ponto de Paldea.',
+    'maps.marker.paldeaMissionSummary':
+      'Objetivo relacionado a uma das jornadas ou missões disponíveis em Paldea.',
+    'maps.marker.paldeaBattleSummary': 'Treinador ou batalha relevante na região de Paldea.',
+    'maps.marker.paldeaOtherSummary':
+      'Ponto de interesse adicional para orientar sua exploração de Paldea.',
+    'maps.marker.paldeaPokemonSummary':
+      'Encontro especial com um Pokémon neste ponto da região de Paldea.',
+    'maps.marker.kitakamiLocationSummary':
+      'Local ou serviço útil durante a exploração da região de Kitakami.',
+    'maps.marker.kitakamiCollectibleSummary':
+      'Colecionável que contribui para a exploração ou progressão em Kitakami.',
+    'maps.marker.kitakamiItemSummary': 'Item que pode ser obtido neste ponto de Kitakami.',
+    'maps.marker.kitakamiBattleSummary': 'Treinador ou batalha relevante na região de Kitakami.',
+    'maps.marker.kitakamiOtherSummary':
+      'Ponto de interesse adicional para orientar sua exploração de Kitakami.',
+    'maps.marker.kitakamiPokemonSummary':
+      'Encontro especial com um Pokémon neste ponto da região de Kitakami.',
+    'maps.marker.terrariumLocationSummary':
+      'Local útil durante a exploração dos biomas do Terarium.',
+    'maps.marker.terrariumCollectibleSummary':
+      'Colecionável que contribui para a exploração ou progressão no Terarium.',
+    'maps.marker.terrariumItemSummary': 'Item que pode ser obtido neste ponto do Terarium.',
+    'maps.marker.terrariumBattleSummary': 'Treinador ou batalha relevante no Terarium.',
+    'maps.marker.terrariumOtherSummary':
+      'Ponto de interesse adicional para orientar sua exploração do Terarium.',
+    'maps.marker.terrariumPokemonSummary':
+      'Encontro especial com um Pokémon neste ponto do Terarium.',
     'pokedex.eyebrow': 'POKÉDEX NACIONAL',
     'pokedex.title': 'Encontre seu Pokémon',
     'pokedex.description': 'Explore cada espécie descoberta e seus dados completos.',
@@ -798,7 +882,21 @@ export const messages = {
     'maps.region': 'Kanto region',
     'maps.pointCount': '{count} cataloged points',
     'maps.openMap': 'Open interactive map',
+    'maps.scarletVioletCoverAlt':
+      'Pokémon Scarlet and Pokémon Violet cover artwork featuring Koraidon and Miraidon',
+    'maps.scarletVioletGeneration': 'Generation IX',
+    'maps.scarletVioletDescription':
+      'Explore the open-world adventure and its three areas in Pokémon Scarlet and Violet.',
+    'maps.chooseRegion': 'Choose a map',
+    'maps.paldeaRegion': 'Paldea region',
+    'maps.kitakamiRegion': 'Kitakami region',
+    'maps.terarium': 'Terarium',
+    'maps.comingSoon': 'Coming soon',
+    'maps.openRegionMap': 'Open map',
     'maps.kantoTitle': 'Interactive Kanto map',
+    'maps.paldeaTitle': 'Interactive Paldea map',
+    'maps.kitakamiTitle': 'Interactive Kitakami map',
+    'maps.terrariumTitle': 'Interactive Terarium map',
     'maps.points': 'points',
     'maps.categories': 'categories',
     'maps.catalogSummary': 'Map catalog summary',
@@ -816,6 +914,12 @@ export const messages = {
     'maps.dragHint': 'Drag to move · use the wheel to zoom',
     'maps.viewportLabel':
       'Kanto map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
+    'maps.paldeaViewportLabel':
+      'Paldea map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
+    'maps.kitakamiViewportLabel':
+      'Kitakami map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
+    'maps.terrariumViewportLabel':
+      'Terarium map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
     'maps.zoomControls': 'Map controls',
     'maps.zoomIn': 'Zoom in',
     'maps.zoomOut': 'Zoom out',
@@ -834,6 +938,10 @@ export const messages = {
     'maps.group.items': 'Items',
     'maps.group.obstacles': 'Obstacles',
     'maps.group.battles': 'Battles',
+    'maps.group.collectibles': 'Collectibles',
+    'maps.group.missions': 'Missions',
+    'maps.group.other': 'Other',
+    'maps.group.specialPokemon': 'Special Pokémon',
     'maps.category.area': 'Area',
     'maps.category.cave': 'Cave',
     'maps.category.pokemonCenter': 'Pokémon Center',
@@ -855,6 +963,34 @@ export const messages = {
     'maps.category.eliteFour': 'Elite Four',
     'maps.category.gymLeader': 'Gym Leader',
     'maps.category.trainer': 'Trainer',
+    'maps.category.chanseySupply': 'Chansey Supply Shop',
+    'maps.category.clothingStore': 'Clothing Store',
+    'maps.category.delibirdPresents': 'Delibird Presents',
+    'maps.category.fastTravel': 'Fast Travel',
+    'maps.category.generalStore': 'General Store',
+    'maps.category.foodStore': 'Food Store',
+    'maps.category.hairdresser': 'Hairdresser',
+    'maps.category.location': 'Location',
+    'maps.category.shrine': 'Shrine',
+    'maps.category.watchtower': 'Watchtower',
+    'maps.category.gimmighoulRoaming': 'Gimmighoul (Roaming)',
+    'maps.category.ominousStake': 'Ominous Stake',
+    'maps.category.battleItem': 'Battle Item',
+    'maps.category.herbaMystica': 'Herba Mystica',
+    'maps.category.medicine': 'Medicine',
+    'maps.category.otherItem': 'Other Item',
+    'maps.category.treasure': 'Treasure',
+    'maps.category.pathOfLegends': 'Path of Legends',
+    'maps.category.sideMission': 'Side Mission',
+    'maps.category.starfallStreet': 'Starfall Street',
+    'maps.category.victoryRoad': 'Victory Road',
+    'maps.category.teamStarBoss': 'Team Star Boss',
+    'maps.category.caveEntrance': 'Cave Entrance',
+    'maps.category.miscellaneous': 'Miscellaneous',
+    'maps.category.npc': 'NPC',
+    'maps.category.gimmighoulChest': 'Gimmighoul (Chest)',
+    'maps.category.legendaryPokemon': 'Legendary Pokémon',
+    'maps.category.teraPokemon': 'Tera Pokémon',
     'maps.marker.areaSummary': 'An important area on the journey through the Kanto region.',
     'maps.marker.centerSummary': 'A place to heal your team and access essential services.',
     'maps.marker.gymSummary': 'A Gym battle required to advance through the Pokémon League.',
@@ -874,6 +1010,39 @@ export const messages = {
     'maps.marker.pokeBallSummary': 'A visible Poké Ball containing a collectible item.',
     'maps.marker.waterfallSummary': 'The only waterfall cataloged on the Kanto map.',
     'maps.marker.eliteSummary': 'The final challenge against the Elite Four and Champion.',
+    'maps.marker.paldeaLocationSummary':
+      'A useful location or service while exploring the Paldea region.',
+    'maps.marker.paldeaCollectibleSummary':
+      'A collectible that contributes to exploration or progression in Paldea.',
+    'maps.marker.paldeaItemSummary': 'An item that can be obtained at this point in Paldea.',
+    'maps.marker.paldeaMissionSummary':
+      'An objective related to one of the journeys or missions available in Paldea.',
+    'maps.marker.paldeaBattleSummary': 'A notable Trainer or battle in the Paldea region.',
+    'maps.marker.paldeaOtherSummary':
+      'An additional point of interest to guide your exploration of Paldea.',
+    'maps.marker.paldeaPokemonSummary':
+      'A special Pokémon encounter at this point in the Paldea region.',
+    'maps.marker.kitakamiLocationSummary':
+      'A useful location or service while exploring the Kitakami region.',
+    'maps.marker.kitakamiCollectibleSummary':
+      'A collectible that contributes to exploration or progression in Kitakami.',
+    'maps.marker.kitakamiItemSummary': 'An item that can be obtained at this point in Kitakami.',
+    'maps.marker.kitakamiBattleSummary': 'A notable Trainer or battle in the Kitakami region.',
+    'maps.marker.kitakamiOtherSummary':
+      'An additional point of interest to guide your exploration of Kitakami.',
+    'maps.marker.kitakamiPokemonSummary':
+      'A special Pokémon encounter at this point in the Kitakami region.',
+    'maps.marker.terrariumLocationSummary':
+      'A useful location while exploring the Terarium biomes.',
+    'maps.marker.terrariumCollectibleSummary':
+      'A collectible that contributes to exploration or progression in the Terarium.',
+    'maps.marker.terrariumItemSummary':
+      'An item that can be obtained at this point in the Terarium.',
+    'maps.marker.terrariumBattleSummary': 'A notable Trainer or battle in the Terarium.',
+    'maps.marker.terrariumOtherSummary':
+      'An additional point of interest to guide your exploration of the Terarium.',
+    'maps.marker.terrariumPokemonSummary':
+      'A special Pokémon encounter at this point in the Terarium.',
     'pokedex.eyebrow': 'NATIONAL POKÉDEX',
     'pokedex.title': 'Find your Pokémon',
     'pokedex.description': 'Explore every discovered species and its complete data.',
@@ -1544,7 +1713,21 @@ export const messages = {
     'maps.region': 'Región de Kanto',
     'maps.pointCount': '{count} puntos catalogados',
     'maps.openMap': 'Abrir mapa interactivo',
+    'maps.scarletVioletCoverAlt':
+      'Arte de portada de Pokémon Scarlet y Pokémon Violet con Koraidon y Miraidon',
+    'maps.scarletVioletGeneration': 'Generación IX',
+    'maps.scarletVioletDescription':
+      'Explora la aventura de mundo abierto y sus tres áreas en Pokémon Scarlet y Violet.',
+    'maps.chooseRegion': 'Elige un mapa',
+    'maps.paldeaRegion': 'Región de Paldea',
+    'maps.kitakamiRegion': 'Región de Kitakami',
+    'maps.terarium': 'Terarium',
+    'maps.comingSoon': 'Próximamente',
+    'maps.openRegionMap': 'Abrir mapa',
     'maps.kantoTitle': 'Mapa interactivo de Kanto',
+    'maps.paldeaTitle': 'Mapa interactivo de Paldea',
+    'maps.kitakamiTitle': 'Mapa interactivo de Kitakami',
+    'maps.terrariumTitle': 'Mapa interactivo del Terarium',
     'maps.points': 'puntos',
     'maps.categories': 'categorías',
     'maps.catalogSummary': 'Resumen del catálogo del mapa',
@@ -1562,6 +1745,12 @@ export const messages = {
     'maps.dragHint': 'Arrastra para mover · usa la rueda para ampliar',
     'maps.viewportLabel':
       'Mapa de Kanto. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
+    'maps.paldeaViewportLabel':
+      'Mapa de Paldea. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
+    'maps.kitakamiViewportLabel':
+      'Mapa de Kitakami. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
+    'maps.terrariumViewportLabel':
+      'Mapa del Terarium. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
     'maps.zoomControls': 'Controles del mapa',
     'maps.zoomIn': 'Ampliar mapa',
     'maps.zoomOut': 'Reducir mapa',
@@ -1580,6 +1769,10 @@ export const messages = {
     'maps.group.items': 'Objetos',
     'maps.group.obstacles': 'Obstáculos',
     'maps.group.battles': 'Combates',
+    'maps.group.collectibles': 'Coleccionables',
+    'maps.group.missions': 'Misiones',
+    'maps.group.other': 'Otros',
+    'maps.group.specialPokemon': 'Pokémon especiales',
     'maps.category.area': 'Área',
     'maps.category.cave': 'Cueva',
     'maps.category.pokemonCenter': 'Centro Pokémon',
@@ -1601,6 +1794,34 @@ export const messages = {
     'maps.category.eliteFour': 'Alto Mando',
     'maps.category.gymLeader': 'Líder de Gimnasio',
     'maps.category.trainer': 'Entrenador',
+    'maps.category.chanseySupply': 'Tienda de suministros Chansey',
+    'maps.category.clothingStore': 'Tienda de ropa',
+    'maps.category.delibirdPresents': 'Delibird Presents',
+    'maps.category.fastTravel': 'Viaje rápido',
+    'maps.category.generalStore': 'Tienda general',
+    'maps.category.foodStore': 'Tienda de comida',
+    'maps.category.hairdresser': 'Peluquería',
+    'maps.category.location': 'Lugar',
+    'maps.category.shrine': 'Santuario',
+    'maps.category.watchtower': 'Torre de vigilancia',
+    'maps.category.gimmighoulRoaming': 'Gimmighoul andante',
+    'maps.category.ominousStake': 'Estaca siniestra',
+    'maps.category.battleItem': 'Objeto de combate',
+    'maps.category.herbaMystica': 'Especia oculta',
+    'maps.category.medicine': 'Medicina',
+    'maps.category.otherItem': 'Otro objeto',
+    'maps.category.treasure': 'Tesoro',
+    'maps.category.pathOfLegends': 'Senda legendaria',
+    'maps.category.sideMission': 'Misión secundaria',
+    'maps.category.starfallStreet': 'Vía Stardust',
+    'maps.category.victoryRoad': 'Travesía de la victoria',
+    'maps.category.teamStarBoss': 'Jefe del Team Star',
+    'maps.category.caveEntrance': 'Entrada de cueva',
+    'maps.category.miscellaneous': 'Varios',
+    'maps.category.npc': 'Personaje',
+    'maps.category.gimmighoulChest': 'Gimmighoul cofre',
+    'maps.category.legendaryPokemon': 'Pokémon legendario',
+    'maps.category.teraPokemon': 'Pokémon teracristal',
     'maps.marker.areaSummary': 'Un área importante en el viaje por la región de Kanto.',
     'maps.marker.centerSummary': 'Un lugar para curar al equipo y acceder a servicios esenciales.',
     'maps.marker.gymSummary': 'Combate de Gimnasio necesario para avanzar en la Liga Pokémon.',
@@ -1621,6 +1842,40 @@ export const messages = {
     'maps.marker.pokeBallSummary': 'Poké Ball visible que contiene un objeto coleccionable.',
     'maps.marker.waterfallSummary': 'La única cascada catalogada en el mapa de Kanto.',
     'maps.marker.eliteSummary': 'El desafío final contra el Alto Mando y el Campeón.',
+    'maps.marker.paldeaLocationSummary':
+      'Un lugar o servicio útil durante la exploración de la región de Paldea.',
+    'maps.marker.paldeaCollectibleSummary':
+      'Un coleccionable que contribuye a la exploración o progresión en Paldea.',
+    'maps.marker.paldeaItemSummary': 'Un objeto que se puede obtener en este punto de Paldea.',
+    'maps.marker.paldeaMissionSummary':
+      'Un objetivo relacionado con una de las travesías o misiones disponibles en Paldea.',
+    'maps.marker.paldeaBattleSummary': 'Un Entrenador o combate destacado en la región de Paldea.',
+    'maps.marker.paldeaOtherSummary':
+      'Un punto de interés adicional para orientar tu exploración de Paldea.',
+    'maps.marker.paldeaPokemonSummary':
+      'Un encuentro especial con un Pokémon en este punto de la región de Paldea.',
+    'maps.marker.kitakamiLocationSummary':
+      'Un lugar o servicio útil durante la exploración de la región de Kitakami.',
+    'maps.marker.kitakamiCollectibleSummary':
+      'Un coleccionable que contribuye a la exploración o progresión en Kitakami.',
+    'maps.marker.kitakamiItemSummary': 'Un objeto que se puede obtener en este punto de Kitakami.',
+    'maps.marker.kitakamiBattleSummary':
+      'Un Entrenador o combate destacado en la región de Kitakami.',
+    'maps.marker.kitakamiOtherSummary':
+      'Un punto de interés adicional para orientar tu exploración de Kitakami.',
+    'maps.marker.kitakamiPokemonSummary':
+      'Un encuentro especial con un Pokémon en este punto de la región de Kitakami.',
+    'maps.marker.terrariumLocationSummary':
+      'Un lugar útil durante la exploración de los biomas del Terarium.',
+    'maps.marker.terrariumCollectibleSummary':
+      'Un coleccionable que contribuye a la exploración o progresión en el Terarium.',
+    'maps.marker.terrariumItemSummary':
+      'Un objeto que se puede obtener en este punto del Terarium.',
+    'maps.marker.terrariumBattleSummary': 'Un Entrenador o combate destacado en el Terarium.',
+    'maps.marker.terrariumOtherSummary':
+      'Un punto de interés adicional para orientar tu exploración del Terarium.',
+    'maps.marker.terrariumPokemonSummary':
+      'Un encuentro especial con un Pokémon en este punto del Terarium.',
     'pokedex.eyebrow': 'POKÉDEX NACIONAL',
     'pokedex.title': 'Encuentra tu Pokémon',
     'pokedex.description': 'Explora cada especie descubierta y todos sus datos.',

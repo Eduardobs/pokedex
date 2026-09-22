@@ -1,0 +1,6266 @@
+[
+  {
+    "id": "379823",
+    "category": "fast-travel",
+    "name": "Blueberry Academy",
+    "area": "Savanna Biome",
+    "x": 11910.8,
+    "y": 11937.03
+  },
+  {
+    "id": "314740",
+    "category": "watchtower",
+    "name": "Central Plaza",
+    "area": "Canyon Biome",
+    "x": 8132.96,
+    "y": 8296.87
+  },
+  {
+    "id": "314842",
+    "category": "watchtower",
+    "name": "Polar Plaza",
+    "area": "Polar Biome",
+    "x": 5510.02,
+    "y": 5873.08
+  },
+  {
+    "id": "314843",
+    "category": "watchtower",
+    "name": "Coastal Plaza",
+    "area": "Coastal Biome",
+    "x": 9268.76,
+    "y": 5506.4
+  },
+  {
+    "id": "314844",
+    "category": "watchtower",
+    "name": "Coastal Rest Area",
+    "area": "Coastal Biome",
+    "x": 11193.59,
+    "y": 7112.93
+  },
+  {
+    "id": "315249",
+    "category": "watchtower",
+    "name": "Savanna Rest Area 2",
+    "area": "Savanna Biome",
+    "x": 9322.68,
+    "y": 8640.74
+  },
+  {
+    "id": "315254",
+    "category": "watchtower",
+    "name": "Coastal Outdoor Classroom",
+    "area": "Coastal Biome",
+    "x": 9268.44,
+    "y": 7196.4
+  },
+  {
+    "id": "315256",
+    "category": "watchtower",
+    "name": "Savanna Outdoor Classroom",
+    "area": "Savanna Biome",
+    "x": 9744.33,
+    "y": 9439.95
+  },
+  {
+    "id": "315282",
+    "category": "watchtower",
+    "name": "Savanna Rest Area 1",
+    "area": "Savanna Biome",
+    "x": 10898.43,
+    "y": 10725.54
+  },
+  {
+    "id": "315283",
+    "category": "watchtower",
+    "name": "Savanna Plaza",
+    "area": "Savanna Biome",
+    "x": 8853.88,
+    "y": 11061.04
+  },
+  {
+    "id": "315284",
+    "category": "watchtower",
+    "name": "Canyon Plaza",
+    "area": "Canyon Biome",
+    "x": 5844.66,
+    "y": 10343.33
+  },
+  {
+    "id": "315285",
+    "category": "watchtower",
+    "name": "Canyon Rest Area",
+    "area": "Canyon Biome",
+    "x": 5743.76,
+    "y": 8621.17
+  },
+  {
+    "id": "315286",
+    "category": "watchtower",
+    "name": "Polar Outdoor Classroom 2",
+    "area": "Polar Biome",
+    "x": 5506.45,
+    "y": 7834.88
+  },
+  {
+    "id": "315287",
+    "category": "watchtower",
+    "name": "Polar Outdoor Classroom 1",
+    "area": "Polar Biome",
+    "x": 6485.27,
+    "y": 6924.94
+  },
+  {
+    "id": "315756",
+    "category": "watchtower",
+    "name": "Polar Rest Area",
+    "area": "Polar Biome",
+    "x": 6854.38,
+    "y": 5138.59
+  },
+  {
+    "id": "315840",
+    "category": "watchtower",
+    "name": "Chargestone Cavern",
+    "area": "Canyon Biome",
+    "x": 6270.81,
+    "y": 8426.15
+  },
+  {
+    "id": "316034",
+    "category": "watchtower",
+    "name": "Canyon Outdoor Classroom",
+    "area": "Canyon Biome",
+    "x": 5967.71,
+    "y": 11004.83
+  },
+  {
+    "id": "314744",
+    "category": "tm",
+    "name": "TM 171: Tera Blast",
+    "area": "Canyon Biome",
+    "x": 7960.42,
+    "y": 8263.59
+  },
+  {
+    "id": "315260",
+    "category": "tm",
+    "name": "TM 221: Throat Chop",
+    "area": "Savanna Biome",
+    "x": 9534.11,
+    "y": 11209.2
+  },
+  {
+    "id": "315261",
+    "category": "tm",
+    "name": "TM 209: Muddy Water",
+    "area": "Savanna Biome",
+    "x": 10175.79,
+    "y": 10749.12
+  },
+  {
+    "id": "315275",
+    "category": "tm",
+    "name": "TM 130: Helping Hand",
+    "area": "Savanna Biome",
+    "x": 10769.03,
+    "y": 10715.99
+  },
+  {
+    "id": "315289",
+    "category": "tm",
+    "name": "TM 204: Double-Edge",
+    "area": "Savanna Biome",
+    "x": 9757.92,
+    "y": 11387.7
+  },
+  {
+    "id": "315290",
+    "category": "tm",
+    "name": "TM 205: Endeavor",
+    "area": "Savanna Biome",
+    "x": 9954.84,
+    "y": 11590.58
+  },
+  {
+    "id": "315355",
+    "category": "tm",
+    "name": "TM 007: Protect",
+    "area": "Savanna Biome",
+    "x": 11519.68,
+    "y": 9465.96
+  },
+  {
+    "id": "315358",
+    "category": "tm",
+    "name": "TM 181: Knock Off",
+    "area": "Savanna Biome",
+    "x": 11702.21,
+    "y": 8828.21
+  },
+  {
+    "id": "315361",
+    "category": "tm",
+    "name": "TM 203: Psych Up",
+    "area": "Coastal Biome",
+    "x": 11612.07,
+    "y": 8168.66
+  },
+  {
+    "id": "315364",
+    "category": "tm",
+    "name": "TM 067: Fire Punch",
+    "area": "Savanna Biome",
+    "x": 11021.55,
+    "y": 8588.85
+  },
+  {
+    "id": "315366",
+    "category": "tm",
+    "name": "TM 069: Ice Punch",
+    "area": "Savanna Biome",
+    "x": 10695.32,
+    "y": 8813.11
+  },
+  {
+    "id": "315367",
+    "category": "tm",
+    "name": "TM 074: Reflect",
+    "area": "Savanna Biome",
+    "x": 10199.15,
+    "y": 8256.33
+  },
+  {
+    "id": "315369",
+    "category": "tm",
+    "name": "TM 185: Lunge",
+    "area": "Savanna Biome",
+    "x": 9582.65,
+    "y": 8413.88
+  },
+  {
+    "id": "315372",
+    "category": "tm",
+    "name": "TM 099: Iron Head",
+    "area": "Savanna Biome",
+    "x": 8631.83,
+    "y": 8355.53
+  },
+  {
+    "id": "315389",
+    "category": "tm",
+    "name": "TM 229: Upper Hand",
+    "area": "Savanna Biome",
+    "x": 9697.9,
+    "y": 9408.31
+  },
+  {
+    "id": "315395",
+    "category": "tm",
+    "name": "TM 068: Thunder Punch",
+    "area": "Savanna Biome",
+    "x": 9381.5,
+    "y": 10076.25
+  },
+  {
+    "id": "315400",
+    "category": "tm",
+    "name": "TM 074: Reflect",
+    "area": "Polar Biome",
+    "x": 8001.51,
+    "y": 8186.61
+  },
+  {
+    "id": "315413",
+    "category": "tm",
+    "name": "TM 138: Psychic Terrain",
+    "area": "Coastal Biome",
+    "x": 11229.79,
+    "y": 7181.04
+  },
+  {
+    "id": "315422",
+    "category": "tm",
+    "name": "TM 118: Heat Wave",
+    "area": "Savanna Biome",
+    "x": 8864.98,
+    "y": 11242.61
+  },
+  {
+    "id": "315436",
+    "category": "tm",
+    "name": "TM 112: Aura Sphere",
+    "area": "Coastal Biome",
+    "x": 11035.4,
+    "y": 7872.85
+  },
+  {
+    "id": "315500",
+    "category": "tm",
+    "name": "TM 161: Trick Room",
+    "area": "Canyon Biome",
+    "x": 6846.29,
+    "y": 11845.55
+  },
+  {
+    "id": "315504",
+    "category": "tm",
+    "name": "TM 125: Flamethrower",
+    "area": "Coastal Biome",
+    "x": 8235.18,
+    "y": 6402.43
+  },
+  {
+    "id": "315507",
+    "category": "tm",
+    "name": "TM 137: Grassy Terrain",
+    "area": "Coastal Biome",
+    "x": 8553.31,
+    "y": 7047.66
+  },
+  {
+    "id": "315510",
+    "category": "tm",
+    "name": "TM 194: Grassy Glide",
+    "area": "Coastal Biome",
+    "x": 8446.32,
+    "y": 7372.57
+  },
+  {
+    "id": "315520",
+    "category": "tm",
+    "name": "TM 186: High Horsepower",
+    "area": "Canyon Biome",
+    "x": 7358.82,
+    "y": 10588.86
+  },
+  {
+    "id": "315524",
+    "category": "tm",
+    "name": "TM 064: Bulk Up",
+    "area": "Canyon Biome",
+    "x": 6305.99,
+    "y": 10069.92
+  },
+  {
+    "id": "315527",
+    "category": "tm",
+    "name": "TM 150: Stone Edge",
+    "area": "Canyon Biome",
+    "x": 6821.15,
+    "y": 9653.84
+  },
+  {
+    "id": "315538",
+    "category": "tm",
+    "name": "TM 196: Flip Turn",
+    "area": "Canyon Biome",
+    "x": 7249.4,
+    "y": 10932.53
+  },
+  {
+    "id": "315546",
+    "category": "tm",
+    "name": "TM 165: Flare Blitz",
+    "area": "Canyon Biome",
+    "x": 7036.78,
+    "y": 8786.32
+  },
+  {
+    "id": "315549",
+    "category": "tm",
+    "name": "TM 219: Skitter Smack",
+    "area": "Canyon Biome",
+    "x": 6520.23,
+    "y": 9090.64
+  },
+  {
+    "id": "315555",
+    "category": "tm",
+    "name": "TM 216: Feather Dance",
+    "area": "Canyon Biome",
+    "x": 5774.63,
+    "y": 8595.63
+  },
+  {
+    "id": "315558",
+    "category": "tm",
+    "name": "TM 112: Aura Sphere",
+    "area": "Canyon Biome",
+    "x": 7156.57,
+    "y": 9178.81
+  },
+  {
+    "id": "315566",
+    "category": "tm",
+    "name": "TM 217: Future Sight",
+    "area": "Canyon Biome",
+    "x": 5251.47,
+    "y": 9893.51
+  },
+  {
+    "id": "315574",
+    "category": "tm",
+    "name": "TM 139: Misty Terrain",
+    "area": "Canyon Biome",
+    "x": 5117.71,
+    "y": 10512.5
+  },
+  {
+    "id": "315579",
+    "category": "tm",
+    "name": "TM 149: Earthquake",
+    "area": "Canyon Biome",
+    "x": 5907.09,
+    "y": 11035.95
+  },
+  {
+    "id": "315586",
+    "category": "tm",
+    "name": "TM 155: Frenzy Plant",
+    "area": "Canyon Biome",
+    "x": 6788.27,
+    "y": 11077.15
+  },
+  {
+    "id": "315589",
+    "category": "tm",
+    "name": "TM 141: Fire Blast",
+    "area": "Canyon Biome",
+    "x": 6784.23,
+    "y": 11028.16
+  },
+  {
+    "id": "315591",
+    "category": "tm",
+    "name": "TM 115: Dragon Pulse",
+    "area": "Canyon Biome",
+    "x": 6522.36,
+    "y": 10825.47
+  },
+  {
+    "id": "315603",
+    "category": "tm",
+    "name": "TM 160: Hurricane",
+    "area": "Canyon Biome",
+    "x": 7669.77,
+    "y": 11162.37
+  },
+  {
+    "id": "315611",
+    "category": "tm",
+    "name": "TM 168: Solar Beam",
+    "area": "Canyon Biome",
+    "x": 7936.18,
+    "y": 10415.62
+  },
+  {
+    "id": "315613",
+    "category": "tm",
+    "name": "TM 127: Play Rough",
+    "area": "Canyon Biome",
+    "x": 7856.13,
+    "y": 11713.47
+  },
+  {
+    "id": "315619",
+    "category": "tm",
+    "name": "TM 083: Poison Jab",
+    "area": "Canyon Biome",
+    "x": 8013.43,
+    "y": 12087.23
+  },
+  {
+    "id": "315625",
+    "category": "tm",
+    "name": "TM 153: Blast Burn",
+    "area": "Savanna Biome",
+    "x": 8422.56,
+    "y": 8971.32
+  },
+  {
+    "id": "315631",
+    "category": "tm",
+    "name": "TM 088: Swords Dance",
+    "area": "Savanna Biome",
+    "x": 8940.78,
+    "y": 9611.47
+  },
+  {
+    "id": "315637",
+    "category": "tm",
+    "name": "TM 215: Scorching Sands",
+    "area": "Savanna Biome",
+    "x": 8588.33,
+    "y": 10468.98
+  },
+  {
+    "id": "315646",
+    "category": "tm",
+    "name": "TM 060: U-Turn",
+    "area": "Savanna Biome",
+    "x": 8220.59,
+    "y": 12041.52
+  },
+  {
+    "id": "315654",
+    "category": "tm",
+    "name": "TM 051: Sandstorm",
+    "area": "Savanna Biome",
+    "x": 10085.24,
+    "y": 8641.62
+  },
+  {
+    "id": "315766",
+    "category": "tm",
+    "name": "TM 135: Ice Beam",
+    "area": "Polar Biome",
+    "x": 7802.54,
+    "y": 5618.54
+  },
+  {
+    "id": "315770",
+    "category": "tm",
+    "name": "TM 108: Crunch",
+    "area": "Polar Biome",
+    "x": 4340.1,
+    "y": 8108.6
+  },
+  {
+    "id": "315771",
+    "category": "tm",
+    "name": "TM 129: Calm Mind",
+    "area": "Polar Biome",
+    "x": 8018.4,
+    "y": 4354.32
+  },
+  {
+    "id": "315772",
+    "category": "tm",
+    "name": "TM 214: Sludge Wave",
+    "area": "Coastal Biome",
+    "x": 8888.41,
+    "y": 4697.53
+  },
+  {
+    "id": "315775",
+    "category": "tm",
+    "name": "TM 208: Whirlpool",
+    "area": "Polar Biome",
+    "x": 7539.67,
+    "y": 4553.82
+  },
+  {
+    "id": "315777",
+    "category": "tm",
+    "name": "TM 206: Petal Blizzard",
+    "area": "Coastal Biome",
+    "x": 10473,
+    "y": 5294.38
+  },
+  {
+    "id": "315793",
+    "category": "tm",
+    "name": "TM 030: Snarl",
+    "area": "Polar Biome",
+    "x": 5956.47,
+    "y": 5567.56
+  },
+  {
+    "id": "315801",
+    "category": "tm",
+    "name": "TM 187: Icicle Spear",
+    "area": "Polar Biome",
+    "x": 5087.42,
+    "y": 6214.67
+  },
+  {
+    "id": "315810",
+    "category": "tm",
+    "name": "TM 190: Solar Blade",
+    "area": "Coastal Biome",
+    "x": 11284.3,
+    "y": 6399.46
+  },
+  {
+    "id": "315815",
+    "category": "tm",
+    "name": "TM 154: Hydro Cannon",
+    "area": "Coastal Biome",
+    "x": 10069.11,
+    "y": 6130.87
+  },
+  {
+    "id": "315823",
+    "category": "tm",
+    "name": "TM 107: Will-O-Wisp",
+    "area": "Polar Biome",
+    "x": 4546.45,
+    "y": 7139.19
+  },
+  {
+    "id": "315832",
+    "category": "tm",
+    "name": "TM 210: Supercell Slam",
+    "area": "Canyon Biome",
+    "x": 7106.14,
+    "y": 8382.64
+  },
+  {
+    "id": "315833",
+    "category": "tm",
+    "name": "TM 211: Electroweb",
+    "area": "Polar Biome",
+    "x": 7270.01,
+    "y": 7325.33
+  },
+  {
+    "id": "315842",
+    "category": "tm",
+    "name": "TM 089: Body Press",
+    "area": "Canyon Biome",
+    "x": 8163.08,
+    "y": 9289.74
+  },
+  {
+    "id": "315852",
+    "category": "tm",
+    "name": "TM 117: Hyper Voice",
+    "area": "Canyon Biome",
+    "x": 7449.67,
+    "y": 8444.04
+  },
+  {
+    "id": "315862",
+    "category": "tm",
+    "name": "TM 075: Light Screen",
+    "area": "Coastal Biome",
+    "x": 9177.51,
+    "y": 5291.18
+  },
+  {
+    "id": "315870",
+    "category": "tm",
+    "name": "TM 034: Icy Wind",
+    "area": "Polar Biome",
+    "x": 6075.08,
+    "y": 6396.8
+  },
+  {
+    "id": "315884",
+    "category": "tm",
+    "name": "TM 193: Weather Ball",
+    "area": "Polar Biome",
+    "x": 8092.33,
+    "y": 6858.58
+  },
+  {
+    "id": "315893",
+    "category": "tm",
+    "name": "TM 087: Taunt",
+    "area": "Polar Biome",
+    "x": 7623.59,
+    "y": 7645.08
+  },
+  {
+    "id": "316035",
+    "category": "tm",
+    "name": "TM 158: Focus Blast",
+    "area": "Canyon Biome",
+    "x": 6332.75,
+    "y": 11148.98
+  },
+  {
+    "id": "316039",
+    "category": "tm",
+    "name": "TM 119: Energy Ball",
+    "area": "Canyon Biome",
+    "x": 5887.71,
+    "y": 10995.95
+  },
+  {
+    "id": "316042",
+    "category": "tm",
+    "name": "TM 049: Sunny Day",
+    "area": "Canyon Biome",
+    "x": 5800.6,
+    "y": 8216.08
+  },
+  {
+    "id": "316055",
+    "category": "tm",
+    "name": "TM 131: Pollen Puff",
+    "area": "Coastal Biome",
+    "x": 10714.71,
+    "y": 6738.79
+  },
+  {
+    "id": "316057",
+    "category": "tm",
+    "name": "TM 148: Sludge Bomb",
+    "area": "Coastal Biome",
+    "x": 10231.22,
+    "y": 6731.92
+  },
+  {
+    "id": "316066",
+    "category": "tm",
+    "name": "TM 133: Earth Power",
+    "area": "Coastal Biome",
+    "x": 8640.59,
+    "y": 7792.56
+  },
+  {
+    "id": "316067",
+    "category": "tm",
+    "name": "TM 077: Waterfall",
+    "area": "Coastal Biome",
+    "x": 8698.21,
+    "y": 7200.01
+  },
+  {
+    "id": "316071",
+    "category": "tm",
+    "name": "TM 144: Fire Pledge",
+    "area": "Coastal Biome",
+    "x": 9466.26,
+    "y": 7796.56
+  },
+  {
+    "id": "316076",
+    "category": "tm",
+    "name": "TM 145: Water Pledge",
+    "area": "Coastal Biome",
+    "x": 9402.35,
+    "y": 7402.4
+  },
+  {
+    "id": "316083",
+    "category": "tm",
+    "name": "TM 106: Drill Run",
+    "area": "Coastal Biome",
+    "x": 9281.55,
+    "y": 7653.01
+  },
+  {
+    "id": "316084",
+    "category": "tm",
+    "name": "TM 142: Hydro Pump",
+    "area": "Coastal Biome",
+    "x": 9149.94,
+    "y": 7404.21
+  },
+  {
+    "id": "316087",
+    "category": "tm",
+    "name": "TM 166: Thunder",
+    "area": "Coastal Biome",
+    "x": 10133.68,
+    "y": 7625.14
+  },
+  {
+    "id": "316093",
+    "category": "tm",
+    "name": "TM 121: Heavy Slam",
+    "area": "Coastal Biome",
+    "x": 10316.99,
+    "y": 7106.85
+  },
+  {
+    "id": "316102",
+    "category": "tm",
+    "name": "TM 053: Smart Strike",
+    "area": "Savanna Biome",
+    "x": 8354.59,
+    "y": 8214.12
+  },
+  {
+    "id": "316109",
+    "category": "tm",
+    "name": "TM 222: Breaking Swipe",
+    "area": "Polar Biome",
+    "x": 6895.5,
+    "y": 5145.95
+  },
+  {
+    "id": "316112",
+    "category": "tm",
+    "name": "TM 143: Blizzard",
+    "area": "Polar Biome",
+    "x": 6749.69,
+    "y": 5955.66
+  },
+  {
+    "id": "316118",
+    "category": "tm",
+    "name": "TM 113: Tailwind",
+    "area": "Polar Biome",
+    "x": 5715.81,
+    "y": 6742.03
+  },
+  {
+    "id": "316122",
+    "category": "tm",
+    "name": "TM 224: Curse",
+    "area": "Polar Biome",
+    "x": 4912.79,
+    "y": 7472.3
+  },
+  {
+    "id": "316130",
+    "category": "tm",
+    "name": "TM 174: Haze",
+    "area": "Polar Biome",
+    "x": 4892.54,
+    "y": 7852.66
+  },
+  {
+    "id": "316135",
+    "category": "tm",
+    "name": "TM 128: Amnesia",
+    "area": "Polar Biome",
+    "x": 6273.22,
+    "y": 7802.41
+  },
+  {
+    "id": "316145",
+    "category": "tm",
+    "name": "TM 059: Zen Headbutt",
+    "area": "Polar Biome",
+    "x": 7876.15,
+    "y": 6558.5
+  },
+  {
+    "id": "316153",
+    "category": "tm",
+    "name": "TM 226: Dragon Claw",
+    "area": "Polar Biome",
+    "x": 7536.01,
+    "y": 5684.01
+  },
+  {
+    "id": "316559",
+    "category": "tm",
+    "name": "TM 188: Scald",
+    "area": "Coastal Biome",
+    "x": 8638.01,
+    "y": 5331.91
+  },
+  {
+    "id": "325461",
+    "category": "tm",
+    "name": "TM 202: Pain Split",
+    "area": "Savanna Biome",
+    "x": 9658.25,
+    "y": 9909.5
+  },
+  {
+    "id": "325476",
+    "category": "tm",
+    "name": "TM 223: Metal Sound",
+    "area": "Coastal Biome",
+    "x": 8752.3,
+    "y": 7729.98
+  },
+  {
+    "id": "325481",
+    "category": "tm",
+    "name": "TM 146: Grass Pledge",
+    "area": "Coastal Biome",
+    "x": 9063.58,
+    "y": 7767.22
+  },
+  {
+    "id": "325483",
+    "category": "tm",
+    "name": "TM 228: Psychic Noise",
+    "area": "Coastal Biome",
+    "x": 8341.31,
+    "y": 8092.65
+  },
+  {
+    "id": "325490",
+    "category": "tm",
+    "name": "TM 063: Psychic Fangs",
+    "area": "Coastal Biome",
+    "x": 9035.91,
+    "y": 5697.38
+  },
+  {
+    "id": "325509",
+    "category": "tm",
+    "name": "TM 104: Iron Defense",
+    "area": "Canyon Biome",
+    "x": 5839.91,
+    "y": 10352.35
+  },
+  {
+    "id": "325541",
+    "category": "tm",
+    "name": "TM 052: Snowscape",
+    "area": "Polar Biome",
+    "x": 5722.81,
+    "y": 7112.71
+  },
+  {
+    "id": "325553",
+    "category": "tm",
+    "name": "TM 136: Electric Terrain",
+    "area": "Polar Biome",
+    "x": 7022.32,
+    "y": 7973.92
+  },
+  {
+    "id": "325561",
+    "category": "tm",
+    "name": "TM 013: Acid Spray",
+    "area": "Polar Biome",
+    "x": 7670.32,
+    "y": 7169.21
+  },
+  {
+    "id": "325585",
+    "category": "tm",
+    "name": "TM 212: Triple Axel",
+    "area": "Polar Biome",
+    "x": 6274.12,
+    "y": 5024.25
+  },
+  {
+    "id": "325594",
+    "category": "tm",
+    "name": "TM 220: Meteor Beam",
+    "area": "Polar Biome",
+    "x": 5239.25,
+    "y": 7701.37
+  },
+  {
+    "id": "325612",
+    "category": "tm",
+    "name": "TM 094: Dark Pulse",
+    "area": "Coastal Biome",
+    "x": 8891.4,
+    "y": 7941.47
+  },
+  {
+    "id": "330149",
+    "category": "tm",
+    "name": "TM 093: Flash Cannon",
+    "area": "Polar Biome",
+    "x": 5599.74,
+    "y": 7795.65
+  },
+  {
+    "id": "330150",
+    "category": "tm",
+    "name": "TM 086: Rock Slide",
+    "area": "Canyon Biome",
+    "x": 6630.96,
+    "y": 9195.69
+  },
+  {
+    "id": "330152",
+    "category": "tm",
+    "name": "TM 213: Coaching",
+    "area": "Savanna Biome",
+    "x": 10752.88,
+    "y": 9774.08
+  },
+  {
+    "id": "330154",
+    "category": "tm",
+    "name": "TM 050: Rain Dance",
+    "area": "Coastal Biome",
+    "x": 10407.34,
+    "y": 7710.68
+  },
+  {
+    "id": "379825",
+    "category": "tm",
+    "name": "TM 075: Light Screen",
+    "area": "Savanna Biome",
+    "x": 12003.78,
+    "y": 8398.67
+  },
+  {
+    "id": "513536",
+    "category": "tm",
+    "name": "TM 058: Brick Break",
+    "area": "Coastal Biome",
+    "x": 10611.9,
+    "y": 6221.35
+  },
+  {
+    "id": "513558",
+    "category": "tm",
+    "name": "TM201 Misty Explosion",
+    "area": "Canyon Biome",
+    "x": 5589.63,
+    "y": 10511.01
+  },
+  {
+    "id": "513560",
+    "category": "tm",
+    "name": "Thunderbolt",
+    "area": "Canyon Biome",
+    "x": 5994,
+    "y": 8494.26
+  },
+  {
+    "id": "513665",
+    "category": "tm",
+    "name": "TM 143: Nasty Plot",
+    "area": "Polar Biome",
+    "x": 5541.69,
+    "y": 5960.29
+  },
+  {
+    "id": "314743",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Canyon Biome",
+    "x": 7756.83,
+    "y": 8600.74
+  },
+  {
+    "id": "315259",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Savanna Biome",
+    "x": 9982.08,
+    "y": 11493.73
+  },
+  {
+    "id": "315263",
+    "category": "medicine",
+    "name": "2x Hyper Potion",
+    "area": "Savanna Biome",
+    "x": 10306.87,
+    "y": 10442.6
+  },
+  {
+    "id": "315264",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Savanna Biome",
+    "x": 10893.69,
+    "y": 10292.53
+  },
+  {
+    "id": "315267",
+    "category": "medicine",
+    "name": "2x Hyper Potion",
+    "area": "Savanna Biome",
+    "x": 10591.32,
+    "y": 10816.64
+  },
+  {
+    "id": "315269",
+    "category": "medicine",
+    "name": "2x Ether",
+    "area": "Savanna Biome",
+    "x": 11175.91,
+    "y": 10599.38
+  },
+  {
+    "id": "315353",
+    "category": "medicine",
+    "name": "Super Potion x3",
+    "area": "Savanna Biome",
+    "x": 9465.25,
+    "y": 11332.69
+  },
+  {
+    "id": "315357",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Savanna Biome",
+    "x": 11542.21,
+    "y": 9195.53
+  },
+  {
+    "id": "315360",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Savanna Biome",
+    "x": 11956.86,
+    "y": 8593.84
+  },
+  {
+    "id": "315375",
+    "category": "medicine",
+    "name": "Full Heal x5",
+    "area": "Savanna Biome",
+    "x": 8415.26,
+    "y": 9532.32
+  },
+  {
+    "id": "315377",
+    "category": "medicine",
+    "name": "Ether x3",
+    "area": "Savanna Biome",
+    "x": 8678.32,
+    "y": 9171.09
+  },
+  {
+    "id": "315381",
+    "category": "medicine",
+    "name": "Full Restore x5",
+    "area": "Savanna Biome",
+    "x": 8609.68,
+    "y": 10443.16
+  },
+  {
+    "id": "315401",
+    "category": "medicine",
+    "name": "Elixir x2",
+    "area": "Coastal Biome",
+    "x": 8395.57,
+    "y": 8087.61
+  },
+  {
+    "id": "315404",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Coastal Biome",
+    "x": 9052.35,
+    "y": 8095.71
+  },
+  {
+    "id": "315406",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Coastal Biome",
+    "x": 9228.87,
+    "y": 8137.46
+  },
+  {
+    "id": "315409",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Coastal Biome",
+    "x": 10304.2,
+    "y": 8113.26
+  },
+  {
+    "id": "315415",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Coastal Biome",
+    "x": 10831.27,
+    "y": 7106.71
+  },
+  {
+    "id": "315418",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Coastal Biome",
+    "x": 10864.36,
+    "y": 6546.9
+  },
+  {
+    "id": "315428",
+    "category": "medicine",
+    "name": "Elixir x2",
+    "area": "Coastal Biome",
+    "x": 11242.28,
+    "y": 6740.5
+  },
+  {
+    "id": "315431",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Coastal Biome",
+    "x": 10958.6,
+    "y": 7539.39
+  },
+  {
+    "id": "315439",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Coastal Biome",
+    "x": 10421.01,
+    "y": 7559.6
+  },
+  {
+    "id": "315440",
+    "category": "medicine",
+    "name": "Super Potion x2",
+    "area": "Savanna Biome",
+    "x": 10826.51,
+    "y": 8986.3
+  },
+  {
+    "id": "315505",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Coastal Biome",
+    "x": 8712.35,
+    "y": 6161.95
+  },
+  {
+    "id": "315509",
+    "category": "medicine",
+    "name": "Super Potion x2",
+    "area": "Coastal Biome",
+    "x": 8451.04,
+    "y": 6459.23
+  },
+  {
+    "id": "315525",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Canyon Biome",
+    "x": 6165.44,
+    "y": 10046.49
+  },
+  {
+    "id": "315535",
+    "category": "medicine",
+    "name": "Full Restore x2",
+    "area": "Canyon Biome",
+    "x": 6720.69,
+    "y": 9735.47
+  },
+  {
+    "id": "315536",
+    "category": "medicine",
+    "name": "Max Potion x3",
+    "area": "Canyon Biome",
+    "x": 7034.64,
+    "y": 9701.98
+  },
+  {
+    "id": "315541",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Canyon Biome",
+    "x": 8012.15,
+    "y": 9809.53
+  },
+  {
+    "id": "315544",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Canyon Biome",
+    "x": 7609.1,
+    "y": 10505.3
+  },
+  {
+    "id": "315547",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Canyon Biome",
+    "x": 7057.28,
+    "y": 8225
+  },
+  {
+    "id": "315564",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Canyon Biome",
+    "x": 5277.75,
+    "y": 8944.69
+  },
+  {
+    "id": "315565",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Canyon Biome",
+    "x": 5624.76,
+    "y": 8646.69
+  },
+  {
+    "id": "315569",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Canyon Biome",
+    "x": 5791.71,
+    "y": 10064.26
+  },
+  {
+    "id": "315572",
+    "category": "medicine",
+    "name": "Full Restore x2",
+    "area": "Canyon Biome",
+    "x": 5956.19,
+    "y": 10677.17
+  },
+  {
+    "id": "315578",
+    "category": "medicine",
+    "name": "Hyper Potion x3",
+    "area": "Canyon Biome",
+    "x": 5330.41,
+    "y": 10567.82
+  },
+  {
+    "id": "315584",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Canyon Biome",
+    "x": 6084.32,
+    "y": 11353.17
+  },
+  {
+    "id": "315593",
+    "category": "medicine",
+    "name": "Full Heal x2",
+    "area": "Canyon Biome",
+    "x": 7487.06,
+    "y": 11621.14
+  },
+  {
+    "id": "315604",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Canyon Biome",
+    "x": 7692.91,
+    "y": 10357.32
+  },
+  {
+    "id": "315609",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Canyon Biome",
+    "x": 7918.43,
+    "y": 10098.52
+  },
+  {
+    "id": "315616",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Canyon Biome",
+    "x": 7957.36,
+    "y": 11045.38
+  },
+  {
+    "id": "315617",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Canyon Biome",
+    "x": 8051.58,
+    "y": 11436.7
+  },
+  {
+    "id": "315622",
+    "category": "medicine",
+    "name": "Super Potion x3",
+    "area": "Savanna Biome",
+    "x": 8283.79,
+    "y": 8620.42
+  },
+  {
+    "id": "315632",
+    "category": "medicine",
+    "name": "Max Ether x2",
+    "area": "Savanna Biome",
+    "x": 8808.9,
+    "y": 8424.02
+  },
+  {
+    "id": "315633",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Savanna Biome",
+    "x": 8789.75,
+    "y": 9433.54
+  },
+  {
+    "id": "315638",
+    "category": "medicine",
+    "name": "Elixir x3",
+    "area": "Savanna Biome",
+    "x": 8494.02,
+    "y": 10785.85
+  },
+  {
+    "id": "315643",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Savanna Biome",
+    "x": 8352.13,
+    "y": 11616.45
+  },
+  {
+    "id": "315644",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Savanna Biome",
+    "x": 8750.11,
+    "y": 11706.98
+  },
+  {
+    "id": "315765",
+    "category": "medicine",
+    "name": "Super Potion x3",
+    "area": "Polar Biome",
+    "x": 8035.81,
+    "y": 5847.16
+  },
+  {
+    "id": "315783",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Coastal Biome",
+    "x": 9896.11,
+    "y": 5647.52
+  },
+  {
+    "id": "315784",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Coastal Biome",
+    "x": 10180.75,
+    "y": 5828.65
+  },
+  {
+    "id": "315785",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Coastal Biome",
+    "x": 9931.12,
+    "y": 5440.51
+  },
+  {
+    "id": "315787",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Coastal Biome",
+    "x": 10395.37,
+    "y": 5594.24
+  },
+  {
+    "id": "315788",
+    "category": "medicine",
+    "name": "Elixir x3",
+    "area": "Coastal Biome",
+    "x": 10581.07,
+    "y": 5831.7
+  },
+  {
+    "id": "315795",
+    "category": "medicine",
+    "name": "Super Potion x4",
+    "area": "Polar Biome",
+    "x": 6157.08,
+    "y": 5423.74
+  },
+  {
+    "id": "315811",
+    "category": "medicine",
+    "name": "Super Potion x5",
+    "area": "Coastal Biome",
+    "x": 10931.16,
+    "y": 6270.07
+  },
+  {
+    "id": "315821",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Polar Biome",
+    "x": 4717.63,
+    "y": 6533.48
+  },
+  {
+    "id": "315828",
+    "category": "medicine",
+    "name": "Paralyze Heal",
+    "area": "Canyon Biome",
+    "x": 7112.88,
+    "y": 8443.25
+  },
+  {
+    "id": "315831",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Canyon Biome",
+    "x": 6724.52,
+    "y": 8250.2
+  },
+  {
+    "id": "315837",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Polar Biome",
+    "x": 6645.7,
+    "y": 7790.27
+  },
+  {
+    "id": "315847",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Canyon Biome",
+    "x": 7975.18,
+    "y": 8674.78
+  },
+  {
+    "id": "315851",
+    "category": "medicine",
+    "name": "Super Potion x3",
+    "area": "Canyon Biome",
+    "x": 7767.74,
+    "y": 8283.99
+  },
+  {
+    "id": "315855",
+    "category": "medicine",
+    "name": "Ether x2",
+    "area": "Polar Biome",
+    "x": 5797.14,
+    "y": 5666.7
+  },
+  {
+    "id": "315857",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Polar Biome",
+    "x": 6080.95,
+    "y": 5871.64
+  },
+  {
+    "id": "315872",
+    "category": "medicine",
+    "name": "Full Restore x3",
+    "area": "Polar Biome",
+    "x": 6529,
+    "y": 6336.28
+  },
+  {
+    "id": "315887",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Polar Biome",
+    "x": 7808.47,
+    "y": 7172.05
+  },
+  {
+    "id": "316038",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Canyon Biome",
+    "x": 5853.71,
+    "y": 10888.95
+  },
+  {
+    "id": "316045",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Canyon Biome",
+    "x": 8170.88,
+    "y": 11139.24
+  },
+  {
+    "id": "316052",
+    "category": "medicine",
+    "name": "Revive x2",
+    "area": "Savanna Biome",
+    "x": 9044.16,
+    "y": 10400.8
+  },
+  {
+    "id": "316062",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Coastal Biome",
+    "x": 9627.98,
+    "y": 7556.04
+  },
+  {
+    "id": "316081",
+    "category": "medicine",
+    "name": "Calcium",
+    "area": "Coastal Biome",
+    "x": 9344.66,
+    "y": 7530.41
+  },
+  {
+    "id": "316089",
+    "category": "medicine",
+    "name": "Ether x3",
+    "area": "Coastal Biome",
+    "x": 9969.32,
+    "y": 6991.17
+  },
+  {
+    "id": "316092",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Coastal Biome",
+    "x": 10292.88,
+    "y": 7394.04
+  },
+  {
+    "id": "316098",
+    "category": "medicine",
+    "name": "Full Restore x3",
+    "area": "Coastal Biome",
+    "x": 10260.39,
+    "y": 7201.18
+  },
+  {
+    "id": "316101",
+    "category": "medicine",
+    "name": "Max Potion",
+    "area": "Polar Biome",
+    "x": 8084.15,
+    "y": 7849.56
+  },
+  {
+    "id": "316104",
+    "category": "medicine",
+    "name": "Full Heal x3",
+    "area": "Savanna Biome",
+    "x": 8308.59,
+    "y": 8302.12
+  },
+  {
+    "id": "316107",
+    "category": "medicine",
+    "name": "Elixir x3",
+    "area": "Polar Biome",
+    "x": 6708.87,
+    "y": 5041.79
+  },
+  {
+    "id": "316108",
+    "category": "medicine",
+    "name": "Full Restore x2",
+    "area": "Polar Biome",
+    "x": 6808.7,
+    "y": 5189.36
+  },
+  {
+    "id": "316111",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Polar Biome",
+    "x": 7188.47,
+    "y": 5111.23
+  },
+  {
+    "id": "316119",
+    "category": "medicine",
+    "name": "Ether",
+    "area": "Polar Biome",
+    "x": 5774.99,
+    "y": 6586.46
+  },
+  {
+    "id": "316121",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Polar Biome",
+    "x": 5947.03,
+    "y": 6421.92
+  },
+  {
+    "id": "316124",
+    "category": "medicine",
+    "name": "Elixir x2",
+    "area": "Polar Biome",
+    "x": 4782.32,
+    "y": 7783.05
+  },
+  {
+    "id": "316125",
+    "category": "medicine",
+    "name": "Full Heal",
+    "area": "Polar Biome",
+    "x": 4809.86,
+    "y": 7489.44
+  },
+  {
+    "id": "316146",
+    "category": "medicine",
+    "name": "Full Heal x2",
+    "area": "Polar Biome",
+    "x": 8073.09,
+    "y": 7271.59
+  },
+  {
+    "id": "316149",
+    "category": "medicine",
+    "name": "Hyper Potion x2",
+    "area": "Polar Biome",
+    "x": 8003.6,
+    "y": 6740.81
+  },
+  {
+    "id": "325469",
+    "category": "medicine",
+    "name": "Max Revive x1",
+    "area": "Coastal Biome",
+    "x": 10478.31,
+    "y": 7115.65
+  },
+  {
+    "id": "325482",
+    "category": "medicine",
+    "name": "Max Ether x5",
+    "area": "Coastal Biome",
+    "x": 9178.58,
+    "y": 7684.22
+  },
+  {
+    "id": "325486",
+    "category": "medicine",
+    "name": "Full Heal x3",
+    "area": "Coastal Biome",
+    "x": 8305.92,
+    "y": 6777.37
+  },
+  {
+    "id": "325506",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Canyon Biome",
+    "x": 6953.83,
+    "y": 10088.7
+  },
+  {
+    "id": "325508",
+    "category": "medicine",
+    "name": "Carbos x1",
+    "area": "Canyon Biome",
+    "x": 6901.6,
+    "y": 10098.2
+  },
+  {
+    "id": "325543",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Polar Biome",
+    "x": 5699.84,
+    "y": 7092.72
+  },
+  {
+    "id": "512718",
+    "category": "medicine",
+    "name": "Elixir x2",
+    "area": "Savanna Biome",
+    "x": 12015.17,
+    "y": 8223.62
+  },
+  {
+    "id": "513527",
+    "category": "medicine",
+    "name": "Max Potion x3",
+    "area": "Savanna Biome",
+    "x": 8815.93,
+    "y": 10856.28
+  },
+  {
+    "id": "513539",
+    "category": "medicine",
+    "name": "Super Potion",
+    "area": "Coastal Biome",
+    "x": 10203.29,
+    "y": 7946.16
+  },
+  {
+    "id": "513550",
+    "category": "medicine",
+    "name": "Full Restore x2",
+    "area": "Coastal Biome",
+    "x": 10900.49,
+    "y": 7520
+  },
+  {
+    "id": "513556",
+    "category": "medicine",
+    "name": "Super Potion x5",
+    "area": "Canyon Biome",
+    "x": 7549.87,
+    "y": 10094.19
+  },
+  {
+    "id": "513559",
+    "category": "medicine",
+    "name": "Hyper Potion",
+    "area": "Savanna Biome",
+    "x": 10838.95,
+    "y": 9536.53
+  },
+  {
+    "id": "513561",
+    "category": "medicine",
+    "name": "Max Potion x2",
+    "area": "Canyon Biome",
+    "x": 5765,
+    "y": 8442.26
+  },
+  {
+    "id": "513565",
+    "category": "medicine",
+    "name": "Full Restore",
+    "area": "Canyon Biome",
+    "x": 7654.5,
+    "y": 11423.25
+  },
+  {
+    "id": "513626",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Polar Biome",
+    "x": 5390.88,
+    "y": 7117.75
+  },
+  {
+    "id": "513634",
+    "category": "medicine",
+    "name": "HP Up",
+    "area": "Coastal Biome",
+    "x": 10056.49,
+    "y": 7817.11
+  },
+  {
+    "id": "513661",
+    "category": "medicine",
+    "name": "Max Revive",
+    "area": "Polar Biome",
+    "x": 5680.11,
+    "y": 5979.6
+  },
+  {
+    "id": "513662",
+    "category": "medicine",
+    "name": "Revive",
+    "area": "Polar Biome",
+    "x": 6657.06,
+    "y": 6005.56
+  },
+  {
+    "id": "513666",
+    "category": "medicine",
+    "name": "Max Ether",
+    "area": "Canyon Biome",
+    "x": 7696.62,
+    "y": 11336.66
+  },
+  {
+    "id": "314742",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 8329.81,
+    "y": 7969.75
+  },
+  {
+    "id": "315262",
+    "category": "other-item",
+    "name": "Impish Mint",
+    "area": "Savanna Biome",
+    "x": 10284.47,
+    "y": 10626.26
+  },
+  {
+    "id": "315270",
+    "category": "other-item",
+    "name": "3x X Speed",
+    "area": "Savanna Biome",
+    "x": 11014.79,
+    "y": 10760.06
+  },
+  {
+    "id": "315288",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Savanna Biome",
+    "x": 9585.47,
+    "y": 11157.69
+  },
+  {
+    "id": "315348",
+    "category": "other-item",
+    "name": "Protector",
+    "area": "Savanna Biome",
+    "x": 8979.74,
+    "y": 11957.13
+  },
+  {
+    "id": "315350",
+    "category": "other-item",
+    "name": "Modest Mint",
+    "area": "Savanna Biome",
+    "x": 9459.14,
+    "y": 11769.73
+  },
+  {
+    "id": "315362",
+    "category": "other-item",
+    "name": "Calcium x3",
+    "area": "Savanna Biome",
+    "x": 11551.23,
+    "y": 8204.72
+  },
+  {
+    "id": "315370",
+    "category": "other-item",
+    "name": "Timid Mint",
+    "area": "Savanna Biome",
+    "x": 8831.68,
+    "y": 8290.55
+  },
+  {
+    "id": "315373",
+    "category": "other-item",
+    "name": "Magmarizer",
+    "area": "Savanna Biome",
+    "x": 8809.62,
+    "y": 8733.42
+  },
+  {
+    "id": "315382",
+    "category": "other-item",
+    "name": "Carbos x3",
+    "area": "Savanna Biome",
+    "x": 8242.24,
+    "y": 10314.56
+  },
+  {
+    "id": "315385",
+    "category": "other-item",
+    "name": "Love Sweet",
+    "area": "Savanna Biome",
+    "x": 8724.01,
+    "y": 10948.12
+  },
+  {
+    "id": "315386",
+    "category": "other-item",
+    "name": "Strawberry Sweet",
+    "area": "Savanna Biome",
+    "x": 9311.05,
+    "y": 10745.17
+  },
+  {
+    "id": "315387",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 9477,
+    "y": 9996
+  },
+  {
+    "id": "315393",
+    "category": "other-item",
+    "name": "Iron x3",
+    "area": "Savanna Biome",
+    "x": 9733,
+    "y": 9918.75
+  },
+  {
+    "id": "315398",
+    "category": "other-item",
+    "name": "Gentle Mint",
+    "area": "Savanna Biome",
+    "x": 9551.81,
+    "y": 10419.07
+  },
+  {
+    "id": "315403",
+    "category": "other-item",
+    "name": "Adamant Mint",
+    "area": "Coastal Biome",
+    "x": 8922.35,
+    "y": 8171.71
+  },
+  {
+    "id": "315408",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Coastal Biome",
+    "x": 10419.83,
+    "y": 8169.01
+  },
+  {
+    "id": "315416",
+    "category": "other-item",
+    "name": "Mild Mint",
+    "area": "Coastal Biome",
+    "x": 11145.13,
+    "y": 6974.56
+  },
+  {
+    "id": "315420",
+    "category": "other-item",
+    "name": "Dragon Scale",
+    "area": "Coastal Biome",
+    "x": 10732.99,
+    "y": 6439.79
+  },
+  {
+    "id": "315423",
+    "category": "other-item",
+    "name": "Protein x3",
+    "area": "Savanna Biome",
+    "x": 8242.24,
+    "y": 9590.69
+  },
+  {
+    "id": "315425",
+    "category": "other-item",
+    "name": "Ghost Tera Shard x11",
+    "area": "Coastal Biome",
+    "x": 8544.57,
+    "y": 7973.61
+  },
+  {
+    "id": "315426",
+    "category": "other-item",
+    "name": "Rock Tera Shard x9",
+    "area": "Coastal Biome",
+    "x": 8692.3,
+    "y": 8082.71
+  },
+  {
+    "id": "315438",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Coastal Biome",
+    "x": 10556.42,
+    "y": 7858.71
+  },
+  {
+    "id": "315501",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Coastal Biome",
+    "x": 9040.09,
+    "y": 6254.27
+  },
+  {
+    "id": "315508",
+    "category": "other-item",
+    "name": "Protein",
+    "area": "Coastal Biome",
+    "x": 8676.51,
+    "y": 6787.59
+  },
+  {
+    "id": "315511",
+    "category": "other-item",
+    "name": "Love Sweet",
+    "area": "Coastal Biome",
+    "x": 8574.32,
+    "y": 7372.57
+  },
+  {
+    "id": "315513",
+    "category": "other-item",
+    "name": "X Def. x3",
+    "area": "Coastal Biome",
+    "x": 8595.62,
+    "y": 7235.57
+  },
+  {
+    "id": "315515",
+    "category": "other-item",
+    "name": "Sassy Mint",
+    "area": "Canyon Biome",
+    "x": 7565.75,
+    "y": 10554.34
+  },
+  {
+    "id": "315516",
+    "category": "other-item",
+    "name": "Ground Tera Shard x8",
+    "area": "Coastal Biome",
+    "x": 8312.24,
+    "y": 7678.77
+  },
+  {
+    "id": "315518",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Canyon Biome",
+    "x": 7412.29,
+    "y": 10406.2
+  },
+  {
+    "id": "315519",
+    "category": "other-item",
+    "name": "Calcium",
+    "area": "Coastal Biome",
+    "x": 8222.25,
+    "y": 7985.06
+  },
+  {
+    "id": "315522",
+    "category": "other-item",
+    "name": "Iron x2",
+    "area": "Canyon Biome",
+    "x": 5494.99,
+    "y": 9576.49
+  },
+  {
+    "id": "315523",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Canyon Biome",
+    "x": 5731.57,
+    "y": 9878.66
+  },
+  {
+    "id": "315526",
+    "category": "other-item",
+    "name": "Iron",
+    "area": "Canyon Biome",
+    "x": 5914.28,
+    "y": 9445.31
+  },
+  {
+    "id": "315528",
+    "category": "other-item",
+    "name": "Carbos x2",
+    "area": "Canyon Biome",
+    "x": 6324.75,
+    "y": 10334.63
+  },
+  {
+    "id": "315534",
+    "category": "other-item",
+    "name": "Electirizer",
+    "area": "Canyon Biome",
+    "x": 7302.08,
+    "y": 10025.27
+  },
+  {
+    "id": "315540",
+    "category": "other-item",
+    "name": "Calcium",
+    "area": "Canyon Biome",
+    "x": 7945.15,
+    "y": 9751.53
+  },
+  {
+    "id": "315545",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Canyon Biome",
+    "x": 7602.4,
+    "y": 9547.41
+  },
+  {
+    "id": "315563",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Canyon Biome",
+    "x": 4789.31,
+    "y": 8433.85
+  },
+  {
+    "id": "315573",
+    "category": "other-item",
+    "name": "X Sp. Atk x3",
+    "area": "Canyon Biome",
+    "x": 5791.06,
+    "y": 10487.03
+  },
+  {
+    "id": "315577",
+    "category": "other-item",
+    "name": "HP Up x2",
+    "area": "Canyon Biome",
+    "x": 5141.96,
+    "y": 10539.82
+  },
+  {
+    "id": "315580",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Canyon Biome",
+    "x": 5970.06,
+    "y": 11050.94
+  },
+  {
+    "id": "315590",
+    "category": "other-item",
+    "name": "Naive Mint",
+    "area": "Canyon Biome",
+    "x": 6450.36,
+    "y": 10946.47
+  },
+  {
+    "id": "315594",
+    "category": "other-item",
+    "name": "Protein x2",
+    "area": "Canyon Biome",
+    "x": 6955.67,
+    "y": 10611.02
+  },
+  {
+    "id": "315598",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Canyon Biome",
+    "x": 6660.36,
+    "y": 10714.47
+  },
+  {
+    "id": "315599",
+    "category": "other-item",
+    "name": "Guard Spec. x3",
+    "area": "Canyon Biome",
+    "x": 7887.69,
+    "y": 10830.32
+  },
+  {
+    "id": "315600",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Canyon Biome",
+    "x": 7787.31,
+    "y": 10936.44
+  },
+  {
+    "id": "315602",
+    "category": "other-item",
+    "name": "Exp. Candy XL",
+    "area": "Canyon Biome",
+    "x": 7735.68,
+    "y": 11257.67
+  },
+  {
+    "id": "315612",
+    "category": "other-item",
+    "name": "Calm Mint",
+    "area": "Canyon Biome",
+    "x": 8134.24,
+    "y": 10565.21
+  },
+  {
+    "id": "315614",
+    "category": "other-item",
+    "name": "Calcium x2",
+    "area": "Canyon Biome",
+    "x": 7974.18,
+    "y": 11689.86
+  },
+  {
+    "id": "315621",
+    "category": "other-item",
+    "name": "Exp. Candy XL",
+    "area": "Savanna Biome",
+    "x": 8361.95,
+    "y": 9025.55
+  },
+  {
+    "id": "315623",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Savanna Biome",
+    "x": 8395.79,
+    "y": 8229.43
+  },
+  {
+    "id": "315624",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Coastal Biome",
+    "x": 8497.87,
+    "y": 8170.42
+  },
+  {
+    "id": "315640",
+    "category": "other-item",
+    "name": "PP Up x3",
+    "area": "Savanna Biome",
+    "x": 8210.11,
+    "y": 11755.29
+  },
+  {
+    "id": "315645",
+    "category": "other-item",
+    "name": "Guard Spec. x3",
+    "area": "Savanna Biome",
+    "x": 8508.68,
+    "y": 11325.98
+  },
+  {
+    "id": "315757",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Polar Biome",
+    "x": 5292.25,
+    "y": 7005.31
+  },
+  {
+    "id": "315760",
+    "category": "other-item",
+    "name": "Quiet Mint",
+    "area": "Polar Biome",
+    "x": 5488.7,
+    "y": 6469.15
+  },
+  {
+    "id": "315761",
+    "category": "other-item",
+    "name": "Carbos",
+    "area": "Polar Biome",
+    "x": 6431.42,
+    "y": 6718.05
+  },
+  {
+    "id": "315773",
+    "category": "other-item",
+    "name": "Protein",
+    "area": "Coastal Biome",
+    "x": 9170.82,
+    "y": 5139.84
+  },
+  {
+    "id": "315774",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Coastal Biome",
+    "x": 9630.15,
+    "y": 5325.23
+  },
+  {
+    "id": "315776",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Polar Biome",
+    "x": 6891.16,
+    "y": 4755.33
+  },
+  {
+    "id": "315778",
+    "category": "other-item",
+    "name": "Clover Sweet",
+    "area": "Coastal Biome",
+    "x": 10599.34,
+    "y": 5519.66
+  },
+  {
+    "id": "315786",
+    "category": "other-item",
+    "name": "Flower Sweet",
+    "area": "Coastal Biome",
+    "x": 10049.84,
+    "y": 5620.12
+  },
+  {
+    "id": "315789",
+    "category": "other-item",
+    "name": "Iron",
+    "area": "Coastal Biome",
+    "x": 9888.5,
+    "y": 6072.2
+  },
+  {
+    "id": "315791",
+    "category": "other-item",
+    "name": "Strawberry Sweet",
+    "area": "Polar Biome",
+    "x": 5455.84,
+    "y": 5627.42
+  },
+  {
+    "id": "315794",
+    "category": "other-item",
+    "name": "X Speed x3",
+    "area": "Polar Biome",
+    "x": 6036.69,
+    "y": 5471.54
+  },
+  {
+    "id": "315796",
+    "category": "other-item",
+    "name": "Calcium",
+    "area": "Polar Biome",
+    "x": 6160.62,
+    "y": 5701.69
+  },
+  {
+    "id": "315806",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Savanna Biome",
+    "x": 8216.71,
+    "y": 8992.67
+  },
+  {
+    "id": "315808",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Coastal Biome",
+    "x": 11442.6,
+    "y": 6432.94
+  },
+  {
+    "id": "315822",
+    "category": "other-item",
+    "name": "Rash Mint",
+    "area": "Polar Biome",
+    "x": 4707.1,
+    "y": 6744.16
+  },
+  {
+    "id": "315829",
+    "category": "other-item",
+    "name": "Carbos x2",
+    "area": "Canyon Biome",
+    "x": 6940.03,
+    "y": 8822.63
+  },
+  {
+    "id": "315830",
+    "category": "other-item",
+    "name": "Iron x2",
+    "area": "Polar Biome",
+    "x": 7074.71,
+    "y": 8077.35
+  },
+  {
+    "id": "315835",
+    "category": "other-item",
+    "name": "PP Max",
+    "area": "Polar Biome",
+    "x": 6890.38,
+    "y": 7756.6
+  },
+  {
+    "id": "315836",
+    "category": "other-item",
+    "name": "Protein x2",
+    "area": "Polar Biome",
+    "x": 7090.43,
+    "y": 7439.82
+  },
+  {
+    "id": "315843",
+    "category": "other-item",
+    "name": "Naughty Mint",
+    "area": "Canyon Biome",
+    "x": 7716.6,
+    "y": 9256.16
+  },
+  {
+    "id": "315846",
+    "category": "other-item",
+    "name": "Bold Mint",
+    "area": "Canyon Biome",
+    "x": 7877.09,
+    "y": 8936.4
+  },
+  {
+    "id": "315850",
+    "category": "other-item",
+    "name": "Protein",
+    "area": "Canyon Biome",
+    "x": 8016.18,
+    "y": 8247.78
+  },
+  {
+    "id": "315859",
+    "category": "other-item",
+    "name": "Serious Mint",
+    "area": "Coastal Biome",
+    "x": 8661.4,
+    "y": 5520
+  },
+  {
+    "id": "315863",
+    "category": "other-item",
+    "name": "Carbos",
+    "area": "Coastal Biome",
+    "x": 8761.61,
+    "y": 5417.1
+  },
+  {
+    "id": "315875",
+    "category": "other-item",
+    "name": "Love Sweet",
+    "area": "Polar Biome",
+    "x": 6882.85,
+    "y": 6558.46
+  },
+  {
+    "id": "315878",
+    "category": "other-item",
+    "name": "Hasty Mint",
+    "area": "Polar Biome",
+    "x": 7485.24,
+    "y": 6539.6
+  },
+  {
+    "id": "315881",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Polar Biome",
+    "x": 7430.1,
+    "y": 6934.79
+  },
+  {
+    "id": "316041",
+    "category": "other-item",
+    "name": "Dire Hit x3",
+    "area": "Canyon Biome",
+    "x": 5977.71,
+    "y": 11234.95
+  },
+  {
+    "id": "316043",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 8857.95,
+    "y": 10115.05
+  },
+  {
+    "id": "316049",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Coastal Biome",
+    "x": 11929.59,
+    "y": 7888.47
+  },
+  {
+    "id": "316050",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Coastal Biome",
+    "x": 11132.42,
+    "y": 8132.81
+  },
+  {
+    "id": "316051",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 9375.04,
+    "y": 10578.76
+  },
+  {
+    "id": "316053",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Coastal Biome",
+    "x": 10743.17,
+    "y": 6746.11
+  },
+  {
+    "id": "316056",
+    "category": "other-item",
+    "name": "Protein",
+    "area": "Coastal Biome",
+    "x": 10835.36,
+    "y": 6887.94
+  },
+  {
+    "id": "316058",
+    "category": "other-item",
+    "name": "Lonely Mint",
+    "area": "Coastal Biome",
+    "x": 10448.9,
+    "y": 6922.1
+  },
+  {
+    "id": "316059",
+    "category": "other-item",
+    "name": "Exp. Candy M x5",
+    "area": "Coastal Biome",
+    "x": 10654.29,
+    "y": 6734.37
+  },
+  {
+    "id": "316060",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Coastal Biome",
+    "x": 9651.49,
+    "y": 6676.92
+  },
+  {
+    "id": "316064",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Coastal Biome",
+    "x": 9573.5,
+    "y": 7914.63
+  },
+  {
+    "id": "316068",
+    "category": "other-item",
+    "name": "Iron",
+    "area": "Coastal Biome",
+    "x": 9237.95,
+    "y": 6816.64
+  },
+  {
+    "id": "316070",
+    "category": "other-item",
+    "name": "Carbos",
+    "area": "Coastal Biome",
+    "x": 8854.59,
+    "y": 7916.46
+  },
+  {
+    "id": "316073",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Coastal Biome",
+    "x": 8728.86,
+    "y": 7306.38
+  },
+  {
+    "id": "316074",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 8791.96,
+    "y": 7297.15
+  },
+  {
+    "id": "316075",
+    "category": "other-item",
+    "name": "Iron",
+    "area": "Coastal Biome",
+    "x": 8984.07,
+    "y": 6962.49
+  },
+  {
+    "id": "316077",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Coastal Biome",
+    "x": 8786.56,
+    "y": 6889.68
+  },
+  {
+    "id": "316082",
+    "category": "other-item",
+    "name": "Bottle Cap",
+    "area": "Coastal Biome",
+    "x": 9238.28,
+    "y": 7175.23
+  },
+  {
+    "id": "316086",
+    "category": "other-item",
+    "name": "Jolly Mint",
+    "area": "Coastal Biome",
+    "x": 9364.49,
+    "y": 7171.63
+  },
+  {
+    "id": "316090",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Coastal Biome",
+    "x": 9402.35,
+    "y": 7274.4
+  },
+  {
+    "id": "316096",
+    "category": "other-item",
+    "name": "Brave Mint",
+    "area": "Polar Biome",
+    "x": 7640.11,
+    "y": 6959.83
+  },
+  {
+    "id": "316097",
+    "category": "other-item",
+    "name": "X Defense",
+    "area": "Polar Biome",
+    "x": 7354.03,
+    "y": 7288.35
+  },
+  {
+    "id": "316099",
+    "category": "other-item",
+    "name": "Exp. Candy L x2",
+    "area": "Polar Biome",
+    "x": 7978.58,
+    "y": 8166.69
+  },
+  {
+    "id": "316105",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Savanna Biome",
+    "x": 8344.59,
+    "y": 8271.12
+  },
+  {
+    "id": "316113",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Polar Biome",
+    "x": 7216.37,
+    "y": 5512.92
+  },
+  {
+    "id": "316123",
+    "category": "other-item",
+    "name": "X Defense x2",
+    "area": "Polar Biome",
+    "x": 4826.79,
+    "y": 7449.3
+  },
+  {
+    "id": "316127",
+    "category": "other-item",
+    "name": "Dubious Disc",
+    "area": "Polar Biome",
+    "x": 5126.03,
+    "y": 6896.15
+  },
+  {
+    "id": "316132",
+    "category": "other-item",
+    "name": "PP Up x2",
+    "area": "Polar Biome",
+    "x": 4968.71,
+    "y": 7999.13
+  },
+  {
+    "id": "316139",
+    "category": "other-item",
+    "name": "Iron",
+    "area": "Polar Biome",
+    "x": 6874.91,
+    "y": 8142.56
+  },
+  {
+    "id": "316143",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Polar Biome",
+    "x": 7912.63,
+    "y": 7328.08
+  },
+  {
+    "id": "316144",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Polar Biome",
+    "x": 7780.97,
+    "y": 6942.47
+  },
+  {
+    "id": "316148",
+    "category": "other-item",
+    "name": "Zinc",
+    "area": "Polar Biome",
+    "x": 7650.29,
+    "y": 6585.93
+  },
+  {
+    "id": "316152",
+    "category": "other-item",
+    "name": "Exp Candy XL",
+    "area": "Polar Biome",
+    "x": 6568.15,
+    "y": 7998.48
+  },
+  {
+    "id": "325454",
+    "category": "other-item",
+    "name": "Exp. Candy M x4",
+    "area": "Savanna Biome",
+    "x": 8961.86,
+    "y": 11675.55
+  },
+  {
+    "id": "325456",
+    "category": "other-item",
+    "name": "Exp. Candy L x4",
+    "area": "Savanna Biome",
+    "x": 8894.18,
+    "y": 11379.87
+  },
+  {
+    "id": "325457",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Savanna Biome",
+    "x": 8689.99,
+    "y": 11094.52
+  },
+  {
+    "id": "325458",
+    "category": "other-item",
+    "name": "Zinc x3",
+    "area": "Savanna Biome",
+    "x": 8641.29,
+    "y": 11015.26
+  },
+  {
+    "id": "325460",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Savanna Biome",
+    "x": 9575.19,
+    "y": 9841.47
+  },
+  {
+    "id": "325470",
+    "category": "other-item",
+    "name": "X Sp. Atk x3",
+    "area": "Coastal Biome",
+    "x": 9692.81,
+    "y": 7992.19
+  },
+  {
+    "id": "325472",
+    "category": "other-item",
+    "name": "PP Up",
+    "area": "Coastal Biome",
+    "x": 9674.57,
+    "y": 7941.24
+  },
+  {
+    "id": "325473",
+    "category": "other-item",
+    "name": "Exp. Candy M x1",
+    "area": "Coastal Biome",
+    "x": 9988.88,
+    "y": 8172.58
+  },
+  {
+    "id": "325475",
+    "category": "other-item",
+    "name": "PP Max x1",
+    "area": "Coastal Biome",
+    "x": 8711.3,
+    "y": 7675.98
+  },
+  {
+    "id": "325477",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Coastal Biome",
+    "x": 8739.3,
+    "y": 7641.98
+  },
+  {
+    "id": "325479",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 8880.71,
+    "y": 7647.58
+  },
+  {
+    "id": "325484",
+    "category": "other-item",
+    "name": "Electric Tera Shard x14",
+    "area": "Coastal Biome",
+    "x": 8440.15,
+    "y": 7636.44
+  },
+  {
+    "id": "325485",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 8574.02,
+    "y": 6798.66
+  },
+  {
+    "id": "325487",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Coastal Biome",
+    "x": 8220.02,
+    "y": 6540.82
+  },
+  {
+    "id": "325491",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 10311.47,
+    "y": 5771.04
+  },
+  {
+    "id": "325492",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 11176.68,
+    "y": 6120.77
+  },
+  {
+    "id": "325510",
+    "category": "other-item",
+    "name": "Exp. Candy L x4",
+    "area": "Canyon Biome",
+    "x": 7037.72,
+    "y": 10354.61
+  },
+  {
+    "id": "325511",
+    "category": "other-item",
+    "name": "Exp. Candy M x5",
+    "area": "Canyon Biome",
+    "x": 6757.11,
+    "y": 9244.06
+  },
+  {
+    "id": "325512",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Canyon Biome",
+    "x": 6422.96,
+    "y": 8527.63
+  },
+  {
+    "id": "325515",
+    "category": "other-item",
+    "name": "Exp. Candy M x6",
+    "area": "Canyon Biome",
+    "x": 6192.99,
+    "y": 11349.29
+  },
+  {
+    "id": "325545",
+    "category": "other-item",
+    "name": "Steel Tera Shard x19",
+    "area": "Polar Biome",
+    "x": 6116.19,
+    "y": 7372.45
+  },
+  {
+    "id": "325547",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Polar Biome",
+    "x": 7161.74,
+    "y": 7928.33
+  },
+  {
+    "id": "325558",
+    "category": "other-item",
+    "name": "Relaxed Mint",
+    "area": "Polar Biome",
+    "x": 7097.7,
+    "y": 7459.54
+  },
+  {
+    "id": "325562",
+    "category": "other-item",
+    "name": "HP Up",
+    "area": "Polar Biome",
+    "x": 7728.03,
+    "y": 7292.65
+  },
+  {
+    "id": "325563",
+    "category": "other-item",
+    "name": "X Attack x3",
+    "area": "Polar Biome",
+    "x": 8019.43,
+    "y": 7102.73
+  },
+  {
+    "id": "325595",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Polar Biome",
+    "x": 7698.36,
+    "y": 7721.96
+  },
+  {
+    "id": "513515",
+    "category": "other-item",
+    "name": "Exp. Candy L x2",
+    "area": "Coastal Biome",
+    "x": 10264.94,
+    "y": 5447.85
+  },
+  {
+    "id": "513516",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Polar Biome",
+    "x": 8006.9,
+    "y": 6819.33
+  },
+  {
+    "id": "513517",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Polar Biome",
+    "x": 7903.96,
+    "y": 6669.98
+  },
+  {
+    "id": "513519",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Polar Biome",
+    "x": 7295.31,
+    "y": 4769.98
+  },
+  {
+    "id": "513520",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Polar Biome",
+    "x": 6206.79,
+    "y": 6548.17
+  },
+  {
+    "id": "513522",
+    "category": "other-item",
+    "name": "Exp. Candy M x4",
+    "area": "Canyon Biome",
+    "x": 7740.13,
+    "y": 9653.68
+  },
+  {
+    "id": "513523",
+    "category": "other-item",
+    "name": "Exp. Candy M x5",
+    "area": "Canyon Biome",
+    "x": 7984.83,
+    "y": 10280.62
+  },
+  {
+    "id": "513526",
+    "category": "other-item",
+    "name": "HP Up x3",
+    "area": "Savanna Biome",
+    "x": 8713.93,
+    "y": 10973.28
+  },
+  {
+    "id": "513528",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Savanna Biome",
+    "x": 8375.55,
+    "y": 10740.15
+  },
+  {
+    "id": "513530",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Savanna Biome",
+    "x": 9436.03,
+    "y": 11523.98
+  },
+  {
+    "id": "513531",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Savanna Biome",
+    "x": 9263.57,
+    "y": 11343.74
+  },
+  {
+    "id": "513534",
+    "category": "other-item",
+    "name": "Exp. Candy XL",
+    "area": "Coastal Biome",
+    "x": 10852.39,
+    "y": 6286.41
+  },
+  {
+    "id": "513540",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 11109.58,
+    "y": 7981.57
+  },
+  {
+    "id": "513541",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 11651.37,
+    "y": 8506.49
+  },
+  {
+    "id": "513542",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 9510.34,
+    "y": 10267.63
+  },
+  {
+    "id": "513545",
+    "category": "other-item",
+    "name": "X Attack x3",
+    "area": "Savanna Biome",
+    "x": 10022.65,
+    "y": 10097.01
+  },
+  {
+    "id": "513546",
+    "category": "other-item",
+    "name": "Max Ether x4",
+    "area": "Polar Biome",
+    "x": 8025.57,
+    "y": 8163.34
+  },
+  {
+    "id": "513547",
+    "category": "other-item",
+    "name": "Carbos",
+    "area": "Coastal Biome",
+    "x": 8935.73,
+    "y": 7766.83
+  },
+  {
+    "id": "513548",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 8696.69,
+    "y": 8242.94
+  },
+  {
+    "id": "513549",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 9180.46,
+    "y": 10604.77
+  },
+  {
+    "id": "513551",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Coastal Biome",
+    "x": 10506.61,
+    "y": 7382.33
+  },
+  {
+    "id": "513552",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Savanna Biome",
+    "x": 10291.96,
+    "y": 8451.52
+  },
+  {
+    "id": "513554",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 10489.19,
+    "y": 8812.9
+  },
+  {
+    "id": "513555",
+    "category": "other-item",
+    "name": "Lax Mint",
+    "area": "Canyon Biome",
+    "x": 7588.58,
+    "y": 10113.88
+  },
+  {
+    "id": "513562",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Polar Biome",
+    "x": 5925.25,
+    "y": 8173.2
+  },
+  {
+    "id": "513563",
+    "category": "other-item",
+    "name": "Exp. Candy M x4",
+    "area": "Canyon Biome",
+    "x": 4513.29,
+    "y": 9274.19
+  },
+  {
+    "id": "513564",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Canyon Biome",
+    "x": 4988.94,
+    "y": 9950.11
+  },
+  {
+    "id": "513566",
+    "category": "other-item",
+    "name": "Exp Candy M x3",
+    "area": "Canyon Biome",
+    "x": 7280.98,
+    "y": 10218.03
+  },
+  {
+    "id": "513623",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Canyon Biome",
+    "x": 6855.94,
+    "y": 8783.94
+  },
+  {
+    "id": "513627",
+    "category": "other-item",
+    "name": "Protein",
+    "area": "Polar Biome",
+    "x": 5042.5,
+    "y": 6331.56
+  },
+  {
+    "id": "513628",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Polar Biome",
+    "x": 5030.41,
+    "y": 6619.22
+  },
+  {
+    "id": "513630",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Canyon Biome",
+    "x": 6722.19,
+    "y": 8923.69
+  },
+  {
+    "id": "513631",
+    "category": "other-item",
+    "name": "Exp. Candy M x4",
+    "area": "Coastal Biome",
+    "x": 8266,
+    "y": 7997.62
+  },
+  {
+    "id": "513633",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Coastal Biome",
+    "x": 11173.81,
+    "y": 6404.94
+  },
+  {
+    "id": "513636",
+    "category": "other-item",
+    "name": "Exp. Candy L x2",
+    "area": "Coastal Biome",
+    "x": 9623.72,
+    "y": 8021.24
+  },
+  {
+    "id": "513640",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Savanna Biome",
+    "x": 11111.62,
+    "y": 8343.1
+  },
+  {
+    "id": "513642",
+    "category": "other-item",
+    "name": "X Sp. Def x3",
+    "area": "Savanna Biome",
+    "x": 11121.84,
+    "y": 9112.68
+  },
+  {
+    "id": "513643",
+    "category": "other-item",
+    "name": "Berry Sweet",
+    "area": "Savanna Biome",
+    "x": 10507.28,
+    "y": 8340.83
+  },
+  {
+    "id": "513644",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Savanna Biome",
+    "x": 11011.52,
+    "y": 9963.12
+  },
+  {
+    "id": "513645",
+    "category": "other-item",
+    "name": "Calcium x2",
+    "area": "Polar Biome",
+    "x": 7487.02,
+    "y": 5668.93
+  },
+  {
+    "id": "513646",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Canyon Biome",
+    "x": 8152.01,
+    "y": 9884.02
+  },
+  {
+    "id": "513647",
+    "category": "other-item",
+    "name": "Zinc x2",
+    "area": "Canyon Biome",
+    "x": 7096.98,
+    "y": 8686.83
+  },
+  {
+    "id": "513650",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Polar Biome",
+    "x": 5920.56,
+    "y": 5388.25
+  },
+  {
+    "id": "513651",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Polar Biome",
+    "x": 6453.31,
+    "y": 7338.77
+  },
+  {
+    "id": "513653",
+    "category": "other-item",
+    "name": "Bug Tera Shard x17",
+    "area": "Polar Biome",
+    "x": 6289.19,
+    "y": 6872.31
+  },
+  {
+    "id": "513654",
+    "category": "other-item",
+    "name": "Exp. Candy M x2",
+    "area": "Polar Biome",
+    "x": 5850.06,
+    "y": 6123.56
+  },
+  {
+    "id": "513655",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Polar Biome",
+    "x": 4587.08,
+    "y": 7795.64
+  },
+  {
+    "id": "513657",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Canyon Biome",
+    "x": 7179.87,
+    "y": 10498.19
+  },
+  {
+    "id": "513659",
+    "category": "other-item",
+    "name": "Rare Candy",
+    "area": "Canyon Biome",
+    "x": 5245,
+    "y": 8678
+  },
+  {
+    "id": "513660",
+    "category": "other-item",
+    "name": "Metal Alloy",
+    "area": "Canyon Biome",
+    "x": 6999.37,
+    "y": 8268.25
+  },
+  {
+    "id": "513663",
+    "category": "other-item",
+    "name": "Exp. Candy M x4",
+    "area": "Polar Biome",
+    "x": 6950.62,
+    "y": 4974.38
+  },
+  {
+    "id": "513664",
+    "category": "other-item",
+    "name": "Exp. Candy M x3",
+    "area": "Polar Biome",
+    "x": 7140.75,
+    "y": 6364.09
+  },
+  {
+    "id": "513667",
+    "category": "other-item",
+    "name": "Fire Tera Shard x13",
+    "area": "Polar Biome",
+    "x": 5651.49,
+    "y": 7451.49
+  },
+  {
+    "id": "513668",
+    "category": "other-item",
+    "name": "Exp. Candy L x3",
+    "area": "Savanna Biome",
+    "x": 9562.77,
+    "y": 10569.09
+  },
+  {
+    "id": "513670",
+    "category": "other-item",
+    "name": "Careful Mint",
+    "area": "Polar Biome",
+    "x": 7501.17,
+    "y": 5206.02
+  },
+  {
+    "id": "513671",
+    "category": "other-item",
+    "name": "Poison Tera Shard x17",
+    "area": "Polar Biome",
+    "x": 5345.47,
+    "y": 6317.61
+  },
+  {
+    "id": "513672",
+    "category": "other-item",
+    "name": "Fighting Tera Shard x12",
+    "area": "Polar Biome",
+    "x": 7482.74,
+    "y": 7593.45
+  },
+  {
+    "id": "538739",
+    "category": "other-item",
+    "name": "Exp. Candy M",
+    "area": "Coastal Biome",
+    "x": 9380.15,
+    "y": 7957.01
+  },
+  {
+    "id": "314741",
+    "category": "poke-ball",
+    "name": "Ultra Ball x3",
+    "area": "Coastal Biome",
+    "x": 8468.83,
+    "y": 8030.74
+  },
+  {
+    "id": "315258",
+    "category": "poke-ball",
+    "name": "5x Great Ball",
+    "area": "Savanna Biome",
+    "x": 10033.53,
+    "y": 11236.45
+  },
+  {
+    "id": "315265",
+    "category": "poke-ball",
+    "name": "4x Poké Ball",
+    "area": "Savanna Biome",
+    "x": 10795.14,
+    "y": 10579.22
+  },
+  {
+    "id": "315272",
+    "category": "poke-ball",
+    "name": "3x Nest Ball",
+    "area": "Savanna Biome",
+    "x": 10000.24,
+    "y": 10982.19
+  },
+  {
+    "id": "315349",
+    "category": "poke-ball",
+    "name": "Repeat Ball x5",
+    "area": "Savanna Biome",
+    "x": 9262.28,
+    "y": 11825.55
+  },
+  {
+    "id": "315354",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Savanna Biome",
+    "x": 9429.39,
+    "y": 10928.52
+  },
+  {
+    "id": "315356",
+    "category": "poke-ball",
+    "name": "Poké Ball",
+    "area": "Savanna Biome",
+    "x": 11740.52,
+    "y": 9046.8
+  },
+  {
+    "id": "315390",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Savanna Biome",
+    "x": 9961.06,
+    "y": 9628.67
+  },
+  {
+    "id": "315402",
+    "category": "poke-ball",
+    "name": "Great Ball x5",
+    "area": "Canyon Biome",
+    "x": 8152.3,
+    "y": 8228.71
+  },
+  {
+    "id": "315417",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Coastal Biome",
+    "x": 11015.93,
+    "y": 6900.36
+  },
+  {
+    "id": "315429",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Coastal Biome",
+    "x": 11280.68,
+    "y": 6829.42
+  },
+  {
+    "id": "315430",
+    "category": "poke-ball",
+    "name": "Quick Ball",
+    "area": "Coastal Biome",
+    "x": 10930.31,
+    "y": 7347.39
+  },
+  {
+    "id": "315432",
+    "category": "poke-ball",
+    "name": "Poké Ball x10",
+    "area": "Coastal Biome",
+    "x": 11213.25,
+    "y": 7327.18
+  },
+  {
+    "id": "315502",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Coastal Biome",
+    "x": 9056.09,
+    "y": 6644.27
+  },
+  {
+    "id": "315529",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Canyon Biome",
+    "x": 6830.69,
+    "y": 10224.52
+  },
+  {
+    "id": "315531",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Canyon Biome",
+    "x": 6558.97,
+    "y": 10048.84
+  },
+  {
+    "id": "315548",
+    "category": "poke-ball",
+    "name": "Luxury Ball x3",
+    "area": "Canyon Biome",
+    "x": 6767.65,
+    "y": 8583.8
+  },
+  {
+    "id": "315554",
+    "category": "poke-ball",
+    "name": "Heal Ball x5",
+    "area": "Canyon Biome",
+    "x": 6340.6,
+    "y": 9629.9
+  },
+  {
+    "id": "315588",
+    "category": "poke-ball",
+    "name": "Poké Ball x10",
+    "area": "Canyon Biome",
+    "x": 6538.39,
+    "y": 11599.02
+  },
+  {
+    "id": "315596",
+    "category": "poke-ball",
+    "name": "Premier Ball x3",
+    "area": "Canyon Biome",
+    "x": 6817.36,
+    "y": 10960.47
+  },
+  {
+    "id": "315606",
+    "category": "poke-ball",
+    "name": "Quick Ball x2",
+    "area": "Canyon Biome",
+    "x": 7757.63,
+    "y": 10613.95
+  },
+  {
+    "id": "315620",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Canyon Biome",
+    "x": 7764.31,
+    "y": 11801.36
+  },
+  {
+    "id": "315626",
+    "category": "poke-ball",
+    "name": "Nest Ball x2",
+    "area": "Savanna Biome",
+    "x": 9098.03,
+    "y": 9628.02
+  },
+  {
+    "id": "315628",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Savanna Biome",
+    "x": 8951.13,
+    "y": 8494.23
+  },
+  {
+    "id": "315629",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Savanna Biome",
+    "x": 8568.37,
+    "y": 8758.33
+  },
+  {
+    "id": "315635",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Savanna Biome",
+    "x": 8509.11,
+    "y": 10354.52
+  },
+  {
+    "id": "315636",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Canyon Biome",
+    "x": 8096.65,
+    "y": 9625.95
+  },
+  {
+    "id": "315639",
+    "category": "poke-ball",
+    "name": "Quick Ball x5",
+    "area": "Savanna Biome",
+    "x": 9089.61,
+    "y": 11261.85
+  },
+  {
+    "id": "315651",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Savanna Biome",
+    "x": 8476.37,
+    "y": 11972.46
+  },
+  {
+    "id": "315652",
+    "category": "poke-ball",
+    "name": "Poké Ball",
+    "area": "Savanna Biome",
+    "x": 8792.52,
+    "y": 11521.33
+  },
+  {
+    "id": "315800",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Polar Biome",
+    "x": 5134.25,
+    "y": 5928.33
+  },
+  {
+    "id": "315807",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Coastal Biome",
+    "x": 11348.23,
+    "y": 6576.02
+  },
+  {
+    "id": "315812",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Coastal Biome",
+    "x": 10308.61,
+    "y": 6270.07
+  },
+  {
+    "id": "315838",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Polar Biome",
+    "x": 6421.21,
+    "y": 7956.38
+  },
+  {
+    "id": "315841",
+    "category": "poke-ball",
+    "name": "Quick Ball x3",
+    "area": "Canyon Biome",
+    "x": 7491.09,
+    "y": 9112.26
+  },
+  {
+    "id": "315844",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Canyon Biome",
+    "x": 7604.92,
+    "y": 9365.69
+  },
+  {
+    "id": "315849",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Canyon Biome",
+    "x": 7893.35,
+    "y": 8439.99
+  },
+  {
+    "id": "315856",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Polar Biome",
+    "x": 5988.89,
+    "y": 5696.38
+  },
+  {
+    "id": "315858",
+    "category": "poke-ball",
+    "name": "Poké Ball x2",
+    "area": "Savanna Biome",
+    "x": 10105.08,
+    "y": 9554.66
+  },
+  {
+    "id": "315871",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Polar Biome",
+    "x": 6434.58,
+    "y": 6622.23
+  },
+  {
+    "id": "315885",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Polar Biome",
+    "x": 8095.56,
+    "y": 6721.45
+  },
+  {
+    "id": "315886",
+    "category": "poke-ball",
+    "name": "Timer Ball x5",
+    "area": "Polar Biome",
+    "x": 7864.86,
+    "y": 6797.27
+  },
+  {
+    "id": "315888",
+    "category": "poke-ball",
+    "name": "Poke Ball x10",
+    "area": "Polar Biome",
+    "x": 8156.55,
+    "y": 7473.41
+  },
+  {
+    "id": "316037",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Canyon Biome",
+    "x": 6225.71,
+    "y": 11169.95
+  },
+  {
+    "id": "316061",
+    "category": "poke-ball",
+    "name": "Great Ball x2",
+    "area": "Coastal Biome",
+    "x": 9827.93,
+    "y": 6745.66
+  },
+  {
+    "id": "316065",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Coastal Biome",
+    "x": 9395.22,
+    "y": 7777.55
+  },
+  {
+    "id": "316069",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Coastal Biome",
+    "x": 8974.73,
+    "y": 7327.03
+  },
+  {
+    "id": "316078",
+    "category": "poke-ball",
+    "name": "Nest Ball x2",
+    "area": "Coastal Biome",
+    "x": 9304.99,
+    "y": 7571.88
+  },
+  {
+    "id": "316080",
+    "category": "poke-ball",
+    "name": "Luxury Ball x3",
+    "area": "Coastal Biome",
+    "x": 9368.1,
+    "y": 7777.41
+  },
+  {
+    "id": "316088",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Coastal Biome",
+    "x": 9796.67,
+    "y": 7324.04
+  },
+  {
+    "id": "316103",
+    "category": "poke-ball",
+    "name": "Hyper Potion x3",
+    "area": "Canyon Biome",
+    "x": 8179.57,
+    "y": 8299.81
+  },
+  {
+    "id": "316114",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Polar Biome",
+    "x": 7002.97,
+    "y": 5271.6
+  },
+  {
+    "id": "316116",
+    "category": "poke-ball",
+    "name": "Great Ball x3",
+    "area": "Polar Biome",
+    "x": 5764.23,
+    "y": 6282.07
+  },
+  {
+    "id": "316137",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Polar Biome",
+    "x": 6336.26,
+    "y": 7685.56
+  },
+  {
+    "id": "316147",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Polar Biome",
+    "x": 6221.68,
+    "y": 6202.05
+  },
+  {
+    "id": "316151",
+    "category": "poke-ball",
+    "name": "Ultra Ball",
+    "area": "Polar Biome",
+    "x": 8126.21,
+    "y": 6458.48
+  },
+  {
+    "id": "316154",
+    "category": "poke-ball",
+    "name": "Quick Ball",
+    "area": "Coastal Biome",
+    "x": 9524.92,
+    "y": 5452.17
+  },
+  {
+    "id": "325488",
+    "category": "poke-ball",
+    "name": "Dive Ball x3",
+    "area": "Coastal Biome",
+    "x": 8644.23,
+    "y": 6378.27
+  },
+  {
+    "id": "325593",
+    "category": "poke-ball",
+    "name": "Premier Ball x3",
+    "area": "Polar Biome",
+    "x": 5394.05,
+    "y": 7280.04
+  },
+  {
+    "id": "513518",
+    "category": "poke-ball",
+    "name": "Dive Ball x2",
+    "area": "Polar Biome",
+    "x": 7555.78,
+    "y": 4714.49
+  },
+  {
+    "id": "513521",
+    "category": "poke-ball",
+    "name": "Dive Ball",
+    "area": "Canyon Biome",
+    "x": 6443.58,
+    "y": 11173.89
+  },
+  {
+    "id": "513529",
+    "category": "poke-ball",
+    "name": "Poké Ball",
+    "area": "Savanna Biome",
+    "x": 8681.39,
+    "y": 11803.23
+  },
+  {
+    "id": "513533",
+    "category": "poke-ball",
+    "name": "Ultra Ball x2",
+    "area": "Coastal Biome",
+    "x": 10780.91,
+    "y": 6293.53
+  },
+  {
+    "id": "513538",
+    "category": "poke-ball",
+    "name": "Heal Ball x5",
+    "area": "Coastal Biome",
+    "x": 9659.5,
+    "y": 7140.24
+  },
+  {
+    "id": "513622",
+    "category": "poke-ball",
+    "name": "Dusk Ball x3",
+    "area": "Canyon Biome",
+    "x": 6855.13,
+    "y": 8299.94
+  },
+  {
+    "id": "513624",
+    "category": "poke-ball",
+    "name": "Dusk Ball x4",
+    "area": "Canyon Biome",
+    "x": 6474.06,
+    "y": 8573
+  },
+  {
+    "id": "513635",
+    "category": "poke-ball",
+    "name": "Nest Ball x3",
+    "area": "Coastal Biome",
+    "x": 9851.89,
+    "y": 7678.38
+  },
+  {
+    "id": "513637",
+    "category": "poke-ball",
+    "name": "Heal Ball x5",
+    "area": "Polar Biome",
+    "x": 8101.23,
+    "y": 6234.79
+  },
+  {
+    "id": "513658",
+    "category": "poke-ball",
+    "name": "Ultra Ball x3",
+    "area": "Canyon Biome",
+    "x": 5763.74,
+    "y": 9822.8
+  },
+  {
+    "id": "314765",
+    "category": "treasure",
+    "name": "Rare Bone x2",
+    "area": "Canyon Biome",
+    "x": 7772.73,
+    "y": 8778.18
+  },
+  {
+    "id": "315257",
+    "category": "treasure",
+    "name": "Ground Tera Shard",
+    "area": "Savanna Biome",
+    "x": 10333.19,
+    "y": 11269.74
+  },
+  {
+    "id": "315266",
+    "category": "treasure",
+    "name": "19x Ghost Tera Shard",
+    "area": "Savanna Biome",
+    "x": 10486.05,
+    "y": 10637.46
+  },
+  {
+    "id": "315268",
+    "category": "treasure",
+    "name": "9x Fighting Tera Shard",
+    "area": "Savanna Biome",
+    "x": 10701.07,
+    "y": 11004.78
+  },
+  {
+    "id": "315271",
+    "category": "treasure",
+    "name": "17x Poison Tera Shard",
+    "area": "Savanna Biome",
+    "x": 10564.44,
+    "y": 11038.38
+  },
+  {
+    "id": "315274",
+    "category": "treasure",
+    "name": "Bug Tera Shard x8",
+    "area": "Savanna Biome",
+    "x": 10889.21,
+    "y": 10944.31
+  },
+  {
+    "id": "315351",
+    "category": "treasure",
+    "name": "Normal Tera Shard x16",
+    "area": "Savanna Biome",
+    "x": 8829.8,
+    "y": 11865.33
+  },
+  {
+    "id": "315352",
+    "category": "treasure",
+    "name": "Steel Tera Shard x8",
+    "area": "Savanna Biome",
+    "x": 9629.16,
+    "y": 11715.15
+  },
+  {
+    "id": "315359",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x12",
+    "area": "Savanna Biome",
+    "x": 11776.58,
+    "y": 8679.47
+  },
+  {
+    "id": "315363",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x13",
+    "area": "Savanna Biome",
+    "x": 10856.44,
+    "y": 8560.28
+  },
+  {
+    "id": "315365",
+    "category": "treasure",
+    "name": "Grass Tera Shard x14",
+    "area": "Savanna Biome",
+    "x": 10186.06,
+    "y": 9134.75
+  },
+  {
+    "id": "315371",
+    "category": "treasure",
+    "name": "Water Tera Shard x16",
+    "area": "Savanna Biome",
+    "x": 10004.83,
+    "y": 8386.99
+  },
+  {
+    "id": "315374",
+    "category": "treasure",
+    "name": "Ice Tera Shard x7",
+    "area": "Savanna Biome",
+    "x": 8906.27,
+    "y": 8879.31
+  },
+  {
+    "id": "315376",
+    "category": "treasure",
+    "name": "Rock Tera Shard x18",
+    "area": "Savanna Biome",
+    "x": 8379.24,
+    "y": 9326.1
+  },
+  {
+    "id": "315378",
+    "category": "treasure",
+    "name": "Steel Tera Shard x17",
+    "area": "Savanna Biome",
+    "x": 8842.44,
+    "y": 8986.91
+  },
+  {
+    "id": "315379",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x6",
+    "area": "Savanna Biome",
+    "x": 9163.13,
+    "y": 11050.8
+  },
+  {
+    "id": "315380",
+    "category": "treasure",
+    "name": "Ice Tera Shard x18",
+    "area": "Savanna Biome",
+    "x": 8392.89,
+    "y": 10597.49
+  },
+  {
+    "id": "315383",
+    "category": "treasure",
+    "name": "Fire Tera Shard x10",
+    "area": "Savanna Biome",
+    "x": 8528.85,
+    "y": 9877.3
+  },
+  {
+    "id": "315384",
+    "category": "treasure",
+    "name": "Fire Tera Shard x50",
+    "area": "Savanna Biome",
+    "x": 8880.98,
+    "y": 11053.61
+  },
+  {
+    "id": "315388",
+    "category": "treasure",
+    "name": "Dark Tera Shard x16",
+    "area": "Savanna Biome",
+    "x": 9431.07,
+    "y": 10692.26
+  },
+  {
+    "id": "315391",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x15",
+    "area": "Savanna Biome",
+    "x": 10226.36,
+    "y": 9463.93
+  },
+  {
+    "id": "315392",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x6",
+    "area": "Savanna Biome",
+    "x": 10489.51,
+    "y": 9438.26
+  },
+  {
+    "id": "315394",
+    "category": "treasure",
+    "name": "Flying Tera Shard x15",
+    "area": "Savanna Biome",
+    "x": 9766.53,
+    "y": 10217.32
+  },
+  {
+    "id": "315397",
+    "category": "treasure",
+    "name": "Water Tera Shard x9",
+    "area": "Savanna Biome",
+    "x": 9291.56,
+    "y": 10180.94
+  },
+  {
+    "id": "315399",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x16",
+    "area": "Savanna Biome",
+    "x": 9912.12,
+    "y": 10097.21
+  },
+  {
+    "id": "315407",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x7",
+    "area": "Coastal Biome",
+    "x": 9674.42,
+    "y": 8158.69
+  },
+  {
+    "id": "315410",
+    "category": "treasure",
+    "name": "Poison Tera Shard x16",
+    "area": "Coastal Biome",
+    "x": 10163.79,
+    "y": 8111.19
+  },
+  {
+    "id": "315411",
+    "category": "treasure",
+    "name": "Normal Tera Shard x19",
+    "area": "Coastal Biome",
+    "x": 10579.36,
+    "y": 7205.82
+  },
+  {
+    "id": "315412",
+    "category": "treasure",
+    "name": "Steel Tera Shard x14",
+    "area": "Coastal Biome",
+    "x": 10674.48,
+    "y": 7372.87
+  },
+  {
+    "id": "315414",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x14",
+    "area": "Coastal Biome",
+    "x": 10847.79,
+    "y": 6984.88
+  },
+  {
+    "id": "315419",
+    "category": "treasure",
+    "name": "Nugget x2",
+    "area": "Coastal Biome",
+    "x": 11193.78,
+    "y": 6263.96
+  },
+  {
+    "id": "315427",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x16",
+    "area": "Coastal Biome",
+    "x": 11112.94,
+    "y": 6601.05
+  },
+  {
+    "id": "315434",
+    "category": "treasure",
+    "name": "Ground Tera Shard x17",
+    "area": "Coastal Biome",
+    "x": 11085.92,
+    "y": 7424.19
+  },
+  {
+    "id": "315435",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x8",
+    "area": "Coastal Biome",
+    "x": 11426.19,
+    "y": 6691.99
+  },
+  {
+    "id": "315437",
+    "category": "treasure",
+    "name": "Dark Tera Shard x10",
+    "area": "Coastal Biome",
+    "x": 10720.12,
+    "y": 7925.4
+  },
+  {
+    "id": "315499",
+    "category": "treasure",
+    "name": "Poison Tera Shard x11",
+    "area": "Canyon Biome",
+    "x": 7637.07,
+    "y": 11985.93
+  },
+  {
+    "id": "315503",
+    "category": "treasure",
+    "name": "Normal Tera Shard x6",
+    "area": "Coastal Biome",
+    "x": 9018.09,
+    "y": 6328.27
+  },
+  {
+    "id": "315506",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x9",
+    "area": "Coastal Biome",
+    "x": 8916.09,
+    "y": 6370.27
+  },
+  {
+    "id": "315512",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x17",
+    "area": "Coastal Biome",
+    "x": 8289.32,
+    "y": 7046.57
+  },
+  {
+    "id": "315514",
+    "category": "treasure",
+    "name": "Water Tera Shard x12",
+    "area": "Canyon Biome",
+    "x": 7507.07,
+    "y": 10812.13
+  },
+  {
+    "id": "315517",
+    "category": "treasure",
+    "name": "Grass Tera Shard x15",
+    "area": "Coastal Biome",
+    "x": 8305.32,
+    "y": 7374.57
+  },
+  {
+    "id": "315530",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x16",
+    "area": "Canyon Biome",
+    "x": 6160.76,
+    "y": 10215.15
+  },
+  {
+    "id": "315532",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x15",
+    "area": "Canyon Biome",
+    "x": 6775.1,
+    "y": 9957.32
+  },
+  {
+    "id": "315537",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x11",
+    "area": "Canyon Biome",
+    "x": 6876.89,
+    "y": 10297.07
+  },
+  {
+    "id": "315539",
+    "category": "treasure",
+    "name": "Fire Tera Shard x6",
+    "area": "Canyon Biome",
+    "x": 7767.39,
+    "y": 9940.58
+  },
+  {
+    "id": "315542",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Canyon Biome",
+    "x": 7284.81,
+    "y": 10317.56
+  },
+  {
+    "id": "315543",
+    "category": "treasure",
+    "name": "Flying Tera Shard x11",
+    "area": "Canyon Biome",
+    "x": 7557.89,
+    "y": 10382.04
+  },
+  {
+    "id": "315551",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Canyon Biome",
+    "x": 6139.63,
+    "y": 8606.63
+  },
+  {
+    "id": "315552",
+    "category": "treasure",
+    "name": "Electric Tera Shard x15",
+    "area": "Canyon Biome",
+    "x": 5968.63,
+    "y": 8462.63
+  },
+  {
+    "id": "315553",
+    "category": "treasure",
+    "name": "Water Tera Shard x13",
+    "area": "Canyon Biome",
+    "x": 6309.6,
+    "y": 9406.9
+  },
+  {
+    "id": "315556",
+    "category": "treasure",
+    "name": "Flying Tera Shard x14",
+    "area": "Canyon Biome",
+    "x": 5938.63,
+    "y": 8827.63
+  },
+  {
+    "id": "315559",
+    "category": "treasure",
+    "name": "Ground Tera Shard x12",
+    "area": "Canyon Biome",
+    "x": 5754.49,
+    "y": 9017.65
+  },
+  {
+    "id": "315560",
+    "category": "treasure",
+    "name": "Normal Tera Shard x13",
+    "area": "Canyon Biome",
+    "x": 5294.89,
+    "y": 9304.68
+  },
+  {
+    "id": "315561",
+    "category": "treasure",
+    "name": "Steel Tera Shard x13",
+    "area": "Canyon Biome",
+    "x": 4372.57,
+    "y": 8819.22
+  },
+  {
+    "id": "315562",
+    "category": "treasure",
+    "name": "Rock Tera Shard x18",
+    "area": "Canyon Biome",
+    "x": 4415.14,
+    "y": 8510.02
+  },
+  {
+    "id": "315567",
+    "category": "treasure",
+    "name": "Bug Tera Shard x11",
+    "area": "Canyon Biome",
+    "x": 5095.48,
+    "y": 9634.36
+  },
+  {
+    "id": "315571",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Canyon Biome",
+    "x": 5251.47,
+    "y": 9832.4
+  },
+  {
+    "id": "315575",
+    "category": "treasure",
+    "name": "Grass Tera Shard x16",
+    "area": "Canyon Biome",
+    "x": 5695.99,
+    "y": 10184.3
+  },
+  {
+    "id": "315576",
+    "category": "treasure",
+    "name": "Ice Tera Shard x14",
+    "area": "Canyon Biome",
+    "x": 5988.71,
+    "y": 10349.42
+  },
+  {
+    "id": "315581",
+    "category": "treasure",
+    "name": "Ice Tera Shard x11",
+    "area": "Canyon Biome",
+    "x": 5698.09,
+    "y": 10931.95
+  },
+  {
+    "id": "315587",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x19",
+    "area": "Canyon Biome",
+    "x": 6624.63,
+    "y": 11366.83
+  },
+  {
+    "id": "315607",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x8",
+    "area": "Canyon Biome",
+    "x": 7919.24,
+    "y": 10606.6
+  },
+  {
+    "id": "315610",
+    "category": "treasure",
+    "name": "Ground Tera Shard x13",
+    "area": "Canyon Biome",
+    "x": 8025.54,
+    "y": 10243.33
+  },
+  {
+    "id": "315615",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x10",
+    "area": "Canyon Biome",
+    "x": 7879.74,
+    "y": 11612.47
+  },
+  {
+    "id": "315618",
+    "category": "treasure",
+    "name": "Rock Tera Shard x7",
+    "area": "Canyon Biome",
+    "x": 7875.81,
+    "y": 11974.51
+  },
+  {
+    "id": "315627",
+    "category": "treasure",
+    "name": "Ground Tera Shard x13",
+    "area": "Savanna Biome",
+    "x": 8814.58,
+    "y": 8605.96
+  },
+  {
+    "id": "315634",
+    "category": "treasure",
+    "name": "Normal Tera Shard x9",
+    "area": "Savanna Biome",
+    "x": 8427.68,
+    "y": 8851.43
+  },
+  {
+    "id": "315641",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x14",
+    "area": "Canyon Biome",
+    "x": 8123.91,
+    "y": 11786.2
+  },
+  {
+    "id": "315642",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x9",
+    "area": "Canyon Biome",
+    "x": 8150.31,
+    "y": 11637.19
+  },
+  {
+    "id": "315647",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x10",
+    "area": "Savanna Biome",
+    "x": 8297.43,
+    "y": 11254.31
+  },
+  {
+    "id": "315650",
+    "category": "treasure",
+    "name": "Rock Tera Shard x7",
+    "area": "Savanna Biome",
+    "x": 8309.41,
+    "y": 11922.73
+  },
+  {
+    "id": "315763",
+    "category": "treasure",
+    "name": "Dark Tera Shard x18",
+    "area": "Polar Biome",
+    "x": 7550.84,
+    "y": 6084.56
+  },
+  {
+    "id": "315764",
+    "category": "treasure",
+    "name": "Water Tera Shard x16",
+    "area": "Polar Biome",
+    "x": 7908.35,
+    "y": 6332.2
+  },
+  {
+    "id": "315779",
+    "category": "treasure",
+    "name": "Ice Tera Shard x18",
+    "area": "Coastal Biome",
+    "x": 10530.84,
+    "y": 5787.55
+  },
+  {
+    "id": "315780",
+    "category": "treasure",
+    "name": "Dark Tera Shard x15",
+    "area": "Coastal Biome",
+    "x": 10153.35,
+    "y": 5909.33
+  },
+  {
+    "id": "315782",
+    "category": "treasure",
+    "name": "Flying Tera Shard x13",
+    "area": "Coastal Biome",
+    "x": 9877.84,
+    "y": 5789.08
+  },
+  {
+    "id": "315797",
+    "category": "treasure",
+    "name": "Bug Tera Shard x8",
+    "area": "Polar Biome",
+    "x": 6063.25,
+    "y": 5997.33
+  },
+  {
+    "id": "315798",
+    "category": "treasure",
+    "name": "Ground Tera Shard x15",
+    "area": "Polar Biome",
+    "x": 5730.43,
+    "y": 5802.6
+  },
+  {
+    "id": "315799",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x6",
+    "area": "Polar Biome",
+    "x": 5431.24,
+    "y": 5722.93
+  },
+  {
+    "id": "315809",
+    "category": "treasure",
+    "name": "Grass Tera Shard x10",
+    "area": "Coastal Biome",
+    "x": 11393.9,
+    "y": 6367.49
+  },
+  {
+    "id": "315813",
+    "category": "treasure",
+    "name": "Bug Tera Shard x15",
+    "area": "Coastal Biome",
+    "x": 10214.24,
+    "y": 6038.71
+  },
+  {
+    "id": "315814",
+    "category": "treasure",
+    "name": "Fire Tera Shard x12",
+    "area": "Coastal Biome",
+    "x": 9673.88,
+    "y": 5757.11
+  },
+  {
+    "id": "315816",
+    "category": "treasure",
+    "name": "Grass Tera Shard x14",
+    "area": "Polar Biome",
+    "x": 5062.62,
+    "y": 6712.56
+  },
+  {
+    "id": "315818",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Polar Biome",
+    "x": 5085.8,
+    "y": 6694.09
+  },
+  {
+    "id": "315819",
+    "category": "treasure",
+    "name": "Dragon Tera Shard x19",
+    "area": "Polar Biome",
+    "x": 5265.11,
+    "y": 6127.4
+  },
+  {
+    "id": "315820",
+    "category": "treasure",
+    "name": "Ice Tera Shard x11",
+    "area": "Polar Biome",
+    "x": 5470.46,
+    "y": 6196.44
+  },
+  {
+    "id": "315824",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Polar Biome",
+    "x": 4432.24,
+    "y": 7248.55
+  },
+  {
+    "id": "315825",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x12",
+    "area": "Polar Biome",
+    "x": 5650.2,
+    "y": 5719.81
+  },
+  {
+    "id": "315826",
+    "category": "treasure",
+    "name": "Rock Tera Shard x17",
+    "area": "Polar Biome",
+    "x": 5682.07,
+    "y": 5558.71
+  },
+  {
+    "id": "315839",
+    "category": "treasure",
+    "name": "Nugget x2",
+    "area": "Canyon Biome",
+    "x": 6286.52,
+    "y": 8298.2
+  },
+  {
+    "id": "315845",
+    "category": "treasure",
+    "name": "Dark Tera Shard x7",
+    "area": "Canyon Biome",
+    "x": 7978.1,
+    "y": 8885.86
+  },
+  {
+    "id": "315848",
+    "category": "treasure",
+    "name": "Grass Tera Shard x9",
+    "area": "Canyon Biome",
+    "x": 8101.18,
+    "y": 8424.78
+  },
+  {
+    "id": "315853",
+    "category": "treasure",
+    "name": "Steel Tera Shard x12",
+    "area": "Canyon Biome",
+    "x": 7585.41,
+    "y": 8221.18
+  },
+  {
+    "id": "315854",
+    "category": "treasure",
+    "name": "Normal Tera Shard x12",
+    "area": "Canyon Biome",
+    "x": 4647.69,
+    "y": 9612.77
+  },
+  {
+    "id": "315860",
+    "category": "treasure",
+    "name": "Rock Tera Shard x16",
+    "area": "Coastal Biome",
+    "x": 8896.9,
+    "y": 5528.35
+  },
+  {
+    "id": "315861",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Coastal Biome",
+    "x": 9282.73,
+    "y": 5396.4
+  },
+  {
+    "id": "315864",
+    "category": "treasure",
+    "name": "Poison Tera Shard x9",
+    "area": "Coastal Biome",
+    "x": 8783.33,
+    "y": 5061.33
+  },
+  {
+    "id": "315865",
+    "category": "treasure",
+    "name": "Water Tera Shard x11",
+    "area": "Coastal Biome",
+    "x": 9354.55,
+    "y": 5679.33
+  },
+  {
+    "id": "315866",
+    "category": "treasure",
+    "name": "Ground Tera Shard x10",
+    "area": "Polar Biome",
+    "x": 6103.52,
+    "y": 5329
+  },
+  {
+    "id": "315867",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x13",
+    "area": "Polar Biome",
+    "x": 6337.19,
+    "y": 5561.88
+  },
+  {
+    "id": "315868",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x17",
+    "area": "Polar Biome",
+    "x": 6370.47,
+    "y": 5703.17
+  },
+  {
+    "id": "315869",
+    "category": "treasure",
+    "name": "Pearl String",
+    "area": "Polar Biome",
+    "x": 6013.81,
+    "y": 6252.38
+  },
+  {
+    "id": "315873",
+    "category": "treasure",
+    "name": "Ice Tera Shard x14",
+    "area": "Polar Biome",
+    "x": 6623.41,
+    "y": 6476.55
+  },
+  {
+    "id": "315874",
+    "category": "treasure",
+    "name": "Dark Tera Shard x7",
+    "area": "Polar Biome",
+    "x": 6498.04,
+    "y": 6978.09
+  },
+  {
+    "id": "315877",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x15",
+    "area": "Polar Biome",
+    "x": 7340.71,
+    "y": 6585.43
+  },
+  {
+    "id": "315879",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x13",
+    "area": "Polar Biome",
+    "x": 7079.83,
+    "y": 6566.04
+  },
+  {
+    "id": "315882",
+    "category": "treasure",
+    "name": "Normal Tera Shard x18",
+    "area": "Polar Biome",
+    "x": 7175.78,
+    "y": 6716.63
+  },
+  {
+    "id": "315889",
+    "category": "treasure",
+    "name": "Water Tera Shard x9",
+    "area": "Polar Biome",
+    "x": 8080.26,
+    "y": 7504.2
+  },
+  {
+    "id": "315891",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x10",
+    "area": "Polar Biome",
+    "x": 7738.63,
+    "y": 7508.44
+  },
+  {
+    "id": "316040",
+    "category": "treasure",
+    "name": "Bug Tera Shard x14",
+    "area": "Canyon Biome",
+    "x": 6059.71,
+    "y": 11194.95
+  },
+  {
+    "id": "316044",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Savanna Biome",
+    "x": 8244.72,
+    "y": 11023.65
+  },
+  {
+    "id": "316046",
+    "category": "treasure",
+    "name": "Fighting Tera Shard x6",
+    "area": "Canyon Biome",
+    "x": 7382.05,
+    "y": 8663.02
+  },
+  {
+    "id": "316047",
+    "category": "treasure",
+    "name": "Ghost Tera Shard x17",
+    "area": "Canyon Biome",
+    "x": 5899.12,
+    "y": 8318.17
+  },
+  {
+    "id": "316048",
+    "category": "treasure",
+    "name": "Ice Tera Shard x7",
+    "area": "Coastal Biome",
+    "x": 11559.51,
+    "y": 7599.93
+  },
+  {
+    "id": "316063",
+    "category": "treasure",
+    "name": "Flying Tera Shard x12",
+    "area": "Coastal Biome",
+    "x": 10052.49,
+    "y": 6715.88
+  },
+  {
+    "id": "316072",
+    "category": "treasure",
+    "name": "Fire Tera Shard x13",
+    "area": "Coastal Biome",
+    "x": 9024.54,
+    "y": 7311.79
+  },
+  {
+    "id": "316085",
+    "category": "treasure",
+    "name": "Bug Tera Shard x10",
+    "area": "Coastal Biome",
+    "x": 9506.92,
+    "y": 7240.14
+  },
+  {
+    "id": "316091",
+    "category": "treasure",
+    "name": "Electric Tera Shard x11",
+    "area": "Coastal Biome",
+    "x": 10125.39,
+    "y": 7379.29
+  },
+  {
+    "id": "316095",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Coastal Biome",
+    "x": 10154.4,
+    "y": 7553.32
+  },
+  {
+    "id": "316100",
+    "category": "treasure",
+    "name": "Steel Tera Shard x6",
+    "area": "Polar Biome",
+    "x": 7919.15,
+    "y": 7939.56
+  },
+  {
+    "id": "316106",
+    "category": "treasure",
+    "name": "Electric Tera Shard x16",
+    "area": "Polar Biome",
+    "x": 7850.78,
+    "y": 4482.36
+  },
+  {
+    "id": "316120",
+    "category": "treasure",
+    "name": "Rare Bone",
+    "area": "Polar Biome",
+    "x": 5958.53,
+    "y": 6650.3
+  },
+  {
+    "id": "316126",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x8",
+    "area": "Polar Biome",
+    "x": 4835.92,
+    "y": 7341.82
+  },
+  {
+    "id": "316128",
+    "category": "treasure",
+    "name": "Electric Tera Shard x9",
+    "area": "Polar Biome",
+    "x": 4658.58,
+    "y": 7464.19
+  },
+  {
+    "id": "316133",
+    "category": "treasure",
+    "name": "Poison Tera Shard x14",
+    "area": "Canyon Biome",
+    "x": 5978.82,
+    "y": 8292.33
+  },
+  {
+    "id": "316134",
+    "category": "treasure",
+    "name": "Rock Tera Shard x8",
+    "area": "Polar Biome",
+    "x": 6053.9,
+    "y": 8061.71
+  },
+  {
+    "id": "316141",
+    "category": "treasure",
+    "name": "Flying Tera Shard x7",
+    "area": "Polar Biome",
+    "x": 7929.6,
+    "y": 7423.57
+  },
+  {
+    "id": "316142",
+    "category": "treasure",
+    "name": "Poison Tera Shard x8",
+    "area": "Polar Biome",
+    "x": 7838.36,
+    "y": 7758.83
+  },
+  {
+    "id": "325480",
+    "category": "treasure",
+    "name": "Rare Bone x2",
+    "area": "Coastal Biome",
+    "x": 8826.58,
+    "y": 7630.22
+  },
+  {
+    "id": "513535",
+    "category": "treasure",
+    "name": "Steel Tera Shard x11",
+    "area": "Coastal Biome",
+    "x": 10675.2,
+    "y": 6488.16
+  },
+  {
+    "id": "513537",
+    "category": "treasure",
+    "name": "Psychic Tera Shard x8",
+    "area": "Coastal Biome",
+    "x": 10174.91,
+    "y": 7181.16
+  },
+  {
+    "id": "513544",
+    "category": "treasure",
+    "name": "Dark Tera Shard x9",
+    "area": "Savanna Biome",
+    "x": 10216.75,
+    "y": 10048.12
+  },
+  {
+    "id": "513553",
+    "category": "treasure",
+    "name": "Pearl String",
+    "area": "Savanna Biome",
+    "x": 10219.53,
+    "y": 8466.82
+  },
+  {
+    "id": "513557",
+    "category": "treasure",
+    "name": "Comet Shard",
+    "area": "Polar Biome",
+    "x": 6087.49,
+    "y": 5041.05
+  },
+  {
+    "id": "513625",
+    "category": "treasure",
+    "name": "Flying Tera Shard x18",
+    "area": "Polar Biome",
+    "x": 5462.19,
+    "y": 7818
+  },
+  {
+    "id": "513629",
+    "category": "treasure",
+    "name": "Dark Tera Shard x18",
+    "area": "Canyon Biome",
+    "x": 4816.69,
+    "y": 9446
+  },
+  {
+    "id": "513632",
+    "category": "treasure",
+    "name": "Bug Tera Shard x17",
+    "area": "Savanna Biome",
+    "x": 11301.75,
+    "y": 8877.44
+  },
+  {
+    "id": "513638",
+    "category": "treasure",
+    "name": "Fairy Tera Shard x18",
+    "area": "Coastal Biome",
+    "x": 11140.56,
+    "y": 7221.44
+  },
+  {
+    "id": "513639",
+    "category": "treasure",
+    "name": "Electric Tera Shard x13",
+    "area": "Savanna Biome",
+    "x": 11404.63,
+    "y": 8599
+  },
+  {
+    "id": "513641",
+    "category": "treasure",
+    "name": "Water Tera Shard x14",
+    "area": "Coastal Biome",
+    "x": 10448.5,
+    "y": 7830.94
+  },
+  {
+    "id": "513648",
+    "category": "treasure",
+    "name": "Grass Tera Shard x11",
+    "area": "Polar Biome",
+    "x": 7920.56,
+    "y": 7273.53
+  },
+  {
+    "id": "513649",
+    "category": "treasure",
+    "name": "Normal Tera Shard x13",
+    "area": "Polar Biome",
+    "x": 5789.71,
+    "y": 5459.62
+  },
+  {
+    "id": "513652",
+    "category": "treasure",
+    "name": "Fire Tera Shard x12",
+    "area": "Polar Biome",
+    "x": 6230.7,
+    "y": 6946.69
+  },
+  {
+    "id": "513656",
+    "category": "treasure",
+    "name": "Fire Tera Shard x19",
+    "area": "Canyon Biome",
+    "x": 6706.81,
+    "y": 10369.56
+  },
+  {
+    "id": "513669",
+    "category": "treasure",
+    "name": "Nugget",
+    "area": "Coastal Biome",
+    "x": 8864.02,
+    "y": 6714.7
+  },
+  {
+    "id": "314745",
+    "category": "trainer",
+    "name": "Mana of the League Club",
+    "area": "Coastal Biome",
+    "x": 8847.49,
+    "y": 7639.49
+  },
+  {
+    "id": "314766",
+    "category": "trainer",
+    "name": "Michael the Student",
+    "area": "Savanna Biome",
+    "x": 10773.84,
+    "y": 10142.52
+  },
+  {
+    "id": "314767",
+    "category": "trainer",
+    "name": "Darius the Student",
+    "area": "Savanna Biome",
+    "x": 10777.91,
+    "y": 10496.72
+  },
+  {
+    "id": "314768",
+    "category": "trainer",
+    "name": "Yuchen the Student",
+    "area": "Savanna Biome",
+    "x": 9257.7,
+    "y": 11064.61
+  },
+  {
+    "id": "314830",
+    "category": "trainer",
+    "name": "John of the League Club",
+    "area": "Canyon Biome",
+    "x": 5723.79,
+    "y": 10444.5
+  },
+  {
+    "id": "315243",
+    "category": "trainer",
+    "name": "Max the Student",
+    "area": "Coastal Biome",
+    "x": 10887.87,
+    "y": 7921.51
+  },
+  {
+    "id": "315244",
+    "category": "trainer",
+    "name": "Lila the Student",
+    "area": "Coastal Biome",
+    "x": 9049.65,
+    "y": 8127.28
+  },
+  {
+    "id": "315245",
+    "category": "trainer",
+    "name": "Sophie of the League Club",
+    "area": "Savanna Biome",
+    "x": 8803.07,
+    "y": 8530.74
+  },
+  {
+    "id": "315246",
+    "category": "trainer",
+    "name": "Kev the Student",
+    "area": "Savanna Biome",
+    "x": 11843.13,
+    "y": 8415.81
+  },
+  {
+    "id": "315247",
+    "category": "trainer",
+    "name": "Kanade the Student",
+    "area": "Savanna Biome",
+    "x": 11592.29,
+    "y": 9649.7
+  },
+  {
+    "id": "315248",
+    "category": "trainer",
+    "name": "Tsukasa the Student",
+    "area": "Savanna Biome",
+    "x": 9365.39,
+    "y": 9973.5
+  },
+  {
+    "id": "315250",
+    "category": "trainer",
+    "name": "Annie the Student",
+    "area": "Coastal Biome",
+    "x": 10668.82,
+    "y": 6840.65
+  },
+  {
+    "id": "315251",
+    "category": "trainer",
+    "name": "Mikkel of the League Club",
+    "area": "Coastal Biome",
+    "x": 9982.92,
+    "y": 6717.25
+  },
+  {
+    "id": "315252",
+    "category": "trainer",
+    "name": "Wayne the Student",
+    "area": "Canyon Biome",
+    "x": 8068.98,
+    "y": 9805.34
+  },
+  {
+    "id": "315253",
+    "category": "trainer",
+    "name": "Riley the Student",
+    "area": "Savanna Biome",
+    "x": 10089.1,
+    "y": 9780.5
+  },
+  {
+    "id": "315276",
+    "category": "trainer",
+    "name": "Chloe the Student",
+    "area": "Savanna Biome",
+    "x": 9250.64,
+    "y": 8791.37
+  },
+  {
+    "id": "315277",
+    "category": "trainer",
+    "name": "Yoshiki the Student",
+    "area": "Savanna Biome",
+    "x": 9477.24,
+    "y": 9211.43
+  },
+  {
+    "id": "315278",
+    "category": "trainer",
+    "name": "Armin the Student",
+    "area": "Savanna Biome",
+    "x": 10745.05,
+    "y": 9059.49
+  },
+  {
+    "id": "315279",
+    "category": "trainer",
+    "name": "Kashif of the League Club",
+    "area": "Savanna Biome",
+    "x": 8986.65,
+    "y": 11161.15
+  },
+  {
+    "id": "315280",
+    "category": "trainer",
+    "name": "Imani the Student",
+    "area": "Savanna Biome",
+    "x": 10228.69,
+    "y": 11082.91
+  },
+  {
+    "id": "315281",
+    "category": "trainer",
+    "name": "Sarah the Student",
+    "area": "Savanna Biome",
+    "x": 9826.9,
+    "y": 10861.12
+  },
+  {
+    "id": "315342",
+    "category": "trainer",
+    "name": "Marika the Student",
+    "area": "Coastal Biome",
+    "x": 8683.79,
+    "y": 5164.81
+  },
+  {
+    "id": "315343",
+    "category": "trainer",
+    "name": "Cia the Student",
+    "area": "Coastal Biome",
+    "x": 9390.11,
+    "y": 5853.54
+  },
+  {
+    "id": "315344",
+    "category": "trainer",
+    "name": "Yun Hee the Student",
+    "area": "Coastal Biome",
+    "x": 8276.9,
+    "y": 7712.09
+  },
+  {
+    "id": "315345",
+    "category": "trainer",
+    "name": "Kaz the Student",
+    "area": "Coastal Biome",
+    "x": 8303.13,
+    "y": 7099.61
+  },
+  {
+    "id": "315346",
+    "category": "trainer",
+    "name": "Daria the Student",
+    "area": "Coastal Biome",
+    "x": 10843.1,
+    "y": 6194.91
+  },
+  {
+    "id": "315347",
+    "category": "trainer",
+    "name": "Leo the Student",
+    "area": "Coastal Biome",
+    "x": 11065.52,
+    "y": 6876.71
+  },
+  {
+    "id": "315396",
+    "category": "trainer",
+    "name": "Nicholo the Student",
+    "area": "Coastal Biome",
+    "x": 9365.26,
+    "y": 7021.84
+  },
+  {
+    "id": "315421",
+    "category": "trainer",
+    "name": "Alyssa the Student",
+    "area": "Coastal Biome",
+    "x": 11357.48,
+    "y": 6918.34
+  },
+  {
+    "id": "315496",
+    "category": "trainer",
+    "name": "Seori the Student",
+    "area": "Canyon Biome",
+    "x": 5905.79,
+    "y": 8742.67
+  },
+  {
+    "id": "315497",
+    "category": "trainer",
+    "name": "Harry the Student",
+    "area": "Canyon Biome",
+    "x": 7857.79,
+    "y": 8559.67
+  },
+  {
+    "id": "315498",
+    "category": "trainer",
+    "name": "Chun the Student",
+    "area": "Canyon Biome",
+    "x": 7753.79,
+    "y": 11951.67
+  },
+  {
+    "id": "315521",
+    "category": "trainer",
+    "name": "Art the Student",
+    "area": "Canyon Biome",
+    "x": 5942.39,
+    "y": 9592.88
+  },
+  {
+    "id": "315583",
+    "category": "trainer",
+    "name": "Yama the Student",
+    "area": "Canyon Biome",
+    "x": 6263.32,
+    "y": 11516.17
+  },
+  {
+    "id": "315597",
+    "category": "trainer",
+    "name": "Dana of the League Club",
+    "area": "Canyon Biome",
+    "x": 6500.36,
+    "y": 10921.47
+  },
+  {
+    "id": "315605",
+    "category": "trainer",
+    "name": "Anne the Student",
+    "area": "Canyon Biome",
+    "x": 7668.37,
+    "y": 10410.87
+  },
+  {
+    "id": "315649",
+    "category": "trainer",
+    "name": "Ian of the League Club",
+    "area": "Coastal Biome",
+    "x": 9406.73,
+    "y": 7716.81
+  },
+  {
+    "id": "315762",
+    "category": "trainer",
+    "name": "Rayford the Student",
+    "area": "Polar Biome",
+    "x": 6715.25,
+    "y": 6674.78
+  },
+  {
+    "id": "315768",
+    "category": "trainer",
+    "name": "Hank of the League Club",
+    "area": "Polar Biome",
+    "x": 7645.02,
+    "y": 5777.53
+  },
+  {
+    "id": "315769",
+    "category": "trainer",
+    "name": "Theo of the League Club",
+    "area": "Polar Biome",
+    "x": 7431.64,
+    "y": 7094.11
+  },
+  {
+    "id": "315790",
+    "category": "trainer",
+    "name": "Pietro the Student",
+    "area": "Coastal Biome",
+    "x": 10113.77,
+    "y": 6152.87
+  },
+  {
+    "id": "315792",
+    "category": "trainer",
+    "name": "Sam of the League Club",
+    "area": "Polar Biome",
+    "x": 5696.23,
+    "y": 5629.52
+  },
+  {
+    "id": "315802",
+    "category": "trainer",
+    "name": "Fiona the Student",
+    "area": "Canyon Biome",
+    "x": 5962.81,
+    "y": 11080.88
+  },
+  {
+    "id": "315803",
+    "category": "trainer",
+    "name": "Ramona of the League Club",
+    "area": "Canyon Biome",
+    "x": 6772.01,
+    "y": 9205.33
+  },
+  {
+    "id": "315804",
+    "category": "trainer",
+    "name": "Tsubasa of the League Club",
+    "area": "Canyon Biome",
+    "x": 6400.94,
+    "y": 8773.59
+  },
+  {
+    "id": "315805",
+    "category": "trainer",
+    "name": "Elli the Student",
+    "area": "Polar Biome",
+    "x": 6201.64,
+    "y": 7657.38
+  },
+  {
+    "id": "315827",
+    "category": "trainer",
+    "name": "Alex the Student",
+    "area": "Polar Biome",
+    "x": 4403.86,
+    "y": 7614.11
+  },
+  {
+    "id": "315834",
+    "category": "trainer",
+    "name": "Cecelia of the League Club",
+    "area": "Polar Biome",
+    "x": 6636.72,
+    "y": 7893.53
+  },
+  {
+    "id": "315880",
+    "category": "trainer",
+    "name": "Marci the Student",
+    "area": "Polar Biome",
+    "x": 7215.35,
+    "y": 6761.48
+  },
+  {
+    "id": "315892",
+    "category": "trainer",
+    "name": "Eve the Student",
+    "area": "Polar Biome",
+    "x": 7800.16,
+    "y": 7553
+  },
+  {
+    "id": "316032",
+    "category": "trainer",
+    "name": "Cindy of the League Club",
+    "area": "Canyon Biome",
+    "x": 6538.25,
+    "y": 8439
+  },
+  {
+    "id": "316033",
+    "category": "trainer",
+    "name": "Danyo of the League Club",
+    "area": "Canyon Biome",
+    "x": 6790.14,
+    "y": 9059.82
+  },
+  {
+    "id": "316094",
+    "category": "trainer",
+    "name": "Apinya the Student",
+    "area": "Polar Biome",
+    "x": 7589.65,
+    "y": 6982.36
+  },
+  {
+    "id": "316110",
+    "category": "trainer",
+    "name": "Fleur of the League Club",
+    "area": "Polar Biome",
+    "x": 7014.86,
+    "y": 5128.59
+  },
+  {
+    "id": "316115",
+    "category": "trainer",
+    "name": "Cathy the Student",
+    "area": "Polar Biome",
+    "x": 6019.77,
+    "y": 5905.8
+  },
+  {
+    "id": "316117",
+    "category": "trainer",
+    "name": "Soran the Student",
+    "area": "Polar Biome",
+    "x": 5716.63,
+    "y": 6185.01
+  },
+  {
+    "id": "316138",
+    "category": "trainer",
+    "name": "Joseph the Student",
+    "area": "Polar Biome",
+    "x": 7108.58,
+    "y": 7682.7
+  },
+  {
+    "id": "316549",
+    "category": "trainer",
+    "name": "Anthony the Student",
+    "area": "Polar Biome",
+    "x": 7487.64,
+    "y": 6460.01
+  },
+  {
+    "id": "316550",
+    "category": "trainer",
+    "name": "Rebeccah the Student",
+    "area": "Polar Biome",
+    "x": 5708.93,
+    "y": 7373.62
+  },
+  {
+    "id": "316551",
+    "category": "trainer",
+    "name": "Satoru of the League Club",
+    "area": "Coastal Biome",
+    "x": 9229.1,
+    "y": 5580.81
+  },
+  {
+    "id": "314746",
+    "category": "cave-entrance",
+    "name": "Cave Entrance: Torchlit Labyrinth",
+    "area": "Coastal Biome",
+    "x": 9211.42,
+    "y": 7333.3
+  },
+  {
+    "id": "314769",
+    "category": "cave-entrance",
+    "name": "Chargestone Cavern Entrance",
+    "area": "Polar Biome",
+    "x": 6644.39,
+    "y": 7290.57
+  },
+  {
+    "id": "315273",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Savanna Biome",
+    "x": 9752.04,
+    "y": 11157.75
+  },
+  {
+    "id": "315405",
+    "category": "cave-entrance",
+    "name": "Cave Entrance: Torchlit Labyrinth",
+    "area": "Coastal Biome",
+    "x": 9408.51,
+    "y": 8092.03
+  },
+  {
+    "id": "315433",
+    "category": "cave-entrance",
+    "name": "Torchlit Cavern Entrance",
+    "area": "Coastal Biome",
+    "x": 9175.59,
+    "y": 6723.87
+  },
+  {
+    "id": "315442",
+    "category": "cave-entrance",
+    "name": "Cave",
+    "area": "Coastal Biome",
+    "x": 10082.64,
+    "y": 7487.23
+  },
+  {
+    "id": "315443",
+    "category": "cave-entrance",
+    "name": "Cave",
+    "area": "Coastal Biome",
+    "x": 10450.91,
+    "y": 7279.3
+  },
+  {
+    "id": "315444",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 8731.23,
+    "y": 5326.16
+  },
+  {
+    "id": "315533",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 7297.61,
+    "y": 10117.39
+  },
+  {
+    "id": "315557",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 6066.63,
+    "y": 8669.63
+  },
+  {
+    "id": "315570",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 5071.35,
+    "y": 9872.6
+  },
+  {
+    "id": "315585",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 5845.09,
+    "y": 11184.95
+  },
+  {
+    "id": "315595",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 6854.61,
+    "y": 11220.88
+  },
+  {
+    "id": "315601",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 7815.99,
+    "y": 11266.27
+  },
+  {
+    "id": "315608",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 6976.23,
+    "y": 11006.16
+  },
+  {
+    "id": "315630",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Savanna Biome",
+    "x": 8350.78,
+    "y": 8784.71
+  },
+  {
+    "id": "315653",
+    "category": "cave-entrance",
+    "name": "Chargestone Cavern Entrance",
+    "area": "Canyon Biome",
+    "x": 7294.14,
+    "y": 9249.61
+  },
+  {
+    "id": "315759",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 5235.24,
+    "y": 6885.95
+  },
+  {
+    "id": "315767",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 7782.54,
+    "y": 5731.54
+  },
+  {
+    "id": "315781",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 9982.35,
+    "y": 6199.37
+  },
+  {
+    "id": "315817",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 5096.86,
+    "y": 6493.97
+  },
+  {
+    "id": "315883",
+    "category": "cave-entrance",
+    "name": "Chargestone Cavern Entrance",
+    "area": "Polar Biome",
+    "x": 7323.08,
+    "y": 6821.62
+  },
+  {
+    "id": "315890",
+    "category": "cave-entrance",
+    "name": "Chargestone Cavern Entrance",
+    "area": "Polar Biome",
+    "x": 7757.73,
+    "y": 7391.74
+  },
+  {
+    "id": "316036",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 6307.75,
+    "y": 11223.98
+  },
+  {
+    "id": "316054",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 10776.71,
+    "y": 6615.31
+  },
+  {
+    "id": "316129",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 4683.98,
+    "y": 7400.83
+  },
+  {
+    "id": "316140",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 6665.95,
+    "y": 7966.22
+  },
+  {
+    "id": "325462",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Savanna Biome",
+    "x": 9632.94,
+    "y": 9888.25
+  },
+  {
+    "id": "325471",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 9672.94,
+    "y": 7967.4
+  },
+  {
+    "id": "325478",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 8808.3,
+    "y": 7717.98
+  },
+  {
+    "id": "325507",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 6977.57,
+    "y": 10248.56
+  },
+  {
+    "id": "325539",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 5624.43,
+    "y": 7991.68
+  },
+  {
+    "id": "325591",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 5272.62,
+    "y": 6976.12
+  },
+  {
+    "id": "330148",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Polar Biome",
+    "x": 5454.37,
+    "y": 7008.87
+  },
+  {
+    "id": "330151",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Canyon Biome",
+    "x": 7514.62,
+    "y": 11329.86
+  },
+  {
+    "id": "330153",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Coastal Biome",
+    "x": 10706.08,
+    "y": 6135.43
+  },
+  {
+    "id": "330156",
+    "category": "cave-entrance",
+    "name": "Cave Entrance",
+    "area": "Savanna Biome",
+    "x": 10304.87,
+    "y": 8511.69
+  },
+  {
+    "id": "513524",
+    "category": "cave-entrance",
+    "name": "Cave",
+    "area": "Savanna Biome",
+    "x": 8622.29,
+    "y": 10875.74
+  },
+  {
+    "id": "316554",
+    "category": "miscellaneous",
+    "name": "Flying Time Trial",
+    "area": "Canyon Biome",
+    "x": 5844.98,
+    "y": 10377.67
+  },
+  {
+    "id": "315424",
+    "category": "npc",
+    "name": "Galarian Weaver",
+    "area": "Coastal Biome",
+    "x": 9070.23,
+    "y": 5447.16
+  },
+  {
+    "id": "316552",
+    "category": "npc",
+    "name": "Galarica Accessory Vendor",
+    "area": "Coastal Biome",
+    "x": 9077.1,
+    "y": 5453.75
+  },
+  {
+    "id": "316553",
+    "category": "npc",
+    "name": "Canyon Biome Guidance Counselor",
+    "area": "Canyon Biome",
+    "x": 5749.1,
+    "y": 8637.75
+  },
+  {
+    "id": "316555",
+    "category": "npc",
+    "name": "Coastal Biome Guidance Counselor",
+    "area": "Coastal Biome",
+    "x": 11175.51,
+    "y": 7153.47
+  },
+  {
+    "id": "316556",
+    "category": "npc",
+    "name": "Savanna Biome Guidance Counselor",
+    "area": "Savanna Biome",
+    "x": 9331.51,
+    "y": 8672.74
+  },
+  {
+    "id": "316557",
+    "category": "npc",
+    "name": "Polar Biome Guidance Counselor",
+    "area": "Polar Biome",
+    "x": 6903.51,
+    "y": 5168.74
+  },
+  {
+    "id": "314747",
+    "category": "legendary-pokemon",
+    "name": "Meloetta",
+    "area": "Coastal Biome",
+    "x": 9900.17,
+    "y": 7156.85
+  },
+  {
+    "id": "314831",
+    "category": "tera-pokemon",
+    "name": "Metagross",
+    "area": "Canyon Biome",
+    "x": 5136.19,
+    "y": 9723.81
+  },
+  {
+    "id": "314833",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Polar Biome",
+    "x": 7836,
+    "y": 5738.5
+  },
+  {
+    "id": "314834",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Savanna Biome",
+    "x": 11461.75,
+    "y": 8768
+  },
+  {
+    "id": "314835",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Coastal Biome",
+    "x": 9967,
+    "y": 7455
+  },
+  {
+    "id": "314836",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Coastal Biome",
+    "x": 8898.5,
+    "y": 5045.5
+  },
+  {
+    "id": "314837",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Polar Biome",
+    "x": 7593.22,
+    "y": 7957.12
+  },
+  {
+    "id": "314838",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Canyon Biome",
+    "x": 6287.53,
+    "y": 9438.26
+  },
+  {
+    "id": "314839",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Canyon Biome",
+    "x": 6684.49,
+    "y": 10828.47
+  },
+  {
+    "id": "314840",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Polar Biome",
+    "x": 5755,
+    "y": 5985
+  },
+  {
+    "id": "314841",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Canyon Biome",
+    "x": 6957.54,
+    "y": 11006.08
+  },
+  {
+    "id": "314845",
+    "category": "tera-pokemon",
+    "name": "Lapras",
+    "area": "Polar Biome",
+    "x": 7912,
+    "y": 4497.91
+  },
+  {
+    "id": "315368",
+    "category": "tera-pokemon",
+    "name": "Rabsca",
+    "area": "Savanna Biome",
+    "x": 9874.25,
+    "y": 8390.25
+  },
+  {
+    "id": "315441",
+    "category": "tera-pokemon",
+    "name": "Tauros",
+    "area": "Savanna Biome",
+    "x": 10801.25,
+    "y": 9987
+  },
+  {
+    "id": "315568",
+    "category": "tera-pokemon",
+    "name": "Magneton",
+    "area": "Canyon Biome",
+    "x": 5098.69,
+    "y": 9724.42
+  },
+  {
+    "id": "315582",
+    "category": "tera-pokemon",
+    "name": "Hitmontop",
+    "area": "Canyon Biome",
+    "x": 5684.09,
+    "y": 10954.95
+  },
+  {
+    "id": "315592",
+    "category": "tera-pokemon",
+    "name": "Rhydon",
+    "area": "Canyon Biome",
+    "x": 6881.15,
+    "y": 11397.79
+  },
+  {
+    "id": "315648",
+    "category": "tera-pokemon",
+    "name": "Duraludon",
+    "area": "Polar Biome",
+    "x": 5532,
+    "y": 5534
+  },
+  {
+    "id": "315758",
+    "category": "tera-pokemon",
+    "name": "Metang",
+    "area": "Polar Biome",
+    "x": 5281.5,
+    "y": 6942.09
+  },
+  {
+    "id": "315876",
+    "category": "tera-pokemon",
+    "name": "Reuniclus",
+    "area": "Polar Biome",
+    "x": 6964,
+    "y": 6558.5
+  },
+  {
+    "id": "316079",
+    "category": "tera-pokemon",
+    "name": "Granbull",
+    "area": "Coastal Biome",
+    "x": 9445.62,
+    "y": 7671
+  },
+  {
+    "id": "316131",
+    "category": "tera-pokemon",
+    "name": "Abomasnow",
+    "area": "Polar Biome",
+    "x": 4949,
+    "y": 8024
+  },
+  {
+    "id": "316150",
+    "category": "tera-pokemon",
+    "name": "Dewgong",
+    "area": "Polar Biome",
+    "x": 8073,
+    "y": 6581
+  },
+  {
+    "id": "316558",
+    "category": "tera-pokemon",
+    "name": "Golurk",
+    "area": "Canyon Biome",
+    "x": 6868.4,
+    "y": 10090.38
+  },
+  {
+    "id": "325464",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Coastal Biome",
+    "x": 8623.19,
+    "y": 7537.76
+  },
+  {
+    "id": "325465",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Savanna Biome",
+    "x": 9977.26,
+    "y": 9500.57
+  },
+  {
+    "id": "325466",
+    "category": "tera-pokemon",
+    "name": "Random Stellar Tera Pokemon",
+    "area": "Savanna Biome",
+    "x": 8993.25,
+    "y": 8553.29
+  },
+  {
+    "id": "325467",
+    "category": "tera-pokemon",
+    "name": "Vibrava",
+    "area": "Savanna Biome",
+    "x": 11856.45,
+    "y": 9000.08
+  },
+  {
+    "id": "325468",
+    "category": "tera-pokemon",
+    "name": "Trumbeak",
+    "area": "Coastal Biome",
+    "x": 11942.11,
+    "y": 7878.04
+  },
+  {
+    "id": "325474",
+    "category": "tera-pokemon",
+    "name": "Bruxish",
+    "area": "Coastal Biome",
+    "x": 9085.83,
+    "y": 7597.27
+  },
+  {
+    "id": "325489",
+    "category": "tera-pokemon",
+    "name": "Seadra",
+    "area": "Coastal Biome",
+    "x": 9671.03,
+    "y": 6351.14
+  },
+  {
+    "id": "325513",
+    "category": "tera-pokemon",
+    "name": "Eelektross",
+    "area": "Canyon Biome",
+    "x": 6557.43,
+    "y": 8300.24
+  },
+  {
+    "id": "325514",
+    "category": "tera-pokemon",
+    "name": "Porygon",
+    "area": "Canyon Biome",
+    "x": 6551.67,
+    "y": 8452.72
+  },
+  {
+    "id": "513525",
+    "category": "tera-pokemon",
+    "name": "Magmar",
+    "area": "Savanna Biome",
+    "x": 8658.54,
+    "y": 10905.64
+  },
+  {
+    "id": "513532",
+    "category": "tera-pokemon",
+    "name": "Alolan Muk",
+    "area": "Coastal Biome",
+    "x": 10761.92,
+    "y": 6174.43
+  }
+]
