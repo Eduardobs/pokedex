@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
+import { STORAGE_KEYS } from '../../config/app'
 import { LanguageProvider } from '../../contexts/LanguageContext'
 import type { Pokemon, Species } from '../../types'
 import { TrainingBreedingCard } from './TrainingBreedingCard'
@@ -20,6 +21,11 @@ const species = {
   gender_rate: 4,
 } as Species
 
+afterEach(() => {
+  cleanup()
+  localStorage.clear()
+})
+
 describe('TrainingBreedingCard', () => {
   it('transforma os dados técnicos em informações úteis para o jogador', () => {
     render(<LanguageProvider><TrainingBreedingCard pokemon={pokemon} species={species} /></LanguageProvider>)
@@ -30,5 +36,14 @@ describe('TrainingBreedingCard', () => {
     expect(screen.getByText('Água 1, Dragão')).toBeVisible()
     expect(screen.getByText('A quantidade de passos por ciclo varia conforme a geração do jogo.')).toBeVisible()
     expect(screen.getByLabelText('50% masculino / 50% feminino')).toBeVisible()
+  })
+
+  it('localiza o rótulo de HP usado nos EVs', () => {
+    localStorage.setItem(STORAGE_KEYS.language, 'es')
+    const hpPokemon = { ...pokemon, stats: [{ base_stat: 95, effort: 1, stat: { name: 'hp', url: '' } }] } as Pokemon
+
+    render(<LanguageProvider><TrainingBreedingCard pokemon={hpPokemon} species={species} /></LanguageProvider>)
+
+    expect(screen.getByText('1 EV en PS')).toBeVisible()
   })
 })

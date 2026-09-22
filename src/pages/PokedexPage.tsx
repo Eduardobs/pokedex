@@ -273,7 +273,7 @@ export function PokedexPage() {
     { value: 'number', label: t('pokedex.sort.number') },
     { value: 'name', label: t('pokedex.sort.name') },
     { value: 'total', label: t('pokedex.sort.total'), metric: t('detail.total') },
-    { value: 'hp', label: t('pokedex.sort.hp'), metric: 'HP' },
+    { value: 'hp', label: t('pokedex.sort.hp'), metric: t('pokedex.sort.hp') },
     { value: 'attack', label: t('pokedex.sort.attack'), metric: t('stats.attack') },
     { value: 'defense', label: t('pokedex.sort.defense'), metric: t('stats.defense') },
     { value: 'special-attack', label: t('pokedex.sort.specialAttack'), metric: t('stats.specialAttack') },

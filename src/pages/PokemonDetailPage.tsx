@@ -125,7 +125,7 @@ export function PokemonDetailPage() {
   const localizedGenus = species?.genera.find((entry) => entry.language.name === apiLanguage)
   const fallbackGenus = species?.genera.find((entry) => entry.language.name === 'en')
   const genus = localizedGenus?.genus ?? fallbackGenus?.genus
-  const statNames: Record<string, string> = { hp: 'HP', attack: t('stats.attack'), defense: t('stats.defense'), 'special-attack': t('stats.specialAttack'), 'special-defense': t('stats.specialDefense'), speed: t('stats.speed') }
+  const statNames: Record<string, string> = { hp: t('pokedex.sort.hp'), attack: t('stats.attack'), defense: t('stats.defense'), 'special-attack': t('stats.specialAttack'), 'special-defense': t('stats.specialDefense'), speed: t('stats.speed') }
   const tabOrder = ['about', 'moves', 'encounters', 'data'] as const
   const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, current: typeof tabOrder[number]) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
@@ -141,7 +141,7 @@ export function PokemonDetailPage() {
     <section className={`pokemon-detail type-theme-${pokemon.types[0]?.type.name ?? 'normal'}`}>
       <div className="detail-hero content-width">
         <div className="detail-nav">
-          <Link to="/pokemon" className="back-link"><ArrowLeft /> Pokédex</Link>
+          <Link to="/pokemon" className="back-link"><ArrowLeft /> {t('nav.pokedex')}</Link>
           <div>
             {previousPokemon && <Link className="detail-nav-pokemon previous" to={`/pokemon/${previousPokemon.name}`} aria-label={`${prettyName(previousPokemon.name)} #${previousPokemon.id}`}><ArrowLeft /><span><strong>{prettyName(previousPokemon.name)}</strong><small>#{String(previousPokemon.id).padStart(4, '0')}</small></span></Link>}
             {nextPokemon && <Link className="detail-nav-pokemon next" to={`/pokemon/${nextPokemon.name}`} aria-label={`${prettyName(nextPokemon.name)} #${nextPokemon.id}`}><span><strong>{prettyName(nextPokemon.name)}</strong><small>#{String(nextPokemon.id).padStart(4, '0')}</small></span><ChevronRight /></Link>}

@@ -11,7 +11,7 @@ type Props = {
 export function TrainingBreedingCard({ pokemon, species }: Props) {
   const { language, t } = useLanguage()
   const statNames: Record<string, string> = {
-    hp: 'HP',
+    hp: t('pokedex.sort.hp'),
     attack: t('stats.attack'),
     defense: t('stats.defense'),
     'special-attack': t('stats.specialAttack'),

@@ -35,7 +35,7 @@ export function PokemonHistoryCard({ pokemon }: Props) {
               <b>{t('detail.throughGeneration', { generation: localizedApiTerm(generation.name, language) })}</b>
               <div>{stats.map(({ base_stat, stat }) => {
                 const key = statKeys[stat.name]
-                const label = stat.name === 'hp' ? 'HP' : key ? t(key) : localizedApiTerm(stat.name, language)
+                const label = stat.name === 'hp' ? t('pokedex.sort.hp') : key ? t(key) : localizedApiTerm(stat.name, language)
                 return <span className="history-stat" key={stat.name}><small>{label}</small><strong>{base_stat}</strong></span>
               })}</div>
             </div>

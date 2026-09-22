@@ -42,5 +42,6 @@ export function GenderBadge({ value }: { value: string }) {
   const normalized = value.toLowerCase()
   if (normalized === 'male') return <span className="gender-badge gender-male"><Mars size={15} />{t('gender.maleLabel')}</span>
   if (normalized === 'female') return <span className="gender-badge gender-female"><Venus size={15} />{t('gender.femaleLabel')}</span>
+  if (normalized === 'genderless') return <span className="gender-badge genderless"><span>Ø</span>{t('gender.none')}</span>
   return <span className="gender-badge genderless"><span>Ø</span>{prettyName(value)}</span>
 }
