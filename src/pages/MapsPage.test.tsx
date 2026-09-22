@@ -43,7 +43,7 @@ describe('MapsPage', () => {
       'href',
       '/mapas/hisui-region',
     )
-    expect(screen.getByAltText(/prévia do mapa interativo de Hisui/i)).toHaveAttribute(
+    expect(screen.getByAltText(/arte de capa de Pokémon Legends: Arceus/i)).toHaveAttribute(
       'src',
       '/maps/legends-arceus-map.jpg',
     )

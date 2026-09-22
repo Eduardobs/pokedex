@@ -6141,7 +6141,7 @@ footer a {
   width: min(100%, 225px);
 }
 .game-map-card--arceus .game-map-cover {
-  background: #9b8a5c;
+  background: linear-gradient(180deg, #91cbcb 0 50%, #748b5f 50% 100%);
 }
 .game-map-card--arceus .game-map-cover::before {
   z-index: 1;
@@ -6153,8 +6153,8 @@ footer a {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  filter: saturate(0.92) contrast(1.03);
+  object-fit: contain;
+  filter: saturate(0.96) contrast(1.02);
 }
 .game-map-generation {
   position: absolute;

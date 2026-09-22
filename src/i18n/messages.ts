@@ -56,7 +56,7 @@ export const messages = {
     'maps.scarletVioletGeneration': 'Geração IX',
     'maps.scarletVioletDescription':
       'Explore a aventura de mundo aberto e suas três áreas em Pokémon Scarlet e Violet.',
-    'maps.arceusMapAlt': 'Prévia do mapa interativo de Hisui em Pokémon Legends: Arceus',
+    'maps.arceusMapAlt': 'Arte de capa de Pokémon Legends: Arceus na região de Hisui',
     'maps.arceusGeneration': 'Geração VIII',
     'maps.arceusDescription':
       'Explore a antiga região de Hisui e encontre Pokémon, materiais, missões e colecionáveis.',
@@ -933,7 +933,7 @@ export const messages = {
     'maps.scarletVioletGeneration': 'Generation IX',
     'maps.scarletVioletDescription':
       'Explore the open-world adventure and its three areas in Pokémon Scarlet and Violet.',
-    'maps.arceusMapAlt': 'Preview of the interactive Hisui map in Pokémon Legends: Arceus',
+    'maps.arceusMapAlt': 'Pokémon Legends: Arceus cover artwork set in the Hisui region',
     'maps.arceusGeneration': 'Generation VIII',
     'maps.arceusDescription':
       'Explore ancient Hisui and find Pokémon, materials, missions, and collectibles.',
@@ -1809,7 +1809,7 @@ export const messages = {
     'maps.scarletVioletGeneration': 'Generación IX',
     'maps.scarletVioletDescription':
       'Explora la aventura de mundo abierto y sus tres áreas en Pokémon Scarlet y Violet.',
-    'maps.arceusMapAlt': 'Vista previa del mapa interactivo de Hisui en Pokémon Legends: Arceus',
+    'maps.arceusMapAlt': 'Arte de portada de Pokémon Legends: Arceus en la región de Hisui',
     'maps.arceusGeneration': 'Generación VIII',
     'maps.arceusDescription':
       'Explora la antigua región de Hisui y encuentra Pokémon, materiales, misiones y coleccionables.',

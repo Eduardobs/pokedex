@@ -172,7 +172,7 @@ Because routing uses hash URLs and assets are built by Vite, no additional base-
 
 ## Attribution
 
-Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). The FireRed/LeafGreen Kanto, Scarlet/Violet Paldea, Kitakami, and Terarium, and Legends: Arceus Hisui map tiles, previews, and factual location catalogs are provided by [MapGenie](https://mapgenie.io/), and game cover artwork is presented for identification. Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, The Pokémon Company, or MapGenie.
+Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). The FireRed/LeafGreen Kanto, Scarlet/Violet Paldea, Kitakami, and Terarium, and Legends: Arceus Hisui map tiles and factual location catalogs are provided by [MapGenie](https://mapgenie.io/), and game cover artwork is presented for identification. Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, The Pokémon Company, or MapGenie.
 
 ## License
 

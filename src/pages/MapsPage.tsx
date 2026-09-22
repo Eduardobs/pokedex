@@ -94,8 +94,8 @@ export function MapsPage() {
             <img
               src={`${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`}
               alt={t('maps.arceusMapAlt')}
-              width="1700"
-              height="1166"
+              width="1024"
+              height="1024"
             />
             <span className="game-map-generation">{t('maps.arceusGeneration')}</span>
           </div>
