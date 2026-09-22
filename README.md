@@ -10,6 +10,7 @@ The application is a client-side static site: it has no application server or da
 - **Detailed Pokémon pages** with species information, training and breeding data, complete evolution requirements, abilities, forms, shiny sprites, cries, held items, game indices, present and past base stats, defensive type matchups, compatible moves, and version-filtered encounter methods, levels, chances, and conditions.
 - **Special forms catalog** for regional variants, Mega Evolutions, and Gigantamax forms.
 - **Pokémon type chart** with an interactive damage calculator for one or two defending types.
+- **Interactive game maps**, starting with FireRed/LeafGreen's detailed Kanto atlas, with 1,963 cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
@@ -25,6 +26,8 @@ The application is a client-side static site: it has no application server or da
 | `#/pokemon/:name` | Pokémon detail page |
 | `#/formas` | Regional, Mega, and Gigantamax forms |
 | `#/types-table` | Type effectiveness table and calculator |
+| `#/mapas` | Available interactive game maps |
+| `#/mapas/kanto` | Interactive FireRed/LeafGreen map of Kanto |
 | `#/favoritos` | Locally stored favorites |
 | `#/explorar` | Categories from the PokéAPI encyclopedia |
 | `#/explorar/:resource` | Paginated records for an API collection |
@@ -118,6 +121,7 @@ Atlas Pokémon reads data from the following fixed endpoints:
 
 - REST: `https://pokeapi.co/api/v2`
 - GraphQL: `https://graphql.pokeapi.co/v1beta2`
+- Kanto map tiles: `https://tiles.mapgenie.io/games/pokemon-firered-leafgreen/kanto/firered-v2`
 
 REST responses use an in-memory LRU-style cache with a maximum of 250 entries and a five-minute TTL. Concurrent requests for the same URL share one underlying request, while each consumer retains independent cancellation. Requests time out after 15 seconds.
 REST payloads are limited to 8 MiB and checked for a JSON content type and bounded nesting, collection sizes, object keys, and strings before being cached or rendered.
@@ -163,7 +167,7 @@ Because routing uses hash URLs and assets are built by Vite, no additional base-
 
 ## Attribution
 
-Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, or The Pokémon Company.
+Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). The FireRed/LeafGreen Kanto map tiles and factual location catalog are provided by [MapGenie](https://mapgenie.io/pokemon-firered-leafgreen/maps/kanto), and game cover artwork is presented for identification. Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, The Pokémon Company, or MapGenie.
 
 ## License
 

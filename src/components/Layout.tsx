@@ -5,6 +5,7 @@ import {
   Grid3X3,
   Heart,
   Languages,
+  MapPinned,
   Menu,
   Moon,
   Search,
@@ -53,13 +54,17 @@ export function Layout() {
         ? t('nav.forms')
         : location.pathname === '/types-table'
           ? t('typesTable.title')
-          : location.pathname === '/favoritos'
-            ? t('nav.favorites')
-            : location.pathname.startsWith('/explorar')
-              ? t('nav.explore')
-              : location.pathname === '/'
-                ? 'Atlas Pokémon'
-                : t('error.notFoundTitle')
+          : location.pathname === '/mapas/kanto'
+            ? t('maps.kantoTitle')
+            : location.pathname === '/mapas'
+              ? t('maps.title')
+              : location.pathname === '/favoritos'
+                ? t('nav.favorites')
+                : location.pathname.startsWith('/explorar')
+                  ? t('nav.explore')
+                  : location.pathname === '/'
+                    ? 'Atlas Pokémon'
+                    : t('error.notFoundTitle')
   const routeDescription = location.pathname.startsWith('/pokemon/')
     ? t('pokedex.description')
     : location.pathname === '/pokemon'
@@ -68,13 +73,15 @@ export function Layout() {
         ? t('forms.description')
         : location.pathname === '/types-table'
           ? t('typesTable.description')
-          : location.pathname === '/favoritos'
-            ? t('favorites.description')
-            : location.pathname.startsWith('/explorar')
-              ? t('explore.description')
-              : location.pathname === '/'
-                ? t('home.description')
-                : t('error.notFoundDesc')
+          : location.pathname.startsWith('/mapas')
+            ? t('maps.description')
+            : location.pathname === '/favoritos'
+              ? t('favorites.description')
+              : location.pathname.startsWith('/explorar')
+                ? t('explore.description')
+                : location.pathname === '/'
+                  ? t('home.description')
+                  : t('error.notFoundDesc')
 
   useEffect(() => {
     document.title = routeTitle === 'Atlas Pokémon' ? routeTitle : `${routeTitle} · Atlas Pokémon`
@@ -245,6 +252,9 @@ export function Layout() {
           </NavLink>
           <NavLink to="/types-table" onClick={() => setMenuOpen(false)}>
             <Grid3X3 size={17} /> {t('nav.types')}
+          </NavLink>
+          <NavLink to="/mapas" onClick={() => setMenuOpen(false)}>
+            <MapPinned size={17} /> {t('nav.maps')}
           </NavLink>
           <NavLink to="/favoritos" onClick={() => setMenuOpen(false)}>
             <Heart size={17} /> {t('nav.favorites')}{' '}

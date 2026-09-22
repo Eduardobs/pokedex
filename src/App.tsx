@@ -36,6 +36,12 @@ const FavoritesPage = lazy(() =>
 const TypesTablePage = lazy(() =>
   import('./pages/TypesTablePage').then(({ TypesTablePage }) => ({ default: TypesTablePage })),
 )
+const MapsPage = lazy(() =>
+  import('./pages/MapsPage').then(({ MapsPage }) => ({ default: MapsPage })),
+)
+const KantoMapPage = lazy(() =>
+  import('./pages/KantoMapPage').then(({ KantoMapPage }) => ({ default: KantoMapPage })),
+)
 
 export default function App() {
   return (
@@ -53,6 +59,8 @@ export default function App() {
               <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
               <Route path="favoritos" element={<FavoritesPage />} />
               <Route path="types-table" element={<TypesTablePage />} />
+              <Route path="mapas" element={<MapsPage />} />
+              <Route path="mapas/kanto" element={<KantoMapPage />} />
               <Route
                 path="*"
                 element={

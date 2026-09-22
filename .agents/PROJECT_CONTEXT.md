@@ -11,6 +11,7 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - Os links das listagens de espécies devem abrir a variedade padrão roteável de cada Pokémon.
 - Listas de Pokémon relacionados em recursos de Explorar devem exibir imagem, nome, número e, quando pertinente, o dado que define a relação.
 - Classes de dano devem usar os sprites de categoria de Pokémon Scarlet/Violet fornecidos como referência, com as cores laranja, azul e cinza para Físico, Especial e Status, respectivamente.
+- Mapas de jogos devem preservar a geografia da versão representada e oferecer zoom detalhado, navegação e filtros de pontos de interesse acessíveis por teclado; a roda do mouse sobre o mapa deve controlar somente o zoom, sem rolar a página.
 
 ## Manutenção
 
