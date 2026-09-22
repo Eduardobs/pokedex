@@ -7,6 +7,10 @@ description: Review or harden Atlas Pokémon against client-side security and pr
 
 Base findings on reachable behavior in this repository. Atlas is a static public client with no server, database, account system, or legitimate place for secrets.
 
+## Required project context
+
+Before analyzing or changing the project, read [`../PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
+
 ## Establish the threat model
 
 Map the affected trust boundaries before judging risk:

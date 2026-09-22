@@ -7,6 +7,10 @@ description: Plan and implement architectural changes in Atlas Pokémon, includi
 
 Improve boundaries without turning a static client application into a needlessly complex platform.
 
+## Required project context
+
+Before analyzing or changing the project, read [`../PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
+
 ## Model the current flow
 
 Use this dependency direction as the default:

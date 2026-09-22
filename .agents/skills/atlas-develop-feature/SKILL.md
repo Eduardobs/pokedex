@@ -7,6 +7,10 @@ description: Implement or change an Atlas Pokémon feature end to end in React a
 
 Deliver the smallest complete vertical slice that matches the request and the repository's existing conventions.
 
+## Required project context
+
+Before analyzing or changing the project, read [`../PROJECT_CONTEXT.md`](../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
+
 ## Establish the change
 
 1. Read the affected route, its components, nearby domain utilities, tests, and translation keys before editing.
