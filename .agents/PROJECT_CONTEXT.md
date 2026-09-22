@@ -7,6 +7,8 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - As cores e os ícones associados aos tipos de Pokémon não devem ser alterados.
 - O ícone referente à Mega Evolução não deve ser alterado.
 - A linha evolutiva deve preservar e tornar visualmente inequívocas as ramificações e as condições de cada evolução alternativa.
+- Os links da linha evolutiva devem abrir a variedade padrão de cada espécie quando o nome da espécie e o nome roteável do Pokémon forem diferentes.
+- Os links das listagens de espécies devem abrir a variedade padrão roteável de cada Pokémon.
 - Listas de Pokémon relacionados em recursos de Explorar devem exibir imagem, nome, número e, quando pertinente, o dado que define a relação.
 
 ## Manutenção

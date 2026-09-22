@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Language, Translate } from '../../contexts/LanguageContext'
 import { formatNumber, pokemonArtwork, prettyName } from '../../lib/api'
+import { defaultPokemonNameForSpecies } from '../../lib/pokemon-species'
 import type { EvolutionDetail, EvolutionNode } from '../../types'
 
 const presentNumber = (value: number | null | undefined): value is number => typeof value === 'number'
@@ -69,13 +70,14 @@ type Props = {
 
 export function EvolutionTreeNode({ node, t, language, root = false }: Props) {
   const id = Number(node.species.url.split('/').filter(Boolean).at(-1))
+  const pokemonName = defaultPokemonNameForSpecies(node.species.name)
   const hasBranches = node.evolves_to.length > 1
 
   return (
     <li className="evolution-node">
       <div className="evolution-entry">
         {!root && <span className="evolution-condition"><ChevronRight aria-hidden="true" /><span className="evolution-condition-options">{evolutionConditions(node.evolution_details, t, language).map((condition) => <small key={condition}>{condition}</small>)}</span></span>}
-        <Link to={`/pokemon/${node.species.name}`} className="evolution-pokemon">
+        <Link to={`/pokemon/${encodeURIComponent(pokemonName)}`} className="evolution-pokemon">
           <img src={pokemonArtwork(id)} alt={prettyName(node.species.name)} width="100" height="100" loading="lazy" decoding="async" />
           <b>{prettyName(node.species.name)}</b>
           <small>#{String(id).padStart(4, '0')}</small>

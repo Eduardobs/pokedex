@@ -84,6 +84,15 @@ describe('evolutionCondition', () => {
 })
 
 describe('EvolutionTreeNode', () => {
+  it.each([
+    ['wormadam', 413, '/pokemon/wormadam-plant'],
+    ['meowstic', 678, '/pokemon/meowstic-male'],
+  ])('links the %s species to its canonical default variety', (name, id, href) => {
+    render(<MemoryRouter><ul><EvolutionTreeNode node={evolutionNode(name, id)} t={t} language="pt-BR" root /></ul></MemoryRouter>)
+
+    expect(screen.getByRole('link', { name: new RegExp(name, 'i') })).toHaveAttribute('href', href)
+  })
+
   it('mantém evoluções alternativas como ramos irmãos do mesmo Pokémon', () => {
     const chain = evolutionNode('oddish', 43, [
       evolutionNode('gloom', 44, [

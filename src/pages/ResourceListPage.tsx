@@ -10,6 +10,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
 import { berrySprite, formatNumber, itemSprite, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
+import { defaultPokemonNameForSpecies } from '../lib/pokemon-species'
 import type { ApiList, NamedResource } from '../types'
 
 const LIMIT = 40
@@ -64,9 +65,11 @@ export function ResourceListPage() {
     return { ...item, name: 'name' in item && item.name ? item.name : id }
   })
   const filtered = items.filter((item) => normalizeSearchText(item.name).includes(normalizeSearchText(query)))
-  const itemRoute = (name: string) => resource === 'pokemon' || resource === 'pokemon-species'
-    ? `/pokemon/${encodeURIComponent(name)}`
-    : `/explorar/${resource}/${encodeURIComponent(name)}`
+  const itemRoute = (name: string) => {
+    if (resource === 'pokemon-species') return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
+    if (resource === 'pokemon') return `/pokemon/${encodeURIComponent(name)}`
+    return `/explorar/${resource}/${encodeURIComponent(name)}`
+  }
   const resourceName = (name: string) => {
     if (resource === 'type') return <TypeBadge type={name} />
     if (resource === 'gender') return <GenderBadge value={name} />

@@ -31,6 +31,33 @@ describe('ResourceListPage pagination', () => {
 })
 
 describe('ResourceListPage item presentation', () => {
+  it.each([
+    ['wormadam', '/pokemon/wormadam-plant'],
+    ['meowstic', '/pokemon/meowstic-male'],
+  ])('links the %s species to its canonical default variety', (name, href) => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name, url: `https://pokeapi.co/api/v2/pokemon-species/${name}/` }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/pokemon-species']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource" element={<ResourceListPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('link', { name: new RegExp(name, 'i') })).toHaveAttribute('href', href)
+  })
+
   it('shows each Pokémon artwork instead of the generic resource icon', () => {
     useApiMock.mockReturnValue({
       data: {

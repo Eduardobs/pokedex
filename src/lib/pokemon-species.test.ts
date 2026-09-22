@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { captureRatePercentage, pokemonColorHex } from './pokemon-species'
+import { captureRatePercentage, defaultPokemonNameForSpecies, pokemonColorHex } from './pokemon-species'
 
 describe('captureRatePercentage', () => {
   it('converts the PokéAPI capture scale to a percentage', () => {
@@ -17,5 +17,53 @@ describe('pokemonColorHex', () => {
   it('maps API color names to a safe visual color', () => {
     expect(pokemonColorHex('green')).toBe('#55a868')
     expect(pokemonColorHex('unknown')).toBe('#8b929a')
+  })
+})
+
+describe('defaultPokemonNameForSpecies', () => {
+  it.each([
+    ['deoxys', 'deoxys-normal'],
+    ['wormadam', 'wormadam-plant'],
+    ['giratina', 'giratina-altered'],
+    ['shaymin', 'shaymin-land'],
+    ['basculin', 'basculin-red-striped'],
+    ['darmanitan', 'darmanitan-standard'],
+    ['frillish', 'frillish-male'],
+    ['jellicent', 'jellicent-male'],
+    ['tornadus', 'tornadus-incarnate'],
+    ['thundurus', 'thundurus-incarnate'],
+    ['landorus', 'landorus-incarnate'],
+    ['keldeo', 'keldeo-ordinary'],
+    ['meloetta', 'meloetta-aria'],
+    ['pyroar', 'pyroar-male'],
+    ['meowstic', 'meowstic-male'],
+    ['aegislash', 'aegislash-shield'],
+    ['pumpkaboo', 'pumpkaboo-average'],
+    ['gourgeist', 'gourgeist-average'],
+    ['zygarde', 'zygarde-50'],
+    ['oricorio', 'oricorio-baile'],
+    ['lycanroc', 'lycanroc-midday'],
+    ['wishiwashi', 'wishiwashi-solo'],
+    ['minior', 'minior-red-meteor'],
+    ['mimikyu', 'mimikyu-disguised'],
+    ['toxtricity', 'toxtricity-amped'],
+    ['eiscue', 'eiscue-ice'],
+    ['indeedee', 'indeedee-male'],
+    ['morpeko', 'morpeko-full-belly'],
+    ['urshifu', 'urshifu-single-strike'],
+    ['basculegion', 'basculegion-male'],
+    ['enamorus', 'enamorus-incarnate'],
+    ['oinkologne', 'oinkologne-male'],
+    ['maushold', 'maushold-family-of-four'],
+    ['squawkabilly', 'squawkabilly-green-plumage'],
+    ['palafin', 'palafin-zero'],
+    ['tatsugiri', 'tatsugiri-curly'],
+    ['dudunsparce', 'dudunsparce-two-segment'],
+  ])('maps %s to the canonical default variety %s', (species, pokemon) => {
+    expect(defaultPokemonNameForSpecies(species)).toBe(pokemon)
+  })
+
+  it('keeps the species name when the default variety uses the same name', () => {
+    expect(defaultPokemonNameForSpecies('pikachu')).toBe('pikachu')
   })
 })
