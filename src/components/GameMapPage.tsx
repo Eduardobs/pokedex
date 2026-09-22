@@ -100,6 +100,7 @@ function categoryIcon(icon: GameMapIconId, size = 15) {
       return <Cross {...props} />
     case 'legendary':
       return <Star {...props} />
+    case 'sparkles':
     case 'tera-pokemon':
       return <Sparkles {...props} />
   }

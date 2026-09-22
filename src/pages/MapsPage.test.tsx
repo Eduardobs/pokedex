@@ -7,7 +7,7 @@ import { MapsPage } from './MapsPage'
 afterEach(cleanup)
 
 describe('MapsPage', () => {
-  it('makes Kanto and all three Scarlet and Violet maps available', () => {
+  it('makes Kanto, Scarlet and Violet, and the single Legends Arceus map available', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
@@ -39,5 +39,14 @@ describe('MapsPage', () => {
       '/mapas/terrarium',
     )
     expect(screen.queryByText('Em breve')).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Pokémon Legends: Arceus/i })).toHaveAttribute(
+      'href',
+      '/mapas/hisui-region',
+    )
+    expect(screen.getByAltText(/prévia do mapa interativo de Hisui/i)).toHaveAttribute(
+      'src',
+      '/maps/legends-arceus-map.jpg',
+    )
+    expect(screen.getByText('2.525 pontos catalogados')).toBeVisible()
   })
 })

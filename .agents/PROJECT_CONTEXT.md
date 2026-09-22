@@ -13,6 +13,7 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - Classes de dano devem usar os sprites de categoria de Pokémon Scarlet/Violet fornecidos como referência, com as cores laranja, azul e cinza para Físico, Especial e Status, respectivamente.
 - Mapas de jogos devem preservar a geografia da versão representada e oferecer zoom detalhado, navegação e filtros de pontos de interesse acessíveis por teclado; a roda do mouse sobre o mapa deve controlar somente o zoom, sem rolar a página.
 - Pokémon Scarlet/Violet deve oferecer mapas distintos para Paldea, Kitakami e Terarium.
+- Pokémon Legends: Arceus deve oferecer apenas o mapa da região de Hisui (`hisui-region`).
 
 ## Manutenção
 

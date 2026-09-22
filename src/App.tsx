@@ -53,6 +53,9 @@ const TerrariumMapPage = lazy(() =>
     default: TerrariumMapPage,
   })),
 )
+const HisuiMapPage = lazy(() =>
+  import('./pages/HisuiMapPage').then(({ HisuiMapPage }) => ({ default: HisuiMapPage })),
+)
 
 export default function App() {
   return (
@@ -75,6 +78,7 @@ export default function App() {
               <Route path="mapas/paldea" element={<PaldeaMapPage />} />
               <Route path="mapas/kitakami" element={<KitakamiMapPage />} />
               <Route path="mapas/terrarium" element={<TerrariumMapPage />} />
+              <Route path="mapas/hisui-region" element={<HisuiMapPage />} />
               <Route
                 path="*"
                 element={

@@ -10,7 +10,7 @@ The application is a client-side static site: it has no application server or da
 - **Detailed Pokémon pages** with species information, training and breeding data, complete evolution requirements, abilities, forms, shiny sprites, cries, held items, game indices, present and past base stats, defensive type matchups, compatible moves, and version-filtered encounter methods, levels, chances, and conditions.
 - **Special forms catalog** for regional variants, Mega Evolutions, and Gigantamax forms.
 - **Pokémon type chart** with an interactive damage calculator for one or two defending types.
-- **Interactive game maps** for FireRed/LeafGreen's Kanto and Scarlet/Violet's Paldea, Kitakami, and Terarium, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
+- **Interactive game maps** for FireRed/LeafGreen's Kanto, Scarlet/Violet's Paldea, Kitakami, and Terarium, and Legends: Arceus's Hisui, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
@@ -31,6 +31,7 @@ The application is a client-side static site: it has no application server or da
 | `#/mapas/paldea` | Interactive Scarlet/Violet map of Paldea |
 | `#/mapas/kitakami` | Interactive Scarlet/Violet map of Kitakami |
 | `#/mapas/terrarium` | Interactive Scarlet/Violet map of the Terarium |
+| `#/mapas/hisui-region` | Interactive Pokémon Legends: Arceus map of Hisui |
 | `#/favoritos` | Locally stored favorites |
 | `#/explorar` | Categories from the PokéAPI encyclopedia |
 | `#/explorar/:resource` | Paginated records for an API collection |
@@ -171,7 +172,7 @@ Because routing uses hash URLs and assets are built by Vite, no additional base-
 
 ## Attribution
 
-Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). The FireRed/LeafGreen Kanto and Scarlet/Violet Paldea, Kitakami, and Terarium map tiles and factual location catalogs are provided by [MapGenie](https://mapgenie.io/), and game cover artwork is presented for identification. Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, The Pokémon Company, or MapGenie.
+Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi.co/). The FireRed/LeafGreen Kanto, Scarlet/Violet Paldea, Kitakami, and Terarium, and Legends: Arceus Hisui map tiles, previews, and factual location catalogs are provided by [MapGenie](https://mapgenie.io/), and game cover artwork is presented for identification. Pokémon and Pokémon character names are trademarks of their respective owners. This project is an independent, non-commercial interface and is not affiliated with Nintendo, Creatures Inc., Game Freak, The Pokémon Company, or MapGenie.
 
 ## License
 

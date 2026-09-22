@@ -21,6 +21,7 @@ export type GameMapIconId =
   | 'pokemon-center'
   | 'shop'
   | 'shrine'
+  | 'sparkles'
   | 'tera-pokemon'
   | 'tm'
   | 'trainer'
