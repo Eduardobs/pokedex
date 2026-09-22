@@ -67,6 +67,9 @@ npm run preview
 | `npm run preview` | Serve the generated production build locally |
 | `npm run lint` | Run ESLint across the project |
 | `npm test` | Run the Vitest test suite once |
+| `npm run release:patch` | Increment the patch version and create a Git commit and tag |
+| `npm run release:minor` | Increment the minor version and create a Git commit and tag |
+| `npm run release:major` | Increment the major version and create a Git commit and tag |
 | `npm run check` | Run linting, tests, and the production build |
 
 Before opening a pull request, run:
@@ -74,6 +77,18 @@ Before opening a pull request, run:
 ```bash
 npm run check
 ```
+
+## Versioning
+
+The project follows [Semantic Versioning](https://semver.org/) and starts at `0.0.1` while it is in alpha. The version in `package.json` is the source of truth and is kept in sync with `package-lock.json` by npm.
+
+During the `0.x` phase:
+
+- Use `npm run release:patch` for fixes and small compatible improvements.
+- Use `npm run release:minor` for larger changes or changes that may break existing behavior.
+- Reserve `npm run release:major` for the first stable release (`1.0.0`) and later breaking changes.
+
+Each release command updates the package files, creates a version commit, and adds a Git tag such as `v0.0.2`. Run it only from a clean working tree after `npm run check` succeeds, then push the commit and tag with `git push --follow-tags`.
 
 ## Project structure
 
