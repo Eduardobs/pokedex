@@ -17,6 +17,7 @@ const CENTER_Y = 160
 const CHART_RADIUS = 104
 const LABEL_RADIUS = 137
 const MAX_STAT = 255
+const RADAR_STAT_ORDER = ['hp', 'attack', 'defense', 'speed', 'special-defense', 'special-attack']
 
 function pointAt(index: number, count: number, radius: number) {
   const angle = -Math.PI / 2 + (index * Math.PI * 2) / count
@@ -36,16 +37,22 @@ function pointsFor(count: number, radiusAt: (index: number) => number) {
 export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStatsRadarProps) {
   const titleId = useId()
   const descriptionId = useId()
-  const statSummary = stats
+  const orderedStats = [...stats].sort((first, second) => {
+    const firstIndex = RADAR_STAT_ORDER.indexOf(first.stat.name)
+    const secondIndex = RADAR_STAT_ORDER.indexOf(second.stat.name)
+    return (firstIndex === -1 ? RADAR_STAT_ORDER.length : firstIndex)
+      - (secondIndex === -1 ? RADAR_STAT_ORDER.length : secondIndex)
+  })
+  const statSummary = orderedStats
     .map(({ base_stat, stat }) => `${statNames[stat.name] ?? stat.name}: ${baseLabel} ${base_stat}`)
     .join(', ')
 
-  if (stats.length < 3) return null
+  if (orderedStats.length < 3) return null
 
   const gridPoints = [0.25, 0.5, 0.75, 1].map((level) =>
-    pointsFor(stats.length, () => CHART_RADIUS * level))
-  const valuePoints = pointsFor(stats.length, (index) =>
-    CHART_RADIUS * Math.min(stats[index].base_stat / MAX_STAT, 1))
+    pointsFor(orderedStats.length, () => CHART_RADIUS * level))
+  const valuePoints = pointsFor(orderedStats.length, (index) =>
+    CHART_RADIUS * Math.min(orderedStats[index].base_stat / MAX_STAT, 1))
 
   return (
     <figure className="stats-radar">
@@ -59,23 +66,23 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
 
         <g className="radar-grid">
           {gridPoints.map((points, index) => <polygon key={index} points={points} />)}
-          {stats.map((_, index) => {
-            const edge = pointAt(index, stats.length, CHART_RADIUS)
+          {orderedStats.map((_, index) => {
+            const edge = pointAt(index, orderedStats.length, CHART_RADIUS)
             return <line key={index} x1={CENTER_X} y1={CENTER_Y} x2={edge.x} y2={edge.y} />
           })}
         </g>
 
         <polygon className="radar-area" points={valuePoints} />
         <g className="radar-points">
-          {stats.map(({ base_stat }, index) => {
-            const point = pointAt(index, stats.length, CHART_RADIUS * Math.min(base_stat / MAX_STAT, 1))
-            return <circle key={index} cx={point.x} cy={point.y} r="3.5" />
+          {orderedStats.map(({ base_stat, stat }, index) => {
+            const point = pointAt(index, orderedStats.length, CHART_RADIUS * Math.min(base_stat / MAX_STAT, 1))
+            return <circle key={stat.name} cx={point.x} cy={point.y} r="3.5" />
           })}
         </g>
 
         <g className="radar-labels">
-          {stats.map(({ base_stat, stat }, index) => {
-            const point = pointAt(index, stats.length, LABEL_RADIUS)
+          {orderedStats.map(({ base_stat, stat }, index) => {
+            const point = pointAt(index, orderedStats.length, LABEL_RADIUS)
             const anchor = point.x < CENTER_X - 10 ? 'end' : point.x > CENTER_X + 10 ? 'start' : 'middle'
             return (
               <text key={stat.name} x={point.x} y={point.y} textAnchor={anchor}>

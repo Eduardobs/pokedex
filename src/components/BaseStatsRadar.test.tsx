@@ -26,3 +26,31 @@ it('exibe somente os atributos base no radar', () => {
   expect(screen.queryByText('Nível 100')).not.toBeInTheDocument()
   expect(screen.queryByText('200–294')).not.toBeInTheDocument()
 })
+
+it('organiza os atributos na ordem definida para o radar', () => {
+  const { container } = render(<BaseStatsRadar
+    stats={stats}
+    statNames={{
+      hp: 'HP',
+      attack: 'Ataque',
+      defense: 'Defesa',
+      speed: 'Velocidade',
+      'special-attack': 'Atq. Especial',
+      'special-defense': 'Def. Especial',
+    }}
+    label="Atributos base"
+    baseLabel="Base"
+  />)
+
+  const labels = [...container.querySelectorAll('.radar-labels text')]
+    .map((element) => element.firstElementChild?.textContent)
+
+  expect(labels).toEqual([
+    'HP',
+    'Ataque',
+    'Defesa',
+    'Velocidade',
+    'Def. Especial',
+    'Atq. Especial',
+  ])
+})

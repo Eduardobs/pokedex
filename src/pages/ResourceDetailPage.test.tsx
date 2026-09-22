@@ -8,6 +8,41 @@ const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 
 describe('ResourceDetailPage berry presentation', () => {
+  it('renders location-area fields and encounter methods in Portuguese', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 283,
+        name: 'celadon-city-area',
+        game_index: 100,
+        encounter_method_rates: [{
+          encounter_method: { name: 'old-rod', url: 'https://pokeapi.co/api/v2/encounter-method/2/' },
+          version_details: [{ rate: 10, version: { name: 'firered', url: 'https://pokeapi.co/api/v2/version/10/' } }],
+        }],
+        location: { name: 'celadon-city', url: 'https://pokeapi.co/api/v2/location/67/' },
+        pokemon_encounters: [],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/location-area/283']}>
+        <LanguageProvider>
+          <Routes><Route path="explorar/:resource/:name" element={<ResourceDetailPage />} /></Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('heading', { name: 'Índice no jogo' })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Taxas por método de encontro' })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Local' })).toBeVisible()
+    expect(screen.getByText('Vara velha')).toBeVisible()
+    expect(screen.queryByText('Game Index')).not.toBeInTheDocument()
+    expect(screen.queryByText('Encounter Method Rates')).not.toBeInTheDocument()
+    expect(screen.queryByText('Location')).not.toBeInTheDocument()
+  })
+
   it('uses the referenced damage-class treatment on its catalog detail page', () => {
     useApiMock.mockReturnValue({
       data: { id: 2, name: 'special', names: [] },

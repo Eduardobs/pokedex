@@ -22,6 +22,22 @@ describe('ResourceValue', () => {
     expect(resourceFieldLabel('fling_effect', 'pt-BR')).toBe('Efeito de lançamento')
   })
 
+  it('localizes location-area and nested API fields in every supported language', () => {
+    expect(resourceFieldLabel('game_index', 'pt-BR')).toBe('Índice no jogo')
+    expect(resourceFieldLabel('encounter_method_rates', 'pt-BR')).toBe('Taxas por método de encontro')
+    expect(resourceFieldLabel('location', 'pt-BR')).toBe('Local')
+    expect(resourceFieldLabel('version_details', 'en')).toBe('Version details')
+    expect(resourceFieldLabel('encounter_method', 'es')).toBe('Método de encuentro')
+    expect(resourceFieldLabel('max_chance', 'es')).toBe('Probabilidad máxima')
+  })
+
+  it('localizes known API terms inside generic resource values', () => {
+    renderValue({ name: 'old-rod', url: `${API_BASE}/encounter-method/2/` })
+
+    expect(screen.getByRole('link', { name: /Vara velha/ })).toBeInTheDocument()
+    expect(screen.queryByText('Old Rod')).not.toBeInTheDocument()
+  })
+
   it('shows Pokémon arrays as paginated visual cards with artwork, name, and Pokédex number', () => {
     const values = Array.from({ length: 21 }, (_, index) => ({
       name: `pokemon-${index + 1}`,
