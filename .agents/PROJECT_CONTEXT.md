@@ -10,6 +10,7 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - Os links da linha evolutiva devem abrir a variedade padrão de cada espécie quando o nome da espécie e o nome roteável do Pokémon forem diferentes.
 - Os links das listagens de espécies devem abrir a variedade padrão roteável de cada Pokémon.
 - Listas de Pokémon relacionados em recursos de Explorar devem exibir imagem, nome, número e, quando pertinente, o dado que define a relação.
+- A lista de Pokémon necessários para evolução em páginas de gênero deve usar a variedade e a arte correspondentes ao gênero selecionado.
 - Classes de dano devem usar os sprites de categoria de Pokémon Scarlet/Violet fornecidos como referência, com as cores laranja, azul e cinza para Físico, Especial e Status, respectivamente.
 - Mapas de jogos devem preservar a geografia da versão representada e oferecer zoom detalhado, navegação e filtros de pontos de interesse acessíveis por teclado; a roda do mouse sobre o mapa deve controlar somente o zoom, sem rolar a página.
 - Mapas não devem deslocar a página ao alterar filtros nem exibir estado vazio quando nenhuma categoria estiver selecionada.

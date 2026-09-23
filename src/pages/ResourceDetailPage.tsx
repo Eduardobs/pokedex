@@ -37,6 +37,11 @@ const summaryFields: Record<string, string[]> = {
   region: ['main_generation', 'locations', 'pokedexes'],
 }
 
+function relatedPokemonGender(resource: string, key: string, name: unknown) {
+  if (resource !== 'gender' || key !== 'required_for_evolution') return undefined
+  return name === 'female' || name === 'male' ? name : undefined
+}
+
 function fieldIcon(key: string): LucideIcon {
   if (/(type|category|class|attribute|pocket)/.test(key)) return Tags
   if (/(effect|damage|power|chance|trigger)/.test(key)) return Zap
@@ -195,7 +200,10 @@ export function ResourceDetailPage() {
                   </span>
                   {resourceFieldLabel(key, language)}
                 </h3>
-                <ResourceValue value={value} />
+                <ResourceValue
+                  value={value}
+                  pokemonGender={relatedPokemonGender(resource, key, data.name)}
+                />
               </article>
             )
           })}
@@ -224,7 +232,10 @@ export function ResourceDetailPage() {
                     </span>
                     {resourceFieldLabel(key, language)}
                   </h3>
-                  <ResourceValue value={value} />
+                  <ResourceValue
+                    value={value}
+                    pokemonGender={relatedPokemonGender(resource, key, data.name)}
+                  />
                 </article>
               )
             })}

@@ -13,6 +13,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import type { Language, TranslationKey } from '../contexts/LanguageContext'
 import { getResourceLabel } from '../data/resources'
 import { messages } from '../i18n/messages'
+import { pokemonVariantForSpeciesGender } from '../lib/pokemon-species'
 import { parseRelatedPokemonList } from '../lib/related-pokemon'
 import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
 import { DamageClassBadge } from './SemanticBadges'
@@ -71,7 +72,17 @@ function referenceMeta(value: unknown, language: Language) {
   }
 }
 
-function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: number }) {
+type PokemonGender = 'female' | 'male'
+
+function PaginatedResourceValues({
+  values,
+  depth,
+  pokemonGender,
+}: {
+  values: unknown[]
+  depth: number
+  pokemonGender?: PokemonGender
+}) {
   const { language, t } = useLanguage()
   const [page, setPage] = useState(0)
   const pageCount = Math.ceil(values.length / PAGE_SIZE)
@@ -90,7 +101,7 @@ function PaginatedResourceValues({ values, depth }: { values: unknown[]; depth: 
                 {String(start + index + 1).padStart(2, '0')}
               </span>
               <div>
-                <ResourceValue value={item} depth={depth + 1} />
+                <ResourceValue value={item} depth={depth + 1} pokemonGender={pokemonGender} />
                 {reference && (
                   <small className="resource-value-meta">
                     {reference.endpoint} · {reference.identifier}
@@ -138,7 +149,13 @@ function relatedDatumValue(
   return localizedApiTerm(detail.value, language)
 }
 
-function RelatedPokemonValues({ values }: { values: RelatedPokemon[] }) {
+function RelatedPokemonValues({
+  values,
+  pokemonGender,
+}: {
+  values: RelatedPokemon[]
+  pokemonGender?: PokemonGender
+}) {
   const { language, t } = useLanguage()
   const [page, setPage] = useState(0)
   const pageCount = Math.ceil(values.length / PAGE_SIZE)
@@ -154,11 +171,12 @@ function RelatedPokemonValues({ values }: { values: RelatedPokemon[] }) {
         {values.slice(start, end).map((pokemon) => {
           const displayName = prettyName(pokemon.name)
           const displayNumber = `#${String(pokemon.id).padStart(4, '0')}`
+          const variant = pokemonVariantForSpeciesGender(pokemon.name, pokemon.id, pokemonGender)
           return (
             <li key={`${pokemon.id}-${pokemon.name}`}>
               <Link
                 className="related-pokemon-card"
-                to={`/pokemon/${encodeURIComponent(pokemon.name)}`}
+                to={`/pokemon/${encodeURIComponent(variant.name)}`}
                 aria-label={t('resource.openPokemon', {
                   name: displayName,
                   number: formatNumber(pokemon.id, language),
@@ -166,7 +184,7 @@ function RelatedPokemonValues({ values }: { values: RelatedPokemon[] }) {
               >
                 <span className="related-pokemon-art">
                   <img
-                    src={pokemonArtwork(pokemon.id)}
+                    src={pokemonArtwork(variant.artworkId)}
                     alt={displayName}
                     width="58"
                     height="58"
@@ -224,7 +242,15 @@ function RelatedPokemonValues({ values }: { values: RelatedPokemon[] }) {
   )
 }
 
-export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: number }) {
+export function ResourceValue({
+  value,
+  depth = 0,
+  pokemonGender,
+}: {
+  value: unknown
+  depth?: number
+  pokemonGender?: PokemonGender
+}) {
   const { language, t } = useLanguage()
   if (value === null || value === undefined) return <span className="muted">—</span>
   if (typeof value === 'boolean')
@@ -240,13 +266,14 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
   if (Array.isArray(value)) {
     if (!value.length) return <span className="muted">{t('resource.none')}</span>
     const relatedPokemon = parseRelatedPokemonList(value)
-    if (relatedPokemon) return <RelatedPokemonValues values={relatedPokemon} />
+    if (relatedPokemon)
+      return <RelatedPokemonValues values={relatedPokemon} pokemonGender={pokemonGender} />
     if (depth > 1 || value.length > 20)
-      return <PaginatedResourceValues values={value} depth={depth} />
+      return <PaginatedResourceValues values={value} depth={depth} pokemonGender={pokemonGender} />
     return (
       <div className="value-list">
         {value.slice(0, 20).map((item, index) => (
-          <ResourceValue key={index} value={item} depth={depth + 1} />
+          <ResourceValue key={index} value={item} depth={depth + 1} pokemonGender={pokemonGender} />
         ))}
       </div>
     )
@@ -277,7 +304,7 @@ export function ResourceValue({ value, depth = 0 }: { value: unknown; depth?: nu
         .map(([key, child]) => (
           <div className="nested-row" key={key}>
             <small>{resourceFieldLabel(key, language)}</small>
-            <ResourceValue value={child} depth={depth + 1} />
+            <ResourceValue value={child} depth={depth + 1} pokemonGender={pokemonGender} />
           </div>
         ))}
     </div>

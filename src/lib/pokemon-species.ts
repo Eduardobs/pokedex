@@ -42,6 +42,12 @@ const DEFAULT_VARIETY_BY_SPECIES: Readonly<Record<string, string>> = {
   dudunsparce: 'dudunsparce-two-segment',
 }
 
+const FEMALE_VARIETY_BY_SPECIES: Readonly<Record<string, { name: string; artworkId: number }>> = {
+  meowstic: { name: 'meowstic-female', artworkId: 10025 },
+  basculegion: { name: 'basculegion-female', artworkId: 10248 },
+  oinkologne: { name: 'oinkologne-female', artworkId: 10254 },
+}
+
 const POKEMON_COLOR_HEX: Record<string, string> = {
   black: '#30343b',
   blue: '#4a90d9',
@@ -65,4 +71,18 @@ export function pokemonColorHex(color: string) {
 
 export function defaultPokemonNameForSpecies(speciesName: string) {
   return DEFAULT_VARIETY_BY_SPECIES[speciesName] ?? speciesName
+}
+
+export function pokemonVariantForSpeciesGender(
+  speciesName: string,
+  speciesId: number,
+  gender?: 'female' | 'male',
+) {
+  const femaleVariety = gender === 'female' ? FEMALE_VARIETY_BY_SPECIES[speciesName] : undefined
+  return (
+    femaleVariety ?? {
+      name: defaultPokemonNameForSpecies(speciesName),
+      artworkId: speciesId,
+    }
+  )
 }

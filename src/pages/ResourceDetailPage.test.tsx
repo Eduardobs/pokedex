@@ -142,4 +142,36 @@ describe('ResourceDetailPage berry presentation', () => {
     expect(screen.getByRole('img', { name: 'Murkrow' })).toBeInTheDocument()
     expect(screen.getByText('#0198')).toBeInTheDocument()
   })
+
+  it('uses female varieties in the required-for-evolution cards on the female gender page', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 1,
+        name: 'female',
+        required_for_evolution: [
+          { name: 'meowstic', url: 'https://pokeapi.co/api/v2/pokemon-species/678/' },
+        ],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/gender/female']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const link = screen.getByRole('link', { name: 'Abrir Meowstic, Pokémon número 678' })
+    expect(link).toHaveAttribute('href', '/pokemon/meowstic-female')
+    expect(screen.getByRole('img', { name: 'Meowstic' })).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10025.png',
+    )
+  })
 })

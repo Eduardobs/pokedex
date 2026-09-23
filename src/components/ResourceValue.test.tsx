@@ -103,6 +103,20 @@ describe('ResourceValue', () => {
     expect(screen.getByText('#0001')).toBeInTheDocument()
   })
 
+  it('links gender species to a routable default Pokemon variety', () => {
+    renderValue([
+      {
+        rate: 4,
+        pokemon_species: { name: 'wormadam', url: `${API_BASE}/pokemon-species/413/` },
+      },
+    ])
+
+    expect(screen.getByRole('link', { name: /Abrir Wormadam/ })).toHaveAttribute(
+      'href',
+      '/pokemon/wormadam-plant',
+    )
+  })
+
   it('links Pokemon species references to the canonical Pokemon page', () => {
     renderValue({ name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` })
 

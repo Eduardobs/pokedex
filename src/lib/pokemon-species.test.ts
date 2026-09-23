@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   captureRatePercentage,
   defaultPokemonNameForSpecies,
+  pokemonVariantForSpeciesGender,
   pokemonColorHex,
 } from './pokemon-species'
 
@@ -69,5 +70,29 @@ describe('defaultPokemonNameForSpecies', () => {
 
   it('keeps the species name when the default variety uses the same name', () => {
     expect(defaultPokemonNameForSpecies('pikachu')).toBe('pikachu')
+  })
+})
+
+describe('pokemonVariantForSpeciesGender', () => {
+  it.each([
+    ['meowstic', 678, 'meowstic-female', 10025],
+    ['basculegion', 902, 'basculegion-female', 10248],
+    ['oinkologne', 916, 'oinkologne-female', 10254],
+  ])('selects the female %s variety and artwork', (species, id, name, artworkId) => {
+    expect(pokemonVariantForSpeciesGender(species, id, 'female')).toEqual({ name, artworkId })
+  })
+
+  it('preserves the default male variety', () => {
+    expect(pokemonVariantForSpeciesGender('meowstic', 678, 'male')).toEqual({
+      name: 'meowstic-male',
+      artworkId: 678,
+    })
+  })
+
+  it('uses the normal species presentation when there is no gender-specific variety', () => {
+    expect(pokemonVariantForSpeciesGender('vespiquen', 416, 'female')).toEqual({
+      name: 'vespiquen',
+      artworkId: 416,
+    })
   })
 })
