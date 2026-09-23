@@ -134,7 +134,7 @@ export function PokemonFormDirectoryCard({
   const baseAlt = `${labels.pokemon} — ${labels.variation}`
   return (
     <div ref={cardRef} className={`directory-form-card directory-${category}`}>
-      <Link to={`/pokemon/${data.pokemon.name}`}>
+      <Link to={`/pokemon/${data.pokemon.name}`} state={{ fromCatalog: 'forms' }}>
         <div className="directory-form-art">
           <span />
           {sortMetric && (

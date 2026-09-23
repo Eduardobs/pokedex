@@ -1,8 +1,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { PokemonFormDirectoryCard } from './PokemonFormDirectoryCard'
+import { PokemonDetailBackLink } from './pokemon-detail/PokemonDetailBackLink'
 
 const { retryMock, useApiMock } = vi.hoisted(() => ({ retryMock: vi.fn(), useApiMock: vi.fn() }))
 
@@ -80,6 +81,44 @@ describe('PokemonFormDirectoryCard', () => {
       'src',
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10034.png',
     )
+  })
+
+  it('identifies the forms catalog as the detail origin', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        pokemon: { name: 'charizard-mega-x', url: 'https://pokeapi.co/api/v2/pokemon/10034/' },
+        sprites: { front_default: 'charizard-mega-x.png', front_shiny: null },
+        types: [{ type: { name: 'fire', url: 'type/fire' } }],
+        is_battle_only: true,
+      },
+      loading: false,
+      error: null,
+    })
+    render(
+      <MemoryRouter initialEntries={['/formas']}>
+        <LanguageProvider>
+          <Routes>
+            <Route
+              path="/formas"
+              element={
+                <PokemonFormDirectoryCard
+                  resource={{
+                    name: 'charizard-mega-x',
+                    url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+                  }}
+                  category="mega"
+                />
+              }
+            />
+            <Route path="/pokemon/:name" element={<PokemonDetailBackLink />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    fireEvent.click(screen.getByRole('link'))
+
+    expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/formas')
   })
 
   it('shows shiny artwork for Zygarde Mega even when form sprites are null', () => {

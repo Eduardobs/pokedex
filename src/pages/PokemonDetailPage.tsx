@@ -22,6 +22,7 @@ import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
 import { PokemonBiologyCard } from '../components/pokemon-detail/PokemonBiologyCard'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
 import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounters'
+import { PokemonDetailBackLink } from '../components/pokemon-detail/PokemonDetailBackLink'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
@@ -263,9 +264,7 @@ export function PokemonDetailPage() {
     <section className={`pokemon-detail type-theme-${pokemon.types[0]?.type.name ?? 'normal'}`}>
       <div className="detail-hero content-width">
         <div className="detail-nav">
-          <Link to="/pokemon" className="back-link">
-            <ArrowLeft /> {t('nav.pokedex')}
-          </Link>
+          <PokemonDetailBackLink />
           <div>
             {previousPokemon && (
               <Link
