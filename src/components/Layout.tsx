@@ -64,15 +64,17 @@ export function Layout() {
                   ? t('maps.terrariumTitle')
                   : location.pathname === '/mapas/hisui-region'
                     ? t('maps.hisuiTitle')
-                    : location.pathname === '/mapas'
-                      ? t('maps.title')
-                      : location.pathname === '/favoritos'
-                        ? t('nav.favorites')
-                        : location.pathname.startsWith('/explorar')
-                          ? t('nav.explore')
-                          : location.pathname === '/'
-                            ? 'Atlas Pokémon'
-                            : t('error.notFoundTitle')
+                    : location.pathname === '/mapas/lumiose-city'
+                      ? t('maps.lumioseTitle')
+                      : location.pathname === '/mapas'
+                        ? t('maps.title')
+                        : location.pathname === '/favoritos'
+                          ? t('nav.favorites')
+                          : location.pathname.startsWith('/explorar')
+                            ? t('nav.explore')
+                            : location.pathname === '/'
+                              ? 'Atlas Pokémon'
+                              : t('error.notFoundTitle')
   const routeDescription = location.pathname.startsWith('/pokemon/')
     ? t('pokedex.description')
     : location.pathname === '/pokemon'

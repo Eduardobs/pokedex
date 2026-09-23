@@ -7,7 +7,7 @@ import { MapsPage } from './MapsPage'
 afterEach(cleanup)
 
 describe('MapsPage', () => {
-  it('makes Kanto, Scarlet and Violet, and the single Legends Arceus map available', () => {
+  it('makes every game and its available maps accessible', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
@@ -48,12 +48,22 @@ describe('MapsPage', () => {
       '/maps/legends-arceus-map.jpg',
     )
     expect(screen.getByText('2.525 pontos catalogados')).toBeVisible()
+    expect(screen.getByRole('link', { name: /Pokémon Legends: Z-A/i })).toHaveAttribute(
+      'href',
+      '/mapas/lumiose-city',
+    )
+    expect(screen.getByAltText(/arte de capa de Pokémon Legends: Z-A/i)).toHaveAttribute(
+      'src',
+      '/maps/pokemon-legends-za-cover.png',
+    )
+    expect(screen.getByText('1.979 pontos catalogados')).toBeVisible()
 
     expect(
       screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent),
     ).toEqual([
       'Pokémon FireRed & LeafGreen',
       'Pokémon Legends: Arceus',
+      'Pokémon Legends: Z-A',
       'Pokémon Scarlet & Violet',
     ])
   })

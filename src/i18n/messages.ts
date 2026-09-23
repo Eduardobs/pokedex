@@ -61,6 +61,11 @@ export const messages = {
     'maps.arceusDescription':
       'Explore a antiga região de Hisui e encontre Pokémon, materiais, missões e colecionáveis.',
     'maps.hisuiRegion': 'Região de Hisui',
+    'maps.legendsZaCoverAlt': 'Arte de capa de Pokémon Legends: Z-A em Lumiose City',
+    'maps.legendsZaGeneration': 'Geração IX',
+    'maps.legendsZaDescription':
+      'Explore cada rua e telhado de Lumiose City em busca de Pokémon, missões, itens e colecionáveis.',
+    'maps.lumioseCity': 'Lumiose City',
     'maps.chooseRegion': 'Escolha um mapa',
     'maps.paldeaRegion': 'Região de Paldea',
     'maps.kitakamiRegion': 'Região de Kitakami',
@@ -72,6 +77,7 @@ export const messages = {
     'maps.kitakamiTitle': 'Mapa interativo de Kitakami',
     'maps.terrariumTitle': 'Mapa interativo do Terarium',
     'maps.hisuiTitle': 'Mapa interativo de Hisui',
+    'maps.lumioseTitle': 'Mapa interativo de Lumiose City',
     'maps.points': 'pontos',
     'maps.categories': 'categorias',
     'maps.catalogSummary': 'Resumo do catálogo do mapa',
@@ -97,6 +103,8 @@ export const messages = {
       'Mapa do Terarium. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
     'maps.hisuiViewportLabel':
       'Mapa de Hisui. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
+    'maps.lumioseViewportLabel':
+      'Mapa de Lumiose City. Use as setas para mover, mais e menos para ampliar e zero para restaurar.',
     'maps.zoomControls': 'Controles do mapa',
     'maps.zoomIn': 'Ampliar mapa',
     'maps.zoomOut': 'Reduzir mapa',
@@ -195,6 +203,18 @@ export const messages = {
     'maps.category.unownPokemon': 'Unown',
     'maps.category.pokemon': 'Pokémon',
     'maps.category.material': 'Material',
+    'maps.category.holovator': 'Holovator',
+    'maps.category.wildZone': 'Zona Selvagem',
+    'maps.category.boutique': 'Boutique',
+    'maps.category.cafe': 'Café',
+    'maps.category.hairSalon': 'Salão de beleza',
+    'maps.category.restaurant': 'Restaurante',
+    'maps.category.colorfulScrew': 'Parafuso colorido',
+    'maps.category.megaStone': 'Megapedra',
+    'maps.category.mainMission': 'Missão principal',
+    'maps.category.promotionMatch': 'Batalha de promoção',
+    'maps.category.ladder': 'Escada',
+    'maps.category.megaPokemon': 'Pokémon Mega Evoluído',
     'maps.marker.areaSummary': 'Área importante na jornada pela região de Kanto.',
     'maps.marker.centerSummary': 'Local para curar a equipe e acessar serviços essenciais.',
     'maps.marker.gymSummary': 'Batalha de Ginásio necessária para avançar na Liga Pokémon.',
@@ -257,6 +277,18 @@ export const messages = {
     'maps.marker.hisuiPokemonSummary': 'Avistamento ou encontro com Pokémon neste ponto de Hisui.',
     'maps.marker.hisuiMaterialSummary':
       'Material de criação que pode ser coletado neste ponto de Hisui.',
+    'maps.marker.lumioseLocationSummary':
+      'Local importante para navegação e exploração de Lumiose City.',
+    'maps.marker.lumioseServiceSummary': 'Serviço disponível durante a aventura por Lumiose City.',
+    'maps.marker.lumioseCollectibleSummary':
+      'Colecionável encontrado durante a exploração de Lumiose City.',
+    'maps.marker.lumioseItemSummary': 'Item que pode ser obtido neste ponto de Lumiose City.',
+    'maps.marker.lumioseMissionSummary': 'Objetivo de missão disponível em Lumiose City.',
+    'maps.marker.lumioseBattleSummary': 'Batalha importante na jornada pelo Z-A Royale.',
+    'maps.marker.lumioseOtherSummary':
+      'Personagem ou recurso adicional para explorar Lumiose City.',
+    'maps.marker.lumiosePokemonSummary':
+      'Avistamento ou encontro especial com Pokémon em Lumiose City.',
     'pokedex.eyebrow': 'POKÉDEX NACIONAL',
     'pokedex.title': 'Encontre seu Pokémon',
     'pokedex.description': 'Explore cada espécie descoberta e seus dados completos.',
@@ -938,6 +970,11 @@ export const messages = {
     'maps.arceusDescription':
       'Explore ancient Hisui and find Pokémon, materials, missions, and collectibles.',
     'maps.hisuiRegion': 'Hisui region',
+    'maps.legendsZaCoverAlt': 'Pokémon Legends: Z-A cover artwork set in Lumiose City',
+    'maps.legendsZaGeneration': 'Generation IX',
+    'maps.legendsZaDescription':
+      'Explore every street and rooftop in Lumiose City to find Pokémon, missions, items, and collectibles.',
+    'maps.lumioseCity': 'Lumiose City',
     'maps.chooseRegion': 'Choose a map',
     'maps.paldeaRegion': 'Paldea region',
     'maps.kitakamiRegion': 'Kitakami region',
@@ -949,6 +986,7 @@ export const messages = {
     'maps.kitakamiTitle': 'Interactive Kitakami map',
     'maps.terrariumTitle': 'Interactive Terarium map',
     'maps.hisuiTitle': 'Interactive Hisui map',
+    'maps.lumioseTitle': 'Interactive Lumiose City map',
     'maps.points': 'points',
     'maps.categories': 'categories',
     'maps.catalogSummary': 'Map catalog summary',
@@ -974,6 +1012,8 @@ export const messages = {
       'Terarium map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
     'maps.hisuiViewportLabel':
       'Hisui map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
+    'maps.lumioseViewportLabel':
+      'Lumiose City map. Use arrow keys to move, plus and minus to zoom, and zero to reset.',
     'maps.zoomControls': 'Map controls',
     'maps.zoomIn': 'Zoom in',
     'maps.zoomOut': 'Zoom out',
@@ -1072,6 +1112,18 @@ export const messages = {
     'maps.category.unownPokemon': 'Unown',
     'maps.category.pokemon': 'Pokémon',
     'maps.category.material': 'Material',
+    'maps.category.holovator': 'Holovator',
+    'maps.category.wildZone': 'Wild Zone',
+    'maps.category.boutique': 'Boutique',
+    'maps.category.cafe': 'Café',
+    'maps.category.hairSalon': 'Hair Salon',
+    'maps.category.restaurant': 'Restaurant',
+    'maps.category.colorfulScrew': 'Colorful Screw',
+    'maps.category.megaStone': 'Mega Stone',
+    'maps.category.mainMission': 'Main Mission',
+    'maps.category.promotionMatch': 'Promotion Match',
+    'maps.category.ladder': 'Ladder',
+    'maps.category.megaPokemon': 'Mega Pokémon',
     'maps.marker.areaSummary': 'An important area on the journey through the Kanto region.',
     'maps.marker.centerSummary': 'A place to heal your team and access essential services.',
     'maps.marker.gymSummary': 'A Gym battle required to advance through the Pokémon League.',
@@ -1134,6 +1186,18 @@ export const messages = {
     'maps.marker.hisuiPokemonSummary': 'A Pokémon sighting or encounter at this point in Hisui.',
     'maps.marker.hisuiMaterialSummary':
       'A crafting material that can be collected at this point in Hisui.',
+    'maps.marker.lumioseLocationSummary':
+      'An important location for navigation and exploration in Lumiose City.',
+    'maps.marker.lumioseServiceSummary':
+      'A service available during the adventure through Lumiose City.',
+    'maps.marker.lumioseCollectibleSummary': 'A collectible found while exploring Lumiose City.',
+    'maps.marker.lumioseItemSummary': 'An item that can be obtained at this point in Lumiose City.',
+    'maps.marker.lumioseMissionSummary': 'A mission objective available in Lumiose City.',
+    'maps.marker.lumioseBattleSummary':
+      'An important battle on the journey through the Z-A Royale.',
+    'maps.marker.lumioseOtherSummary':
+      'A character or additional resource for exploring Lumiose City.',
+    'maps.marker.lumiosePokemonSummary': 'A Pokémon sighting or special encounter in Lumiose City.',
     'pokedex.eyebrow': 'NATIONAL POKÉDEX',
     'pokedex.title': 'Find your Pokémon',
     'pokedex.description': 'Explore every discovered species and its complete data.',
@@ -1814,6 +1878,11 @@ export const messages = {
     'maps.arceusDescription':
       'Explora la antigua región de Hisui y encuentra Pokémon, materiales, misiones y coleccionables.',
     'maps.hisuiRegion': 'Región de Hisui',
+    'maps.legendsZaCoverAlt': 'Arte de portada de Pokémon Legends: Z-A en Ciudad Luminalia',
+    'maps.legendsZaGeneration': 'Generación IX',
+    'maps.legendsZaDescription':
+      'Explora cada calle y azotea de Ciudad Luminalia para encontrar Pokémon, misiones, objetos y coleccionables.',
+    'maps.lumioseCity': 'Ciudad Luminalia',
     'maps.chooseRegion': 'Elige un mapa',
     'maps.paldeaRegion': 'Región de Paldea',
     'maps.kitakamiRegion': 'Región de Kitakami',
@@ -1825,6 +1894,7 @@ export const messages = {
     'maps.kitakamiTitle': 'Mapa interactivo de Kitakami',
     'maps.terrariumTitle': 'Mapa interactivo del Terarium',
     'maps.hisuiTitle': 'Mapa interactivo de Hisui',
+    'maps.lumioseTitle': 'Mapa interactivo de Ciudad Luminalia',
     'maps.points': 'puntos',
     'maps.categories': 'categorías',
     'maps.catalogSummary': 'Resumen del catálogo del mapa',
@@ -1850,6 +1920,8 @@ export const messages = {
       'Mapa del Terarium. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
     'maps.hisuiViewportLabel':
       'Mapa de Hisui. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
+    'maps.lumioseViewportLabel':
+      'Mapa de Ciudad Luminalia. Usa las flechas para mover, más y menos para ampliar y cero para restaurar.',
     'maps.zoomControls': 'Controles del mapa',
     'maps.zoomIn': 'Ampliar mapa',
     'maps.zoomOut': 'Reducir mapa',
@@ -1948,6 +2020,18 @@ export const messages = {
     'maps.category.unownPokemon': 'Unown',
     'maps.category.pokemon': 'Pokémon',
     'maps.category.material': 'Material',
+    'maps.category.holovator': 'Holovator',
+    'maps.category.wildZone': 'Zona salvaje',
+    'maps.category.boutique': 'Boutique',
+    'maps.category.cafe': 'Cafetería',
+    'maps.category.hairSalon': 'Peluquería',
+    'maps.category.restaurant': 'Restaurante',
+    'maps.category.colorfulScrew': 'Tornillo de colores',
+    'maps.category.megaStone': 'Megapiedra',
+    'maps.category.mainMission': 'Misión principal',
+    'maps.category.promotionMatch': 'Combate de promoción',
+    'maps.category.ladder': 'Escalera',
+    'maps.category.megaPokemon': 'Pokémon megaevolucionado',
     'maps.marker.areaSummary': 'Un área importante en el viaje por la región de Kanto.',
     'maps.marker.centerSummary': 'Un lugar para curar al equipo y acceder a servicios esenciales.',
     'maps.marker.gymSummary': 'Combate de Gimnasio necesario para avanzar en la Liga Pokémon.',
@@ -2015,6 +2099,21 @@ export const messages = {
       'Un avistamiento o encuentro con Pokémon en este punto de Hisui.',
     'maps.marker.hisuiMaterialSummary':
       'Un material de fabricación que se puede recoger en este punto de Hisui.',
+    'maps.marker.lumioseLocationSummary':
+      'Un lugar importante para navegar y explorar Ciudad Luminalia.',
+    'maps.marker.lumioseServiceSummary':
+      'Un servicio disponible durante la aventura por Ciudad Luminalia.',
+    'maps.marker.lumioseCollectibleSummary':
+      'Un coleccionable encontrado durante la exploración de Ciudad Luminalia.',
+    'maps.marker.lumioseItemSummary':
+      'Un objeto que se puede obtener en este punto de Ciudad Luminalia.',
+    'maps.marker.lumioseMissionSummary': 'Un objetivo de misión disponible en Ciudad Luminalia.',
+    'maps.marker.lumioseBattleSummary':
+      'Un combate importante durante el recorrido por el Royale Z-A.',
+    'maps.marker.lumioseOtherSummary':
+      'Un personaje o recurso adicional para explorar Ciudad Luminalia.',
+    'maps.marker.lumiosePokemonSummary':
+      'Un avistamiento o encuentro especial con Pokémon en Ciudad Luminalia.',
     'pokedex.eyebrow': 'POKÉDEX NACIONAL',
     'pokedex.title': 'Encuentra tu Pokémon',
     'pokedex.description': 'Explora cada especie descubierta y todos sus datos.',

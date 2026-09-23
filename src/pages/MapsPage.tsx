@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { formatNumber } from '../lib/api'
 import { MAP_TOTAL } from '../data/kanto-map'
 import { HISUI_TOTAL } from '../data/hisui-map'
+import { LUMIOSE_TOTAL } from '../data/lumiose-map'
 
 export function MapsPage() {
   const { language, t } = useLanguage()
@@ -71,6 +72,32 @@ export function MapsPage() {
             <div className="game-map-card-meta">
               <span>{t('maps.hisuiRegion')}</span>
               <span>{t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) })}</span>
+            </div>
+            <span className="game-map-open">
+              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
+            </span>
+          </div>
+        </Link>
+
+        <Link className="game-map-card game-map-card--legends-za" to="/mapas/lumiose-city">
+          <div className="game-map-cover">
+            <img
+              src={`${import.meta.env.BASE_URL}maps/pokemon-legends-za-cover.png`}
+              alt={t('maps.legendsZaCoverAlt')}
+              width="600"
+              height="900"
+            />
+            <span className="game-map-generation">{t('maps.legendsZaGeneration')}</span>
+          </div>
+          <div className="game-map-card-copy">
+            <span className="game-map-platform">
+              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch · Nintendo Switch 2
+            </span>
+            <h2>Pokémon Legends: Z-A</h2>
+            <p>{t('maps.legendsZaDescription')}</p>
+            <div className="game-map-card-meta">
+              <span>{t('maps.lumioseCity')}</span>
+              <span>{t('maps.pointCount', { count: formatNumber(LUMIOSE_TOTAL, language) })}</span>
             </div>
             <span className="game-map-open">
               {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />

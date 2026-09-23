@@ -15,6 +15,7 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - Mapas não devem deslocar a página ao alterar filtros nem exibir estado vazio quando nenhuma categoria estiver selecionada.
 - Pokémon Scarlet/Violet deve oferecer mapas distintos para Paldea, Kitakami e Terarium.
 - Pokémon Legends: Arceus deve oferecer apenas o mapa da região de Hisui (`hisui-region`).
+- Pokémon Legends: Z-A deve oferecer apenas o mapa de Lumiose City (`lumiose-city`).
 
 ## Manutenção
 

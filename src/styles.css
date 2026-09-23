@@ -6156,6 +6156,22 @@ footer a {
   object-fit: contain;
   filter: saturate(0.96) contrast(1.02);
 }
+.game-map-card--legends-za .game-map-cover {
+  background: linear-gradient(180deg, #172641 0 58%, #263b55 100%);
+}
+.game-map-card--legends-za .game-map-cover::before {
+  z-index: 1;
+  background: linear-gradient(180deg, #07111d14, #07111d66);
+  transform: none;
+}
+.game-map-card--legends-za .game-map-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.96) contrast(1.03);
+}
 .game-map-generation {
   position: absolute;
   z-index: 2;
@@ -6899,6 +6915,23 @@ footer a {
   border-color: #8d7245;
   background: #3c3120;
   color: #ddc28e;
+}
+.game-map-page--lumiose .map-header-stats .map-region-chip {
+  border-color: #69a980;
+  background: #e9f8ee;
+  color: #287046;
+}
+.game-map-page--lumiose .map-viewport,
+.game-map-page--lumiose .map-canvas,
+:root[data-theme='dark'] .game-map-page--lumiose .map-viewport,
+:root[data-theme='dark'] .game-map-page--lumiose .map-canvas {
+  border-color: #506b82;
+  background-color: #172b3f;
+}
+:root[data-theme='dark'] .game-map-page--lumiose .map-header-stats .map-region-chip {
+  border-color: #4b8c63;
+  background: #1e3c2a;
+  color: #9ad7ae;
 }
 
 @media (max-width: 950px) {
