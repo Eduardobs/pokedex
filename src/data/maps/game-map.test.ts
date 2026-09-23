@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  createGameMap,
-  createGameMapCatalog,
-  gameMapCategory,
-  parseGameMapMarkers,
-} from './game-map'
+import { createGameMap, createGameMapCatalog, gameMapCategory, parseGameMapMarkers } from './game-map'
 
 const categories = new Set(['location'])
 const bounds = { width: 100, height: 100 }
@@ -35,9 +30,7 @@ describe('parseGameMapMarkers', () => {
       ],
     },
   ])('rejects malformed marker catalogs', ({ markers }) => {
-    expect(() => parseGameMapMarkers(markers, categories, bounds, 'Paldea')).toThrow(
-      /Invalid Paldea marker/,
-    )
+    expect(() => parseGameMapMarkers(markers, categories, bounds, 'Paldea')).toThrow(/Invalid Paldea marker/)
   })
 })
 
@@ -81,9 +74,7 @@ describe('createGameMap', () => {
       '#123456',
       'area',
     )
-    const groups = [
-      { id: 'locations', labelKey: 'maps.group.locations' as const, categories: [location] },
-    ]
+    const groups = [{ id: 'locations', labelKey: 'maps.group.locations' as const, categories: [location] }]
     const marker = {
       id: '1',
       name: 'Mesagoza',

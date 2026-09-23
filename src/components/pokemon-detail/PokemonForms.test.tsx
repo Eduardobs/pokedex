@@ -1,26 +1,24 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { LanguageProvider } from '../contexts/LanguageContext'
-import type { Pokemon, PokemonForm, Species } from '../types'
+import { LanguageProvider } from '../../contexts/LanguageContext'
+import type { Pokemon, PokemonForm, Species } from '../../types'
 import { PokemonForms } from './PokemonForms'
 
 const { apiFetchMock } = vi.hoisted(() => ({ apiFetchMock: vi.fn() }))
 
-vi.mock('../lib/api', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../lib/api')>()),
+vi.mock('../../lib/api', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/api')>()),
   apiFetch: apiFetchMock,
 }))
 
 const pokemonUrl = 'https://pokeapi.co/api/v2/pokemon/412/'
 const plantFormUrl = 'https://pokeapi.co/api/v2/pokemon-form/412/'
 const sandyFormUrl = 'https://pokeapi.co/api/v2/pokemon-form/10034/'
-const pokemonSprite =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png'
+const pokemonSprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png'
 const officialArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412.png'
-const sandySprite =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412-sandy.png'
+const sandySprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412-sandy.png'
 const sandyArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412-sandy.png'
 
@@ -76,13 +74,7 @@ const pokemon: Pokemon = {
   game_indices: [],
 }
 
-function pokemonForm(
-  id: number,
-  name: string,
-  formName: string,
-  isDefault: boolean,
-  sprite: string,
-): PokemonForm {
+function pokemonForm(id: number, name: string, formName: string, isDefault: boolean, sprite: string): PokemonForm {
   return {
     id,
     name,
@@ -130,10 +122,7 @@ describe('PokemonForms', () => {
       </MemoryRouter>,
     )
 
-    expect(await screen.findByRole('img', { name: 'Forma padrão' })).toHaveAttribute(
-      'src',
-      officialArtwork,
-    )
+    expect(await screen.findByRole('img', { name: 'Forma padrão' })).toHaveAttribute('src', officialArtwork)
     const sandyImage = screen.getByRole('img', { name: 'Sandy' })
     expect(sandyImage).toHaveAttribute('src', sandyArtwork)
 

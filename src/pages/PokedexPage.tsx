@@ -52,17 +52,12 @@ export function PokedexPage() {
   const sortError = sorting.error
   const rarityError = rarity.error
   const regionError = regions.error
-  const endpoint =
-    type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
-  const { data, loading, error, retry } = useApi<
-    ApiList | { pokemon: { pokemon: NamedResource }[] }
-  >(endpoint)
+  const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
+  const { data, loading, error, retry } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
 
   const catalog = useMemo<PokemonListItem[]>(() => {
     if (!data) return []
-    return pokemonListItems(
-      'results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon),
-    )
+    return pokemonListItems('results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon))
   }, [data])
   const scopedCatalog = useMemo(
     () =>
@@ -75,10 +70,7 @@ export function PokedexPage() {
       }),
     [catalog, legendary, mythical, rarityDetails, region, regionDetails],
   )
-  const filteredPokemon = useMemo(
-    () => filterPokemonList(scopedCatalog, deferredQuery),
-    [deferredQuery, scopedCatalog],
-  )
+  const filteredPokemon = useMemo(() => filterPokemonList(scopedCatalog, deferredQuery), [deferredQuery, scopedCatalog])
   const suggestions = useMemo(
     () => pokemonSearchSuggestions(scopedCatalog, deferredQuery),
     [deferredQuery, scopedCatalog],
@@ -87,10 +79,7 @@ export function PokedexPage() {
     () => sortPokemonList(filteredPokemon, sort, direction, pokemonDetails, language),
     [direction, filteredPokemon, language, pokemonDetails, sort],
   )
-  const visiblePokemon = useMemo(
-    () => sortedPokemon.slice(0, visibleCount),
-    [sortedPokemon, visibleCount],
-  )
+  const visiblePokemon = useMemo(() => sortedPokemon.slice(0, visibleCount), [sortedPokemon, visibleCount])
   const total = catalog.length
   const hasMore = visibleCount < sortedPokemon.length
 
@@ -128,11 +117,7 @@ export function PokedexPage() {
         description={t('pokedex.description')}
         aside={
           <div className="result-count" aria-live="polite">
-            <b>
-              {isFilterPending
-                ? '…'
-                : formatNumber(hasResultFilter ? filteredPokemon.length : total, language)}
-            </b>
+            <b>{isFilterPending ? '…' : formatNumber(hasResultFilter ? filteredPokemon.length : total, language)}</b>
             <span>{hasResultFilter ? t('pokedex.results') : t('pokedex.registered')}</span>
           </div>
         }
@@ -171,50 +156,27 @@ export function PokedexPage() {
       {(loading && !catalog.length) || isFilterPending ? (
         <CardSkeleton count={12} />
       ) : regionError && region !== 'all' && !regionDetails ? (
-        <InlineRetryError
-          message={t('pokedex.region.error')}
-          retryLabel={t('common.retry')}
-          onRetry={regions.retry}
-        />
+        <InlineRetryError message={t('pokedex.region.error')} retryLabel={t('common.retry')} onRetry={regions.retry} />
       ) : rarityError && hasRarityFilter && !rarityDetails ? (
-        <InlineRetryError
-          message={t('pokedex.rarity.error')}
-          retryLabel={t('common.retry')}
-          onRetry={rarity.retry}
-        />
+        <InlineRetryError message={t('pokedex.rarity.error')} retryLabel={t('common.retry')} onRetry={rarity.retry} />
       ) : error && !catalog.length ? (
-        <InlineRetryError
-          message={t('pokedex.loadError')}
-          retryLabel={t('common.retry')}
-          onRetry={retry}
-        />
+        <InlineRetryError message={t('pokedex.loadError')} retryLabel={t('common.retry')} onRetry={retry} />
       ) : visiblePokemon.length ? (
         <div className="pokemon-grid">
           {visiblePokemon.map((pokemon) => {
             const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
-            const sortMetric =
-              value === undefined ? undefined : { label: selectedSortMetric, value }
-            return (
-              <PokemonCard key={pokemon.name} {...pokemon} sortMetric={sortMetric} shiny={shiny} />
-            )
+            const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }
+            return <PokemonCard key={pokemon.name} {...pokemon} sortMetric={sortMetric} shiny={shiny} />
           })}
         </div>
       ) : (
-        <EmptyState
-          icon={<Search />}
-          title={t('pokedex.empty')}
-          description={t('pokedex.tryAnother')}
-        />
+        <EmptyState icon={<Search />} title={t('pokedex.empty')} description={t('pokedex.tryAnother')} />
       )}
       {hasMore && (
         <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite">
           <span className="pokeball-spinner" />
           <button onClick={loadMore} disabled={loading || sortingDetails}>
-            {loading
-              ? t('pokedex.loadingMore')
-              : sortingDetails
-                ? t('pokedex.sort.loading')
-                : t('pokedex.loadMore')}
+            {loading ? t('pokedex.loadingMore') : sortingDetails ? t('pokedex.sort.loading') : t('pokedex.loadMore')}
           </button>
         </div>
       )}

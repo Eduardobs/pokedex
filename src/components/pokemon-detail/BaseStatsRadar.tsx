@@ -51,9 +51,7 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
 
   if (orderedStats.length < 3) return null
 
-  const gridPoints = [0.25, 0.5, 0.75, 1].map((level) =>
-    pointsFor(orderedStats.length, () => CHART_RADIUS * level),
-  )
+  const gridPoints = [0.25, 0.5, 0.75, 1].map((level) => pointsFor(orderedStats.length, () => CHART_RADIUS * level))
   const valuePoints = pointsFor(
     orderedStats.length,
     (index) => CHART_RADIUS * Math.min(orderedStats[index].base_stat / MAX_STAT, 1),
@@ -78,11 +76,7 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
         <polygon className="radar-area" points={valuePoints} />
         <g className="radar-points">
           {orderedStats.map(({ base_stat, stat }, index) => {
-            const point = pointAt(
-              index,
-              orderedStats.length,
-              CHART_RADIUS * Math.min(base_stat / MAX_STAT, 1),
-            )
+            const point = pointAt(index, orderedStats.length, CHART_RADIUS * Math.min(base_stat / MAX_STAT, 1))
             return <circle key={stat.name} cx={point.x} cy={point.y} r="3.5" />
           })}
         </g>
@@ -90,8 +84,7 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
         <g className="radar-labels">
           {orderedStats.map(({ base_stat, stat }, index) => {
             const point = pointAt(index, orderedStats.length, LABEL_RADIUS)
-            const anchor =
-              point.x < CENTER_X - 10 ? 'end' : point.x > CENTER_X + 10 ? 'start' : 'middle'
+            const anchor = point.x < CENTER_X - 10 ? 'end' : point.x > CENTER_X + 10 ? 'start' : 'middle'
             return (
               <text key={stat.name} x={point.x} y={point.y} textAnchor={anchor}>
                 <tspan x={point.x}>{statNames[stat.name] ?? stat.name}</tspan>

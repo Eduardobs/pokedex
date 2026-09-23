@@ -155,9 +155,7 @@ export function PokemonCatalogFilters({
             aria-autocomplete="list"
             aria-expanded={suggestionsOpen && suggestions.length > 0}
             aria-controls={suggestionListId}
-            aria-activedescendant={
-              activeSuggestion >= 0 ? `${idPrefix}-suggestion-${activeSuggestion}` : undefined
-            }
+            aria-activedescendant={activeSuggestion >= 0 ? `${idPrefix}-suggestion-${activeSuggestion}` : undefined}
             aria-label={searchLabel}
             onFocus={() => setSuggestionsOpen(true)}
             onBlur={() => setSuggestionsOpen(false)}
@@ -188,13 +186,7 @@ export function PokemonCatalogFilters({
         </div>
         <SelectMenu
           className="region-field"
-          icon={
-            regionPending ? (
-              <LoaderCircle className="sort-spinner" size={18} />
-            ) : (
-              <MapPin size={18} />
-            )
-          }
+          icon={regionPending ? <LoaderCircle className="sort-spinner" size={18} /> : <MapPin size={18} />}
           label={t('pokedex.region.label')}
           options={regionOptions}
           value={region}
@@ -202,13 +194,7 @@ export function PokemonCatalogFilters({
         />
         <div className="sort-controls">
           <SelectMenu
-            icon={
-              sorting ? (
-                <LoaderCircle className="sort-spinner" size={18} />
-              ) : (
-                <ArrowUpDown size={18} />
-              )
-            }
+            icon={sorting ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
             label={t('pokedex.sort.label')}
             options={options}
             value={sort}
@@ -246,11 +232,7 @@ export function PokemonCatalogFilters({
               {additionalFilterCount}
             </span>
           )}
-          <ChevronDown
-            className={additionalFiltersOpen ? 'open' : ''}
-            size={17}
-            aria-hidden="true"
-          />
+          <ChevronDown className={additionalFiltersOpen ? 'open' : ''} size={17} aria-hidden="true" />
         </button>
         <div className="filter-end-actions">
           {hasActiveFilters && (
@@ -278,10 +260,7 @@ export function PokemonCatalogFilters({
             {POKEMON_TYPES.map((item) => {
               const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
               return (
-                <label
-                  className={`type-filter-option${item === 'all' ? ' type-all' : ` type-${item}`}`}
-                  key={item}
-                >
+                <label className={`type-filter-option${item === 'all' ? ' type-all' : ` type-${item}`}`} key={item}>
                   <input
                     type="radio"
                     name={`${idPrefix}-type`}

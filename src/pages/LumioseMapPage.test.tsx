@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { LUMIOSE_CATEGORIES, LUMIOSE_MARKERS } from '../data/lumiose-map'
+import { LUMIOSE_CATEGORIES, LUMIOSE_MARKERS } from '../data/maps/lumiose-map'
 import { LumioseMapPage } from './LumioseMapPage'
 
 function renderPage() {
@@ -52,9 +52,9 @@ describe('LumioseMapPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ampliar mapa' }))
     fireEvent.click(screen.getByRole('button', { name: 'Ampliar mapa' }))
 
-    const topRightTile = Array.from(
-      container.querySelectorAll<HTMLImageElement>('.map-tile-layer img'),
-    ).find((tile) => tile.style.left === '8192px' && tile.style.top === '0px')
+    const topRightTile = Array.from(container.querySelectorAll<HTMLImageElement>('.map-tile-layer img')).find(
+      (tile) => tile.style.left === '8192px' && tile.style.top === '0px',
+    )
 
     expect(topRightTile).toHaveAttribute(
       'src',

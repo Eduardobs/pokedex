@@ -73,11 +73,7 @@ export function defaultPokemonNameForSpecies(speciesName: string) {
   return DEFAULT_VARIETY_BY_SPECIES[speciesName] ?? speciesName
 }
 
-export function pokemonVariantForSpeciesGender(
-  speciesName: string,
-  speciesId: number,
-  gender?: 'female' | 'male',
-) {
+export function pokemonVariantForSpeciesGender(speciesName: string, speciesId: number, gender?: 'female' | 'male') {
   const femaleVariety = gender === 'female' ? FEMALE_VARIETY_BY_SPECIES[speciesName] : undefined
   return (
     femaleVariety ?? {

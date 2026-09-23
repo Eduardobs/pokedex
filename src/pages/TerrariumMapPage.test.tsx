@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { TERRARIUM_CATEGORIES, TERRARIUM_MARKERS } from '../data/terrarium-map'
+import { TERRARIUM_CATEGORIES, TERRARIUM_MARKERS } from '../data/maps/terrarium-map'
 import { TerrariumMapPage } from './TerrariumMapPage'
 
 function renderPage() {

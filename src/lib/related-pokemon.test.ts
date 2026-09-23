@@ -26,8 +26,6 @@ describe('related Pokémon lists', () => {
         { name: 'not-a-pokemon', url: `${API_BASE}/ability/65/` },
       ]),
     ).toBe(false)
-    expect(
-      isRelatedPokemonList([{ name: 'unsafe', url: 'https://example.com/api/v2/pokemon/1/' }]),
-    ).toBe(false)
+    expect(isRelatedPokemonList([{ name: 'unsafe', url: 'https://example.com/api/v2/pokemon/1/' }])).toBe(false)
   })
 })

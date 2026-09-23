@@ -22,11 +22,8 @@ export function FavoritesPage() {
     { value: 'name', label: t('favorites.sortName') },
   ]
   const visibleFavorites = useMemo(() => {
-    const filtered = favorites.filter((name) =>
-      normalizeSearchText(name).includes(normalizeSearchText(query)),
-    )
-    if (sort === 'name')
-      return [...filtered].sort((left, right) => new Intl.Collator(language).compare(left, right))
+    const filtered = favorites.filter((name) => normalizeSearchText(name).includes(normalizeSearchText(query)))
+    if (sort === 'name') return [...filtered].sort((left, right) => new Intl.Collator(language).compare(left, right))
     return [...filtered].reverse()
   }, [favorites, language, query, sort])
   return (
@@ -40,9 +37,7 @@ export function FavoritesPage() {
             <div className="result-count">
               <b>{favorites.length}</b>
               <span>
-                {favorites.length === 1
-                  ? t('favorites.countOne')
-                  : t('favorites.count', { count: favorites.length })}
+                {favorites.length === 1 ? t('favorites.countOne') : t('favorites.count', { count: favorites.length })}
               </span>
             </div>
           ) : undefined
@@ -73,11 +68,7 @@ export function FavoritesPage() {
               ))}
             </div>
           ) : (
-            <EmptyState
-              icon={<Search />}
-              title={t('pokedex.empty')}
-              description={prettyName(query)}
-            />
+            <EmptyState icon={<Search />} title={t('pokedex.empty')} description={prettyName(query)} />
           )}
         </>
       ) : (

@@ -20,9 +20,7 @@ export function PokemonHistoryCard({ pokemon }: Props) {
     'special-defense': 'stats.specialDefense',
     speed: 'stats.speed',
   }
-  const hasHistory = Boolean(
-    pokemon.past_stats?.length || pokemon.past_types?.length || pokemon.past_abilities?.length,
-  )
+  const hasHistory = Boolean(pokemon.past_stats?.length || pokemon.past_types?.length || pokemon.past_abilities?.length)
 
   return (
     <article className="info-card technical-card pokemon-history-card">

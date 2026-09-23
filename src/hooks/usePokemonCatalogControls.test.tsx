@@ -14,9 +14,7 @@ function wrapper(initialEntry: string) {
 describe('usePokemonCatalogControls', () => {
   it('accepts supported catalog parameters and safely falls back from invalid values', () => {
     const { result } = renderHook(() => usePokemonCatalogControls(24), {
-      wrapper: wrapper(
-        '/pokemon?q=pika&type=invalid&region=kanto&sort=attack&order=desc&legendary=true',
-      ),
+      wrapper: wrapper('/pokemon?q=pika&type=invalid&region=kanto&sort=attack&order=desc&legendary=true'),
     })
 
     expect(result.current).toMatchObject({
@@ -33,10 +31,9 @@ describe('usePokemonCatalogControls', () => {
   })
 
   it('preserves page-specific parameters, removes defaults and resets pagination', () => {
-    const { result } = renderHook(
-      () => ({ controls: usePokemonCatalogControls(24), location: useLocation() }),
-      { wrapper: wrapper('/formas?category=mega&type=fire') },
-    )
+    const { result } = renderHook(() => ({ controls: usePokemonCatalogControls(24), location: useLocation() }), {
+      wrapper: wrapper('/formas?category=mega&type=fire'),
+    })
 
     act(() => result.current.controls.setVisibleCount(72))
     act(() => result.current.controls.updateSearchParam('sort', 'attack', 'number'))

@@ -1,10 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from './api-client'
-import {
-  parsePokemonRarityDetails,
-  parsePokemonRegionDetails,
-  parsePokemonSortDetails,
-} from './pokemon-catalog'
+import { parsePokemonRarityDetails, parsePokemonRegionDetails, parsePokemonSortDetails } from './pokemon-catalog'
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -13,9 +9,10 @@ afterEach(() => {
 })
 
 describe('catálogo de atributos da Pokédex', () => {
-  const stats = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map(
-    (name, index) => ({ base_stat: 50 + index, stat: { name } }),
-  )
+  const stats = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name, index) => ({
+    base_stat: 50 + index,
+    stat: { name },
+  }))
 
   it('mantém somente os campos necessários para ordenar', () => {
     expect(
@@ -42,9 +39,9 @@ describe('catálogo de atributos da Pokédex', () => {
   })
 
   it('rejeita nomes e atributos inesperados', () => {
-    expect(() =>
-      parsePokemonSortDetails({ data: { pokemon: [{ name: '__proto__', pokemonstats: stats }] } }),
-    ).toThrow(ApiError)
+    expect(() => parsePokemonSortDetails({ data: { pokemon: [{ name: '__proto__', pokemonstats: stats }] } })).toThrow(
+      ApiError,
+    )
     expect(() =>
       parsePokemonSortDetails({
         data: {
@@ -92,14 +89,11 @@ describe('catálogo de atributos da Pokédex', () => {
   })
 
   it('busca o catálogo com POST e reutiliza o resultado validado', async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(
-        new Response(
-          JSON.stringify({ data: { pokemon: [{ name: 'pikachu', pokemonstats: stats }] } }),
-          { status: 200 },
-        ),
-      )
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(JSON.stringify({ data: { pokemon: [{ name: 'pikachu', pokemonstats: stats }] } }), {
+        status: 200,
+      }),
+    )
     const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
 
     const first = await fetchPokemonSortDetails()
@@ -133,11 +127,9 @@ describe('catálogo de atributos da Pokédex', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       (_input, init) =>
         new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener(
-            'abort',
-            () => reject(new DOMException('Aborted', 'AbortError')),
-            { once: true },
-          )
+          init?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+            once: true,
+          })
         }),
     )
     const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
@@ -184,9 +176,9 @@ describe('catálogo de raridade da Pokédex', () => {
   })
 
   it('rejeita respostas parciais e variedades inválidas', () => {
-    expect(() =>
-      parsePokemonRarityDetails({ ...rarityPayload, errors: [{ message: 'partial response' }] }),
-    ).toThrow(ApiError)
+    expect(() => parsePokemonRarityDetails({ ...rarityPayload, errors: [{ message: 'partial response' }] })).toThrow(
+      ApiError,
+    )
     expect(() => parsePokemonRarityDetails({ data: { pokemonspecies: [] } })).toThrow(ApiError)
     expect(() =>
       parsePokemonRarityDetails({
@@ -244,9 +236,9 @@ describe('catálogo de regiões da Pokédex', () => {
   })
 
   it('rejeita respostas parciais, espécies sem região e variedades duplicadas', () => {
-    expect(() =>
-      parsePokemonRegionDetails({ ...regionPayload, errors: [{ message: 'partial response' }] }),
-    ).toThrow(ApiError)
+    expect(() => parsePokemonRegionDetails({ ...regionPayload, errors: [{ message: 'partial response' }] })).toThrow(
+      ApiError,
+    )
     expect(() =>
       parsePokemonRegionDetails({
         data: {

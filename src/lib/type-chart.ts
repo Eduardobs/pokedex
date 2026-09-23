@@ -77,9 +77,6 @@ const MATCHUPS: Partial<Record<BattleType, Partial<Record<BattleType, DamageMult
   fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 },
 }
 
-export function getDamageMultiplier(
-  attacking: BattleType,
-  defending: BattleType,
-): DamageMultiplier {
+export function getDamageMultiplier(attacking: BattleType, defending: BattleType): DamageMultiplier {
   return MATCHUPS[attacking]?.[defending] ?? 1
 }

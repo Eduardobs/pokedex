@@ -15,10 +15,7 @@ const damageClassIcons: Record<DamageClass, string> = {
   status: '/icons/damage-status.png',
 }
 
-export function DamageClassIcon({
-  value,
-  ...props
-}: ImgHTMLAttributes<HTMLImageElement> & { value: string }) {
+export function DamageClassIcon({ value, ...props }: ImgHTMLAttributes<HTMLImageElement> & { value: string }) {
   const damageClass = normalizedDamageClass(value)
   return <img src={damageClassIcons[damageClass]} alt="" aria-hidden="true" {...props} />
 }
@@ -49,15 +46,8 @@ export function DamageClassBadge({ value, compact = false }: { value: string; co
   }
   const label = damageClass[normalizedValue]
   return (
-    <span
-      className={`damage-badge damage-${normalizedValue}`}
-      title={t('damage.class', { name: label })}
-    >
-      <DamageClassIcon
-        value={normalizedValue}
-        width={compact ? 18 : 20}
-        height={compact ? 14 : 16}
-      />
+    <span className={`damage-badge damage-${normalizedValue}`} title={t('damage.class', { name: label })}>
+      <DamageClassIcon value={normalizedValue} width={compact ? 18 : 20} height={compact ? 14 : 16} />
       {!compact && label}
     </span>
   )
@@ -90,10 +80,7 @@ export function GenderRatio({ rate }: { rate: number }) {
   const female = rate * 12.5
   const male = 100 - female
   return (
-    <div
-      className="gender-ratio"
-      aria-label={`${male}% ${t('gender.male')} / ${female}% ${t('gender.female')}`}
-    >
+    <div className="gender-ratio" aria-label={`${male}% ${t('gender.male')} / ${female}% ${t('gender.female')}`}>
       <div className="gender-values">
         {male > 0 && (
           <span className="gender-male">

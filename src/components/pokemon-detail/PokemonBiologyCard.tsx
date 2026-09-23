@@ -22,11 +22,7 @@ export function PokemonBiologyCard({ species }: Props) {
         </div>
         <div>
           <dt>{t('detail.habitat')}</dt>
-          <dd>
-            {species.habitat?.name
-              ? localizedApiTerm(species.habitat.name, language)
-              : t('detail.unknown')}
-          </dd>
+          <dd>{species.habitat?.name ? localizedApiTerm(species.habitat.name, language) : t('detail.unknown')}</dd>
         </div>
         <div>
           <dt>{t('detail.growth')}</dt>
@@ -45,9 +41,7 @@ export function PokemonBiologyCard({ species }: Props) {
         </div>
         <div>
           <dt>{t('detail.shape')}</dt>
-          <dd>
-            {species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}
-          </dd>
+          <dd>{species.shape ? localizedApiTerm(species.shape.name, language) : t('detail.unknown')}</dd>
         </div>
         <div>
           <dt>{t('detail.captureRate')}</dt>

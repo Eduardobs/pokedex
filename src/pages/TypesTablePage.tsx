@@ -4,12 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { SelectMenu } from '../components/SelectMenu'
 import { useLanguage } from '../contexts/LanguageContext'
-import {
-  BATTLE_TYPES,
-  getDamageMultiplier,
-  type BattleType,
-  type DamageMultiplier,
-} from '../lib/type-chart'
+import { BATTLE_TYPES, getDamageMultiplier, type BattleType, type DamageMultiplier } from '../lib/type-chart'
 import { formatDecimal } from '../lib/api'
 
 const multiplierLabels: Record<DamageMultiplier, string> = {
@@ -169,9 +164,7 @@ export function TypesTablePage() {
                 <th
                   scope="col"
                   key={type}
-                  className={
-                    activeCell?.defendingType === type ? 'is-column-highlighted' : undefined
-                  }
+                  className={activeCell?.defendingType === type ? 'is-column-highlighted' : undefined}
                 >
                   <TypeBadge type={type} iconOnly />
                 </th>
@@ -182,9 +175,7 @@ export function TypesTablePage() {
             {BATTLE_TYPES.map((attackingType) => (
               <tr
                 key={attackingType}
-                className={
-                  activeCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined
-                }
+                className={activeCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
               >
                 <th scope="row">
                   <TypeBadge type={attackingType} />
@@ -192,8 +183,7 @@ export function TypesTablePage() {
                 {BATTLE_TYPES.map((defendingType) => {
                   const multiplier = getDamageMultiplier(attackingType, defendingType)
                   const isHovered =
-                    activeCell?.attackingType === attackingType &&
-                    activeCell.defendingType === defendingType
+                    activeCell?.attackingType === attackingType && activeCell.defendingType === defendingType
                   const classes = [
                     multiplierClass(multiplier),
                     activeCell?.defendingType === defendingType && 'is-column-highlighted',
@@ -212,8 +202,7 @@ export function TypesTablePage() {
                         type="button"
                         aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}
                         aria-pressed={
-                          selectedCell?.attackingType === attackingType &&
-                          selectedCell.defendingType === defendingType
+                          selectedCell?.attackingType === attackingType && selectedCell.defendingType === defendingType
                         }
                         onClick={() => selectMatchup(attackingType, defendingType)}
                       >

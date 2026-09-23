@@ -45,9 +45,7 @@ export function TrainingBreedingCard({ pokemon, species }: Props) {
         </div>
         <div>
           <dt>{t('detail.eggGroups')}</dt>
-          <dd>
-            {species.egg_groups.map((group) => localizedApiTerm(group.name, language)).join(', ')}
-          </dd>
+          <dd>{species.egg_groups.map((group) => localizedApiTerm(group.name, language)).join(', ')}</dd>
         </div>
         <div>
           <dt>{t('detail.genderDifferences')}</dt>

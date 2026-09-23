@@ -6,11 +6,7 @@ import {
   type PokemonRarityDetails,
   type PokemonRegion,
 } from '../lib/pokemon-catalog'
-import {
-  pokemonSortNeedsDetails,
-  type PokemonSortDetails,
-  type PokemonSortKey,
-} from '../lib/pokemon-sort'
+import { pokemonSortNeedsDetails, type PokemonSortDetails, type PokemonSortKey } from '../lib/pokemon-sort'
 
 type CatalogDetailsState<T> = {
   data: T | null
@@ -70,19 +66,9 @@ type PokemonCatalogDetailsOptions = {
   sort: PokemonSortKey
 }
 
-export function usePokemonCatalogDetails({
-  hasRarityFilter,
-  region,
-  sort,
-}: PokemonCatalogDetailsOptions) {
-  const rarity = useCatalogDetails<Record<string, PokemonRarityDetails>>(
-    hasRarityFilter,
-    fetchPokemonRarityDetails,
-  )
-  const regions = useCatalogDetails<Record<string, PokemonRegion>>(
-    region !== 'all',
-    fetchPokemonRegionDetails,
-  )
+export function usePokemonCatalogDetails({ hasRarityFilter, region, sort }: PokemonCatalogDetailsOptions) {
+  const rarity = useCatalogDetails<Record<string, PokemonRarityDetails>>(hasRarityFilter, fetchPokemonRarityDetails)
+  const regions = useCatalogDetails<Record<string, PokemonRegion>>(region !== 'all', fetchPokemonRegionDetails)
   const sorting = useCatalogDetails<Record<string, PokemonSortDetails>>(
     pokemonSortNeedsDetails(sort),
     fetchPokemonSortDetails,

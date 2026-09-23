@@ -10,9 +10,7 @@ const isFavorites = (value: unknown): value is string[] =>
   value.every((item) => typeof item === 'string' && item.length <= 64 && POKEMON_NAME.test(item))
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<string[]>(() =>
-    readStorage(STORAGE_KEYS.favorites, isFavorites, []),
-  )
+  const [favorites, setFavorites] = useState<string[]>(() => readStorage(STORAGE_KEYS.favorites, isFavorites, []))
   const favoritesRef = useRef(favorites)
   const [notice, setNotice] = useState<{
     name: string

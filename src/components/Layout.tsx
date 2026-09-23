@@ -110,9 +110,7 @@ export function Layout() {
   useEffect(() => {
     if (!menuOpen) return
     const nav = document.getElementById('main-navigation')
-    const focusable = Array.from(
-      nav?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [],
-    )
+    const focusable = Array.from(nav?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
     window.requestAnimationFrame(() => focusable[0]?.focus())
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -169,9 +167,7 @@ export function Layout() {
 
   const handleLanguageOptionsKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
     const languages: Language[] = ['pt-BR', 'en', 'es']
-    const currentIndex = languages.findIndex(
-      (item) => languageOptionRefs.current[item] === document.activeElement,
-    )
+    const currentIndex = languages.findIndex((item) => languageOptionRefs.current[item] === document.activeElement)
     const nextIndex =
       event.key === 'Home'
         ? 0
@@ -235,23 +231,14 @@ export function Layout() {
             enterKeyHint="search"
           />
           {query ? (
-            <button
-              className="search-clear"
-              type="button"
-              onClick={() => setQuery('')}
-              aria-label={t('common.clear')}
-            >
+            <button className="search-clear" type="button" onClick={() => setQuery('')} aria-label={t('common.clear')}>
               <X size={15} />
             </button>
           ) : (
             <kbd>↵</kbd>
           )}
         </form>
-        <nav
-          id="main-navigation"
-          className={menuOpen ? 'nav open' : 'nav'}
-          aria-label={t('nav.main')}
-        >
+        <nav id="main-navigation" className={menuOpen ? 'nav open' : 'nav'} aria-label={t('nav.main')}>
           <NavLink to="/pokemon" onClick={() => setMenuOpen(false)}>
             {t('nav.pokedex')}
           </NavLink>
@@ -268,8 +255,7 @@ export function Layout() {
             <MapPinned size={17} /> {t('nav.maps')}
           </NavLink>
           <NavLink to="/favoritos" onClick={() => setMenuOpen(false)}>
-            <Heart size={17} /> {t('nav.favorites')}{' '}
-            <span className="nav-count">{favorites.length}</span>
+            <Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span>
           </NavLink>
         </nav>
         <div
@@ -318,9 +304,7 @@ export function Layout() {
                     languageButtonRef.current?.focus()
                   }}
                 >
-                  <span className="language-code">
-                    {item === 'pt-BR' ? 'PT' : item.toUpperCase()}
-                  </span>
+                  <span className="language-code">{item === 'pt-BR' ? 'PT' : item.toUpperCase()}</span>
                   <span>{t(`language.${item}`)}</span>
                   {language === item && <Check size={15} aria-hidden="true" />}
                 </button>
@@ -379,12 +363,7 @@ export function Layout() {
                 {t('favorites.undo')}
               </button>
             )}
-            <button
-              type="button"
-              className="toast-close"
-              onClick={clearNotice}
-              aria-label={t('common.clear')}
-            >
+            <button type="button" className="toast-close" onClick={clearNotice} aria-label={t('common.clear')}>
               <X size={16} />
             </button>
           </div>

@@ -6,17 +6,13 @@ import type { ApiList, NamedResource } from '../types'
 import { FormsPage } from './FormsPage'
 import { PokedexPage } from './PokedexPage'
 
-const {
-  fetchPokemonRarityDetailsMock,
-  fetchPokemonRegionDetailsMock,
-  fetchPokemonSortDetailsMock,
-  useApiMock,
-} = vi.hoisted(() => ({
-  fetchPokemonRarityDetailsMock: vi.fn(),
-  fetchPokemonRegionDetailsMock: vi.fn(),
-  fetchPokemonSortDetailsMock: vi.fn(),
-  useApiMock: vi.fn(),
-}))
+const { fetchPokemonRarityDetailsMock, fetchPokemonRegionDetailsMock, fetchPokemonSortDetailsMock, useApiMock } =
+  vi.hoisted(() => ({
+    fetchPokemonRarityDetailsMock: vi.fn(),
+    fetchPokemonRegionDetailsMock: vi.fn(),
+    fetchPokemonSortDetailsMock: vi.fn(),
+    useApiMock: vi.fn(),
+  }))
 
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
@@ -38,11 +34,7 @@ vi.mock('../components/PokemonCard', () => ({
     sortMetric?: { value: number }
   }) =>
     resource ? (
-      <div
-        data-testid="form-card"
-        data-shiny={shiny ? 'true' : 'false'}
-        data-sort-metric={sortMetric?.value}
-      >
+      <div data-testid="form-card" data-shiny={shiny ? 'true' : 'false'} data-sort-metric={sortMetric?.value}>
         {resource.name}
       </div>
     ) : (
@@ -149,11 +141,7 @@ describe('infinite scroll', () => {
   it('starts observing forms after loading and keeps observing subsequent pages', () => {
     let loading = true
     useApiMock.mockImplementation((pathOrUrl: string | null) => ({
-      data: pathOrUrl
-        ? pathOrUrl.startsWith('pokemon-form')
-          ? apiList(forms)
-          : apiList(species)
-        : null,
+      data: pathOrUrl ? (pathOrUrl.startsWith('pokemon-form') ? apiList(forms) : apiList(species)) : null,
       loading: Boolean(pathOrUrl) && loading,
       error: null,
     }))
@@ -189,10 +177,7 @@ describe('Pokédex filters', () => {
 
     fireEvent.click(toggle)
 
-    expect(screen.getByRole('button', { name: 'Exibir versões normais' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
+    expect(screen.getByRole('button', { name: 'Exibir versões normais' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByText('pokemon-1')).toHaveAttribute('data-shiny', 'true')
     expect(screen.getByText('pokemon-24')).toHaveAttribute('data-shiny', 'true')
   })
@@ -201,9 +186,7 @@ describe('Pokédex filters', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))
 
-    expect(
-      screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' }),
-    ).toBeVisible()
+    expect(screen.getByRole('combobox', { name: 'Filtrar todos os Pokémon por nome ou número' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Região' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Ordenar por' })).toBeVisible()
     expect(screen.getByRole('combobox', { name: 'Ordem' })).toHaveTextContent('Crescente')
@@ -213,10 +196,7 @@ describe('Pokédex filters', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     fireEvent.click(toggle)
 
-    expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    )
+    expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
     expect(screen.getByRole('radio', { name: 'Fogo' })).toBeVisible()
   })
@@ -338,8 +318,7 @@ describe('Forms filters', () => {
   function mockFormsApi(typeNames: string[] = []) {
     useApiMock.mockImplementation((pathOrUrl: string | null) => {
       if (!pathOrUrl) return { data: null, loading: false, error: null }
-      if (pathOrUrl.startsWith('pokemon-form'))
-        return { data: apiList(filteredForms), loading: false, error: null }
+      if (pathOrUrl.startsWith('pokemon-form')) return { data: apiList(filteredForms), loading: false, error: null }
       if (pathOrUrl.startsWith('pokemon-species'))
         return { data: apiList(filteredSpecies), loading: false, error: null }
       if (pathOrUrl.startsWith('type/'))
@@ -367,10 +346,7 @@ describe('Forms filters', () => {
 
     expect(screen.getByText('charizard-mega-x')).toBeInTheDocument()
     expect(screen.queryByText('butterfree-gmax')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Mega Formas/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
+    expect(screen.getByRole('button', { name: /Mega Formas/ })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('applies the shiny selection to every visible form', () => {
@@ -382,13 +358,8 @@ describe('Forms filters', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Exibir versões shiny' }))
 
-    expect(screen.getByRole('button', { name: 'Exibir versões normais' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
-    screen
-      .getAllByTestId('form-card')
-      .forEach((card) => expect(card).toHaveAttribute('data-shiny', 'true'))
+    expect(screen.getByRole('button', { name: 'Exibir versões normais' })).toHaveAttribute('aria-pressed', 'true')
+    screen.getAllByTestId('form-card').forEach((card) => expect(card).toHaveAttribute('data-shiny', 'true'))
   })
 
   it('filters forms by region and rarity on demand', async () => {

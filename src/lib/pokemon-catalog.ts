@@ -48,14 +48,7 @@ export const POKEMON_REGIONS = [
 
 export type PokemonRegion = (typeof POKEMON_REGIONS)[number]['name']
 
-const STAT_NAMES = new Set([
-  'hp',
-  'attack',
-  'defense',
-  'special-attack',
-  'special-defense',
-  'speed',
-])
+const STAT_NAMES = new Set(['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'])
 let cachedDetails: Record<string, PokemonSortDetails> | undefined
 let cachedRarityDetails: Record<string, PokemonRarityDetails> | undefined
 let cachedRegionDetails: Record<string, PokemonRegion> | undefined
@@ -79,20 +72,13 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
     !Array.isArray(payload.data.pokemon) ||
     payload.data.pokemon.length === 0
   ) {
-    throw new ApiError(
-      'A PokéAPI retornou dados de ordenação inválidos.',
-      undefined,
-      'invalid-response',
-    )
+    throw new ApiError('A PokéAPI retornou dados de ordenação inválidos.', undefined, 'invalid-response')
   }
   if (payload.data.pokemon.length > POKEMON_CATALOG_LIMIT) {
     throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
   }
 
-  const details: Record<string, PokemonSortDetails> = Object.create(null) as Record<
-    string,
-    PokemonSortDetails
-  >
+  const details: Record<string, PokemonSortDetails> = Object.create(null) as Record<string, PokemonSortDetails>
   for (const entry of payload.data.pokemon) {
     if (
       !isRecord(entry) ||
@@ -102,11 +88,7 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
       entry.pokemonstats.length !== STAT_NAMES.size ||
       details[entry.name]
     ) {
-      throw new ApiError(
-        'A PokéAPI retornou dados de ordenação inválidos.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou dados de ordenação inválidos.', undefined, 'invalid-response')
     }
 
     const foundStats = new Set<string>()
@@ -144,20 +126,13 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
     !Array.isArray(payload.data.pokemonspecies) ||
     payload.data.pokemonspecies.length === 0
   ) {
-    throw new ApiError(
-      'A PokéAPI retornou dados de raridade inválidos.',
-      undefined,
-      'invalid-response',
-    )
+    throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
   }
   if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
     throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
   }
 
-  const details: Record<string, PokemonRarityDetails> = Object.create(null) as Record<
-    string,
-    PokemonRarityDetails
-  >
+  const details: Record<string, PokemonRarityDetails> = Object.create(null) as Record<string, PokemonRarityDetails>
   for (const species of payload.data.pokemonspecies) {
     if (
       !isRecord(species) ||
@@ -169,11 +144,7 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
       !Array.isArray(species.pokemons) ||
       species.pokemons.length === 0
     ) {
-      throw new ApiError(
-        'A PokéAPI retornou dados de raridade inválidos.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
     }
 
     for (const pokemon of species.pokemons) {
@@ -183,11 +154,7 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
         !/^[a-z0-9-]{1,100}$/.test(pokemon.name) ||
         details[pokemon.name]
       ) {
-        throw new ApiError(
-          'A PokéAPI retornou variedades inválidas.',
-          undefined,
-          'invalid-response',
-        )
+        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
       }
       details[pokemon.name] = { isLegendary: species.is_legendary, isMythical: species.is_mythical }
     }
@@ -204,20 +171,13 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
     !Array.isArray(payload.data.pokemonspecies) ||
     payload.data.pokemonspecies.length === 0
   ) {
-    throw new ApiError(
-      'A PokéAPI retornou dados de região inválidos.',
-      undefined,
-      'invalid-response',
-    )
+    throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
   }
   if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
     throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
   }
 
-  const details: Record<string, PokemonRegion> = Object.create(null) as Record<
-    string,
-    PokemonRegion
-  >
+  const details: Record<string, PokemonRegion> = Object.create(null) as Record<string, PokemonRegion>
   const speciesIds = new Set<number>()
   for (const species of payload.data.pokemonspecies) {
     if (
@@ -231,23 +191,14 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
       !Array.isArray(species.pokemons) ||
       species.pokemons.length === 0
     ) {
-      throw new ApiError(
-        'A PokéAPI retornou dados de região inválidos.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
     }
     speciesIds.add(Number(species.id))
     const region = POKEMON_REGIONS.find(
-      ({ firstSpecies, lastSpecies }) =>
-        Number(species.id) >= firstSpecies && Number(species.id) <= lastSpecies,
+      ({ firstSpecies, lastSpecies }) => Number(species.id) >= firstSpecies && Number(species.id) <= lastSpecies,
     )?.name
     if (!region)
-      throw new ApiError(
-        'A PokéAPI retornou uma espécie sem região conhecida.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou uma espécie sem região conhecida.', undefined, 'invalid-response')
 
     for (const pokemon of species.pokemons) {
       if (
@@ -256,11 +207,7 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
         !/^[a-z0-9-]{1,100}$/.test(pokemon.name) ||
         details[pokemon.name]
       ) {
-        throw new ApiError(
-          'A PokéAPI retornou variedades inválidas.',
-          undefined,
-          'invalid-response',
-        )
+        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
       }
       details[pokemon.name] = region
     }
@@ -304,9 +251,7 @@ async function fetchPokemonCatalogDetails<T>(
 }
 
 /** Loads every sortable stat in one fixed, field-limited request. */
-export async function fetchPokemonSortDetails(
-  signal?: AbortSignal,
-): Promise<Record<string, PokemonSortDetails>> {
+export async function fetchPokemonSortDetails(signal?: AbortSignal): Promise<Record<string, PokemonSortDetails>> {
   if (cachedDetails) return cachedDetails
   cachedDetails = await fetchPokemonCatalogDetails(
     SORT_DETAILS_QUERY,
@@ -318,9 +263,7 @@ export async function fetchPokemonSortDetails(
 }
 
 /** Loads and caches the rare-species catalog in one field-limited request. */
-export async function fetchPokemonRarityDetails(
-  signal?: AbortSignal,
-): Promise<Record<string, PokemonRarityDetails>> {
+export async function fetchPokemonRarityDetails(signal?: AbortSignal): Promise<Record<string, PokemonRarityDetails>> {
   if (cachedRarityDetails) return cachedRarityDetails
   cachedRarityDetails = await fetchPokemonCatalogDetails(
     RARITY_DETAILS_QUERY,
@@ -332,9 +275,7 @@ export async function fetchPokemonRarityDetails(
 }
 
 /** Loads and caches the region where every catalog species was introduced. */
-export async function fetchPokemonRegionDetails(
-  signal?: AbortSignal,
-): Promise<Record<string, PokemonRegion>> {
+export async function fetchPokemonRegionDetails(signal?: AbortSignal): Promise<Record<string, PokemonRegion>> {
   if (cachedRegionDetails) return cachedRegionDetails
   cachedRegionDetails = await fetchPokemonCatalogDetails(
     REGION_DETAILS_QUERY,

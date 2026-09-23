@@ -41,9 +41,7 @@ describe('TrainingBreedingCard', () => {
     expect(screen.getByText('2 EV em Def. especial')).toBeVisible()
     expect(screen.getByText('21 ciclos')).toBeVisible()
     expect(screen.getByText('Água 1, Dragão')).toBeVisible()
-    expect(
-      screen.getByText('A quantidade de passos por ciclo varia conforme a geração do jogo.'),
-    ).toBeVisible()
+    expect(screen.getByText('A quantidade de passos por ciclo varia conforme a geração do jogo.')).toBeVisible()
     expect(screen.getByLabelText('50% masculino / 50% feminino')).toBeVisible()
   })
 

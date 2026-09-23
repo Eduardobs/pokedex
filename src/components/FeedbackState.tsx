@@ -9,14 +9,7 @@ type EmptyStateProps = {
   headingLevel?: 2 | 3
 }
 
-export function EmptyState({
-  icon,
-  title,
-  description,
-  children,
-  className,
-  headingLevel = 2,
-}: EmptyStateProps) {
+export function EmptyState({ icon, title, description, children, className, headingLevel = 2 }: EmptyStateProps) {
   const Heading = headingLevel === 3 ? 'h3' : 'h2'
   return (
     <div className={`empty${className ? ` ${className}` : ''}`}>

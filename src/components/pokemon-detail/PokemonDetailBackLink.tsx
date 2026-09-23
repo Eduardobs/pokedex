@@ -10,9 +10,7 @@ export function PokemonDetailBackLink() {
   const { t } = useLanguage()
   const { state } = useLocation()
   const fromForms =
-    typeof state === 'object' &&
-    state !== null &&
-    (state as DetailLocationState).fromCatalog === 'forms'
+    typeof state === 'object' && state !== null && (state as DetailLocationState).fromCatalog === 'forms'
 
   return (
     <Link to={fromForms ? '/formas' : '/pokemon'} className="back-link">

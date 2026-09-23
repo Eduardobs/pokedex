@@ -48,9 +48,7 @@ export function FormsPage() {
   } = usePokemonCatalogControls(PAGE_SIZE)
   const requestedCategory = searchParams.get('category') as SelectedCategory | null
   const category: SelectedCategory =
-    requestedCategory && ['regional', 'mega', 'gmax'].includes(requestedCategory)
-      ? requestedCategory
-      : 'all'
+    requestedCategory && ['regional', 'mega', 'gmax'].includes(requestedCategory) ? requestedCategory : 'all'
   const { rarity, regions, sorting } = usePokemonCatalogDetails({
     hasRarityFilter,
     region,
@@ -100,8 +98,7 @@ export function FormsPage() {
   ]
 
   const nationalDex = useMemo(
-    () =>
-      new Map(speciesData?.results.map((species) => [species.name, idFromUrl(species.url)]) ?? []),
+    () => new Map(speciesData?.results.map((species) => [species.name, idFromUrl(species.url)]) ?? []),
     [speciesData],
   )
   const grouped = useMemo(() => {
@@ -117,8 +114,7 @@ export function FormsPage() {
         ? (nationalDex.get(formLabels(left.name, leftCategory).baseName) ?? Number.MAX_SAFE_INTEGER)
         : Number.MAX_SAFE_INTEGER
       const rightId = rightCategory
-        ? (nationalDex.get(formLabels(right.name, rightCategory).baseName) ??
-          Number.MAX_SAFE_INTEGER)
+        ? (nationalDex.get(formLabels(right.name, rightCategory).baseName) ?? Number.MAX_SAFE_INTEGER)
         : Number.MAX_SAFE_INTEGER
       return leftId - rightId || left.name.localeCompare(right.name)
     }
@@ -131,19 +127,14 @@ export function FormsPage() {
       [...grouped.regional, ...grouped.mega, ...grouped.gmax].sort((left, right) => {
         const leftCategory = formCategory(left.name)!
         const rightCategory = formCategory(right.name)!
-        const leftId =
-          nationalDex.get(formLabels(left.name, leftCategory).baseName) ?? Number.MAX_SAFE_INTEGER
-        const rightId =
-          nationalDex.get(formLabels(right.name, rightCategory).baseName) ?? Number.MAX_SAFE_INTEGER
+        const leftId = nationalDex.get(formLabels(left.name, leftCategory).baseName) ?? Number.MAX_SAFE_INTEGER
+        const rightId = nationalDex.get(formLabels(right.name, rightCategory).baseName) ?? Number.MAX_SAFE_INTEGER
         return leftId - rightId || left.name.localeCompare(right.name)
       }),
     [grouped, nationalDex],
   )
   const selectedForms = category === 'all' ? specialForms : grouped[category]
-  const typeNames = useMemo(
-    () => new Set(typeData?.pokemon.map((entry) => entry.pokemon.name) ?? []),
-    [typeData],
-  )
+  const typeNames = useMemo(() => new Set(typeData?.pokemon.map((entry) => entry.pokemon.name) ?? []), [typeData])
   const typedForms = useMemo<PokemonListItem[]>(
     () =>
       selectedForms.flatMap((resource) => {
@@ -219,9 +210,7 @@ export function FormsPage() {
     updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
-  const hasResultFilter = Boolean(
-    query || category !== 'all' || type !== 'all' || region !== 'all' || hasRarityFilter,
-  )
+  const hasResultFilter = Boolean(query || category !== 'all' || type !== 'all' || region !== 'all' || hasRarityFilter)
   const hasActiveFilters = hasResultFilter || sort !== 'number' || direction !== 'asc'
   const isRarityPending = hasRarityFilter && !rarityDetails && rarity.loading
   const isRegionPending = region !== 'all' && !regionDetails && regions.loading
@@ -268,9 +257,7 @@ export function FormsPage() {
         aside={
           <div className="result-count" aria-live="polite">
             <b>
-              {isFilterPending
-                ? '…'
-                : formatNumber(hasResultFilter ? sorted.length : specialForms.length, language)}
+              {isFilterPending ? '…' : formatNumber(hasResultFilter ? sorted.length : specialForms.length, language)}
             </b>
             <span>{hasResultFilter ? t('forms.resultsLabel') : t('forms.specialCount')}</span>
           </div>
@@ -344,39 +331,22 @@ export function FormsPage() {
       </PokemonCatalogFilters>
       <div className="directory-summary">
         <span>{categories.find((item) => item.value === category)?.label}</span>
-        <p>
-          {sorted.length === 1
-            ? t('forms.resultOne')
-            : t('forms.results', { count: sorted.length })}
-        </p>
+        <p>{sorted.length === 1 ? t('forms.resultOne') : t('forms.results', { count: sorted.length })}</p>
       </div>
       {isFilterPending ? (
         <CardSkeleton count={8} />
       ) : typeError && type !== 'all' && !typeData ? (
-        <InlineRetryError
-          message={t('forms.typeError')}
-          retryLabel={t('common.retry')}
-          onRetry={retryType}
-        />
+        <InlineRetryError message={t('forms.typeError')} retryLabel={t('common.retry')} onRetry={retryType} />
       ) : regionError && region !== 'all' && !regionDetails ? (
-        <InlineRetryError
-          message={t('pokedex.region.error')}
-          retryLabel={t('common.retry')}
-          onRetry={regions.retry}
-        />
+        <InlineRetryError message={t('pokedex.region.error')} retryLabel={t('common.retry')} onRetry={regions.retry} />
       ) : rarityError && hasRarityFilter && !rarityDetails ? (
-        <InlineRetryError
-          message={t('pokedex.rarity.error')}
-          retryLabel={t('common.retry')}
-          onRetry={rarity.retry}
-        />
+        <InlineRetryError message={t('pokedex.rarity.error')} retryLabel={t('common.retry')} onRetry={rarity.retry} />
       ) : visible.length ? (
         <div className="forms-directory-grid">
           {visible.map((resource) => {
             const resourceCategory = formCategory(resource.name)
             const value = getPokemonSortValue(pokemonDetails[resource.name], sort)
-            const sortMetric =
-              value === undefined ? undefined : { label: selectedSortMetric, value }
+            const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }
             return resourceCategory ? (
               <PokemonCard
                 resource={resource}
@@ -389,11 +359,7 @@ export function FormsPage() {
           })}
         </div>
       ) : (
-        <EmptyState
-          icon={<Search />}
-          title={t('forms.empty')}
-          description={t('forms.tryAnother')}
-        />
+        <EmptyState icon={<Search />} title={t('forms.empty')} description={t('forms.tryAnother')} />
       )}
       {hasMore && !isFilterPending && (
         <div className="infinite-loader" ref={sentinelRef} role="status" aria-live="polite">

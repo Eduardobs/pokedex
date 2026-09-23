@@ -1,5 +1,5 @@
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
-import type { Language } from '../contexts/LanguageContext'
+import type { Language } from '../i18n/types'
 import { API_BASE_URL, POKEAPI_ALTERNATE_POKEMON_ID_START } from '../config/app'
 import { apiFetch } from './api-client'
 
@@ -21,9 +21,7 @@ export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] 
     const id = idFromUrl(item.url)
     // PokéAPI reserves IDs from 10001 onward for alternate varieties such as
     // regional, Mega and Gigantamax forms. The Pokédex directory lists species.
-    return Number.isInteger(id) && id > 0 && id < POKEAPI_ALTERNATE_POKEMON_ID_START
-      ? [{ ...item, id }]
-      : []
+    return Number.isInteger(id) && id > 0 && id < POKEAPI_ALTERNATE_POKEMON_ID_START ? [{ ...item, id }] : []
   })
 
 export const prettyName = (value: string) =>
@@ -44,14 +42,10 @@ function numberFormatter(language: Language, maximumFractionDigits?: number) {
   return formatter
 }
 
-export const formatNumber = (value: number, language: Language = 'pt-BR') =>
-  numberFormatter(language).format(value)
+export const formatNumber = (value: number, language: Language = 'pt-BR') => numberFormatter(language).format(value)
 
-export const formatDecimal = (
-  value: number,
-  language: Language = 'pt-BR',
-  maximumFractionDigits = 1,
-) => numberFormatter(language, maximumFractionDigits).format(value)
+export const formatDecimal = (value: number, language: Language = 'pt-BR', maximumFractionDigits = 1) =>
+  numberFormatter(language, maximumFractionDigits).format(value)
 
 export const normalizeSearchText = (value: string) =>
   value

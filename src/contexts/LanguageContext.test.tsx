@@ -9,9 +9,7 @@ beforeEach(() => {
 })
 afterEach(cleanup)
 
-const wrapper = ({ children }: { children: React.ReactNode }) => (
-  <LanguageProvider>{children}</LanguageProvider>
-)
+const wrapper = ({ children }: { children: React.ReactNode }) => <LanguageProvider>{children}</LanguageProvider>
 
 describe('LanguageProvider', () => {
   it('usa português quando o idioma persistido não é permitido', () => {

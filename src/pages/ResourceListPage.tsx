@@ -16,14 +16,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import {
-  berrySprite,
-  formatNumber,
-  itemSprite,
-  normalizeSearchText,
-  pokemonArtwork,
-  prettyName,
-} from '../lib/api'
+import { berrySprite, formatNumber, itemSprite, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
 import { defaultPokemonNameForSpecies } from '../lib/pokemon-species'
 import type { ApiList, NamedResource } from '../types'
 
@@ -81,8 +74,7 @@ export function ResourceListPage() {
     if (nextQuery) next.set('q', nextQuery)
     setSearchParams(next, { replace: true })
   }
-  if (!valid)
-    return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
+  if (!valid) return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
   if (loading)
     return (
       <section
@@ -126,12 +118,9 @@ export function ResourceListPage() {
     const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
     return { ...item, id, name: 'name' in item && item.name ? item.name : id }
   })
-  const filtered = items.filter((item) =>
-    normalizeSearchText(item.name).includes(normalizeSearchText(query)),
-  )
+  const filtered = items.filter((item) => normalizeSearchText(item.name).includes(normalizeSearchText(query)))
   const itemRoute = (name: string) => {
-    if (resource === 'pokemon-species')
-      return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
+    if (resource === 'pokemon-species') return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
     if (resource === 'pokemon') return `/pokemon/${encodeURIComponent(name)}`
     return `/explorar/${resource}/${encodeURIComponent(name)}`
   }
@@ -160,11 +149,7 @@ export function ResourceListPage() {
       className={`pagination pagination-${position}`}
       aria-label={`${t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })} · ${t('resource.range', { start: offset + 1, end: Math.min(offset + LIMIT, data.count), total: data.count })}`}
     >
-      <button
-        type="button"
-        disabled={!data.previous}
-        onClick={() => updateParams(Math.max(0, offset - LIMIT))}
-      >
+      <button type="button" disabled={!data.previous} onClick={() => updateParams(Math.max(0, offset - LIMIT))}>
         <ChevronLeft /> {t('resource.previous')}
       </button>
       <span>
@@ -239,13 +224,10 @@ export function ResourceListPage() {
                 : resource === 'pokemon' && hasValidId
                   ? pokemonArtwork(numericId)
                   : undefined
-          const damageClass =
-            resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
+          const damageClass = resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
           return (
             <Link to={itemRoute(item.name)} key={item.name}>
-              <span className="data-index">
-                {hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}
-              </span>
+              <span className="data-index">{hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}</span>
               <span
                 className={`data-resource-icon${damageClass ? ` damage-class-resource-icon damage-${damageClass}` : ''}`}
               >

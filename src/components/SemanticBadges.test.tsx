@@ -37,10 +37,7 @@ describe('DamageClassBadge', () => {
     )
 
     expect(screen.getByText(label)).toBeVisible()
-    expect(container.querySelector(`.damage-${value} img`)).toHaveAttribute(
-      'src',
-      `/icons/damage-${value}.png`,
-    )
+    expect(container.querySelector(`.damage-${value} img`)).toHaveAttribute('src', `/icons/damage-${value}.png`)
   })
 
   it('uses the status treatment for an unknown API value', () => {

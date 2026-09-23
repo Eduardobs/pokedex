@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-export function useIntersectionVisibility<T extends Element>(
-  initiallyVisible = false,
-  rootMargin = '200px',
-) {
+export function useIntersectionVisibility<T extends Element>(initiallyVisible = false, rootMargin = '200px') {
   const targetRef = useRef<T>(null)
   const [visible, setVisible] = useState(initiallyVisible)
 

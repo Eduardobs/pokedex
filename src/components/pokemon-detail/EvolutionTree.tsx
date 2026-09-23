@@ -5,8 +5,7 @@ import { formatNumber, idFromUrl, pokemonArtwork, prettyName } from '../../lib/a
 import { defaultPokemonNameForSpecies } from '../../lib/pokemon-species'
 import type { EvolutionDetail, EvolutionNode } from '../../types'
 
-const presentNumber = (value: number | null | undefined): value is number =>
-  typeof value === 'number'
+const presentNumber = (value: number | null | undefined): value is number => typeof value === 'number'
 
 function statRelation(value: EvolutionDetail['relative_physical_stats'], t: Translate) {
   if (value === 1) return t('evolution.attackHigher')
@@ -14,11 +13,7 @@ function statRelation(value: EvolutionDetail['relative_physical_stats'], t: Tran
   return t('evolution.statsEqual')
 }
 
-export function evolutionCondition(
-  detail: EvolutionDetail,
-  t: Translate,
-  language: Language = 'pt-BR',
-) {
+export function evolutionCondition(detail: EvolutionDetail, t: Translate, language: Language = 'pt-BR') {
   const conditions: string[] = []
   const trigger = detail.trigger?.name
   const number = (value: number) => formatNumber(value, language)
@@ -29,47 +24,34 @@ export function evolutionCondition(
         ? t('evolution.tradeFor', { species: prettyName(detail.trade_species.name) })
         : t('evolution.trade'),
     )
-  if (presentNumber(detail.min_level))
-    conditions.push(t('evolution.level', { level: number(detail.min_level) }))
+  if (presentNumber(detail.min_level)) conditions.push(t('evolution.level', { level: number(detail.min_level) }))
   if (detail.item) conditions.push(t('evolution.useItem', { item: prettyName(detail.item.name) }))
   if (presentNumber(detail.min_happiness))
     conditions.push(t('evolution.friendship', { value: number(detail.min_happiness) }))
   if (presentNumber(detail.min_affection))
     conditions.push(t('evolution.affection', { value: number(detail.min_affection) }))
-  if (presentNumber(detail.min_beauty))
-    conditions.push(t('evolution.beauty', { value: number(detail.min_beauty) }))
+  if (presentNumber(detail.min_beauty)) conditions.push(t('evolution.beauty', { value: number(detail.min_beauty) }))
   if (detail.gender === 1) conditions.push(t('evolution.female'))
   if (detail.gender === 2) conditions.push(t('evolution.male'))
-  if (detail.held_item)
-    conditions.push(t('evolution.holding', { item: prettyName(detail.held_item.name) }))
-  if (detail.known_move)
-    conditions.push(t('evolution.knownMove', { move: prettyName(detail.known_move.name) }))
+  if (detail.held_item) conditions.push(t('evolution.holding', { item: prettyName(detail.held_item.name) }))
+  if (detail.known_move) conditions.push(t('evolution.knownMove', { move: prettyName(detail.known_move.name) }))
   if (detail.known_move_type)
     conditions.push(t('evolution.knownType', { type: prettyName(detail.known_move_type.name) }))
-  if (detail.location)
-    conditions.push(t('evolution.location', { location: prettyName(detail.location.name) }))
-  if (detail.time_of_day)
-    conditions.push(t('evolution.time', { time: prettyName(String(detail.time_of_day)) }))
-  if (presentNumber(detail.relative_physical_stats))
-    conditions.push(statRelation(detail.relative_physical_stats, t))
+  if (detail.location) conditions.push(t('evolution.location', { location: prettyName(detail.location.name) }))
+  if (detail.time_of_day) conditions.push(t('evolution.time', { time: prettyName(String(detail.time_of_day)) }))
+  if (presentNumber(detail.relative_physical_stats)) conditions.push(statRelation(detail.relative_physical_stats, t))
   if (detail.party_species)
     conditions.push(t('evolution.partySpecies', { species: prettyName(detail.party_species.name) }))
-  if (detail.party_type)
-    conditions.push(t('evolution.partyType', { type: prettyName(detail.party_type.name) }))
+  if (detail.party_type) conditions.push(t('evolution.partyType', { type: prettyName(detail.party_type.name) }))
   if (detail.near_special_rock) conditions.push(t('evolution.specialRock'))
   if (detail.needs_multiplayer) conditions.push(t('evolution.multiplayer'))
   if (detail.needs_overworld_rain) conditions.push(t('evolution.rain'))
   if (detail.turn_upside_down) conditions.push(t('evolution.upsideDown'))
-  if (detail.region)
-    conditions.push(t('evolution.region', { region: prettyName(detail.region.name) }))
+  if (detail.region) conditions.push(t('evolution.region', { region: prettyName(detail.region.name) }))
   if (detail.required_pokemon_form)
-    conditions.push(
-      t('evolution.requiredForm', { form: prettyName(detail.required_pokemon_form.name) }),
-    )
+    conditions.push(t('evolution.requiredForm', { form: prettyName(detail.required_pokemon_form.name) }))
   if (detail.evolved_pokemon_form)
-    conditions.push(
-      t('evolution.evolvedForm', { form: prettyName(detail.evolved_pokemon_form.name) }),
-    )
+    conditions.push(t('evolution.evolvedForm', { form: prettyName(detail.evolved_pokemon_form.name) }))
   if (detail.used_move)
     conditions.push(
       presentNumber(detail.min_move_count)
@@ -79,8 +61,7 @@ export function evolutionCondition(
           })
         : t('evolution.useMove', { move: prettyName(detail.used_move.name) }),
     )
-  if (presentNumber(detail.min_steps))
-    conditions.push(t('evolution.steps', { count: number(detail.min_steps) }))
+  if (presentNumber(detail.min_steps)) conditions.push(t('evolution.steps', { count: number(detail.min_steps) }))
   if (presentNumber(detail.min_damage_taken))
     conditions.push(t('evolution.damageTaken', { amount: number(detail.min_damage_taken) }))
   if (detail.allowed_natures?.length)
@@ -101,11 +82,7 @@ export function evolutionCondition(
   return conditions.length ? conditions.join(' · ') : t('evolution.special')
 }
 
-export function evolutionConditions(
-  details: EvolutionDetail[],
-  t: Translate,
-  language: Language = 'pt-BR',
-) {
+export function evolutionConditions(details: EvolutionDetail[], t: Translate, language: Language = 'pt-BR') {
   if (!details.length) return [t('evolution.basic')]
   return [...new Set(details.map((detail) => evolutionCondition(detail, t, language)))]
 }

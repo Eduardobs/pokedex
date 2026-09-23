@@ -1,4 +1,4 @@
-import type { TranslationKey } from '../contexts/LanguageContext'
+import type { TranslationKey } from '../../i18n/types'
 
 export type GameMapIconId =
   | 'area'

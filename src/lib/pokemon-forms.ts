@@ -8,8 +8,7 @@ type FormLabelTranslate = (key: FormLabelKey, variables?: Record<string, string 
 export function formCategory(name: string): FormCategory | null {
   if (name.includes('-gmax')) return 'gmax'
   if (name.match(/-mega(?:-|$)/)) return 'mega'
-  if (['-alola', '-galar', '-hisui', '-paldea'].some((region) => name.includes(region)))
-    return 'regional'
+  if (['-alola', '-galar', '-hisui', '-paldea'].some((region) => name.includes(region))) return 'regional'
   return null
 }
 

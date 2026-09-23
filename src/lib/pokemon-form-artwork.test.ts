@@ -7,10 +7,8 @@ import {
 
 const officialArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412.png'
-const pokemonSprite =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png'
-const sandySprite =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412-sandy.png'
+const pokemonSprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png'
+const sandySprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412-sandy.png'
 const sandyArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412-sandy.png'
 
@@ -100,10 +98,7 @@ describe('pokemonFormImageSources', () => {
       sprites: { ...sandyForm.sprites, front_default: null },
     }
 
-    expect(pokemonFormImageSources(pokemon, formWithoutSprite)).toEqual([
-      officialArtwork,
-      pokemonSprite,
-    ])
+    expect(pokemonFormImageSources(pokemon, formWithoutSprite)).toEqual([officialArtwork, pokemonSprite])
   })
 })
 
@@ -124,14 +119,10 @@ describe('pokemonFormDirectoryImageSources', () => {
   })
 
   it('falls back from inferred official artwork to the supplied form sprite', () => {
-    const shinySprite =
-      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10309.png'
+    const shinySprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10309.png'
     const sources = pokemonFormDirectoryImageSources(
       10309,
-      sprites(
-        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10309.png',
-        shinySprite,
-      ),
+      sprites('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10309.png', shinySprite),
       true,
     )
 

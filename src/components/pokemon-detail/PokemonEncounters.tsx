@@ -17,17 +17,11 @@ export function PokemonEncounters({ encounters }: Props) {
   const versions = useMemo(() => encounterVersions(encounters), [encounters])
   const newestVersion = versions.at(-1)?.name ?? ''
   const [selectedVersion, setSelectedVersion] = useState(newestVersion)
-  const activeVersion = versions.some(({ name }) => name === selectedVersion)
-    ? selectedVersion
-    : newestVersion
-  const areas = useMemo(
-    () => encountersForVersion(encounters, activeVersion),
-    [activeVersion, encounters],
-  )
+  const activeVersion = versions.some(({ name }) => name === selectedVersion) ? selectedVersion : newestVersion
+  const areas = useMemo(() => encountersForVersion(encounters, activeVersion), [activeVersion, encounters])
   const versionLabel = prettyName(activeVersion)
 
-  if (!versions.length)
-    return <EmptyState icon={<MapPin />} title={t('detail.noEncounters')} headingLevel={3} />
+  if (!versions.length) return <EmptyState icon={<MapPin />} title={t('detail.noEncounters')} headingLevel={3} />
 
   return (
     <>

@@ -70,29 +70,17 @@ function validateJsonBounds(value: unknown) {
     if (nodes > NETWORK.maxJsonNodes || depth > NETWORK.maxJsonDepth)
       throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
     if (typeof current === 'string' && current.length > NETWORK.maxStringLength)
-      throw new ApiError(
-        'A PokéAPI retornou um texto grande demais.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou um texto grande demais.', undefined, 'invalid-response')
     if (Array.isArray(current)) {
       if (current.length > NETWORK.maxArrayItems)
-        throw new ApiError(
-          'A PokéAPI retornou uma lista grande demais.',
-          undefined,
-          'invalid-response',
-        )
+        throw new ApiError('A PokéAPI retornou uma lista grande demais.', undefined, 'invalid-response')
       current.forEach((item) => visit(item, depth + 1))
       return
     }
     if (current === null || typeof current !== 'object') return
     const entries = Object.entries(current)
     if (entries.length > NETWORK.maxObjectKeys)
-      throw new ApiError(
-        'A PokéAPI retornou um objeto grande demais.',
-        undefined,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou um objeto grande demais.', undefined, 'invalid-response')
     entries.forEach(([, item]) => visit(item, depth + 1))
   }
   visit(value, 0)
@@ -101,19 +89,11 @@ function validateJsonBounds(value: unknown) {
 async function readJsonResponse(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type')
   if (contentType && !/\b(?:application|text)\/[\w.+-]*json\b/i.test(contentType)) {
-    throw new ApiError(
-      'A PokéAPI retornou um formato inesperado.',
-      response.status,
-      'invalid-response',
-    )
+    throw new ApiError('A PokéAPI retornou um formato inesperado.', response.status, 'invalid-response')
   }
   const declaredLength = Number(response.headers.get('content-length'))
   if (Number.isFinite(declaredLength) && declaredLength > NETWORK.maxResponseBytes) {
-    throw new ApiError(
-      'A PokéAPI retornou uma resposta grande demais.',
-      response.status,
-      'invalid-response',
-    )
+    throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
   }
 
   const reader = response.body?.getReader()
@@ -127,11 +107,7 @@ async function readJsonResponse(response: Response): Promise<unknown> {
       received += value.byteLength
       if (received > NETWORK.maxResponseBytes) {
         await reader.cancel()
-        throw new ApiError(
-          'A PokéAPI retornou uma resposta grande demais.',
-          response.status,
-          'invalid-response',
-        )
+        throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
       }
       text += decoder.decode(value, { stream: true })
     }
@@ -139,11 +115,7 @@ async function readJsonResponse(response: Response): Promise<unknown> {
   } else {
     text = await response.text()
     if (new TextEncoder().encode(text).byteLength > NETWORK.maxResponseBytes) {
-      throw new ApiError(
-        'A PokéAPI retornou uma resposta grande demais.',
-        response.status,
-        'invalid-response',
-      )
+      throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
     }
   }
 
@@ -159,11 +131,7 @@ async function readJsonResponse(response: Response): Promise<unknown> {
   return data
 }
 
-function observeWithSignal<T>(
-  request: Promise<T>,
-  signal?: AbortSignal,
-  onFinish?: () => void,
-): Promise<T> {
+function observeWithSignal<T>(request: Promise<T>, signal?: AbortSignal, onFinish?: () => void): Promise<T> {
   let finished = false
   let abortHandler: (() => void) | undefined
   const finish = () => {
@@ -206,8 +174,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
     return Promise.reject(error)
   }
 
-  if (signal?.aborted)
-    return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'))
+  if (signal?.aborted) return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'))
 
   const cached = readCache<T>(url)
   if (cached !== undefined) return observeWithSignal(Promise.resolve(cached), signal)
@@ -230,9 +197,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
       .then(async (response) => {
         if (!response.ok)
           throw new ApiError(
-            response.status === 404
-              ? 'Conteúdo não encontrado.'
-              : 'A PokéAPI não respondeu como esperado.',
+            response.status === 404 ? 'Conteúdo não encontrado.' : 'A PokéAPI não respondeu como esperado.',
             response.status,
           )
         const data = await readJsonResponse(response)
@@ -240,8 +205,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
         return data
       })
       .catch((error: unknown) => {
-        if (timedOut)
-          throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+        if (timedOut) throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
         throw error
       })
       .finally(() => {

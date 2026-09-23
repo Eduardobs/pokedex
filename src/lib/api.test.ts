@@ -18,8 +18,7 @@ afterEach(() => {
 })
 
 describe('utilitários da PokéAPI', () => {
-  it('extrai o id de uma URL', () =>
-    expect(idFromUrl('https://pokeapi.co/api/v2/pokemon/25/')).toBe(25))
+  it('extrai o id de uma URL', () => expect(idFromUrl('https://pokeapi.co/api/v2/pokemon/25/')).toBe(25))
   it('mantém apenas as variedades padrão na listagem da Pokédex', () => {
     expect(
       pokemonListItems([
@@ -50,9 +49,7 @@ describe('utilitários da PokéAPI', () => {
       ),
     ).toBe('Español'))
   it('usa inglês quando a tradução solicitada não existe', () =>
-    expect(
-      localizedText([{ language: { name: 'en' }, flavor_text: 'English' }], undefined, 'es'),
-    ).toBe('English'))
+    expect(localizedText([{ language: { name: 'en' }, flavor_text: 'English' }], undefined, 'es')).toBe('English'))
   it('traduz nomes localizados', () =>
     expect(
       localizedName(
@@ -70,11 +67,7 @@ describe('utilitários da PokéAPI', () => {
 
   it('informa quando precisou usar outro idioma e higieniza quebras de linha', () => {
     expect(
-      localizedTextResult(
-        [{ language: { name: 'en' }, effect: 'First line\nsecond\fline' }],
-        ['effect'],
-        'es',
-      ),
+      localizedTextResult([{ language: { name: 'en' }, effect: 'First line\nsecond\fline' }], ['effect'], 'es'),
     ).toEqual({
       text: 'First line second line',
       language: 'en',
@@ -92,14 +85,10 @@ describe('utilitários da PokéAPI', () => {
     expect(resolveApiUrl('pokemon/25')).toBe('https://pokeapi.co/api/v2/pokemon/25')
     expect(resolveApiUrl('/pokemon/25#sprites')).toBe('https://pokeapi.co/api/v2/pokemon/25')
     expect(() => resolveApiUrl('https://pokeapi.co/api/v2/pokemon/25/')).not.toThrow()
-    expect(() => resolveApiUrl('https://pokeapi.co.evil.example/api/v2/pokemon/25')).toThrow(
-      ApiError,
-    )
+    expect(() => resolveApiUrl('https://pokeapi.co.evil.example/api/v2/pokemon/25')).toThrow(ApiError)
     expect(() => resolveApiUrl('http://pokeapi.co/api/v2/pokemon/25')).toThrow(ApiError)
     expect(() => resolveApiUrl('https://pokeapi.co/api/v20/pokemon/25')).toThrow(ApiError)
-    expect(() => resolveApiUrl('https://user:password@pokeapi.co/api/v2/pokemon/25')).toThrow(
-      ApiError,
-    )
+    expect(() => resolveApiUrl('https://user:password@pokeapi.co/api/v2/pokemon/25')).toThrow(ApiError)
     expect(() => resolveApiUrl('   ')).toThrow(ApiError)
     await expect(apiFetch('https://evil.example/collect')).rejects.toMatchObject({
       code: 'unsafe-url',
@@ -197,11 +186,9 @@ describe('utilitários da PokéAPI', () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       (_input, init) =>
         new Promise((_resolve, reject) => {
-          init?.signal?.addEventListener(
-            'abort',
-            () => reject(new DOMException('Aborted', 'AbortError')),
-            { once: true },
-          )
+          init?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+            once: true,
+          })
         }),
     )
 
@@ -256,11 +243,9 @@ describe('utilitários da PokéAPI', () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
       transportSignal = init?.signal ?? undefined
       return new Promise((_resolve, reject) => {
-        transportSignal?.addEventListener(
-          'abort',
-          () => reject(new DOMException('Aborted', 'AbortError')),
-          { once: true },
-        )
+        transportSignal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+          once: true,
+        })
       })
     })
     const controller = new AbortController()

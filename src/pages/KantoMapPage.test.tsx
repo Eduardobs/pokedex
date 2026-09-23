@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { KANTO_MARKERS, MAP_CATEGORIES } from '../data/kanto-map'
+import { KANTO_MARKERS, MAP_CATEGORIES } from '../data/maps/kanto-map'
 import { KantoMapPage } from './KantoMapPage'
 
 function renderPage() {

@@ -57,14 +57,11 @@ export function SelectMenu<T extends string>({
   }
 
   const handleOptionsKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    const optionButtons = Array.from(
-      rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? [],
-    )
+    const optionButtons = Array.from(rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? [])
     const currentIndex = optionButtons.indexOf(document.activeElement as HTMLButtonElement)
     let nextIndex: number
     if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % optionButtons.length
-    else if (event.key === 'ArrowUp')
-      nextIndex = (currentIndex - 1 + optionButtons.length) % optionButtons.length
+    else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + optionButtons.length) % optionButtons.length
     else if (event.key === 'Home') nextIndex = 0
     else if (event.key === 'End') nextIndex = optionButtons.length - 1
     else return

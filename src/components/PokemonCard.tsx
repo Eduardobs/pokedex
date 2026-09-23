@@ -98,9 +98,7 @@ function PokemonCardView({
         <h3>{displayName}</h3>
         {variation && <p className="pokemon-card-variation">{variation}</p>}
         <div className="type-row">
-          {types.length
-            ? types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />)
-            : typeFallback}
+          {types.length ? types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />) : typeFallback}
         </div>
       </Link>
       {footer}
@@ -112,20 +110,13 @@ function PokemonSummaryCard({ id, name, pokemon, sortMetric, shiny = false }: Po
   const { isFavorite, toggle } = useFavoritesContext()
   const { t } = useLanguage()
   const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLElement>(Boolean(pokemon))
-  const {
-    data: loadedPokemon,
-    error,
-    retry,
-  } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
+  const { data: loadedPokemon, error, retry } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
   const detail = pokemon ?? loadedPokemon
   const favorite = isFavorite(name)
   const displayName = prettyName(name)
   const normalArtwork =
-    detail?.sprites.other?.['official-artwork']?.front_default ??
-    detail?.sprites.front_default ??
-    pokemonArtwork(id)
-  const shinyArtwork =
-    detail?.sprites.other?.['official-artwork']?.front_shiny ?? detail?.sprites.front_shiny
+    detail?.sprites.other?.['official-artwork']?.front_default ?? detail?.sprites.front_default ?? pokemonArtwork(id)
+  const shinyArtwork = detail?.sprites.other?.['official-artwork']?.front_shiny ?? detail?.sprites.front_shiny
   const showingShiny = shiny && Boolean(shinyArtwork)
   const artwork = showingShiny ? (shinyArtwork ?? normalArtwork) : normalArtwork
 
@@ -191,16 +182,7 @@ function DirectoryFormArtwork({
     alt: source.shiny ? shinyAlt : normalAlt,
   }))
 
-  return (
-    <FallbackImage
-      sources={sources}
-      alt={normalAlt}
-      width="165"
-      height="165"
-      loading="lazy"
-      decoding="async"
-    />
-  )
+  return <FallbackImage sources={sources} alt={normalAlt} width="165" height="165" loading="lazy" decoding="async" />
 }
 
 function PokemonFormCard({ resource, category, shiny = false, sortMetric }: PokemonFormProps) {

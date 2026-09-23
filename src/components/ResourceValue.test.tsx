@@ -26,9 +26,7 @@ describe('ResourceValue', () => {
 
   it('localizes location-area and nested API fields in every supported language', () => {
     expect(resourceFieldLabel('game_index', 'pt-BR')).toBe('Índice no jogo')
-    expect(resourceFieldLabel('encounter_method_rates', 'pt-BR')).toBe(
-      'Taxas por método de encontro',
-    )
+    expect(resourceFieldLabel('encounter_method_rates', 'pt-BR')).toBe('Taxas por método de encontro')
     expect(resourceFieldLabel('location', 'pt-BR')).toBe('Local')
     expect(resourceFieldLabel('version_details', 'en')).toBe('Version details')
     expect(resourceFieldLabel('encounter_method', 'es')).toBe('Método de encuentro')
@@ -73,9 +71,7 @@ describe('ResourceValue', () => {
   })
 
   it('keeps related data visible for nested Pokémon records', () => {
-    const values = [
-      { slot: 1, is_hidden: false, pokemon: { name: 'murkrow', url: `${API_BASE}/pokemon/198/` } },
-    ]
+    const values = [{ slot: 1, is_hidden: false, pokemon: { name: 'murkrow', url: `${API_BASE}/pokemon/198/` } }]
 
     renderValue(values, 2)
 
@@ -93,9 +89,7 @@ describe('ResourceValue', () => {
   })
 
   it('shows the relationship rate used by gender resource pages', () => {
-    renderValue([
-      { rate: 4, pokemon_species: { name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` } },
-    ])
+    renderValue([{ rate: 4, pokemon_species: { name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` } }])
 
     expect(screen.getByText('Taxa')).toBeInTheDocument()
     expect(screen.getByText('4')).toBeInTheDocument()
@@ -111,31 +105,19 @@ describe('ResourceValue', () => {
       },
     ])
 
-    expect(screen.getByRole('link', { name: /Abrir Wormadam/ })).toHaveAttribute(
-      'href',
-      '/pokemon/wormadam-plant',
-    )
+    expect(screen.getByRole('link', { name: /Abrir Wormadam/ })).toHaveAttribute('href', '/pokemon/wormadam-plant')
   })
 
   it('links Pokemon species references to the canonical Pokemon page', () => {
     renderValue({ name: 'bulbasaur', url: `${API_BASE}/pokemon-species/1/` })
 
-    expect(screen.getByRole('link', { name: /Bulbasaur/ })).toHaveAttribute(
-      'href',
-      '/pokemon/bulbasaur',
-    )
+    expect(screen.getByRole('link', { name: /Bulbasaur/ })).toHaveAttribute('href', '/pokemon/bulbasaur')
   })
 
   it('renders damage-class references with the shared icon and color treatment', () => {
     const { container } = renderValue({ name: 'status', url: `${API_BASE}/move-damage-class/1/` })
 
-    expect(screen.getByRole('link', { name: /Status/ })).toHaveAttribute(
-      'href',
-      '/explorar/move-damage-class/1',
-    )
-    expect(container.querySelector('.damage-status img')).toHaveAttribute(
-      'src',
-      '/icons/damage-status.png',
-    )
+    expect(screen.getByRole('link', { name: /Status/ })).toHaveAttribute('href', '/explorar/move-damage-class/1')
+    expect(container.querySelector('.damage-status img')).toHaveAttribute('src', '/icons/damage-status.png')
   })
 })

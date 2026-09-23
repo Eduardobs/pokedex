@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { HISUI_CATEGORIES, HISUI_MARKERS } from '../data/hisui-map'
+import { HISUI_CATEGORIES, HISUI_MARKERS } from '../data/maps/hisui-map'
 import { HisuiMapPage } from './HisuiMapPage'
 
 function renderPage() {

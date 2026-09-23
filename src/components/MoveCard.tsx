@@ -52,10 +52,7 @@ export function moveLearningMethodLabel(method: string, t: Translate) {
 
 export function MoveCard({ move, method, level }: Props) {
   const { apiLanguage, t } = useLanguage()
-  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(
-    false,
-    '250px',
-  )
+  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(false, '250px')
   const { data } = useApi<MoveDetail>(visible ? move.url : null)
 
   const learning = moveLearningLabel(method, level, t)

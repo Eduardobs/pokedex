@@ -26,8 +26,7 @@ export function ScrollToTop() {
       title={label}
       onClick={() => {
         const prefersReducedMotion =
-          typeof window.matchMedia === 'function' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
         window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' })
         document.querySelector<HTMLElement>('.brand')?.focus({ preventScroll: true })

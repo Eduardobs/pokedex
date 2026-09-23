@@ -1,13 +1,13 @@
 import { Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { apiFetch, prettyName } from '../lib/api'
-import { pokemonFormImageSources } from '../lib/pokemon-form-artwork'
-import type { Pokemon, PokemonForm, Species } from '../types'
-import { FallbackImage } from './FallbackImage'
-import { TypeBadge } from './TypeBadge'
-import { Translate, useLanguage } from '../contexts/LanguageContext'
-import { MegaEvolutionIcon } from './MegaEvolutionIcon'
+import { Translate, useLanguage } from '../../contexts/LanguageContext'
+import { apiFetch, prettyName } from '../../lib/api'
+import { pokemonFormImageSources } from '../../lib/pokemon-form-artwork'
+import type { Pokemon, PokemonForm, Species } from '../../types'
+import { FallbackImage } from '../FallbackImage'
+import { MegaEvolutionIcon } from '../MegaEvolutionIcon'
+import { TypeBadge } from '../TypeBadge'
 
 type FormEntry = {
   pokemon: Pokemon
@@ -43,12 +43,7 @@ function localizedFormName(form: PokemonForm | null, language: string) {
   )
 }
 
-function formPresentation(
-  entry: FormEntry,
-  speciesName: string,
-  t: Translate,
-  apiLanguage: string,
-) {
+function formPresentation(entry: FormEntry, speciesName: string, t: Translate, apiLanguage: string) {
   const { pokemon, form, isDefaultVariety } = entry
   const suffix = pokemon.name.replace(new RegExp(`^${speciesName}-?`), '')
   const regional = [
@@ -67,9 +62,7 @@ function formPresentation(
     }
   if (regional)
     return {
-      label:
-        localizedFormName(form, apiLanguage) ||
-        t('pokemonForms.regionForm', { region: regional[1] }),
+      label: localizedFormName(form, apiLanguage) || t('pokemonForms.regionForm', { region: regional[1] }),
       category: t('pokemonForms.regional'),
       kind: 'regional',
       icon: Globe2,
@@ -97,8 +90,7 @@ function formPresentation(
     }
   return {
     label:
-      localizedFormName(form, apiLanguage) ||
-      prettyName(suffix || form?.form_name || t('pokemonForms.alternative')),
+      localizedFormName(form, apiLanguage) || prettyName(suffix || form?.form_name || t('pokemonForms.alternative')),
     category: t('pokemonForms.alternate'),
     kind: 'alternate',
     icon: Sparkles,
@@ -120,11 +112,7 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
     >
       <div className="form-art">
         <span />
-        <FormArtwork
-          key={artworkSources.join('|')}
-          sources={artworkSources}
-          alt={presentation.label}
-        />
+        <FormArtwork key={artworkSources.join('|')} sources={artworkSources} alt={presentation.label} />
         {active && <small>{t('pokemonForms.current')}</small>}
       </div>
       <div className="form-info">
@@ -144,13 +132,7 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
   )
 }
 
-export function PokemonForms({
-  species,
-  currentPokemon,
-}: {
-  species: Species
-  currentPokemon: Pokemon
-}) {
+export function PokemonForms({ species, currentPokemon }: { species: Species; currentPokemon: Pokemon }) {
   const { apiLanguage, t } = useLanguage()
   const [entries, setEntries] = useState<FormEntry[]>([])
   const [loading, setLoading] = useState(true)
@@ -165,13 +147,10 @@ export function PokemonForms({
       species.varieties.map(async (variety) => {
         const pokemon = await apiFetch<Pokemon>(variety.pokemon.url, controller.signal)
         const forms = await Promise.all(
-          pokemon.forms.map((resource) =>
-            apiFetch<PokemonForm>(resource.url, controller.signal).catch(() => null),
-          ),
+          pokemon.forms.map((resource) => apiFetch<PokemonForm>(resource.url, controller.signal).catch(() => null)),
         )
         const availableForms = forms.filter((form): form is PokemonForm => form !== null)
-        if (!availableForms.length)
-          return [{ pokemon, form: null, isDefaultVariety: variety.is_default }]
+        if (!availableForms.length) return [{ pokemon, form: null, isDefaultVariety: variety.is_default }]
         return availableForms.map((form) => ({
           pokemon,
           form,
@@ -179,11 +158,7 @@ export function PokemonForms({
         }))
       }),
     )
-      .then((groups) =>
-        setEntries(
-          groups.flat().sort((a, b) => (a.form?.form_order ?? 0) - (b.form?.form_order ?? 0)),
-        ),
-      )
+      .then((groups) => setEntries(groups.flat().sort((a, b) => (a.form?.form_order ?? 0) - (b.form?.form_order ?? 0))))
       .catch((reason: unknown) => {
         if (!(reason instanceof Error) || reason.name !== 'AbortError') {
           setEntries([])
@@ -210,11 +185,7 @@ export function PokemonForms({
       <article className="info-card forms-card inline-error" role="alert">
         <h2>{t('pokemonForms.title')}</h2>
         <p>{t('pokemonForms.unavailable')}</p>
-        <button
-          className="button secondary"
-          type="button"
-          onClick={() => setRetryCount((count) => count + 1)}
-        >
+        <button className="button secondary" type="button" onClick={() => setRetryCount((count) => count + 1)}>
           {t('common.retry')}
         </button>
       </article>
@@ -231,9 +202,7 @@ export function PokemonForms({
       title: t('pokemonForms.different'),
       description: t('pokemonForms.differentDesc'),
       icon: Sparkles,
-      entries: presented.filter(({ presentation }) =>
-        ['default', 'alternate', 'battle'].includes(presentation.kind),
-      ),
+      entries: presented.filter(({ presentation }) => ['default', 'alternate', 'battle'].includes(presentation.kind)),
     },
     {
       key: 'regional',
@@ -266,9 +235,7 @@ export function PokemonForms({
           <p>{t('pokemonForms.description')}</p>
         </div>
         <span>
-          {entries.length === 1
-            ? t('pokemonForms.countOne')
-            : t('pokemonForms.count', { count: entries.length })}
+          {entries.length === 1 ? t('pokemonForms.countOne') : t('pokemonForms.count', { count: entries.length })}
         </span>
       </header>
       <div className="forms-sections">

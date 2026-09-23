@@ -1,12 +1,10 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { STORAGE_KEYS } from '../config/app'
 import { messages } from '../i18n/messages'
+import type { Language, Translate } from '../i18n/types'
 import { readStorageString, writeStorageString } from '../lib/storage'
 
-export type Language = 'pt-BR' | 'en' | 'es'
-
-export type TranslationKey = keyof (typeof messages)['pt-BR']
-export type Translate = (key: TranslationKey, variables?: Record<string, string | number>) => string
+export type { Language, Translate, TranslationKey } from '../i18n/types'
 
 type LanguageContextValue = {
   language: Language

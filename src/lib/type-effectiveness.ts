@@ -8,10 +8,7 @@ export interface TypeEffectivenessResult {
 function calculateMultipliers(relations: TypeDamageRelations[]) {
   const multipliers = new Map<string, number>()
 
-  const applyMultiplier = (
-    types: TypeDamageRelations['double_damage_from'],
-    multiplier: number,
-  ) => {
+  const applyMultiplier = (types: TypeDamageRelations['double_damage_from'], multiplier: number) => {
     types.forEach(({ name }) => {
       multipliers.set(name, (multipliers.get(name) ?? 1) * multiplier)
     })
@@ -32,9 +29,7 @@ export function calculateWeaknesses(relations: TypeDamageRelations[]): TypeEffec
   return [...multipliers]
     .filter(([, multiplier]) => multiplier > 1)
     .map(([type, multiplier]) => ({ type, multiplier }))
-    .sort(
-      (left, right) => right.multiplier - left.multiplier || left.type.localeCompare(right.type),
-    )
+    .sort((left, right) => right.multiplier - left.multiplier || left.type.localeCompare(right.type))
 }
 
 export function calculateImmunities(relations: TypeDamageRelations[]): TypeEffectivenessResult[] {
@@ -52,7 +47,5 @@ export function calculateResistances(relations: TypeDamageRelations[]): TypeEffe
   return [...multipliers]
     .filter(([, multiplier]) => multiplier > 0 && multiplier < 1)
     .map(([type, multiplier]) => ({ type, multiplier }))
-    .sort(
-      (left, right) => left.multiplier - right.multiplier || left.type.localeCompare(right.type),
-    )
+    .sort((left, right) => left.multiplier - right.multiplier || left.type.localeCompare(right.type))
 }

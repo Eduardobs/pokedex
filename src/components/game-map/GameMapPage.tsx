@@ -1,206 +1,35 @@
 import {
-  Accessibility,
   ArrowLeft,
-  Badge,
-  Box,
-  CircleDot,
-  CircleUserRound,
-  Cross,
-  Dumbbell,
   Expand,
-  Gem,
-  GraduationCap,
-  Landmark,
   MapPin,
   MapPinned,
   Minus,
-  Mountain,
-  Package,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
   RefreshCcw,
   Search,
-  Scissors,
-  Shirt,
-  ShoppingBag,
-  Sparkles,
-  Star,
-  Swords,
-  TowerControl,
-  Utensils,
-  Waves,
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useLanguage } from '../contexts/LanguageContext'
-import type { GameMapDefinition, GameMapIconId, GameMapMarker } from '../data/game-map'
-import { formatNumber, normalizeSearchText } from '../lib/api'
-import { SearchField } from './SearchField'
-
-const MIN_ZOOM = 1
-const MAX_ZOOM = 32
-const ZOOM_LEVELS = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24, 32] as const
-const TILE_SIZE = 256
-
-type ViewportSize = { width: number; height: number }
-type MapTile = { key: string; x: number; y: number; size: number; url: string }
-type MarkerCluster = { key: string; x: number; y: number; markers: GameMapMarker[] }
-
-function categoryIcon(icon: GameMapIconId, size = 15) {
-  const props = { size, 'aria-hidden': true as const }
-  switch (icon) {
-    case 'area':
-      return <MapPin {...props} />
-    case 'cave':
-      return <Mountain {...props} />
-    case 'pokemon-center':
-      return <Cross {...props} />
-    case 'transition':
-      return <RefreshCcw {...props} />
-    case 'move-tutor':
-      return <GraduationCap {...props} />
-    case 'npc':
-      return <CircleUserRound {...props} />
-    case 'shop':
-      return <ShoppingBag {...props} />
-    case 'clothing':
-      return <Shirt {...props} />
-    case 'food':
-      return <Utensils {...props} />
-    case 'hairdresser':
-      return <Scissors {...props} />
-    case 'watchtower':
-      return <TowerControl {...props} />
-    case 'shrine':
-      return <Landmark {...props} />
-    case 'collectible':
-      return <CircleDot {...props} />
-    case 'berry':
-    case 'poke-ball':
-      return <CircleDot {...props} />
-    case 'item':
-      return <Package {...props} />
-    case 'key-item':
-      return <Gem {...props} />
-    case 'tm':
-      return <Box {...props} />
-    case 'obstacle':
-      return <Dumbbell {...props} />
-    case 'waterfall':
-      return <Waves {...props} />
-    case 'battle':
-      return <Swords {...props} />
-    case 'trainer':
-      return <Accessibility {...props} />
-    case 'mission':
-      return <Badge {...props} />
-    case 'medicine':
-      return <Cross {...props} />
-    case 'legendary':
-      return <Star {...props} />
-    case 'sparkles':
-    case 'tera-pokemon':
-      return <Sparkles {...props} />
-  }
-}
-
-function clampZoom(value: number) {
-  return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value))
-}
-
-function getAdjacentZoom(value: number, direction: 1 | -1) {
-  if (direction === 1) {
-    return ZOOM_LEVELS.find((level) => level > value) ?? MAX_ZOOM
-  }
-  return [...ZOOM_LEVELS].reverse().find((level) => level < value) ?? MIN_ZOOM
-}
-
-function getFitScale(viewport: ViewportSize, map: GameMapDefinition) {
-  return Math.min(viewport.width / map.width, viewport.height / map.height)
-}
-
-function getSourceZoom(zoom: number, map: GameMapDefinition) {
-  return Math.min(
-    map.tileMaxZoom,
-    Math.max(map.tileMinZoom, map.tileMinZoom + Math.floor(Math.log2(zoom))),
-  )
-}
-
-function getVisibleTiles(
-  map: GameMapDefinition,
-  viewport: ViewportSize,
-  pan: { x: number; y: number },
-  scale: number,
-  sourceZoom: number,
-): MapTile[] {
-  const left = Math.max(0, map.width / 2 + (-viewport.width / 2 - pan.x) / scale)
-  const right = Math.min(map.width, map.width / 2 + (viewport.width / 2 - pan.x) / scale)
-  const top = Math.max(0, map.height / 2 + (-viewport.height / 2 - pan.y) / scale)
-  const bottom = Math.min(map.height, map.height / 2 + (viewport.height / 2 - pan.y) / scale)
-  const factor = 2 ** (sourceZoom - map.tileBaseZoom)
-  const tileLogicalSize = TILE_SIZE / factor
-  const originX = map.tileOrigin.x * TILE_SIZE
-  const originY = map.tileOrigin.y * TILE_SIZE
-  const sourceMinX = Math.floor(map.tileOrigin.x * factor)
-  const sourceMaxX = Math.ceil((map.tileOrigin.x + map.width / TILE_SIZE) * factor) - 1
-  const sourceMinY = Math.floor(map.tileOrigin.y * factor)
-  const sourceMaxY = Math.ceil((map.tileOrigin.y + map.height / TILE_SIZE) * factor) - 1
-  const minX = Math.max(sourceMinX, Math.floor(((originX + left) * factor) / TILE_SIZE) - 1)
-  const maxX = Math.min(sourceMaxX, Math.floor(((originX + right) * factor) / TILE_SIZE) + 1)
-  const minY = Math.max(sourceMinY, Math.floor(((originY + top) * factor) / TILE_SIZE) - 1)
-  const maxY = Math.min(sourceMaxY, Math.floor(((originY + bottom) * factor) / TILE_SIZE) + 1)
-  const tiles: MapTile[] = []
-
-  for (let tileY = minY; tileY <= maxY; tileY += 1) {
-    for (let tileX = minX; tileX <= maxX; tileX += 1) {
-      const path = map.tileOrder === 'xy' ? `${tileX}/${tileY}` : `${tileY}/${tileX}`
-      tiles.push({
-        key: `${sourceZoom}-${tileX}-${tileY}`,
-        x: (tileX * TILE_SIZE) / factor - originX,
-        y: (tileY * TILE_SIZE) / factor - originY,
-        size: tileLogicalSize,
-        url: `${map.tileBaseUrl}/${sourceZoom}/${path}.${map.tileExtension}`,
-      })
-    }
-  }
-
-  return tiles
-}
-
-function getMarkerClusters(
-  map: GameMapDefinition,
-  markers: GameMapMarker[],
-  viewport: ViewportSize,
-  pan: { x: number; y: number },
-  scale: number,
-  separateMarkers: boolean,
-): MarkerCluster[] {
-  const cells = new Map<string, MarkerCluster>()
-  const clusterSize = separateMarkers ? 1 : 54
-
-  markers.forEach((marker) => {
-    const x = viewport.width / 2 + pan.x + (marker.x - map.width / 2) * scale
-    const y = viewport.height / 2 + pan.y + (marker.y - map.height / 2) * scale
-    if (x < -40 || x > viewport.width + 40 || y < -40 || y > viewport.height + 40) return
-
-    const key = separateMarkers
-      ? marker.id
-      : `${Math.floor(x / clusterSize)}:${Math.floor(y / clusterSize)}`
-    const cluster = cells.get(key)
-    if (cluster) {
-      const count = cluster.markers.length
-      cluster.x = (cluster.x * count + x) / (count + 1)
-      cluster.y = (cluster.y * count + y) / (count + 1)
-      cluster.markers.push(marker)
-    } else {
-      cells.set(key, { key, x, y, markers: [marker] })
-    }
-  })
-
-  return [...cells.values()]
-}
+import { useLanguage } from '../../contexts/LanguageContext'
+import type { GameMapDefinition, GameMapMarker } from '../../data/maps/game-map'
+import { formatNumber, normalizeSearchText } from '../../lib/api'
+import { SearchField } from '../SearchField'
+import { GameMapIcon } from './GameMapIcon'
+import {
+  clampZoom,
+  getAdjacentZoom,
+  getFitScale,
+  getMarkerClusters,
+  getSourceZoom,
+  getVisibleTiles,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  type MarkerCluster,
+  type ViewportSize,
+} from './game-map-geometry'
 
 export function GameMapPage({ map }: { map: GameMapDefinition }) {
   const { language, t } = useLanguage()
@@ -230,18 +59,15 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     return new Set(categoryParam.split(',').filter((id) => valid.has(id)))
   }, [categories, categoryParam])
 
-  const categoryById = useMemo(
-    () => new Map(categories.map((category) => [category.id, category])),
-    [categories],
-  )
+  const categoryById = useMemo(() => new Map(categories.map((category) => [category.id, category])), [categories])
   const normalizedQuery = normalizeSearchText(query)
   const visibleMarkers = map.markers.filter((marker) => {
     if (!activeCategories.has(marker.category)) return false
     if (!normalizedQuery) return true
     const category = categoryById.get(marker.category)
-    return normalizeSearchText(
-      `${marker.name} ${marker.area} ${category ? t(category.labelKey) : ''}`,
-    ).includes(normalizedQuery)
+    return normalizeSearchText(`${marker.name} ${marker.area} ${category ? t(category.labelKey) : ''}`).includes(
+      normalizedQuery,
+    )
   })
 
   const fitScale = getFitScale(viewport, map)
@@ -352,10 +178,10 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
 
   const focusCluster = (cluster: MarkerCluster) => {
     const nextZoom = clampZoom(Math.max(zoom + 1, zoom * 1.7))
-    const average = cluster.markers.reduce(
-      (total, marker) => ({ x: total.x + marker.x, y: total.y + marker.y }),
-      { x: 0, y: 0 },
-    )
+    const average = cluster.markers.reduce((total, marker) => ({ x: total.x + marker.x, y: total.y + marker.y }), {
+      x: 0,
+      y: 0,
+    })
     average.x /= cluster.markers.length
     average.y /= cluster.markers.length
     const nextScale = fitScale * nextZoom
@@ -433,11 +259,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
               <span>{t('maps.filters')}</span>
               <small>{t('maps.filterHint')}</small>
             </div>
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(false)}
-              aria-label={t('maps.hideFilters')}
-            >
+            <button type="button" onClick={() => setFiltersOpen(false)} aria-label={t('maps.hideFilters')}>
               <PanelLeftClose size={19} aria-hidden="true" />
             </button>
           </div>
@@ -451,9 +273,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
           <div className="map-filter-actions">
             <button
               type="button"
-              onClick={() =>
-                updateSearchParams(query, new Set(categories.map((category) => category.id)))
-              }
+              onClick={() => updateSearchParams(query, new Set(categories.map((category) => category.id)))}
             >
               {t('maps.selectAll')}
             </button>
@@ -467,16 +287,15 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
               <section key={group.id} aria-labelledby={`${map.id}-map-group-${group.id}`}>
                 <h2 id={`${map.id}-map-group-${group.id}`}>{t(group.labelKey)}</h2>
                 {group.categories.map((category) => (
-                  <label
-                    key={category.id}
-                    style={{ '--pin-color': category.color } as React.CSSProperties}
-                  >
+                  <label key={category.id} style={{ '--pin-color': category.color } as React.CSSProperties}>
                     <input
                       type="checkbox"
                       checked={activeCategories.has(category.id)}
                       onChange={() => toggleCategory(category.id)}
                     />
-                    <span className="map-category-icon">{categoryIcon(category.icon)}</span>
+                    <span className="map-category-icon">
+                      <GameMapIcon icon={category.icon} />
+                    </span>
                     <span>{t(category.labelKey)}</span>
                     <b>{formatNumber(category.count, language)}</b>
                   </label>
@@ -489,17 +308,11 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
         <div className="map-view-column">
           <div className="map-toolbar">
             {!filtersOpen && (
-              <button
-                type="button"
-                className="map-show-filters"
-                onClick={() => setFiltersOpen(true)}
-              >
+              <button type="button" className="map-show-filters" onClick={() => setFiltersOpen(true)}>
                 <PanelLeftOpen size={18} aria-hidden="true" /> {t('maps.showFilters')}
               </button>
             )}
-            <p role="status">
-              {t('maps.visiblePins', { count: formatNumber(visibleMarkers.length, language) })}
-            </p>
+            <p role="status">{t('maps.visiblePins', { count: formatNumber(visibleMarkers.length, language) })}</p>
             <span>{t('maps.dragHint')}</span>
           </div>
 
@@ -598,7 +411,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
                     aria-label={`${t(category.labelKey)}: ${marker.name}, ${marker.area}`}
                     aria-pressed={selected}
                   >
-                    {categoryIcon(category.icon, 14)}
+                    <GameMapIcon icon={category.icon} size={14} />
                   </button>
                 )
               })}
@@ -652,7 +465,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
                     } as React.CSSProperties
                   }
                 >
-                  {categoryIcon(categoryById.get(selectedMarker.category)!.icon)}
+                  <GameMapIcon icon={categoryById.get(selectedMarker.category)!.icon} />
                   {t(categoryById.get(selectedMarker.category)!.labelKey)}
                 </span>
                 <h2>{selectedMarker.name}</h2>
@@ -670,9 +483,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
                 <p>{t('maps.emptyDescription')}</p>
                 <button
                   type="button"
-                  onClick={() =>
-                    updateSearchParams('', new Set(categories.map((category) => category.id)))
-                  }
+                  onClick={() => updateSearchParams('', new Set(categories.map((category) => category.id)))}
                 >
                   {t('maps.resetFilters')}
                 </button>

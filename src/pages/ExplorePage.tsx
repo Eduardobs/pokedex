@@ -74,11 +74,7 @@ export function ExplorePage() {
                 return (
                   <Link key={resource.endpoint} to={`/explorar/${resource.endpoint}`}>
                     <span className="resource-link-icon">
-                      {resource.endpoint === 'move-damage-class' ? (
-                        <DamageClassIconSet />
-                      ) : (
-                        <ResourceIcon size={17} />
-                      )}
+                      {resource.endpoint === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon size={17} />}
                     </span>
                     <span>{resource.label}</span>
                     <ArrowRight size={16} />

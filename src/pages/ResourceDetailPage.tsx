@@ -1,25 +1,10 @@
 import type { LucideIcon } from 'lucide-react'
-import {
-  ArrowLeft,
-  Braces,
-  Dna,
-  ExternalLink,
-  Gamepad2,
-  Gem,
-  MapPin,
-  Tags,
-  Zap,
-} from 'lucide-react'
+import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { ResourceValue, resourceFieldLabel } from '../components/ResourceValue'
-import {
-  DamageClassBadge,
-  DamageClassIcon,
-  GenderBadge,
-  normalizedDamageClass,
-} from '../components/SemanticBadges'
+import { DamageClassBadge, DamageClassIcon, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
@@ -61,25 +46,16 @@ export function ResourceDetailPage() {
   const GroupIcon = meta?.groupIcon
   const resourcePath = valid ? `${encodeURIComponent(resource)}/${encodeURIComponent(name)}` : null
   const { data, loading, error, retry } = useApi<Record<string, unknown>>(resourcePath)
-  if (!valid)
-    return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
+  if (!valid) return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
   if (loading) return <Loading />
   if (error || !data)
-    return (
-      <ErrorState
-        title={t('resource.notFound')}
-        message={t('resource.notFoundDesc')}
-        retry={retry}
-      />
-    )
+    return <ErrorState title={t('resource.notFound')} message={t('resource.notFoundDesc')} retry={retry} />
   if ((resource === 'pokemon' || resource === 'pokemon-species') && typeof data.name === 'string') {
     return <Navigate to={`/pokemon/${encodeURIComponent(data.name)}`} replace />
   }
   const title =
     localizedName(data.names, apiLanguage) ||
-    (typeof data.name === 'string'
-      ? data.name
-      : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
+    (typeof data.name === 'string' ? data.name : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
   const localizedDescription = localizedTextResult(data.flavor_text_entries, undefined, apiLanguage)
   const effectDescription = localizedTextResult(data.effect_entries, undefined, apiLanguage)
   const descriptionResult = localizedDescription.text ? localizedDescription : effectDescription
@@ -97,9 +73,7 @@ export function ResourceDetailPage() {
       ? (data.damage_class as { name?: string }).name
       : undefined
   const damageClass =
-    resource === 'move-damage-class' && typeof data.name === 'string'
-      ? normalizedDamageClass(data.name)
-      : undefined
+    resource === 'move-damage-class' && typeof data.name === 'string' ? normalizedDamageClass(data.name) : undefined
   const berryName = resource === 'berry' && typeof data.name === 'string' ? data.name : null
   return (
     <section
@@ -132,14 +106,7 @@ export function ResourceDetailPage() {
           <ArrowLeft />
         </Link>
         {berryName ? (
-          <img
-            src={berrySprite(berryName)}
-            alt=""
-            width="72"
-            height="72"
-            loading="lazy"
-            decoding="async"
-          />
+          <img src={berrySprite(berryName)} alt="" width="72" height="72" loading="lazy" decoding="async" />
         ) : damageClass ? (
           <span className={`resource-detail-mark damage-class-detail-icon damage-${damageClass}`}>
             <DamageClassIcon value={damageClass} width="42" height="34" />
@@ -149,9 +116,7 @@ export function ResourceDetailPage() {
             <ResourceIcon />
           </span>
         )}
-        {resource === 'item' && (
-          <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />
-        )}
+        {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />}
         <div>
           <span className="eyebrow">
             {getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}
@@ -200,10 +165,7 @@ export function ResourceDetailPage() {
                   </span>
                   {resourceFieldLabel(key, language)}
                 </h3>
-                <ResourceValue
-                  value={value}
-                  pokemonGender={relatedPokemonGender(resource, key, data.name)}
-                />
+                <ResourceValue value={value} pokemonGender={relatedPokemonGender(resource, key, data.name)} />
               </article>
             )
           })}
@@ -232,10 +194,7 @@ export function ResourceDetailPage() {
                     </span>
                     {resourceFieldLabel(key, language)}
                   </h3>
-                  <ResourceValue
-                    value={value}
-                    pokemonGender={relatedPokemonGender(resource, key, data.name)}
-                  />
+                  <ResourceValue value={value} pokemonGender={relatedPokemonGender(resource, key, data.name)} />
                 </article>
               )
             })}

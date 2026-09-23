@@ -31,9 +31,7 @@ export function officialArtworkForFormSprite(spriteUrl: string | null | undefine
       return null
 
     const isShiny = parsed.pathname.startsWith(`${FORM_SPRITES_PATH}shiny/`)
-    const filename = parsed.pathname.slice(
-      isShiny ? `${FORM_SPRITES_PATH}shiny/`.length : FORM_SPRITES_PATH.length,
-    )
+    const filename = parsed.pathname.slice(isShiny ? `${FORM_SPRITES_PATH}shiny/`.length : FORM_SPRITES_PATH.length)
     if (!FORM_SPRITE_FILENAME.test(filename)) return null
 
     return `${SPRITES_ORIGIN}${OFFICIAL_ARTWORK_PATH}${isShiny ? 'shiny/' : ''}${filename}`
@@ -84,7 +82,5 @@ export function pokemonFormImageSources(pokemon: PokemonWithArtwork, form: FormW
     ? [officialArtworkForFormSprite(formSprite), formSprite, officialArtwork, pokemonSprite]
     : [officialArtwork, formSprite, pokemonSprite]
 
-  return candidates.filter(
-    (source, index): source is string => Boolean(source) && candidates.indexOf(source) === index,
-  )
+  return candidates.filter((source, index): source is string => Boolean(source) && candidates.indexOf(source) === index)
 }

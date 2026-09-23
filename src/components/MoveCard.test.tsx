@@ -47,11 +47,7 @@ describe('MoveCard', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
-          <MoveCard
-            move={{ name: 'thunder-shock', url: 'https://example.test/move/84' }}
-            method="level-up"
-            level={5}
-          />
+          <MoveCard move={{ name: 'thunder-shock', url: 'https://example.test/move/84' }} method="level-up" level={5} />
         </LanguageProvider>
       </MemoryRouter>,
     )

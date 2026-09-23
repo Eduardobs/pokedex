@@ -51,10 +51,8 @@ describe('PokemonCard with form resources', () => {
       data: {
         pokemon: { name: 'charizard-mega-x', url: 'https://pokeapi.co/api/v2/pokemon/10034/' },
         sprites: {
-          front_default:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10034.png',
-          front_shiny:
-            'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10034.png',
+          front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10034.png',
+          front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10034.png',
         },
         types: [{ type: { name: 'fire', url: 'type/fire' } }],
         is_battle_only: true,

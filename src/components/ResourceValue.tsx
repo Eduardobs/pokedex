@@ -1,14 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import {
-  API_BASE,
-  formatNumber,
-  localizedApiTerm,
-  pokemonArtwork,
-  prettyName,
-  resolveApiUrl,
-} from '../lib/api'
+import { API_BASE, formatNumber, localizedApiTerm, pokemonArtwork, prettyName, resolveApiUrl } from '../lib/api'
 import { useLanguage } from '../contexts/LanguageContext'
 import type { Language, TranslationKey } from '../contexts/LanguageContext'
 import { getResourceLabel } from '../data/resources'
@@ -18,13 +11,7 @@ import { parseRelatedPokemonList } from '../lib/related-pokemon'
 import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
 import { DamageClassBadge } from './SemanticBadges'
 
-const excluded = new Set([
-  'sprites',
-  'game_indices',
-  'version_group_details',
-  'past_values',
-  'past_types',
-])
+const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
 
 export const resourceFieldLabel = (key: string, language: Language) => {
@@ -42,9 +29,7 @@ function routeFromReference(url: string, resourceName: string) {
     if ((endpoint === 'pokemon' || endpoint === 'pokemon-species') && resourceName) {
       return `/pokemon/${encodeURIComponent(resourceName)}`
     }
-    return endpoint && name
-      ? `/explorar/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}`
-      : null
+    return endpoint && name ? `/explorar/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
   } catch {
     return null
   }
@@ -63,9 +48,7 @@ function referenceMeta(value: unknown, language: Language) {
     if (!endpoint || !identifier) return null
     return {
       endpoint: getResourceLabel(endpoint, language),
-      identifier: /^\d+$/.test(identifier)
-        ? `#${identifier.padStart(3, '0')}`
-        : prettyName(identifier),
+      identifier: /^\d+$/.test(identifier) ? `#${identifier.padStart(3, '0')}` : prettyName(identifier),
     }
   } catch {
     return null
@@ -138,9 +121,7 @@ function PaginatedResourceValues({
           const reference = referenceMeta(item, language)
           return (
             <div className="resource-value-item" key={start + index}>
-              <span className="resource-value-index">
-                {String(start + index + 1).padStart(2, '0')}
-              </span>
+              <span className="resource-value-index">{String(start + index + 1).padStart(2, '0')}</span>
               <div>
                 <ResourceValue value={item} depth={depth + 1} pokemonGender={pokemonGender} />
                 {reference && (
@@ -158,24 +139,13 @@ function PaginatedResourceValues({
   )
 }
 
-function relatedDatumValue(
-  detail: RelatedPokemonDatum,
-  language: Language,
-  yes: string,
-  no: string,
-) {
+function relatedDatumValue(detail: RelatedPokemonDatum, language: Language, yes: string, no: string) {
   if (typeof detail.value === 'boolean') return detail.value ? yes : no
   if (typeof detail.value === 'number') return formatNumber(detail.value, language)
   return localizedApiTerm(detail.value, language)
 }
 
-function RelatedPokemonValues({
-  values,
-  pokemonGender,
-}: {
-  values: RelatedPokemon[]
-  pokemonGender?: PokemonGender
-}) {
+function RelatedPokemonValues({ values, pokemonGender }: { values: RelatedPokemon[]; pokemonGender?: PokemonGender }) {
   const { language, t } = useLanguage()
   const pagination = useResourcePagination(values.length)
   const { pageCount, start, end } = pagination
@@ -248,18 +218,11 @@ export function ResourceValue({
   if (typeof value === 'boolean')
     return <span className={`boolean ${value}`}>{value ? t('common.yes') : t('common.no')}</span>
   if (typeof value === 'string' || typeof value === 'number')
-    return (
-      <span>
-        {typeof value === 'string'
-          ? localizedApiTerm(value, language)
-          : formatNumber(value, language)}
-      </span>
-    )
+    return <span>{typeof value === 'string' ? localizedApiTerm(value, language) : formatNumber(value, language)}</span>
   if (Array.isArray(value)) {
     if (!value.length) return <span className="muted">{t('resource.none')}</span>
     const relatedPokemon = parseRelatedPokemonList(value)
-    if (relatedPokemon)
-      return <RelatedPokemonValues values={relatedPokemon} pokemonGender={pokemonGender} />
+    if (relatedPokemon) return <RelatedPokemonValues values={relatedPokemon} pokemonGender={pokemonGender} />
     if (depth > 1 || value.length > 20)
       return <PaginatedResourceValues values={value} depth={depth} pokemonGender={pokemonGender} />
     return (

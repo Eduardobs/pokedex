@@ -61,10 +61,7 @@ describe('ResourceListPage item presentation', () => {
       'src',
       '/icons/damage-physical.png',
     )
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
-      'src',
-      '/icons/damage-physical.png',
-    )
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-physical.png')
   })
 
   it.each([

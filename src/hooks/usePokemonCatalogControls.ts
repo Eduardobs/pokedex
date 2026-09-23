@@ -8,15 +8,12 @@ export function usePokemonCatalogControls(pageSize: number) {
   const [visibleCount, setVisibleCount] = useState(pageSize)
   const [shiny, setShiny] = useState(false)
   const resetPagination = useCallback(() => setVisibleCount(pageSize), [pageSize])
-  const { searchParams, updateSearchParam, clearSearchParams } =
-    useSearchParamUpdater(resetPagination)
+  const { searchParams, updateSearchParam, clearSearchParams } = useSearchParamUpdater(resetPagination)
 
   const query = searchParams.get('q') ?? ''
   const deferredQuery = useDeferredValue(query)
   const requestedType = searchParams.get('type') ?? 'all'
-  const type = POKEMON_TYPES.includes(requestedType as (typeof POKEMON_TYPES)[number])
-    ? requestedType
-    : 'all'
+  const type = POKEMON_TYPES.includes(requestedType as (typeof POKEMON_TYPES)[number]) ? requestedType : 'all'
   const requestedRegion = searchParams.get('region') ?? 'all'
   const region: PokemonRegion | 'all' = isPokemonRegion(requestedRegion) ? requestedRegion : 'all'
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null

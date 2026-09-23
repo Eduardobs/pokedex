@@ -68,14 +68,10 @@ describe('useApi', () => {
   })
 
   it('expõe falhas e consegue repetir a requisição', async () => {
-    apiFetchMock
-      .mockRejectedValueOnce(new Error('network unavailable'))
-      .mockResolvedValueOnce({ name: 'raichu' })
+    apiFetchMock.mockRejectedValueOnce(new Error('network unavailable')).mockResolvedValueOnce({ name: 'raichu' })
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/raichu'))
 
-    await waitFor(() =>
-      expect(result.current.error).toMatchObject({ message: 'network unavailable' }),
-    )
+    await waitFor(() => expect(result.current.error).toMatchObject({ message: 'network unavailable' }))
 
     act(() => result.current.retry())
 

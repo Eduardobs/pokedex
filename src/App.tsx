@@ -15,10 +15,7 @@ const PokemonDetailPage = lazyPage(() => import('./pages/PokemonDetailPage'), 'P
 const FormsPage = lazyPage(() => import('./pages/FormsPage'), 'FormsPage')
 const ExplorePage = lazyPage(() => import('./pages/ExplorePage'), 'ExplorePage')
 const ResourceListPage = lazyPage(() => import('./pages/ResourceListPage'), 'ResourceListPage')
-const ResourceDetailPage = lazyPage(
-  () => import('./pages/ResourceDetailPage'),
-  'ResourceDetailPage',
-)
+const ResourceDetailPage = lazyPage(() => import('./pages/ResourceDetailPage'), 'ResourceDetailPage')
 const FavoritesPage = lazyPage(() => import('./pages/FavoritesPage'), 'FavoritesPage')
 const TypesTablePage = lazyPage(() => import('./pages/TypesTablePage'), 'TypesTablePage')
 const MapsPage = lazyPage(() => import('./pages/MapsPage'), 'MapsPage')
@@ -54,9 +51,7 @@ export default function App() {
               <Route path="mapas/lumiose-city" element={<LumioseMapPage />} />
               <Route
                 path="*"
-                element={
-                  <ErrorState titleKey="error.notFoundTitle" messageKey="error.notFoundDesc" home />
-                }
+                element={<ErrorState titleKey="error.notFoundTitle" messageKey="error.notFoundDesc" home />}
               />
             </Route>
           </Routes>

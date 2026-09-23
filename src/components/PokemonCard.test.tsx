@@ -38,10 +38,7 @@ describe('PokemonCard', () => {
   it('exibe a arte definida pela listagem sem renderizar um toggle individual', () => {
     const view = renderCard()
 
-    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute(
-      'src',
-      'normal-artwork.png',
-    )
+    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute('src', 'normal-artwork.png')
     expect(screen.queryByRole('button', { name: /shiny/i })).not.toBeInTheDocument()
 
     view.rerender(
@@ -54,9 +51,6 @@ describe('PokemonCard', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('img', { name: 'Bulbasaur — Shiny' })).toHaveAttribute(
-      'src',
-      'shiny-artwork.png',
-    )
+    expect(screen.getByRole('img', { name: 'Bulbasaur — Shiny' })).toHaveAttribute('src', 'shiny-artwork.png')
   })
 })

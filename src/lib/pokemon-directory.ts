@@ -1,4 +1,4 @@
-import type { Translate } from '../contexts/LanguageContext'
+import type { Translate } from '../i18n/types'
 import { normalizeSearchText } from './api'
 import { POKEMON_REGIONS, type PokemonRarityDetails, type PokemonRegion } from './pokemon-catalog'
 import type { PokemonSortKey } from './pokemon-sort'
@@ -72,9 +72,7 @@ export function pokemonSearchSuggestions<T extends { id: number; name: string }>
   if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
 
   return pokemon
-    .filter((entry) =>
-      searchValues(entry).some((value) => normalizeSearchText(value).includes(normalizedQuery)),
-    )
+    .filter((entry) => searchValues(entry).some((value) => normalizeSearchText(value).includes(normalizedQuery)))
     .sort((left, right) => {
       const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
       const rightStartsWith = normalizeSearchText(right.name).startsWith(normalizedQuery)
@@ -84,9 +82,7 @@ export function pokemonSearchSuggestions<T extends { id: number; name: string }>
     .slice(0, limit)
 }
 
-export function pokemonSortOptions(
-  t: Translate,
-): { value: PokemonSortKey; label: string; metric?: string }[] {
+export function pokemonSortOptions(t: Translate): { value: PokemonSortKey; label: string; metric?: string }[] {
   return [
     { value: 'number', label: t('pokedex.sort.number') },
     { value: 'name', label: t('pokedex.sort.name') },

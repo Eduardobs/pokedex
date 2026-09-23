@@ -13,12 +13,7 @@ const stats = [
 
 it('exibe somente os atributos base no radar', () => {
   const { container } = render(
-    <BaseStatsRadar
-      stats={stats}
-      statNames={{ hp: 'HP', attack: 'Ataque' }}
-      label="Atributos base"
-      baseLabel="Base"
-    />,
+    <BaseStatsRadar stats={stats} statNames={{ hp: 'HP', attack: 'Ataque' }} label="Atributos base" baseLabel="Base" />,
   )
 
   expect(screen.getByRole('img', { name: /Atributos base/ })).toBeInTheDocument()

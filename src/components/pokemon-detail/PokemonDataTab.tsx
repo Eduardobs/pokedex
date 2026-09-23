@@ -33,10 +33,7 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
   ].filter((cry): cry is { label: string; url: string } => Boolean(cry.url))
 
   return (
-    <div
-      className="technical-data-grid"
-      style={{ '--resource-color': 'var(--theme)' } as React.CSSProperties}
-    >
+    <div className="technical-data-grid" style={{ '--resource-color': 'var(--theme)' } as React.CSSProperties}>
       <article className="info-card technical-card registry-card">
         <h2>
           <Database />

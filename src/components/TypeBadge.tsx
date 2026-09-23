@@ -51,8 +51,7 @@ const labels: Record<Language, Record<string, string>> = {
   },
 }
 
-export const typeLabel = (type: string, language: Language) =>
-  labels[language][type] ?? prettyName(type)
+export const typeLabel = (type: string, language: Language) => labels[language][type] ?? prettyName(type)
 
 export function TypeBadge({ type, iconOnly = false }: { type: string; iconOnly?: boolean }) {
   const { language } = useLanguage()

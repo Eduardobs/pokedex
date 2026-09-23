@@ -1,0 +1,93 @@
+/* Legibilidade, estados de erro e densidade responsiva */
+.data-list a {
+  grid-template-columns: 48px 38px minmax(180px, 1fr) 24px;
+}
+.catalog-select-copy small,
+.type-calculator label > span,
+.type-calculator output > span {
+  font-size: 11px;
+}
+.detail-nav-pokemon small,
+.physical-stats small,
+.tabs button span,
+.stat-list-heading,
+.radar-legend {
+  font-size: 11px;
+}
+.shiny-toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.form-art small,
+.form-category,
+.form-info .type-badge,
+.pokemon-card-category,
+.pokemon-card-battle {
+  font-size: 10px;
+}
+.form-info > p,
+.pokemon-card-variation,
+.forms-category-tabs button small,
+.forms-category-tabs button i {
+  font-size: 11px;
+}
+.move-card-meta .type-badge,
+.move-learning > span,
+.move-numbers span,
+.move-group > header span {
+  font-size: 10px;
+}
+.pokemon-card-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+  content-visibility: visible;
+}
+.pokemon-card-error > svg {
+  color: var(--red);
+}
+.pokemon-card-error h2,
+.pokemon-card-error p {
+  margin: 0;
+}
+.pokemon-card-error p {
+  color: var(--muted);
+  font-size: 13px;
+}
+.pokemon-card-error button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--red);
+  font-weight: 700;
+}
+:root[data-theme='dark'] .pokemon-card-error button {
+  background: #202731;
+}
+
+@media (max-width: 720px) {
+  .type-chart-legend span {
+    font-size: 11px;
+  }
+  .data-list a {
+    grid-template-columns: 34px 34px minmax(0, 1fr) 20px;
+  }
+}
+@media (max-width: 340px) {
+  .pokemon-grid {
+    grid-template-columns: 1fr;
+  }
+  .pokemon-card {
+    padding: 16px;
+  }
+  .pokemon-image-wrap img {
+    width: 150px;
+    height: 150px;
+  }
+}

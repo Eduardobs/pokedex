@@ -1,10 +1,6 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import {
-  fetchPokemonRarityDetails,
-  fetchPokemonRegionDetails,
-  fetchPokemonSortDetails,
-} from '../lib/pokemon-catalog'
+import { fetchPokemonRarityDetails, fetchPokemonRegionDetails, fetchPokemonSortDetails } from '../lib/pokemon-catalog'
 import { usePokemonCatalogDetails } from './usePokemonCatalogDetails'
 
 vi.mock('../lib/pokemon-catalog', () => ({

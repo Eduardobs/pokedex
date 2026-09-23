@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { NamedResource, TypeDamageRelations } from '../types'
-import {
-  calculateImmunities,
-  calculateResistances,
-  calculateWeaknesses,
-} from './type-effectiveness'
+import { calculateImmunities, calculateResistances, calculateWeaknesses } from './type-effectiveness'
 
 const resources = (...names: string[]): NamedResource[] =>
   names.map((name) => ({
@@ -30,11 +26,7 @@ function relations({
 
 describe('calculateWeaknesses', () => {
   it('returns the weaknesses of a single type', () => {
-    expect(
-      calculateWeaknesses([
-        relations({ double: ['water', 'ground', 'rock'], half: ['fire', 'grass'] }),
-      ]),
-    ).toEqual([
+    expect(calculateWeaknesses([relations({ double: ['water', 'ground', 'rock'], half: ['fire', 'grass'] })])).toEqual([
       { type: 'ground', multiplier: 2 },
       { type: 'rock', multiplier: 2 },
       { type: 'water', multiplier: 2 },

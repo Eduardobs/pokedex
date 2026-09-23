@@ -1,55 +1,28 @@
-import {
-  ArrowLeft,
-  ChevronRight,
-  GraduationCap,
-  Heart,
-  Ruler,
-  Search,
-  Shapes,
-  ShieldAlert,
-  Sparkles,
-  Weight,
-} from 'lucide-react'
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, ChevronRight, Heart, Ruler, ShieldAlert, Sparkles, Weight } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
-import { BaseStatsRadar } from '../components/BaseStatsRadar'
-import { EmptyState, InlineRetryError } from '../components/FeedbackState'
+import { InlineRetryError } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
 import { LocalizedResourceName } from '../components/LocalizedResourceName'
-import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
-import { PokemonForms } from '../components/PokemonForms'
+import { BaseStatsRadar } from '../components/pokemon-detail/BaseStatsRadar'
 import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
 import { PokemonBiologyCard } from '../components/pokemon-detail/PokemonBiologyCard'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
 import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounters'
 import { PokemonDetailBackLink } from '../components/pokemon-detail/PokemonDetailBackLink'
+import { PokemonForms } from '../components/pokemon-detail/PokemonForms'
+import { PokemonMovesTab } from '../components/pokemon-detail/PokemonMovesTab'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
-import { SearchField } from '../components/SearchField'
-import { SelectMenu } from '../components/SelectMenu'
-import { AbilityBadge, DamageClassBadge } from '../components/SemanticBadges'
-import { TypeBadge, typeLabel } from '../components/TypeBadge'
+import { AbilityBadge } from '../components/SemanticBadges'
+import { TypeBadge } from '../components/TypeBadge'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import {
-  formatDecimal,
-  formatNumber,
-  idFromUrl,
-  localizedTextResult,
-  normalizeSearchText,
-  pokemonArtwork,
-  prettyName,
-} from '../lib/api'
-import { groupMovesByLearningMethod } from '../lib/move-learning'
+import { formatDecimal, formatNumber, idFromUrl, localizedTextResult, pokemonArtwork, prettyName } from '../lib/api'
 import { parsePokemonEncounters } from '../lib/pokemon-encounters'
 import { level100StatRange } from '../lib/pokemon-stats'
-import { BATTLE_TYPES, type BattleType } from '../lib/type-chart'
-import {
-  calculateImmunities,
-  calculateResistances,
-  calculateWeaknesses,
-} from '../lib/type-effectiveness'
+import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
 import type { ApiList, Encounter, EvolutionChain, Pokemon, PokemonType, Species } from '../types'
 
 export function PokemonDetailPage() {
@@ -57,21 +30,9 @@ export function PokemonDetailPage() {
   const { name = '' } = useParams()
   const [tab, setTab] = useState<'about' | 'moves' | 'encounters' | 'data'>('about')
   const [shiny, setShiny] = useState(false)
-  const [moveQuery, setMoveQuery] = useState('')
-  const [moveMethod, setMoveMethod] = useState('all')
-  const [moveType, setMoveType] = useState<BattleType | 'all'>('all')
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
-  const {
-    data: pokemon,
-    loading,
-    error,
-    retry,
-  } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
-  const {
-    data: species,
-    loading: speciesLoading,
-    error: speciesError,
-  } = useApi<Species>(pokemon?.species.url ?? null)
+  const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
+  const { data: species, loading: speciesLoading, error: speciesError } = useApi<Species>(pokemon?.species.url ?? null)
   const {
     data: evolution,
     loading: evolutionLoading,
@@ -92,80 +53,22 @@ export function PokemonDetailPage() {
   const { data: neighbors } = useApi<ApiList>(
     secondaryDataReady && pokemon ? `pokemon?limit=3&offset=${neighborOffset}` : null,
   )
-  const previousResource = previousId
-    ? neighbors?.results.find((entry) => idFromUrl(entry.url) === previousId)
-    : null
-  const nextResource = nextId
-    ? neighbors?.results.find((entry) => idFromUrl(entry.url) === nextId)
-    : null
-  const previousPokemon =
-    previousResource && previousId ? { ...previousResource, id: previousId } : null
+  const previousResource = previousId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === previousId) : null
+  const nextResource = nextId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === nextId) : null
+  const previousPokemon = previousResource && previousId ? { ...previousResource, id: previousId } : null
   const nextPokemon = nextResource && nextId ? { ...nextResource, id: nextId } : null
   const { data: primaryType, error: primaryTypeError } = useApi<PokemonType>(
-    secondaryDataReady && pokemon?.types[0]
-      ? `type/${encodeURIComponent(pokemon.types[0].type.name)}`
-      : null,
+    secondaryDataReady && pokemon?.types[0] ? `type/${encodeURIComponent(pokemon.types[0].type.name)}` : null,
   )
   const { data: secondaryType, error: secondaryTypeError } = useApi<PokemonType>(
-    secondaryDataReady && pokemon?.types[1]
-      ? `type/${encodeURIComponent(pokemon.types[1].type.name)}`
-      : null,
-  )
-  const {
-    data: selectedMoveType,
-    loading: moveTypeLoading,
-    error: moveTypeError,
-    retry: retryMoveType,
-  } = useApi<PokemonType & { moves: Array<{ name: string }> }>(
-    tab === 'moves' && moveType !== 'all' ? `type/${moveType}` : null,
+    secondaryDataReady && pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null,
   )
   const { isFavorite, toggle } = useFavoritesContext()
-  const deferredMoveQuery = useDeferredValue(moveQuery)
-  const moveGroups = useMemo(
-    () => groupMovesByLearningMethod(pokemon?.moves ?? []),
-    [pokemon?.moves],
-  )
-  const moveMethods = useMemo(() => moveGroups.map((group) => group.method), [moveGroups])
-  const moveNamesForType = useMemo(
-    () =>
-      moveType === 'all' ? null : new Set(selectedMoveType?.moves.map((move) => move.name) ?? []),
-    [moveType, selectedMoveType],
-  )
-  const normalizedMoveQuery = useMemo(
-    () => normalizeSearchText(deferredMoveQuery),
-    [deferredMoveQuery],
-  )
-  const filteredMoveGroups = useMemo(
-    () =>
-      moveGroups
-        .filter((group) => moveMethod === 'all' || group.method === moveMethod)
-        .map((group) => ({
-          ...group,
-          moves: group.moves.filter(
-            ({ move }) =>
-              normalizeSearchText(move.name).includes(normalizedMoveQuery) &&
-              (!moveNamesForType || moveNamesForType.has(move.name)),
-          ),
-        }))
-        .filter((group) => group.moves.length),
-    [moveGroups, moveMethod, moveNamesForType, normalizedMoveQuery],
-  )
-  const moveMethodOptions = [
-    { value: 'all', label: t('detail.allMethods') },
-    ...moveMethods.map((method) => ({ value: method, label: moveLearningMethodLabel(method, t) })),
-  ]
-  const moveTypeOptions: Array<{ value: BattleType | 'all'; label: string }> = [
-    { value: 'all', label: t('detail.allTypes') },
-    ...BATTLE_TYPES.map((type) => ({ value: type, label: typeLabel(type, language) })),
-  ]
 
   useEffect(() => {
     setSecondaryDataReady(false)
     setTab('about')
     setShiny(false)
-    setMoveQuery('')
-    setMoveMethod('all')
-    setMoveType('all')
   }, [name])
 
   useEffect(() => {
@@ -185,46 +88,24 @@ export function PokemonDetailPage() {
   const currentTypeRelations = useMemo(() => {
     const loadedTypes = [primaryType, secondaryType]
     return (pokemon?.types ?? [])
-      .map(
-        ({ type }) =>
-          loadedTypes.find((loadedType) => loadedType?.name === type.name)?.damage_relations,
-      )
+      .map(({ type }) => loadedTypes.find((loadedType) => loadedType?.name === type.name)?.damage_relations)
       .filter((relations): relations is PokemonType['damage_relations'] => Boolean(relations))
   }, [pokemon, primaryType, secondaryType])
-  const typeRelationsReady = Boolean(
-    pokemon && currentTypeRelations.length === pokemon.types.length,
-  )
+  const typeRelationsReady = Boolean(pokemon && currentTypeRelations.length === pokemon.types.length)
   const typeRelationsError = primaryTypeError || (pokemon?.types[1] ? secondaryTypeError : null)
-  const weaknesses = useMemo(
-    () => calculateWeaknesses(currentTypeRelations),
-    [currentTypeRelations],
-  )
-  const resistances = useMemo(
-    () => calculateResistances(currentTypeRelations),
-    [currentTypeRelations],
-  )
-  const immunities = useMemo(
-    () => calculateImmunities(currentTypeRelations),
-    [currentTypeRelations],
-  )
+  const weaknesses = useMemo(() => calculateWeaknesses(currentTypeRelations), [currentTypeRelations])
+  const resistances = useMemo(() => calculateResistances(currentTypeRelations), [currentTypeRelations])
+  const immunities = useMemo(() => calculateImmunities(currentTypeRelations), [currentTypeRelations])
   if (loading) return <Loading label={t('detail.loading')} />
   if (error || !pokemon)
-    return (
-      <ErrorState
-        title={t('detail.notFound')}
-        message={t('detail.notFoundDesc', { name })}
-        retry={retry}
-      />
-    )
-  if (name !== pokemon.name)
-    return <Navigate to={`/pokemon/${encodeURIComponent(pokemon.name)}`} replace />
+    return <ErrorState title={t('detail.notFound')} message={t('detail.notFoundDesc', { name })} retry={retry} />
+  if (name !== pokemon.name) return <Navigate to={`/pokemon/${encodeURIComponent(pokemon.name)}`} replace />
 
   const normalArtwork =
     pokemon.sprites.other?.['official-artwork']?.front_default ??
     pokemon.sprites.front_default ??
     pokemonArtwork(pokemon.id)
-  const shinyArtwork =
-    pokemon.sprites.other?.['official-artwork']?.front_shiny ?? pokemon.sprites.front_shiny
+  const shinyArtwork = pokemon.sprites.other?.['official-artwork']?.front_shiny ?? pokemon.sprites.front_shiny
   const artwork = shiny && shinyArtwork ? shinyArtwork : normalArtwork
   const descriptionResult = species
     ? localizedTextResult(species.flavor_text_entries, undefined, apiLanguage)
@@ -242,10 +123,7 @@ export function PokemonDetailPage() {
     speed: t('stats.speed'),
   }
   const tabOrder = ['about', 'moves', 'encounters', 'data'] as const
-  const handleTabKey = (
-    event: React.KeyboardEvent<HTMLButtonElement>,
-    current: (typeof tabOrder)[number],
-  ) => {
+  const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, current: (typeof tabOrder)[number]) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
     event.preventDefault()
     const currentIndex = tabOrder.indexOf(current)
@@ -254,11 +132,9 @@ export function PokemonDetailPage() {
         ? 0
         : event.key === 'End'
           ? tabOrder.length - 1
-          : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + tabOrder.length) %
-            tabOrder.length
+          : (currentIndex + (event.key === 'ArrowRight' ? 1 : -1) + tabOrder.length) % tabOrder.length
     setTab(tabOrder[nextIndex])
-    const buttons =
-      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+    const buttons = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
     buttons?.[nextIndex]?.focus()
   }
   return (
@@ -306,8 +182,7 @@ export function PokemonDetailPage() {
               ))}
             </div>
             <p className="description">
-              {description ||
-                (speciesError ? t('detail.speciesUnavailable') : t('detail.loadingSpecies'))}
+              {description || (speciesError ? t('detail.speciesUnavailable') : t('detail.loadingSpecies'))}
             </p>
             {descriptionResult.fallback && language !== 'en' && (
               <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
@@ -394,8 +269,7 @@ export function PokemonDetailPage() {
               <header>
                 <h2>{t('detail.baseStats')}</h2>
                 <span>
-                  {t('detail.total')}{' '}
-                  <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b>
+                  {t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b>
                 </span>
               </header>
               <div className="stats-visualization">
@@ -415,9 +289,7 @@ export function PokemonDetailPage() {
                   {pokemon.stats.map(({ base_stat, stat }) => {
                     const range = level100StatRange(base_stat, stat.name, pokemon.name)
                     const rangeLabel =
-                      range.minimum === range.maximum
-                        ? String(range.minimum)
-                        : `${range.minimum}–${range.maximum}`
+                      range.minimum === range.maximum ? String(range.minimum) : `${range.minimum}–${range.maximum}`
                     return (
                       <div className="stat-row" key={stat.name}>
                         <span>{statNames[stat.name] ?? prettyName(stat.name)}</span>
@@ -473,9 +345,7 @@ export function PokemonDetailPage() {
                 <ShieldAlert />
                 {t('detail.typeEffectiveness')}
               </h2>
-              {!typeRelationsReady && !typeRelationsError && (
-                <p className="muted">{t('common.loading')}</p>
-              )}
+              {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}
               {typeRelationsError && <p className="muted">{t('detail.weaknessesUnavailable')}</p>}
               {typeRelationsReady && !typeRelationsError && (
                 <>
@@ -556,96 +426,7 @@ export function PokemonDetailPage() {
             {species && <PokemonForms species={species} currentPokemon={pokemon} />}
           </div>
         )}
-        {tab === 'moves' && (
-          <article
-            className="info-card wide-card"
-            role="tabpanel"
-            id="panel-moves"
-            aria-labelledby="tab-moves"
-          >
-            <div className="table-heading">
-              <div>
-                <h2>{t('detail.compatibleMoves')}</h2>
-                <p>{t('detail.movesDesc')}</p>
-              </div>
-              <div
-                className="damage-legend"
-                aria-label={t('damage.class', {
-                  name: `${t('damage.physical')}, ${t('damage.special')}, ${t('damage.status')}`,
-                })}
-              >
-                <DamageClassBadge value="physical" />
-                <DamageClassBadge value="special" />
-                <DamageClassBadge value="status" />
-              </div>
-            </div>
-            <div className="move-toolbar">
-              <SearchField
-                value={moveQuery}
-                onChange={setMoveQuery}
-                clearLabel={t('common.clear')}
-                iconSize={18}
-                aria-label={t('detail.movesSearch')}
-                placeholder={t('detail.movesSearch')}
-              />
-              <SelectMenu
-                icon={<GraduationCap size={18} />}
-                label={t('move.learning')}
-                options={moveMethodOptions}
-                value={moveMethod}
-                onChange={setMoveMethod}
-              />
-              <SelectMenu
-                icon={<Shapes size={18} />}
-                label={t('detail.moveType')}
-                options={moveTypeOptions}
-                value={moveType}
-                onChange={setMoveType}
-              />
-            </div>
-            {moveTypeLoading && (
-              <p className="sort-status" role="status">
-                {t('common.loading')}
-              </p>
-            )}
-            {moveTypeError && (
-              <InlineRetryError
-                message={t('error.message')}
-                retryLabel={t('common.retry')}
-                onRetry={retryMoveType}
-              />
-            )}
-            <div className="move-groups">
-              {!moveTypeLoading &&
-                !moveTypeError &&
-                filteredMoveGroups.map((group) => (
-                  <section className="move-group" key={group.method}>
-                    <header>
-                      <h3>{moveLearningMethodLabel(group.method, t)}</h3>
-                      <span>
-                        {group.moves.length === 1
-                          ? t('move.countOne')
-                          : t('move.count', { count: group.moves.length })}
-                      </span>
-                    </header>
-                    <div className="moves-grid">
-                      {group.moves.map(({ move, method, level }) => (
-                        <MoveCard key={move.name} move={move} method={method} level={level} />
-                      ))}
-                    </div>
-                  </section>
-                ))}
-            </div>
-            {!moveTypeLoading && !moveTypeError && !filteredMoveGroups.length && (
-              <EmptyState
-                className="compact-empty"
-                icon={<Search />}
-                title={t('pokedex.empty')}
-                headingLevel={3}
-              />
-            )}
-          </article>
-        )}
+        <PokemonMovesTab key={pokemon.name} active={tab === 'moves'} pokemon={pokemon} />
         {tab === 'encounters' && (
           <article
             className="info-card wide-card"
@@ -656,11 +437,7 @@ export function PokemonDetailPage() {
             {encountersLoading ? (
               <Loading />
             ) : encountersError ? (
-              <InlineRetryError
-                message={t('error.message')}
-                retryLabel={t('common.retry')}
-                onRetry={retryEncounters}
-              />
+              <InlineRetryError message={t('error.message')} retryLabel={t('common.retry')} onRetry={retryEncounters} />
             ) : (
               <PokemonEncounters encounters={encounters ?? []} />
             )}

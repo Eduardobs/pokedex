@@ -43,7 +43,7 @@ import {
   VenusAndMars,
   Zap,
 } from 'lucide-react'
-import type { Language } from '../contexts/LanguageContext'
+import type { Language } from '../i18n/types'
 
 export type ResourceDefinition = {
   endpoint: string
@@ -194,10 +194,7 @@ export const resourceGroups: ResourceGroup[] = [
 
 export const allResources = resourceGroups.flatMap((group) => group.resources)
 
-const groupTranslations: Record<
-  Exclude<Language, 'pt-BR'>,
-  { title: string; description: string }[]
-> = {
+const groupTranslations: Record<Exclude<Language, 'pt-BR'>, { title: string; description: string }[]> = {
   en: [
     { title: 'Pokémon', description: 'Species, forms, characteristics, and stats' },
     { title: 'Battle', description: 'Moves, styles, targets, and battle effects' },

@@ -102,14 +102,16 @@ Each release command updates the package files, creates a version commit, and ad
 
 ```text
 src/
-├── components/       Reusable UI, cards, badges, loading, and error states
+├── components/       Reusable UI plus feature folders such as game-map and pokemon-detail
 ├── config/           API, network, storage, and catalog configuration
 ├── contexts/         Shared language and favorites state
-├── data/             API resource catalog and summary helpers
+├── data/             API resource catalogs, summary helpers, and local map catalogs
 ├── hooks/            Async data, infinite scrolling, visibility, and favorites hooks
-├── i18n/             Translation dictionaries for supported languages
+├── i18n/             Translation dictionaries and framework-independent locale types
 ├── lib/              API access, caching, persistence, sorting, and domain logic
 ├── pages/            Route-level screens
+├── styles/           Ordered feature styles for catalogs, details, resources, themes, and maps
+├── styles.css        Stylesheet entry point that preserves the cascade order
 └── test/             Shared test setup
 ```
 
@@ -121,8 +123,9 @@ The main data flow is intentionally layered:
 - Pages compose screens, while components focus on presentation and user interaction.
 - `PageHeader` and the feedback-state components own the common page heading, empty, and retry presentations.
 - `PokemonCatalogFilters`, `usePokemonCatalogControls`, and `usePokemonCatalogDetails` centralize URL-backed controls and on-demand metadata used by the Pokédex and form directory; pure filtering and suggestion rules live in `src/lib/pokemon-directory.ts`.
-- `GameMapPage` owns shared map navigation and filtering; each region provides a validated local marker catalog and tile configuration under `src/data/`.
-- `src/data/game-map.ts` creates and validates the shared category, marker, total-count, and map-definition contract for every regional map.
+- `src/components/game-map/` owns shared map navigation, icons, and viewport geometry; each region provides a validated local marker catalog and tile configuration under `src/data/maps/`.
+- `src/data/maps/game-map.ts` creates and validates the shared category, marker, total-count, and map-definition contract for every regional map.
+- `src/components/pokemon-detail/` groups the detail screen's focused cards, forms, statistics, encounters, evolution, and move browsing UI.
 
 ## Data, caching, and persistence
 

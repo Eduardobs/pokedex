@@ -74,14 +74,8 @@ describe('ResourceDetailPage berry presentation', () => {
     )
 
     expect(screen.getByText('Especial')).toBeVisible()
-    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute(
-      'src',
-      '/icons/damage-special.png',
-    )
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
-      'src',
-      '/icons/damage-special.png',
-    )
+    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute('src', '/icons/damage-special.png')
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-special.png')
   })
 
   it('shows the berry sprite instead of the generic resource icon', () => {
@@ -118,9 +112,7 @@ describe('ResourceDetailPage berry presentation', () => {
       data: {
         id: 1,
         name: 'black',
-        pokemon_species: [
-          { name: 'murkrow', url: 'https://pokeapi.co/api/v2/pokemon-species/198/' },
-        ],
+        pokemon_species: [{ name: 'murkrow', url: 'https://pokeapi.co/api/v2/pokemon-species/198/' }],
       },
       loading: false,
       error: null,
@@ -148,9 +140,7 @@ describe('ResourceDetailPage berry presentation', () => {
       data: {
         id: 1,
         name: 'female',
-        required_for_evolution: [
-          { name: 'meowstic', url: 'https://pokeapi.co/api/v2/pokemon-species/678/' },
-        ],
+        required_for_evolution: [{ name: 'meowstic', url: 'https://pokeapi.co/api/v2/pokemon-species/678/' }],
       },
       loading: false,
       error: null,

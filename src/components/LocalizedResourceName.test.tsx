@@ -32,9 +32,7 @@ describe('LocalizedResourceName', () => {
 
     render(
       <LanguageProvider>
-        <LocalizedResourceName
-          resource={{ name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }}
-        />
+        <LocalizedResourceName resource={{ name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }} />
       </LanguageProvider>,
     )
 

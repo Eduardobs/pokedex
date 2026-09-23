@@ -90,9 +90,7 @@ describe('evolutionCondition', () => {
         }),
         t,
       ),
-    ).toBe(
-      'Em sessão multijogador · Usar Rage Fist 20 vezes · Caminhar 1.000 passos · Sofrer ao menos 49 de dano',
-    )
+    ).toBe('Em sessão multijogador · Usar Rage Fist 20 vezes · Caminhar 1.000 passos · Sofrer ao menos 49 de dano')
   })
 
   it('remove alternativas repetidas sem esconder condições diferentes', () => {

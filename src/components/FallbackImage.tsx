@@ -6,10 +6,7 @@ export type FallbackImageSource = {
   className?: string
 }
 
-type FallbackImageProps = Omit<
-  ImgHTMLAttributes<HTMLImageElement>,
-  'src' | 'alt' | 'className' | 'onError'
-> & {
+type FallbackImageProps = Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt' | 'className' | 'onError'> & {
   sources: readonly FallbackImageSource[]
   alt: string
   className?: string

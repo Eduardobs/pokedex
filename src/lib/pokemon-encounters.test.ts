@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { ApiError } from './api'
-import {
-  encountersForVersion,
-  encounterVersions,
-  parsePokemonEncounters,
-} from './pokemon-encounters'
+import { encountersForVersion, encounterVersions, parsePokemonEncounters } from './pokemon-encounters'
 
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
@@ -49,9 +45,7 @@ describe('parsePokemonEncounters', () => {
   it('valida os detalhes documentados e descarta campos desconhecidos', () => {
     const highAggregateChance = structuredClone(payload[0])
     highAggregateChance.version_details[0].max_chance = 870
-    const encounters = parsePokemonEncounters([
-      { ...highAggregateChance, ignored: 'remote extension' },
-    ])
+    const encounters = parsePokemonEncounters([{ ...highAggregateChance, ignored: 'remote extension' }])
 
     expect(encounters[0].version_details[0].max_chance).toBe(870)
     expect(encounters[0].version_details[0].encounter_details[0]).toEqual({
@@ -72,9 +66,7 @@ describe('parsePokemonEncounters', () => {
     unsafeUrl[0].location_area.url = 'https://example.com/location-area/2/'
     expect(() => parsePokemonEncounters(unsafeUrl)).toThrow(ApiError)
 
-    expect(() => parsePokemonEncounters(Array.from({ length: 2_049 }, () => payload[0]))).toThrow(
-      ApiError,
-    )
+    expect(() => parsePokemonEncounters(Array.from({ length: 2_049 }, () => payload[0]))).toThrow(ApiError)
   })
 })
 
