@@ -9,6 +9,7 @@ import {
   MapPin,
   Search,
   SlidersHorizontal,
+  Sparkles,
 } from 'lucide-react'
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
@@ -108,6 +109,7 @@ export function PokedexPage() {
   const [sortError, setSortError] = useState(false)
   const [visibleCount, setVisibleCount] = useState(LIMIT)
   const [additionalFiltersOpen, setAdditionalFiltersOpen] = useState(false)
+  const [shiny, setShiny] = useState(false)
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
   const [activeSuggestion, setActiveSuggestion] = useState(-1)
   const endpoint =
@@ -546,11 +548,23 @@ export function PokedexPage() {
               aria-hidden="true"
             />
           </button>
-          {hasActiveFilters && (
-            <button className="clear-filters" type="button" onClick={clearFilters}>
-              {t('pokedex.clearFilters')}
+          <div className="filter-end-actions">
+            {hasActiveFilters && (
+              <button className="clear-filters" type="button" onClick={clearFilters}>
+                {t('pokedex.clearFilters')}
+              </button>
+            )}
+            <button
+              className={`list-shiny-toggle${shiny ? ' active' : ''}`}
+              type="button"
+              aria-label={t(shiny ? 'pokedex.showNormal' : 'pokedex.showShiny')}
+              aria-pressed={shiny}
+              onClick={() => setShiny((value) => !value)}
+            >
+              <Sparkles size={17} aria-hidden="true" />
+              <span>{t(shiny ? 'detail.normal' : 'detail.shiny')}</span>
             </button>
-          )}
+          </div>
         </div>
         <div
           id="additional-pokedex-filters"
@@ -663,7 +677,9 @@ export function PokedexPage() {
             const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
             const sortMetric =
               value === undefined ? undefined : { label: selectedSortMetric, value }
-            return <PokemonCard key={pokemon.name} {...pokemon} sortMetric={sortMetric} />
+            return (
+              <PokemonCard key={pokemon.name} {...pokemon} sortMetric={sortMetric} shiny={shiny} />
+            )
           })}
         </div>
       ) : (

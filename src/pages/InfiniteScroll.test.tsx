@@ -21,7 +21,9 @@ vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
   fetchPokemonRegionDetails: fetchPokemonRegionDetailsMock,
 }))
 vi.mock('../components/PokemonCard', () => ({
-  PokemonCard: ({ name }: { name: string }) => <div>{name}</div>,
+  PokemonCard: ({ name, shiny }: { name: string; shiny?: boolean }) => (
+    <div data-shiny={shiny ? 'true' : 'false'}>{name}</div>
+  ),
 }))
 vi.mock('../components/PokemonFormDirectoryCard', async (importOriginal) => {
   const original = await importOriginal<typeof import('../components/PokemonFormDirectoryCard')>()
@@ -156,6 +158,25 @@ describe('infinite scroll', () => {
 })
 
 describe('Pokédex filters', () => {
+  it('applies the shiny selection to every Pokémon in the list', () => {
+    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
+    render(renderPage(<PokedexPage />))
+
+    const toggle = screen.getByRole('button', { name: 'Exibir versões shiny' })
+    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByText('pokemon-1')).toHaveAttribute('data-shiny', 'false')
+    expect(screen.getByText('pokemon-24')).toHaveAttribute('data-shiny', 'false')
+
+    fireEvent.click(toggle)
+
+    expect(screen.getByRole('button', { name: 'Exibir versões normais' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(screen.getByText('pokemon-1')).toHaveAttribute('data-shiny', 'true')
+    expect(screen.getByText('pokemon-24')).toHaveAttribute('data-shiny', 'true')
+  })
+
   it('keeps primary filters visible and toggles type and rarity filters', () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     render(renderPage(<PokedexPage />))

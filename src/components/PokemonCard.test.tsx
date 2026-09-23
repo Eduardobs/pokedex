@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import { FavoritesProvider } from '../contexts/FavoritesContext'
@@ -22,12 +22,12 @@ const pokemon = {
   types: [{ slot: 1, type: { name: 'grass', url: '/type/12' } }],
 } as Pokemon
 
-function renderCard() {
+function renderCard(shiny = false) {
   return render(
     <MemoryRouter>
       <LanguageProvider>
         <FavoritesProvider>
-          <PokemonCard id={pokemon.id} name={pokemon.name} pokemon={pokemon} />
+          <PokemonCard id={pokemon.id} name={pokemon.name} pokemon={pokemon} shiny={shiny} />
         </FavoritesProvider>
       </LanguageProvider>
     </MemoryRouter>,
@@ -35,27 +35,28 @@ function renderCard() {
 }
 
 describe('PokemonCard', () => {
-  it('alterna entre as artes normal e shiny', () => {
-    renderCard()
+  it('exibe a arte definida pela listagem sem renderizar um toggle individual', () => {
+    const view = renderCard()
 
-    const image = screen.getByRole('img', { name: 'Bulbasaur — Normal' })
-    const toggle = screen.getByRole('button', { name: 'Exibir versão shiny de Bulbasaur' })
-    expect(image).toHaveAttribute('src', 'normal-artwork.png')
-    expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute(
+      'src',
+      'normal-artwork.png',
+    )
+    expect(screen.queryByRole('button', { name: /shiny/i })).not.toBeInTheDocument()
 
-    fireEvent.click(toggle)
+    view.rerender(
+      <MemoryRouter>
+        <LanguageProvider>
+          <FavoritesProvider>
+            <PokemonCard id={pokemon.id} name={pokemon.name} pokemon={pokemon} shiny />
+          </FavoritesProvider>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
 
     expect(screen.getByRole('img', { name: 'Bulbasaur — Shiny' })).toHaveAttribute(
       'src',
       'shiny-artwork.png',
-    )
-    const normalToggle = screen.getByRole('button', { name: 'Exibir versão normal de Bulbasaur' })
-    expect(normalToggle).toHaveAttribute('aria-pressed', 'true')
-
-    fireEvent.click(normalToggle)
-    expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute(
-      'src',
-      'normal-artwork.png',
     )
   })
 })
