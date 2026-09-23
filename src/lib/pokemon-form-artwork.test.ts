@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { officialArtworkForFormSprite, pokemonFormImageSources } from './pokemon-form-artwork'
+import {
+  officialArtworkForFormSprite,
+  pokemonFormDirectoryImageSources,
+  pokemonFormImageSources,
+} from './pokemon-form-artwork'
 
 const officialArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412.png'
@@ -44,6 +48,10 @@ describe('officialArtworkForFormSprite', () => {
     [
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/201-b.png',
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/201-b.png',
+    ],
+    [
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10034.png',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10034.png',
     ],
   ])('derives the matching official artwork from a trusted form sprite', (sprite, artwork) => {
     expect(officialArtworkForFormSprite(sprite)).toBe(artwork)
@@ -96,5 +104,48 @@ describe('pokemonFormImageSources', () => {
       officialArtwork,
       pokemonSprite,
     ])
+  })
+})
+
+describe('pokemonFormDirectoryImageSources', () => {
+  const sprites = (front_default: string | null, front_shiny: string | null) => ({
+    front_default,
+    front_shiny,
+    back_default: null,
+    back_shiny: null,
+  })
+
+  it('uses the related Pokémon ID when a recent form has no sprites', () => {
+    expect(pokemonFormDirectoryImageSources(10301, sprites(null, null), true)[0]).toEqual({
+      url: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10301.png',
+      shiny: true,
+      sprite: false,
+    })
+  })
+
+  it('falls back from inferred official artwork to the supplied form sprite', () => {
+    const shinySprite =
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10309.png'
+    const sources = pokemonFormDirectoryImageSources(
+      10309,
+      sprites(
+        'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10309.png',
+        shinySprite,
+      ),
+      true,
+    )
+
+    expect(sources.slice(0, 2)).toEqual([
+      {
+        url: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10309.png',
+        shiny: true,
+        sprite: false,
+      },
+      { url: shinySprite, shiny: true, sprite: true },
+    ])
+  })
+
+  it('does not create direct artwork URLs from an invalid Pokémon ID', () => {
+    expect(pokemonFormDirectoryImageSources(Number.NaN, sprites(null, null), true)).toEqual([])
   })
 })

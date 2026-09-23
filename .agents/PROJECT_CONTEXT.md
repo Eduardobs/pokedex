@@ -12,6 +12,8 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - Listas de Pokémon relacionados em recursos de Explorar devem exibir imagem, nome, número e, quando pertinente, o dado que define a relação.
 - A lista de Pokémon necessários para evolução em páginas de gênero deve usar a variedade e a arte correspondentes ao gênero selecionado.
 - Listas de formas de uma espécie devem exibir a arte correspondente a cada forma quando ela estiver disponível, preservando a arte da variedade como fallback.
+- O catálogo de variações deve combinar busca, região, ordenação, tipo, raridade e visualização shiny com os filtros próprios de formas regionais, Mega Formas e Gigantamax.
+- Todas as páginas com rolagem vertical devem oferecer um controle global de retorno ao topo, visível somente quando a página não estiver no topo.
 - Classes de dano devem usar os sprites de categoria de Pokémon Scarlet/Violet fornecidos como referência, com as cores laranja, azul e cinza para Físico, Especial e Status, respectivamente.
 - Mapas de jogos devem preservar a geografia da versão representada e oferecer zoom detalhado, navegação e filtros de pontos de interesse acessíveis por teclado; a roda do mouse sobre o mapa deve controlar somente o zoom, sem rolar a página.
 - Mapas não devem deslocar a página ao alterar filtros nem exibir estado vazio quando nenhuma categoria estiver selecionada.

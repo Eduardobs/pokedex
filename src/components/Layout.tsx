@@ -21,6 +21,7 @@ import { STORAGE_KEYS } from '../config/app'
 import { writeStorageString } from '../lib/storage'
 import { Logo } from './Logo'
 import { Loading } from './Loading'
+import { ScrollToTop } from './ScrollToTop'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -357,36 +358,39 @@ export function Layout() {
           <Outlet />
         </Suspense>
       </main>
-      {notice && (
-        <div className="favorite-toast" role="status">
-          <span>
-            {notice.action === 'limit'
-              ? t('favorites.limit')
-              : t(notice.action === 'added' ? 'favorites.added' : 'favorites.removed', {
-                  name: notice.name,
-                })}
-          </span>
-          {notice.action !== 'limit' && (
+      <div className="floating-actions">
+        {notice && (
+          <div className="favorite-toast" role="status">
+            <span>
+              {notice.action === 'limit'
+                ? t('favorites.limit')
+                : t(notice.action === 'added' ? 'favorites.added' : 'favorites.removed', {
+                    name: notice.name,
+                  })}
+            </span>
+            {notice.action !== 'limit' && (
+              <button
+                type="button"
+                onClick={() => {
+                  toggle(notice.name)
+                  clearNotice()
+                }}
+              >
+                {t('favorites.undo')}
+              </button>
+            )}
             <button
               type="button"
-              onClick={() => {
-                toggle(notice.name)
-                clearNotice()
-              }}
+              className="toast-close"
+              onClick={clearNotice}
+              aria-label={t('common.clear')}
             >
-              {t('favorites.undo')}
+              <X size={16} />
             </button>
-          )}
-          <button
-            type="button"
-            className="toast-close"
-            onClick={clearNotice}
-            aria-label={t('common.clear')}
-          >
-            <X size={16} />
-          </button>
-        </div>
-      )}
+          </div>
+        )}
+        <ScrollToTop />
+      </div>
       <footer>
         <Logo />
         <p>

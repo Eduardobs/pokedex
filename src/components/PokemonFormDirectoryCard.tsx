@@ -1,8 +1,10 @@
 import { Globe2, Maximize2, Shield } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
 import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
-import { idFromUrl, pokemonArtwork, prettyName } from '../lib/api'
+import { idFromUrl, prettyName } from '../lib/api'
+import { pokemonFormDirectoryImageSources } from '../lib/pokemon-form-artwork'
 import type { NamedResource, PokemonForm } from '../types'
 import { TypeBadge } from './TypeBadge'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
@@ -22,6 +24,38 @@ const categoryConfig = {
   regional: { labelKey: 'form.regional', icon: Globe2 },
   mega: { labelKey: 'form.mega', icon: MegaEvolutionIcon },
   gmax: { labelKey: 'forms.gmax', icon: Maximize2 },
+}
+
+function DirectoryFormArtwork({
+  pokemonId,
+  sprites,
+  shiny,
+  normalAlt,
+  shinyAlt,
+}: {
+  pokemonId: number
+  sprites: PokemonForm['sprites']
+  shiny: boolean
+  normalAlt: string
+  shinyAlt: string
+}) {
+  const [sourceIndex, setSourceIndex] = useState(0)
+  const sources = pokemonFormDirectoryImageSources(pokemonId, sprites, shiny)
+  const source = sources[sourceIndex]
+  if (!source) return null
+
+  return (
+    <img
+      src={source.url}
+      className={source.sprite ? 'sprite-art' : undefined}
+      alt={source.shiny ? shinyAlt : normalAlt}
+      width="165"
+      height="165"
+      loading="lazy"
+      decoding="async"
+      onError={() => setSourceIndex((index) => index + 1)}
+    />
+  )
 }
 
 export function formLabels(name: string, category: FormCategory, t?: Translate) {
@@ -61,9 +95,13 @@ export function formLabels(name: string, category: FormCategory, t?: Translate) 
 export function PokemonFormDirectoryCard({
   resource,
   category,
+  shiny = false,
+  sortMetric,
 }: {
   resource: NamedResource
   category: FormCategory
+  shiny?: boolean
+  sortMetric?: { label: string; value: number }
 }) {
   const { t } = useLanguage()
   const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLDivElement>(false, '300px')
@@ -92,20 +130,25 @@ export function PokemonFormDirectoryCard({
     )
 
   const pokemonId = idFromUrl(data.pokemon.url)
-  const artwork = pokemonArtwork(pokemonId)
   const labels = formLabels(data.pokemon.name, category, t)
+  const baseAlt = `${labels.pokemon} — ${labels.variation}`
   return (
     <div ref={cardRef} className={`directory-form-card directory-${category}`}>
       <Link to={`/pokemon/${data.pokemon.name}`}>
         <div className="directory-form-art">
           <span />
-          <img
-            src={artwork ?? data.sprites.front_default ?? ''}
-            alt={`${labels.pokemon} — ${labels.variation}`}
-            width="165"
-            height="165"
-            loading="lazy"
-            decoding="async"
+          {sortMetric && (
+            <small className="directory-sort-metric" title={sortMetric.label}>
+              <b>{sortMetric.value}</b> {sortMetric.label}
+            </small>
+          )}
+          <DirectoryFormArtwork
+            key={`${data.pokemon.name}:${shiny}`}
+            pokemonId={pokemonId}
+            sprites={data.sprites}
+            shiny={shiny}
+            normalAlt={`${baseAlt} — ${t('detail.normal')}`}
+            shinyAlt={`${baseAlt} — ${t('detail.shiny')}`}
           />
           {data.is_battle_only && (
             <small title={t('form.battleOnly')}>
