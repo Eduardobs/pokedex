@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, Database, Search, Swords, Zap } from 'lucide
 import { useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
+import { EmptyState } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
 import { SearchField } from '../components/SearchField'
 import {
@@ -123,7 +124,7 @@ export function ResourceListPage() {
   if (offset > 0 && offset >= data.count) return <Loading />
   const items = data.results.map((item) => {
     const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
-    return { ...item, name: 'name' in item && item.name ? item.name : id }
+    return { ...item, id, name: 'name' in item && item.name ? item.name : id }
   })
   const filtered = items.filter((item) =>
     normalizeSearchText(item.name).includes(normalizeSearchText(query)),
@@ -228,8 +229,7 @@ export function ResourceListPage() {
       {data.count > LIMIT && pagination('top')}
       <div className="data-list">
         {filtered.map((item) => {
-          const itemId = item.url.split('/').filter(Boolean).at(-1) ?? ''
-          const numericId = /^\d+$/.test(itemId) ? Number(itemId) : 0
+          const numericId = /^\d+$/.test(item.id) ? Number(item.id) : 0
           const hasValidId = Number.isSafeInteger(numericId) && numericId > 0
           const sprite =
             resource === 'item'
@@ -243,7 +243,9 @@ export function ResourceListPage() {
             resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
           return (
             <Link to={itemRoute(item.name)} key={item.name}>
-              <span className="data-index">{hasValidId ? `#${itemId.padStart(3, '0')}` : '—'}</span>
+              <span className="data-index">
+                {hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}
+              </span>
               <span
                 className={`data-resource-icon${damageClass ? ` damage-class-resource-icon damage-${damageClass}` : ''}`}
               >
@@ -269,12 +271,7 @@ export function ResourceListPage() {
           )
         })}
       </div>
-      {!filtered.length && (
-        <div className="empty">
-          <Search />
-          <h2>{t('resource.emptyPage')}</h2>
-        </div>
-      )}
+      {!filtered.length && <EmptyState icon={<Search />} title={t('resource.emptyPage')} />}
       {data.count > LIMIT && pagination('bottom')}
     </section>
   )

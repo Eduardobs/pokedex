@@ -268,11 +268,12 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
   return details
 }
 
-/** Loads every sortable stat in one fixed, field-limited request. */
-export async function fetchPokemonSortDetails(
+async function fetchPokemonCatalogDetails<T>(
+  query: string,
+  operationName: string,
+  parse: (payload: unknown) => T,
   signal?: AbortSignal,
-): Promise<Record<string, PokemonSortDetails>> {
-  if (cachedDetails) return cachedDetails
+) {
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
 
   const controller = new AbortController()
@@ -284,14 +285,13 @@ export async function fetchPokemonSortDetails(
     const response = await fetch(GRAPHQL_API_URL, {
       method: 'POST',
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: SORT_DETAILS_QUERY, operationName: 'PokemonSortDetails' }),
+      body: JSON.stringify({ query, operationName }),
       credentials: 'omit',
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
     if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
-    cachedDetails = parsePokemonSortDetails(await response.json())
-    return cachedDetails
+    return parse(await response.json())
   } catch (error) {
     if (controller.signal.aborted && !signal?.aborted) {
       throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
@@ -301,6 +301,20 @@ export async function fetchPokemonSortDetails(
     window.clearTimeout(timeout)
     signal?.removeEventListener('abort', abort)
   }
+}
+
+/** Loads every sortable stat in one fixed, field-limited request. */
+export async function fetchPokemonSortDetails(
+  signal?: AbortSignal,
+): Promise<Record<string, PokemonSortDetails>> {
+  if (cachedDetails) return cachedDetails
+  cachedDetails = await fetchPokemonCatalogDetails(
+    SORT_DETAILS_QUERY,
+    'PokemonSortDetails',
+    parsePokemonSortDetails,
+    signal,
+  )
+  return cachedDetails
 }
 
 /** Loads and caches the rare-species catalog in one field-limited request. */
@@ -308,34 +322,13 @@ export async function fetchPokemonRarityDetails(
   signal?: AbortSignal,
 ): Promise<Record<string, PokemonRarityDetails>> {
   if (cachedRarityDetails) return cachedRarityDetails
-  if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
-
-  const controller = new AbortController()
-  const abort = () => controller.abort()
-  signal?.addEventListener('abort', abort, { once: true })
-  const timeout = window.setTimeout(abort, NETWORK.requestTimeoutMs)
-
-  try {
-    const response = await fetch(GRAPHQL_API_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: RARITY_DETAILS_QUERY, operationName: 'PokemonRarityDetails' }),
-      credentials: 'omit',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
-    cachedRarityDetails = parsePokemonRarityDetails(await response.json())
-    return cachedRarityDetails
-  } catch (error) {
-    if (controller.signal.aborted && !signal?.aborted) {
-      throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
-    }
-    throw error
-  } finally {
-    window.clearTimeout(timeout)
-    signal?.removeEventListener('abort', abort)
-  }
+  cachedRarityDetails = await fetchPokemonCatalogDetails(
+    RARITY_DETAILS_QUERY,
+    'PokemonRarityDetails',
+    parsePokemonRarityDetails,
+    signal,
+  )
+  return cachedRarityDetails
 }
 
 /** Loads and caches the region where every catalog species was introduced. */
@@ -343,32 +336,11 @@ export async function fetchPokemonRegionDetails(
   signal?: AbortSignal,
 ): Promise<Record<string, PokemonRegion>> {
   if (cachedRegionDetails) return cachedRegionDetails
-  if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
-
-  const controller = new AbortController()
-  const abort = () => controller.abort()
-  signal?.addEventListener('abort', abort, { once: true })
-  const timeout = window.setTimeout(abort, NETWORK.requestTimeoutMs)
-
-  try {
-    const response = await fetch(GRAPHQL_API_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: REGION_DETAILS_QUERY, operationName: 'PokemonRegionDetails' }),
-      credentials: 'omit',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
-    cachedRegionDetails = parsePokemonRegionDetails(await response.json())
-    return cachedRegionDetails
-  } catch (error) {
-    if (controller.signal.aborted && !signal?.aborted) {
-      throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
-    }
-    throw error
-  } finally {
-    window.clearTimeout(timeout)
-    signal?.removeEventListener('abort', abort)
-  }
+  cachedRegionDetails = await fetchPokemonCatalogDetails(
+    REGION_DETAILS_QUERY,
+    'PokemonRegionDetails',
+    parsePokemonRegionDetails,
+    signal,
+  )
+  return cachedRegionDetails
 }

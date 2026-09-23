@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { apiFetch, prettyName } from '../lib/api'
 import { pokemonFormImageSources } from '../lib/pokemon-form-artwork'
 import type { Pokemon, PokemonForm, Species } from '../types'
+import { FallbackImage } from './FallbackImage'
 import { TypeBadge } from './TypeBadge'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
 import { MegaEvolutionIcon } from './MegaEvolutionIcon'
@@ -19,20 +20,15 @@ type PresentedForm = FormEntry & {
 }
 
 function FormArtwork({ sources, alt }: { sources: string[]; alt: string }) {
-  const [sourceIndex, setSourceIndex] = useState(0)
-  const source = sources[sourceIndex] ?? ''
-
   return (
-    <img
-      src={source}
+    <FallbackImage
+      sources={sources.map((src) => ({ src }))}
       alt={alt}
       width="92"
       height="92"
       loading="lazy"
       decoding="async"
-      onError={() =>
-        setSourceIndex((current) => (current + 1 < sources.length ? current + 1 : current))
-      }
+      preserveLastOnError
     />
   )
 }

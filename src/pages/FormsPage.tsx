@@ -1,29 +1,25 @@
 import { Globe2, Layers3, Maximize2, Search, Sparkles } from 'lucide-react'
-import { useCallback, useDeferredValue, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useCallback, useMemo } from 'react'
 import { ErrorState } from '../components/ErrorState'
+import { EmptyState, InlineRetryError } from '../components/FeedbackState'
 import { CardSkeleton } from '../components/Loading'
 import { MegaEvolutionIcon } from '../components/MegaEvolutionIcon'
+import { PageHeader } from '../components/PageHeader'
 import { PokemonCatalogFilters } from '../components/PokemonCatalogFilters'
 import { PokemonCard } from '../components/PokemonCard'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
+import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
 import { usePokemonCatalogDetails } from '../hooks/usePokemonCatalogDetails'
 import { formatNumber, idFromUrl, normalizeSearchText } from '../lib/api'
 import {
-  isPokemonRegion,
-  POKEMON_SORT_KEYS,
-  POKEMON_TYPES,
+  filterPokemonCatalogMetadata,
+  pokemonSearchSuggestions,
   pokemonSortMetricLabel,
 } from '../lib/pokemon-directory'
 import { formCategory, formLabels, type FormCategory } from '../lib/pokemon-forms'
-import {
-  getPokemonSortValue,
-  sortPokemonList,
-  type PokemonSortDirection,
-  type PokemonSortKey,
-} from '../lib/pokemon-sort'
+import { getPokemonSortValue, sortPokemonList } from '../lib/pokemon-sort'
 import type { ApiList, NamedResource, PokemonListItem } from '../types'
 
 const PAGE_SIZE = 32
@@ -32,28 +28,29 @@ type PokemonTypeResponse = { pokemon: { pokemon: NamedResource }[] }
 
 export function FormsPage() {
   const { language, t } = useLanguage()
-  const [searchParams, setSearchParams] = useSearchParams()
+  const {
+    searchParams,
+    query,
+    deferredQuery,
+    type,
+    region,
+    sort,
+    direction,
+    legendary,
+    mythical,
+    hasRarityFilter,
+    visibleCount,
+    setVisibleCount,
+    shiny,
+    setShiny,
+    updateSearchParam,
+    clearSearchParams,
+  } = usePokemonCatalogControls(PAGE_SIZE)
   const requestedCategory = searchParams.get('category') as SelectedCategory | null
   const category: SelectedCategory =
     requestedCategory && ['regional', 'mega', 'gmax'].includes(requestedCategory)
       ? requestedCategory
       : 'all'
-  const query = searchParams.get('q') ?? ''
-  const deferredQuery = useDeferredValue(query)
-  const requestedType = searchParams.get('type') ?? 'all'
-  const type = POKEMON_TYPES.includes(requestedType as (typeof POKEMON_TYPES)[number])
-    ? requestedType
-    : 'all'
-  const requestedRegion = searchParams.get('region') ?? 'all'
-  const region = isPokemonRegion(requestedRegion) ? requestedRegion : 'all'
-  const requestedSort = searchParams.get('sort') as PokemonSortKey | null
-  const sort = requestedSort && POKEMON_SORT_KEYS.includes(requestedSort) ? requestedSort : 'number'
-  const direction: PokemonSortDirection = searchParams.get('order') === 'desc' ? 'desc' : 'asc'
-  const legendary = searchParams.get('legendary') === 'true'
-  const mythical = searchParams.get('mythical') === 'true'
-  const hasRarityFilter = legendary || mythical
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
-  const [shiny, setShiny] = useState(false)
   const { rarity, regions, sorting } = usePokemonCatalogDetails({
     hasRarityFilter,
     region,
@@ -147,32 +144,27 @@ export function FormsPage() {
     () => new Set(typeData?.pokemon.map((entry) => entry.pokemon.name) ?? []),
     [typeData],
   )
-  const filterableForms = useMemo<PokemonListItem[]>(
+  const typedForms = useMemo<PokemonListItem[]>(
     () =>
       selectedForms.flatMap((resource) => {
         const resourceCategory = formCategory(resource.name)
         if (!resourceCategory) return []
         if (type !== 'all' && !typeNames.has(resource.name)) return []
-        if (region !== 'all' && regionDetails?.[resource.name] !== region) return []
-        if (hasRarityFilter) {
-          const rarity = rarityDetails?.[resource.name]
-          if (!((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))) return []
-        }
         const baseName = formLabels(resource.name, resourceCategory).baseName
         return [{ ...resource, id: nationalDex.get(baseName) ?? Number.MAX_SAFE_INTEGER }]
       }),
-    [
-      hasRarityFilter,
-      legendary,
-      mythical,
-      nationalDex,
-      rarityDetails,
-      region,
-      regionDetails,
-      selectedForms,
-      type,
-      typeNames,
-    ],
+    [nationalDex, selectedForms, type, typeNames],
+  )
+  const filterableForms = useMemo(
+    () =>
+      filterPokemonCatalogMetadata(typedForms, {
+        region,
+        regionDetails,
+        legendary,
+        mythical,
+        rarityDetails,
+      }),
+    [legendary, mythical, rarityDetails, region, regionDetails, typedForms],
   )
   const normalizedQuery = normalizeSearchText(deferredQuery)
   const filtered = useMemo(
@@ -190,24 +182,15 @@ export function FormsPage() {
       }),
     [filterableForms, normalizedQuery, t],
   )
-  const suggestions = useMemo(() => {
-    if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
-    return filterableForms
-      .filter((resource) => {
+  const suggestions = useMemo(
+    () =>
+      pokemonSearchSuggestions(filterableForms, deferredQuery, (resource) => {
         const resourceCategory = formCategory(resource.name)
         const labels = resourceCategory ? formLabels(resource.name, resourceCategory, t) : null
-        return [resource.name, labels?.pokemon ?? '', labels?.variation ?? ''].some((value) =>
-          normalizeSearchText(value).includes(normalizedQuery),
-        )
-      })
-      .sort((left, right) => {
-        const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
-        const rightStartsWith = normalizeSearchText(right.name).startsWith(normalizedQuery)
-        if (leftStartsWith !== rightStartsWith) return leftStartsWith ? -1 : 1
-        return left.id - right.id || left.name.localeCompare(right.name)
-      })
-      .slice(0, 7)
-  }, [filterableForms, normalizedQuery, t])
+        return [resource.name, labels?.pokemon ?? '', labels?.variation ?? '']
+      }),
+    [deferredQuery, filterableForms, t],
+  )
   const sorted = useMemo(
     () => sortPokemonList(filtered, sort, direction, pokemonDetails, language),
     [direction, filtered, language, pokemonDetails, sort],
@@ -218,7 +201,7 @@ export function FormsPage() {
   const loadMore = useCallback(() => {
     if (loading || speciesLoading || sortingDetails || !hasMore) return
     setVisibleCount((count) => Math.min(count + PAGE_SIZE, filteredLength))
-  }, [filteredLength, hasMore, loading, sortingDetails, speciesLoading])
+  }, [filteredLength, hasMore, loading, setVisibleCount, sortingDetails, speciesLoading])
   const sentinelRef = useInfiniteScroll<HTMLDivElement>({
     enabled: hasMore && !loading && !speciesLoading && !sortingDetails,
     onLoadMore: loadMore,
@@ -226,30 +209,14 @@ export function FormsPage() {
     rootMargin: '300px',
   })
 
-  const updateParam = (name: string, value: string, defaultValue = '') => {
-    setSearchParams(
-      (current) => {
-        const next = new URLSearchParams(current)
-        if (!value || value === defaultValue) next.delete(name)
-        else next.set(name, value)
-        return next
-      },
-      { replace: true },
-    )
-    setVisibleCount(PAGE_SIZE)
-  }
-  const selectCategory = (value: SelectedCategory) => updateParam('category', value, 'all')
-  const updateQuery = (value: string) => updateParam('q', value)
-  const selectType = (value: string) => updateParam('type', value, 'all')
-  const changeRegion = (value: string) => updateParam('region', value, 'all')
-  const changeSort = (value: PokemonSortKey) => updateParam('sort', value, 'number')
-  const changeDirection = (value: PokemonSortDirection) => updateParam('order', value, 'asc')
+  const selectCategory = (value: SelectedCategory) => updateSearchParam('category', value, 'all')
+  const updateQuery = (value: string) => updateSearchParam('q', value)
+  const selectType = (value: string) => updateSearchParam('type', value, 'all')
+  const changeRegion = (value: string) => updateSearchParam('region', value, 'all')
+  const changeSort = (value: typeof sort) => updateSearchParam('sort', value, 'number')
+  const changeDirection = (value: typeof direction) => updateSearchParam('order', value, 'asc')
   const changeRarityFilter = (filter: 'legendary' | 'mythical', checked: boolean) =>
-    updateParam(filter, checked ? 'true' : '')
-  const clearFilters = () => {
-    setSearchParams({}, { replace: true })
-    setVisibleCount(PAGE_SIZE)
-  }
+    updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
   const hasResultFilter = Boolean(
@@ -264,15 +231,15 @@ export function FormsPage() {
   if (loading || speciesLoading)
     return (
       <section className="page content-width forms-directory-page">
-        <div className="page-title">
-          <div>
-            <span className="eyebrow">
+        <PageHeader
+          eyebrow={
+            <>
               <Sparkles size={14} /> {t('forms.eyebrow')}
-            </span>
-            <h1>{t('forms.title')}</h1>
-            <p>{t('forms.loading')}</p>
-          </div>
-        </div>
+            </>
+          }
+          title={t('forms.title')}
+          description={t('forms.loading')}
+        />
         <CardSkeleton count={8} />
       </section>
     )
@@ -290,23 +257,25 @@ export function FormsPage() {
 
   return (
     <section className="page content-width forms-directory-page">
-      <div className="page-title">
-        <div>
-          <span className="eyebrow">
+      <PageHeader
+        eyebrow={
+          <>
             <Sparkles size={14} /> {t('forms.eyebrow')}
-          </span>
-          <h1>{t('forms.title')}</h1>
-          <p>{t('forms.description')}</p>
-        </div>
-        <div className="result-count" aria-live="polite">
-          <b>
-            {isFilterPending
-              ? '…'
-              : formatNumber(hasResultFilter ? sorted.length : specialForms.length, language)}
-          </b>
-          <span>{hasResultFilter ? t('forms.resultsLabel') : t('forms.specialCount')}</span>
-        </div>
-      </div>
+          </>
+        }
+        title={t('forms.title')}
+        description={t('forms.description')}
+        aside={
+          <div className="result-count" aria-live="polite">
+            <b>
+              {isFilterPending
+                ? '…'
+                : formatNumber(hasResultFilter ? sorted.length : specialForms.length, language)}
+            </b>
+            <span>{hasResultFilter ? t('forms.resultsLabel') : t('forms.specialCount')}</span>
+          </div>
+        }
+      />
       <PokemonCatalogFilters
         className="forms-directory-toolbar"
         idPrefix="form"
@@ -339,7 +308,7 @@ export function FormsPage() {
         onRarityChange={changeRarityFilter}
         rarityPending={isRarityPending}
         hasActiveFilters={hasActiveFilters}
-        onClearFilters={clearFilters}
+        onClearFilters={clearSearchParams}
         shiny={shiny}
         onShinyChange={setShiny}
         extraStatus={
@@ -384,26 +353,23 @@ export function FormsPage() {
       {isFilterPending ? (
         <CardSkeleton count={8} />
       ) : typeError && type !== 'all' && !typeData ? (
-        <div className="inline-error">
-          <p>{t('forms.typeError')}</p>
-          <button className="button secondary" type="button" onClick={retryType}>
-            {t('common.retry')}
-          </button>
-        </div>
+        <InlineRetryError
+          message={t('forms.typeError')}
+          retryLabel={t('common.retry')}
+          onRetry={retryType}
+        />
       ) : regionError && region !== 'all' && !regionDetails ? (
-        <div className="inline-error">
-          <p>{t('pokedex.region.error')}</p>
-          <button className="button secondary" type="button" onClick={regions.retry}>
-            {t('common.retry')}
-          </button>
-        </div>
+        <InlineRetryError
+          message={t('pokedex.region.error')}
+          retryLabel={t('common.retry')}
+          onRetry={regions.retry}
+        />
       ) : rarityError && hasRarityFilter && !rarityDetails ? (
-        <div className="inline-error">
-          <p>{t('pokedex.rarity.error')}</p>
-          <button className="button secondary" type="button" onClick={rarity.retry}>
-            {t('common.retry')}
-          </button>
-        </div>
+        <InlineRetryError
+          message={t('pokedex.rarity.error')}
+          retryLabel={t('common.retry')}
+          onRetry={rarity.retry}
+        />
       ) : visible.length ? (
         <div className="forms-directory-grid">
           {visible.map((resource) => {
@@ -423,11 +389,11 @@ export function FormsPage() {
           })}
         </div>
       ) : (
-        <div className="empty">
-          <Search />
-          <h2>{t('forms.empty')}</h2>
-          <p>{t('forms.tryAnother')}</p>
-        </div>
+        <EmptyState
+          icon={<Search />}
+          title={t('forms.empty')}
+          description={t('forms.tryAnother')}
+        />
       )}
       {hasMore && !isFilterPending && (
         <div className="infinite-loader" ref={sentinelRef} role="status" aria-live="polite">

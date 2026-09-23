@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './kitakami-map-markers.json'
 
 export type KitakamiCategoryId =
@@ -191,17 +186,7 @@ export const KITAKAMI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  KITAKAMI_CATEGORY_GROUPS,
-  { width: KITAKAMI_MAP_WIDTH, height: KITAKAMI_MAP_HEIGHT },
-  'Kitakami',
-)
-export const KITAKAMI_CATEGORIES = catalog.categories
-export const KITAKAMI_MARKERS = catalog.markers
-export const KITAKAMI_TOTAL = catalog.total
-
-export const KITAKAMI_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, KITAKAMI_CATEGORY_GROUPS, 'Kitakami', {
   id: 'kitakami',
   gameTitle: 'Pokémon Scarlet & Violet',
   regionName: 'Kitakami',
@@ -218,6 +203,8 @@ export const KITAKAMI_MAP = defineGameMap({
   tileExtension: 'jpg',
   tileOrder: 'xy',
   sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/kitakami-region',
-  groups: KITAKAMI_CATEGORY_GROUPS,
-  markers: KITAKAMI_MARKERS,
 })
+export const KITAKAMI_CATEGORIES = mapData.categories
+export const KITAKAMI_MARKERS = mapData.markers
+export const KITAKAMI_TOTAL = mapData.total
+export const KITAKAMI_MAP = mapData.map

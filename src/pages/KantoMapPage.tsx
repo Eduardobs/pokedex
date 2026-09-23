@@ -1,6 +1,4 @@
-import { GameMapPage } from '../components/GameMapPage'
+import { createGameMapPage } from '../components/GameMapPage'
 import { KANTO_MAP } from '../data/kanto-map'
 
-export function KantoMapPage() {
-  return <GameMapPage map={KANTO_MAP} />
-}
+export const KantoMapPage = createGameMapPage(KANTO_MAP)

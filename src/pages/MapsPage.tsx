@@ -1,5 +1,7 @@
 import { ArrowRight, Gamepad2, MapPinned } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { GameMapCard } from '../components/GameMapCard'
+import { PageHeader } from '../components/PageHeader'
 import { useLanguage } from '../contexts/LanguageContext'
 import { formatNumber } from '../lib/api'
 import { MAP_TOTAL } from '../data/kanto-map'
@@ -13,97 +15,73 @@ export function MapsPage() {
     { label: t('maps.kitakamiRegion'), to: '/mapas/kitakami' },
     { label: t('maps.terarium'), to: '/mapas/terrarium' },
   ]
+  const mapCards = [
+    {
+      to: '/mapas/kanto',
+      cover: {
+        src: `${import.meta.env.BASE_URL}maps/firered-leafgreen-cover.webp`,
+        alt: t('maps.gameCoverAlt'),
+        width: 1024,
+        height: 1536,
+      },
+      generation: t('maps.generation'),
+      platform: 'Game Boy Advance',
+      title: 'Pokémon FireRed & LeafGreen',
+      description: t('maps.gameDescription'),
+      region: t('maps.region'),
+      pointCount: t('maps.pointCount', { count: formatNumber(MAP_TOTAL, language) }),
+    },
+    {
+      to: '/mapas/hisui-region',
+      className: 'game-map-card--arceus',
+      cover: {
+        src: `${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`,
+        alt: t('maps.arceusMapAlt'),
+        width: 1024,
+        height: 1024,
+      },
+      generation: t('maps.arceusGeneration'),
+      platform: 'Nintendo Switch',
+      title: 'Pokémon Legends: Arceus',
+      description: t('maps.arceusDescription'),
+      region: t('maps.hisuiRegion'),
+      pointCount: t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) }),
+    },
+    {
+      to: '/mapas/lumiose-city',
+      className: 'game-map-card--legends-za',
+      cover: {
+        src: `${import.meta.env.BASE_URL}maps/pokemon-legends-za-cover.png`,
+        alt: t('maps.legendsZaCoverAlt'),
+        width: 600,
+        height: 900,
+      },
+      generation: t('maps.legendsZaGeneration'),
+      platform: 'Nintendo Switch · Nintendo Switch 2',
+      title: 'Pokémon Legends: Z-A',
+      description: t('maps.legendsZaDescription'),
+      region: t('maps.lumioseCity'),
+      pointCount: t('maps.pointCount', { count: formatNumber(LUMIOSE_TOTAL, language) }),
+    },
+  ]
 
   return (
     <section className="page content-width maps-page">
-      <div className="page-title maps-title">
-        <div>
-          <span className="eyebrow">
+      <PageHeader
+        className="maps-title"
+        eyebrow={
+          <>
             <MapPinned size={15} aria-hidden="true" /> {t('maps.eyebrow')}
-          </span>
-          <h1>{t('maps.title')}</h1>
-          <p>{t('maps.description')}</p>
-        </div>
-      </div>
+          </>
+        }
+        title={t('maps.title')}
+        description={t('maps.description')}
+      />
 
       <div className="game-map-grid">
-        <Link className="game-map-card" to="/mapas/kanto">
-          <div className="game-map-cover">
-            <img
-              src={`${import.meta.env.BASE_URL}maps/firered-leafgreen-cover.webp`}
-              alt={t('maps.gameCoverAlt')}
-              width="1024"
-              height="1536"
-            />
-            <span className="game-map-generation">{t('maps.generation')}</span>
-          </div>
-          <div className="game-map-card-copy">
-            <span className="game-map-platform">
-              <Gamepad2 size={15} aria-hidden="true" /> Game Boy Advance
-            </span>
-            <h2>Pokémon FireRed &amp; LeafGreen</h2>
-            <p>{t('maps.gameDescription')}</p>
-            <div className="game-map-card-meta">
-              <span>{t('maps.region')}</span>
-              <span>{t('maps.pointCount', { count: formatNumber(MAP_TOTAL, language) })}</span>
-            </div>
-            <span className="game-map-open">
-              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
-            </span>
-          </div>
-        </Link>
-
-        <Link className="game-map-card game-map-card--arceus" to="/mapas/hisui-region">
-          <div className="game-map-cover">
-            <img
-              src={`${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`}
-              alt={t('maps.arceusMapAlt')}
-              width="1024"
-              height="1024"
-            />
-            <span className="game-map-generation">{t('maps.arceusGeneration')}</span>
-          </div>
-          <div className="game-map-card-copy">
-            <span className="game-map-platform">
-              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch
-            </span>
-            <h2>Pokémon Legends: Arceus</h2>
-            <p>{t('maps.arceusDescription')}</p>
-            <div className="game-map-card-meta">
-              <span>{t('maps.hisuiRegion')}</span>
-              <span>{t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) })}</span>
-            </div>
-            <span className="game-map-open">
-              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
-            </span>
-          </div>
-        </Link>
-
-        <Link className="game-map-card game-map-card--legends-za" to="/mapas/lumiose-city">
-          <div className="game-map-cover">
-            <img
-              src={`${import.meta.env.BASE_URL}maps/pokemon-legends-za-cover.png`}
-              alt={t('maps.legendsZaCoverAlt')}
-              width="600"
-              height="900"
-            />
-            <span className="game-map-generation">{t('maps.legendsZaGeneration')}</span>
-          </div>
-          <div className="game-map-card-copy">
-            <span className="game-map-platform">
-              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch · Nintendo Switch 2
-            </span>
-            <h2>Pokémon Legends: Z-A</h2>
-            <p>{t('maps.legendsZaDescription')}</p>
-            <div className="game-map-card-meta">
-              <span>{t('maps.lumioseCity')}</span>
-              <span>{t('maps.pointCount', { count: formatNumber(LUMIOSE_TOTAL, language) })}</span>
-            </div>
-            <span className="game-map-open">
-              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
-            </span>
-          </div>
-        </Link>
+        {mapCards.map((card) => (
+          <GameMapCard {...card} openLabel={t('maps.openMap')} key={card.to} />
+        ))}
 
         <article className="game-map-card game-map-card--scarlet-violet">
           <div className="game-map-cover">

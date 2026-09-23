@@ -150,6 +150,25 @@ export function createGameMapCatalog(
   return { categories, markers, total }
 }
 
+export function createGameMap(
+  rawMarkers: unknown,
+  groups: GameMapCategoryGroup[],
+  mapName: string,
+  definition: Omit<GameMapDefinition, 'groups' | 'markers'>,
+) {
+  const catalog = createGameMapCatalog(
+    rawMarkers,
+    groups,
+    { width: definition.width, height: definition.height },
+    mapName,
+  )
+
+  return {
+    ...catalog,
+    map: defineGameMap({ ...definition, groups, markers: catalog.markers }),
+  }
+}
+
 export function defineGameMap(definition: GameMapDefinition): GameMapDefinition {
   const categories = definition.groups.flatMap((group) => group.categories)
   const categoryIds = new Set(categories.map((category) => category.id))

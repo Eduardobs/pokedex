@@ -5,6 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext'
 import { formatNumber, localizedApiTerm, prettyName } from '../../lib/api'
 import { encountersForVersion, encounterVersions } from '../../lib/pokemon-encounters'
 import type { Encounter } from '../../types'
+import { EmptyState } from '../FeedbackState'
 import { SelectMenu } from '../SelectMenu'
 
 type Props = {
@@ -26,12 +27,7 @@ export function PokemonEncounters({ encounters }: Props) {
   const versionLabel = prettyName(activeVersion)
 
   if (!versions.length)
-    return (
-      <div className="empty">
-        <MapPin />
-        <h3>{t('detail.noEncounters')}</h3>
-      </div>
-    )
+    return <EmptyState icon={<MapPin />} title={t('detail.noEncounters')} headingLevel={3} />
 
   return (
     <>
@@ -133,10 +129,12 @@ export function PokemonEncounters({ encounters }: Props) {
           ))}
         </div>
       ) : (
-        <div className="empty compact-empty">
-          <MapPin />
-          <h3>{t('detail.noEncountersInVersion')}</h3>
-        </div>
+        <EmptyState
+          className="compact-empty"
+          icon={<MapPin />}
+          title={t('detail.noEncountersInVersion')}
+          headingLevel={3}
+        />
       )}
     </>
   )

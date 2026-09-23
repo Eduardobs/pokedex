@@ -74,6 +74,50 @@ function referenceMeta(value: unknown, language: Language) {
 
 type PokemonGender = 'female' | 'male'
 
+function useResourcePagination(total: number) {
+  const [page, setPage] = useState(0)
+  const pageCount = Math.ceil(total / PAGE_SIZE)
+  const currentPage = Math.min(page, pageCount - 1)
+  const start = currentPage * PAGE_SIZE
+  const end = Math.min(start + PAGE_SIZE, total)
+
+  return { currentPage, pageCount, setPage, start, end, total }
+}
+
+function ResourceValuePagination({
+  pagination,
+  live = false,
+}: {
+  pagination: ReturnType<typeof useResourcePagination>
+  live?: boolean
+}) {
+  const { t } = useLanguage()
+  const { currentPage, pageCount, setPage, start, end, total } = pagination
+  const label = t('resource.range', { start: start + 1, end, total })
+
+  return (
+    <nav className="resource-value-pagination" aria-label={label}>
+      <button
+        type="button"
+        disabled={currentPage === 0}
+        onClick={() => setPage((value) => Math.max(0, value - 1))}
+        aria-label={t('resource.previous')}
+      >
+        <ChevronLeft />
+      </button>
+      <span aria-live={live ? 'polite' : undefined}>{label}</span>
+      <button
+        type="button"
+        disabled={currentPage === pageCount - 1}
+        onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
+        aria-label={t('resource.next')}
+      >
+        <ChevronRight />
+      </button>
+    </nav>
+  )
+}
+
 function PaginatedResourceValues({
   values,
   depth,
@@ -83,12 +127,9 @@ function PaginatedResourceValues({
   depth: number
   pokemonGender?: PokemonGender
 }) {
-  const { language, t } = useLanguage()
-  const [page, setPage] = useState(0)
-  const pageCount = Math.ceil(values.length / PAGE_SIZE)
-  const currentPage = Math.min(page, pageCount - 1)
-  const start = currentPage * PAGE_SIZE
-  const end = Math.min(start + PAGE_SIZE, values.length)
+  const { language } = useLanguage()
+  const pagination = useResourcePagination(values.length)
+  const { start, end } = pagination
 
   return (
     <div className="resource-value-pages">
@@ -112,28 +153,7 @@ function PaginatedResourceValues({
           )
         })}
       </div>
-      <nav
-        className="resource-value-pagination"
-        aria-label={t('resource.range', { start: start + 1, end, total: values.length })}
-      >
-        <button
-          type="button"
-          disabled={currentPage === 0}
-          onClick={() => setPage((value) => Math.max(0, value - 1))}
-          aria-label={t('resource.previous')}
-        >
-          <ChevronLeft />
-        </button>
-        <span>{t('resource.range', { start: start + 1, end, total: values.length })}</span>
-        <button
-          type="button"
-          disabled={currentPage === pageCount - 1}
-          onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
-          aria-label={t('resource.next')}
-        >
-          <ChevronRight />
-        </button>
-      </nav>
+      <ResourceValuePagination pagination={pagination} />
     </div>
   )
 }
@@ -157,11 +177,8 @@ function RelatedPokemonValues({
   pokemonGender?: PokemonGender
 }) {
   const { language, t } = useLanguage()
-  const [page, setPage] = useState(0)
-  const pageCount = Math.ceil(values.length / PAGE_SIZE)
-  const currentPage = Math.min(page, pageCount - 1)
-  const start = currentPage * PAGE_SIZE
-  const end = Math.min(start + PAGE_SIZE, values.length)
+  const pagination = useResourcePagination(values.length)
+  const { pageCount, start, end } = pagination
   const yes = t('common.yes')
   const no = t('common.no')
 
@@ -212,32 +229,7 @@ function RelatedPokemonValues({
           )
         })}
       </ul>
-      {pageCount > 1 && (
-        <nav
-          className="resource-value-pagination"
-          aria-label={t('resource.range', { start: start + 1, end, total: values.length })}
-        >
-          <button
-            type="button"
-            disabled={currentPage === 0}
-            onClick={() => setPage((value) => Math.max(0, value - 1))}
-            aria-label={t('resource.previous')}
-          >
-            <ChevronLeft />
-          </button>
-          <span aria-live="polite">
-            {t('resource.range', { start: start + 1, end, total: values.length })}
-          </span>
-          <button
-            type="button"
-            disabled={currentPage === pageCount - 1}
-            onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
-            aria-label={t('resource.next')}
-          >
-            <ChevronRight />
-          </button>
-        </nav>
-      )}
+      {pageCount > 1 && <ResourceValuePagination pagination={pagination} live />}
     </div>
   )
 }

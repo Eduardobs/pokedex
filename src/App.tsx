@@ -1,4 +1,4 @@
-import { lazy } from 'react'
+import { lazy, type ComponentType } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ErrorState } from './components/ErrorState'
@@ -6,59 +6,28 @@ import { FavoritesProvider } from './contexts/FavoritesContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { HomePage } from './pages/HomePage'
 
-const PokedexPage = lazy(() =>
-  import('./pages/PokedexPage').then(({ PokedexPage }) => ({ default: PokedexPage })),
+function lazyPage<T extends Record<string, ComponentType>>(load: () => Promise<T>, name: keyof T) {
+  return lazy(async () => ({ default: (await load())[name] }))
+}
+
+const PokedexPage = lazyPage(() => import('./pages/PokedexPage'), 'PokedexPage')
+const PokemonDetailPage = lazyPage(() => import('./pages/PokemonDetailPage'), 'PokemonDetailPage')
+const FormsPage = lazyPage(() => import('./pages/FormsPage'), 'FormsPage')
+const ExplorePage = lazyPage(() => import('./pages/ExplorePage'), 'ExplorePage')
+const ResourceListPage = lazyPage(() => import('./pages/ResourceListPage'), 'ResourceListPage')
+const ResourceDetailPage = lazyPage(
+  () => import('./pages/ResourceDetailPage'),
+  'ResourceDetailPage',
 )
-const PokemonDetailPage = lazy(() =>
-  import('./pages/PokemonDetailPage').then(({ PokemonDetailPage }) => ({
-    default: PokemonDetailPage,
-  })),
-)
-const FormsPage = lazy(() =>
-  import('./pages/FormsPage').then(({ FormsPage }) => ({ default: FormsPage })),
-)
-const ExplorePage = lazy(() =>
-  import('./pages/ExplorePage').then(({ ExplorePage }) => ({ default: ExplorePage })),
-)
-const ResourceListPage = lazy(() =>
-  import('./pages/ResourceListPage').then(({ ResourceListPage }) => ({
-    default: ResourceListPage,
-  })),
-)
-const ResourceDetailPage = lazy(() =>
-  import('./pages/ResourceDetailPage').then(({ ResourceDetailPage }) => ({
-    default: ResourceDetailPage,
-  })),
-)
-const FavoritesPage = lazy(() =>
-  import('./pages/FavoritesPage').then(({ FavoritesPage }) => ({ default: FavoritesPage })),
-)
-const TypesTablePage = lazy(() =>
-  import('./pages/TypesTablePage').then(({ TypesTablePage }) => ({ default: TypesTablePage })),
-)
-const MapsPage = lazy(() =>
-  import('./pages/MapsPage').then(({ MapsPage }) => ({ default: MapsPage })),
-)
-const KantoMapPage = lazy(() =>
-  import('./pages/KantoMapPage').then(({ KantoMapPage }) => ({ default: KantoMapPage })),
-)
-const PaldeaMapPage = lazy(() =>
-  import('./pages/PaldeaMapPage').then(({ PaldeaMapPage }) => ({ default: PaldeaMapPage })),
-)
-const KitakamiMapPage = lazy(() =>
-  import('./pages/KitakamiMapPage').then(({ KitakamiMapPage }) => ({ default: KitakamiMapPage })),
-)
-const TerrariumMapPage = lazy(() =>
-  import('./pages/TerrariumMapPage').then(({ TerrariumMapPage }) => ({
-    default: TerrariumMapPage,
-  })),
-)
-const HisuiMapPage = lazy(() =>
-  import('./pages/HisuiMapPage').then(({ HisuiMapPage }) => ({ default: HisuiMapPage })),
-)
-const LumioseMapPage = lazy(() =>
-  import('./pages/LumioseMapPage').then(({ LumioseMapPage }) => ({ default: LumioseMapPage })),
-)
+const FavoritesPage = lazyPage(() => import('./pages/FavoritesPage'), 'FavoritesPage')
+const TypesTablePage = lazyPage(() => import('./pages/TypesTablePage'), 'TypesTablePage')
+const MapsPage = lazyPage(() => import('./pages/MapsPage'), 'MapsPage')
+const KantoMapPage = lazyPage(() => import('./pages/KantoMapPage'), 'KantoMapPage')
+const PaldeaMapPage = lazyPage(() => import('./pages/PaldeaMapPage'), 'PaldeaMapPage')
+const KitakamiMapPage = lazyPage(() => import('./pages/KitakamiMapPage'), 'KitakamiMapPage')
+const TerrariumMapPage = lazyPage(() => import('./pages/TerrariumMapPage'), 'TerrariumMapPage')
+const HisuiMapPage = lazyPage(() => import('./pages/HisuiMapPage'), 'HisuiMapPage')
+const LumioseMapPage = lazyPage(() => import('./pages/LumioseMapPage'), 'LumioseMapPage')
 
 export default function App() {
   return (

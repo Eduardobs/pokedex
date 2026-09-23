@@ -1,13 +1,16 @@
 import { ArrowRight, Search } from 'lucide-react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { EmptyState } from '../components/FeedbackState'
+import { PageHeader } from '../components/PageHeader'
 import { SearchField } from '../components/SearchField'
 import { DamageClassIconSet } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getResourceGroups } from '../data/resources'
+import { useSearchParamUpdater } from '../hooks/useSearchParamUpdater'
 import { normalizeSearchText } from '../lib/api'
 
 export function ExplorePage() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { searchParams, updateSearchParam } = useSearchParamUpdater()
   const query = searchParams.get('q') ?? ''
   const { language, t } = useLanguage()
   const resourceGroups = getResourceGroups(language)
@@ -30,25 +33,24 @@ export function ExplorePage() {
       }
     })
     .filter((group) => group.resources.length)
-  const updateQuery = (value: string) =>
-    setSearchParams(value ? { q: value } : {}, { replace: true })
   return (
     <section className="page content-width">
-      <div className="page-title explore-title">
-        <div>
-          <span className="eyebrow">{t('explore.eyebrow')}</span>
-          <h1>{t('explore.title')}</h1>
-          <p>{t('explore.description')}</p>
-        </div>
-        <SearchField
-          value={query}
-          onChange={updateQuery}
-          clearLabel={t('common.clear')}
-          compact
-          aria-label={t('explore.search')}
-          placeholder={t('explore.search')}
-        />
-      </div>
+      <PageHeader
+        className="explore-title"
+        eyebrow={t('explore.eyebrow')}
+        title={t('explore.title')}
+        description={t('explore.description')}
+        aside={
+          <SearchField
+            value={query}
+            onChange={(value) => updateSearchParam('q', value)}
+            clearLabel={t('common.clear')}
+            compact
+            aria-label={t('explore.search')}
+            placeholder={t('explore.search')}
+          />
+        }
+      />
       <div className="resource-groups">
         {groups.map((group) => (
           <article
@@ -87,12 +89,7 @@ export function ExplorePage() {
           </article>
         ))}
       </div>
-      {!groups.length && (
-        <div className="empty">
-          <Search />
-          <h2>{t('explore.empty')}</h2>
-        </div>
-      )}
+      {!groups.length && <EmptyState icon={<Search />} title={t('explore.empty')} />}
     </section>
   )
 }

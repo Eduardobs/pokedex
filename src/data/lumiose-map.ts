@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './lumiose-map-markers.json'
 
 export type LumioseCategoryId =
@@ -275,17 +270,7 @@ export const LUMIOSE_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  LUMIOSE_CATEGORY_GROUPS,
-  { width: LUMIOSE_MAP_WIDTH, height: LUMIOSE_MAP_HEIGHT },
-  'Lumiose City',
-)
-export const LUMIOSE_CATEGORIES = catalog.categories
-export const LUMIOSE_MARKERS = catalog.markers
-export const LUMIOSE_TOTAL = catalog.total
-
-export const LUMIOSE_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, LUMIOSE_CATEGORY_GROUPS, 'Lumiose City', {
   id: 'lumiose-city',
   gameTitle: 'Pokémon Legends: Z-A',
   regionName: 'Lumiose City',
@@ -302,6 +287,8 @@ export const LUMIOSE_MAP = defineGameMap({
   tileExtension: 'jpg',
   tileOrder: 'yx',
   sourceUrl: 'https://mapgenie.io/pokemon-legends-z-a/maps/lumiose-city',
-  groups: LUMIOSE_CATEGORY_GROUPS,
-  markers: LUMIOSE_MARKERS,
 })
+export const LUMIOSE_CATEGORIES = mapData.categories
+export const LUMIOSE_MARKERS = mapData.markers
+export const LUMIOSE_TOTAL = mapData.total
+export const LUMIOSE_MAP = mapData.map

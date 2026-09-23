@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './kanto-map-markers.json'
 
 export type MapCategoryId =
@@ -181,17 +176,7 @@ export const MAP_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  MAP_CATEGORY_GROUPS,
-  { width: KANTO_MAP_WIDTH, height: KANTO_MAP_HEIGHT },
-  'Kanto',
-)
-export const MAP_CATEGORIES = catalog.categories
-export const KANTO_MARKERS = catalog.markers
-export const MAP_TOTAL = catalog.total
-
-export const KANTO_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, MAP_CATEGORY_GROUPS, 'Kanto', {
   id: 'kanto',
   gameTitle: 'Pokémon FireRed & LeafGreen',
   regionName: 'Kanto',
@@ -208,6 +193,8 @@ export const KANTO_MAP = defineGameMap({
   tileExtension: 'jpg',
   tileOrder: 'yx',
   sourceUrl: 'https://mapgenie.io/pokemon-firered-leafgreen/maps/kanto',
-  groups: MAP_CATEGORY_GROUPS,
-  markers: KANTO_MARKERS,
 })
+export const MAP_CATEGORIES = mapData.categories
+export const KANTO_MARKERS = mapData.markers
+export const MAP_TOTAL = mapData.total
+export const KANTO_MAP = mapData.map

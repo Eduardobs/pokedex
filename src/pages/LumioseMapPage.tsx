@@ -1,6 +1,4 @@
-import { GameMapPage } from '../components/GameMapPage'
+import { createGameMapPage } from '../components/GameMapPage'
 import { LUMIOSE_MAP } from '../data/lumiose-map'
 
-export function LumioseMapPage() {
-  return <GameMapPage map={LUMIOSE_MAP} />
-}
+export const LumioseMapPage = createGameMapPage(LUMIOSE_MAP)

@@ -119,9 +119,10 @@ The main data flow is intentionally layered:
 - `src/lib/api.ts` provides the Pokémon-specific API facade and maps remote data into UI-friendly structures.
 - Hooks and contexts coordinate asynchronous data and shared interface state.
 - Pages compose screens, while components focus on presentation and user interaction.
-- `PokemonCatalogFilters` and `usePokemonCatalogDetails` centralize the shared catalog controls and on-demand metadata used by the Pokédex and form directory.
+- `PageHeader` and the feedback-state components own the common page heading, empty, and retry presentations.
+- `PokemonCatalogFilters`, `usePokemonCatalogControls`, and `usePokemonCatalogDetails` centralize URL-backed controls and on-demand metadata used by the Pokédex and form directory; pure filtering and suggestion rules live in `src/lib/pokemon-directory.ts`.
 - `GameMapPage` owns shared map navigation and filtering; each region provides a validated local marker catalog and tile configuration under `src/data/`.
-- `src/data/game-map.ts` prepares and validates the shared category, marker, and total-count contract for every regional map.
+- `src/data/game-map.ts` creates and validates the shared category, marker, total-count, and map-definition contract for every regional map.
 
 ## Data, caching, and persistence
 

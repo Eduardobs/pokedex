@@ -1,5 +1,6 @@
 import type { Translate } from '../contexts/LanguageContext'
-import { POKEMON_REGIONS, type PokemonRegion } from './pokemon-catalog'
+import { normalizeSearchText } from './api'
+import { POKEMON_REGIONS, type PokemonRarityDetails, type PokemonRegion } from './pokemon-catalog'
 import type { PokemonSortKey } from './pokemon-sort'
 
 export const POKEMON_TYPES = [
@@ -38,6 +39,49 @@ export const POKEMON_SORT_KEYS: PokemonSortKey[] = [
 
 export function isPokemonRegion(value: string): value is PokemonRegion {
   return POKEMON_REGIONS.some((region) => region.name === value)
+}
+
+type CatalogMetadataFilters = {
+  region: PokemonRegion | 'all'
+  regionDetails: Record<string, PokemonRegion> | null
+  legendary: boolean
+  mythical: boolean
+  rarityDetails: Record<string, PokemonRarityDetails> | null
+}
+
+export function filterPokemonCatalogMetadata<T extends { name: string }>(
+  pokemon: T[],
+  { region, regionDetails, legendary, mythical, rarityDetails }: CatalogMetadataFilters,
+) {
+  return pokemon.filter(({ name }) => {
+    if (region !== 'all' && regionDetails?.[name] !== region) return false
+    if (!legendary && !mythical) return true
+
+    const rarity = rarityDetails?.[name]
+    return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))
+  })
+}
+
+export function pokemonSearchSuggestions<T extends { id: number; name: string }>(
+  pokemon: T[],
+  query: string,
+  searchValues: (pokemon: T) => readonly string[] = ({ name }) => [name],
+  limit = 7,
+) {
+  const normalizedQuery = normalizeSearchText(query)
+  if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
+
+  return pokemon
+    .filter((entry) =>
+      searchValues(entry).some((value) => normalizeSearchText(value).includes(normalizedQuery)),
+    )
+    .sort((left, right) => {
+      const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
+      const rightStartsWith = normalizeSearchText(right.name).startsWith(normalizedQuery)
+      if (leftStartsWith !== rightStartsWith) return leftStartsWith ? -1 : 1
+      return left.id - right.id || left.name.localeCompare(right.name)
+    })
+    .slice(0, limit)
 }
 
 export function pokemonSortOptions(

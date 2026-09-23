@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './hisui-map-markers.json'
 
 export type HisuiCategoryId =
@@ -345,17 +340,7 @@ export const HISUI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  HISUI_CATEGORY_GROUPS,
-  { width: HISUI_MAP_WIDTH, height: HISUI_MAP_HEIGHT },
-  'Hisui',
-)
-export const HISUI_CATEGORIES = catalog.categories
-export const HISUI_MARKERS = catalog.markers
-export const HISUI_TOTAL = catalog.total
-
-export const HISUI_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, HISUI_CATEGORY_GROUPS, 'Hisui', {
   id: 'hisui-region',
   gameTitle: 'Pokémon Legends: Arceus',
   regionName: 'Hisui',
@@ -372,6 +357,8 @@ export const HISUI_MAP = defineGameMap({
   tileExtension: 'png',
   tileOrder: 'xy',
   sourceUrl: 'https://mapgenie.io/pokemon-legends-arceus/maps/hisui-region',
-  groups: HISUI_CATEGORY_GROUPS,
-  markers: HISUI_MARKERS,
 })
+export const HISUI_CATEGORIES = mapData.categories
+export const HISUI_MARKERS = mapData.markers
+export const HISUI_TOTAL = mapData.total
+export const HISUI_MAP = mapData.map

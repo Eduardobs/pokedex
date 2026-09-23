@@ -1,7 +1,7 @@
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Language, Translate } from '../../contexts/LanguageContext'
-import { formatNumber, pokemonArtwork, prettyName } from '../../lib/api'
+import { formatNumber, idFromUrl, pokemonArtwork, prettyName } from '../../lib/api'
 import { defaultPokemonNameForSpecies } from '../../lib/pokemon-species'
 import type { EvolutionDetail, EvolutionNode } from '../../types'
 
@@ -118,7 +118,7 @@ type Props = {
 }
 
 export function EvolutionTreeNode({ node, t, language, root = false }: Props) {
-  const id = Number(node.species.url.split('/').filter(Boolean).at(-1))
+  const id = idFromUrl(node.species.url)
   const pokemonName = defaultPokemonNameForSpecies(node.species.name)
   const hasBranches = node.evolves_to.length > 1
 

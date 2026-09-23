@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './paldea-map-markers.json'
 
 export type PaldeaCategoryId =
@@ -341,17 +336,7 @@ export const PALDEA_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  PALDEA_CATEGORY_GROUPS,
-  { width: PALDEA_MAP_WIDTH, height: PALDEA_MAP_HEIGHT },
-  'Paldea',
-)
-export const PALDEA_CATEGORIES = catalog.categories
-export const PALDEA_MARKERS = catalog.markers
-export const PALDEA_TOTAL = catalog.total
-
-export const PALDEA_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, PALDEA_CATEGORY_GROUPS, 'Paldea', {
   id: 'paldea',
   gameTitle: 'Pokémon Scarlet & Violet',
   regionName: 'Paldea',
@@ -368,6 +353,8 @@ export const PALDEA_MAP = defineGameMap({
   tileExtension: 'jpg',
   tileOrder: 'xy',
   sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/paldea-region',
-  groups: PALDEA_CATEGORY_GROUPS,
-  markers: PALDEA_MARKERS,
 })
+export const PALDEA_CATEGORIES = mapData.categories
+export const PALDEA_MARKERS = mapData.markers
+export const PALDEA_TOTAL = mapData.total
+export const PALDEA_MAP = mapData.map

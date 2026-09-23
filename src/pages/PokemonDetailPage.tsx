@@ -14,6 +14,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { BaseStatsRadar } from '../components/BaseStatsRadar'
+import { EmptyState, InlineRetryError } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
 import { LocalizedResourceName } from '../components/LocalizedResourceName'
 import { MoveCard, moveLearningMethodLabel } from '../components/MoveCard'
@@ -608,12 +609,11 @@ export function PokemonDetailPage() {
               </p>
             )}
             {moveTypeError && (
-              <div className="inline-error">
-                <p>{t('error.message')}</p>
-                <button className="button secondary" type="button" onClick={retryMoveType}>
-                  {t('common.retry')}
-                </button>
-              </div>
+              <InlineRetryError
+                message={t('error.message')}
+                retryLabel={t('common.retry')}
+                onRetry={retryMoveType}
+              />
             )}
             <div className="move-groups">
               {!moveTypeLoading &&
@@ -637,10 +637,12 @@ export function PokemonDetailPage() {
                 ))}
             </div>
             {!moveTypeLoading && !moveTypeError && !filteredMoveGroups.length && (
-              <div className="empty compact-empty">
-                <Search />
-                <h3>{t('pokedex.empty')}</h3>
-              </div>
+              <EmptyState
+                className="compact-empty"
+                icon={<Search />}
+                title={t('pokedex.empty')}
+                headingLevel={3}
+              />
             )}
           </article>
         )}
@@ -654,12 +656,11 @@ export function PokemonDetailPage() {
             {encountersLoading ? (
               <Loading />
             ) : encountersError ? (
-              <div className="inline-error">
-                <p>{t('error.message')}</p>
-                <button className="button secondary" type="button" onClick={retryEncounters}>
-                  {t('common.retry')}
-                </button>
-              </div>
+              <InlineRetryError
+                message={t('error.message')}
+                retryLabel={t('common.retry')}
+                onRetry={retryEncounters}
+              />
             ) : (
               <PokemonEncounters encounters={encounters ?? []} />
             )}

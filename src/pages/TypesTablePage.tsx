@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ArrowDown, ArrowRight, Grid3X3, Shield, ShieldPlus, Swords } from 'lucide-react'
+import { PageHeader } from '../components/PageHeader'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { SelectMenu } from '../components/SelectMenu'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -81,15 +82,16 @@ export function TypesTablePage() {
 
   return (
     <section className="page content-width types-table-page">
-      <div className="page-title types-table-title">
-        <div>
-          <span className="eyebrow">
+      <PageHeader
+        className="types-table-title"
+        eyebrow={
+          <>
             <Grid3X3 size={14} /> {t('typesTable.eyebrow')}
-          </span>
-          <h1>{t('typesTable.title')}</h1>
-          <p>{t('typesTable.description')}</p>
-        </div>
-      </div>
+          </>
+        }
+        title={t('typesTable.title')}
+        description={t('typesTable.description')}
+      />
 
       <section className="type-calculator" aria-labelledby="type-calculator-title">
         <div>

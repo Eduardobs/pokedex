@@ -1,9 +1,4 @@
-import {
-  createGameMapCatalog,
-  defineGameMap,
-  gameMapCategory,
-  type GameMapCategoryGroup,
-} from './game-map'
+import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
 import rawMarkers from './terrarium-map-markers.json'
 
 export type TerrariumCategoryId =
@@ -171,17 +166,7 @@ export const TERRARIUM_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const catalog = createGameMapCatalog(
-  rawMarkers,
-  TERRARIUM_CATEGORY_GROUPS,
-  { width: TERRARIUM_MAP_WIDTH, height: TERRARIUM_MAP_HEIGHT },
-  'Terrarium',
-)
-export const TERRARIUM_CATEGORIES = catalog.categories
-export const TERRARIUM_MARKERS = catalog.markers
-export const TERRARIUM_TOTAL = catalog.total
-
-export const TERRARIUM_MAP = defineGameMap({
+const mapData = createGameMap(rawMarkers, TERRARIUM_CATEGORY_GROUPS, 'Terrarium', {
   id: 'terrarium',
   gameTitle: 'Pokémon Scarlet & Violet',
   regionName: 'Terarium',
@@ -198,6 +183,8 @@ export const TERRARIUM_MAP = defineGameMap({
   tileExtension: 'jpg',
   tileOrder: 'xy',
   sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/terrarium',
-  groups: TERRARIUM_CATEGORY_GROUPS,
-  markers: TERRARIUM_MARKERS,
 })
+export const TERRARIUM_CATEGORIES = mapData.categories
+export const TERRARIUM_MARKERS = mapData.markers
+export const TERRARIUM_TOTAL = mapData.total
+export const TERRARIUM_MAP = mapData.map

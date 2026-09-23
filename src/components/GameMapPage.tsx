@@ -691,3 +691,12 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     </section>
   )
 }
+
+export function createGameMapPage(map: GameMapDefinition) {
+  function ConfiguredGameMapPage() {
+    return <GameMapPage map={map} />
+  }
+
+  ConfiguredGameMapPage.displayName = `${map.regionName}MapPage`
+  return ConfiguredGameMapPage
+}

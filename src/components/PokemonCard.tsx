@@ -1,5 +1,5 @@
 import { Globe2, Heart, Maximize2, Shield } from 'lucide-react'
-import { useState, type ReactNode, type RefObject } from 'react'
+import type { ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -9,6 +9,7 @@ import { idFromUrl, pokemonArtwork, prettyName } from '../lib/api'
 import { pokemonFormDirectoryImageSources } from '../lib/pokemon-form-artwork'
 import { formLabels, type FormCategory } from '../lib/pokemon-forms'
 import type { NamedResource, Pokemon, PokemonForm } from '../types'
+import { FallbackImage } from './FallbackImage'
 import { MegaEvolutionIcon } from './MegaEvolutionIcon'
 import { TypeBadge } from './TypeBadge'
 
@@ -184,21 +185,20 @@ function DirectoryFormArtwork({
   normalAlt: string
   shinyAlt: string
 }) {
-  const [sourceIndex, setSourceIndex] = useState(0)
-  const sources = pokemonFormDirectoryImageSources(pokemonId, sprites, shiny)
-  const source = sources[sourceIndex]
-  if (!source) return null
+  const sources = pokemonFormDirectoryImageSources(pokemonId, sprites, shiny).map((source) => ({
+    src: source.url,
+    className: source.sprite ? 'sprite-art' : undefined,
+    alt: source.shiny ? shinyAlt : normalAlt,
+  }))
 
   return (
-    <img
-      src={source.url}
-      className={source.sprite ? 'sprite-art' : undefined}
-      alt={source.shiny ? shinyAlt : normalAlt}
+    <FallbackImage
+      sources={sources}
+      alt={normalAlt}
       width="165"
       height="165"
       loading="lazy"
       decoding="async"
-      onError={() => setSourceIndex((index) => index + 1)}
     />
   )
 }
