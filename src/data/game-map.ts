@@ -76,6 +76,17 @@ export type GameMapDefinition = {
 
 type MarkerBounds = { width: number; height: number }
 
+export function gameMapCategory<CategoryId extends string>(
+  id: CategoryId,
+  labelKey: TranslationKey,
+  summaryKey: TranslationKey,
+  count: number,
+  color: string,
+  icon: GameMapIconId,
+): GameMapCategory {
+  return { id, labelKey, summaryKey, count, color, icon }
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
@@ -123,6 +134,20 @@ export function parseGameMapMarkers(
     seenIds.add(id)
     return { id, name, area, category, x, y }
   })
+}
+
+export function createGameMapCatalog(
+  rawMarkers: unknown,
+  groups: GameMapCategoryGroup[],
+  bounds: MarkerBounds,
+  mapName: string,
+) {
+  const categories = groups.flatMap((group) => group.categories)
+  const categoryIds = new Set(categories.map((category) => category.id))
+  const markers = parseGameMapMarkers(rawMarkers, categoryIds, bounds, mapName)
+  const total = categories.reduce((sum, category) => sum + category.count, 0)
+
+  return { categories, markers, total }
 }
 
 export function defineGameMap(definition: GameMapDefinition): GameMapDefinition {

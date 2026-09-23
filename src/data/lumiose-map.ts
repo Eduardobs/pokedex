@@ -1,8 +1,7 @@
-import type { TranslationKey } from '../contexts/LanguageContext'
 import {
+  createGameMapCatalog,
   defineGameMap,
-  parseGameMapMarkers,
-  type GameMapCategory,
+  gameMapCategory,
   type GameMapCategoryGroup,
 } from './game-map'
 import rawMarkers from './lumiose-map-markers.json'
@@ -38,14 +37,7 @@ export const LUMIOSE_MAP_HEIGHT = 16_384
 export const LUMIOSE_TILE_BASE_ZOOM = 14
 export const LUMIOSE_TILE_ORIGIN = { x: 8_128, y: 8_128 } as const
 
-const category = (
-  id: LumioseCategoryId,
-  labelKey: TranslationKey,
-  summaryKey: TranslationKey,
-  count: number,
-  color: string,
-  icon: GameMapCategory['icon'],
-): GameMapCategory => ({ id, labelKey, summaryKey, count, color, icon })
+const category = gameMapCategory<LumioseCategoryId>
 
 export const LUMIOSE_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   {
@@ -283,17 +275,15 @@ export const LUMIOSE_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-export const LUMIOSE_CATEGORIES = LUMIOSE_CATEGORY_GROUPS.flatMap((group) => group.categories)
-const categoryIds = new Set(LUMIOSE_CATEGORIES.map((item) => item.id))
-
-export const LUMIOSE_MARKERS = parseGameMapMarkers(
+const catalog = createGameMapCatalog(
   rawMarkers,
-  categoryIds,
+  LUMIOSE_CATEGORY_GROUPS,
   { width: LUMIOSE_MAP_WIDTH, height: LUMIOSE_MAP_HEIGHT },
   'Lumiose City',
 )
-
-export const LUMIOSE_TOTAL = LUMIOSE_CATEGORIES.reduce((total, item) => total + item.count, 0)
+export const LUMIOSE_CATEGORIES = catalog.categories
+export const LUMIOSE_MARKERS = catalog.markers
+export const LUMIOSE_TOTAL = catalog.total
 
 export const LUMIOSE_MAP = defineGameMap({
   id: 'lumiose-city',

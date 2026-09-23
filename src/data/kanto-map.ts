@@ -1,8 +1,7 @@
-import type { TranslationKey } from '../contexts/LanguageContext'
 import {
+  createGameMapCatalog,
   defineGameMap,
-  parseGameMapMarkers,
-  type GameMapCategory,
+  gameMapCategory,
   type GameMapCategoryGroup,
 } from './game-map'
 import rawMarkers from './kanto-map-markers.json'
@@ -35,14 +34,7 @@ export const KANTO_MAP_HEIGHT = 8192
 export const KANTO_TILE_BASE_ZOOM = 14
 export const KANTO_TILE_ORIGIN = { x: 8134, y: 8140 } as const
 
-const category = (
-  id: MapCategoryId,
-  labelKey: TranslationKey,
-  summaryKey: TranslationKey,
-  count: number,
-  color: string,
-  icon: GameMapCategory['icon'],
-): GameMapCategory => ({ id, labelKey, summaryKey, count, color, icon })
+const category = gameMapCategory<MapCategoryId>
 
 export const MAP_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   {
@@ -189,17 +181,15 @@ export const MAP_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-export const MAP_CATEGORIES = MAP_CATEGORY_GROUPS.flatMap((group) => group.categories)
-const categoryIds = new Set(MAP_CATEGORIES.map((item) => item.id))
-
-export const KANTO_MARKERS = parseGameMapMarkers(
+const catalog = createGameMapCatalog(
   rawMarkers,
-  categoryIds,
+  MAP_CATEGORY_GROUPS,
   { width: KANTO_MAP_WIDTH, height: KANTO_MAP_HEIGHT },
   'Kanto',
 )
-
-export const MAP_TOTAL = MAP_CATEGORIES.reduce((total, item) => total + item.count, 0)
+export const MAP_CATEGORIES = catalog.categories
+export const KANTO_MARKERS = catalog.markers
+export const MAP_TOTAL = catalog.total
 
 export const KANTO_MAP = defineGameMap({
   id: 'kanto',

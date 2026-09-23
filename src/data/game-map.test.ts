@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseGameMapMarkers } from './game-map'
+import { createGameMapCatalog, gameMapCategory, parseGameMapMarkers } from './game-map'
 
 const categories = new Set(['location'])
 const bounds = { width: 100, height: 100 }
@@ -33,5 +33,35 @@ describe('parseGameMapMarkers', () => {
     expect(() => parseGameMapMarkers(markers, categories, bounds, 'Paldea')).toThrow(
       /Invalid Paldea marker/,
     )
+  })
+})
+
+describe('createGameMapCatalog', () => {
+  it('derives categories, validated markers and total from one definition', () => {
+    const location = gameMapCategory(
+      'location',
+      'maps.category.location',
+      'maps.marker.paldeaLocationSummary',
+      1,
+      '#123456',
+      'area',
+    )
+    const marker = {
+      id: '1',
+      name: 'Mesagoza',
+      area: 'Paldea',
+      category: 'location',
+      x: 50,
+      y: 25,
+    }
+
+    expect(
+      createGameMapCatalog(
+        [marker],
+        [{ id: 'locations', labelKey: 'maps.group.locations', categories: [location] }],
+        bounds,
+        'Paldea',
+      ),
+    ).toEqual({ categories: [location], markers: [marker], total: 1 })
   })
 })

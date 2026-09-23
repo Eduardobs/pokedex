@@ -1,8 +1,7 @@
-import type { TranslationKey } from '../contexts/LanguageContext'
 import {
+  createGameMapCatalog,
   defineGameMap,
-  parseGameMapMarkers,
-  type GameMapCategory,
+  gameMapCategory,
   type GameMapCategoryGroup,
 } from './game-map'
 import rawMarkers from './hisui-map-markers.json'
@@ -45,14 +44,7 @@ export const HISUI_MAP_HEIGHT = 16_384
 export const HISUI_TILE_BASE_ZOOM = 14
 export const HISUI_TILE_ORIGIN = { x: 8_128, y: 8_128 } as const
 
-const category = (
-  id: HisuiCategoryId,
-  labelKey: TranslationKey,
-  summaryKey: TranslationKey,
-  count: number,
-  color: string,
-  icon: GameMapCategory['icon'],
-): GameMapCategory => ({ id, labelKey, summaryKey, count, color, icon })
+const category = gameMapCategory<HisuiCategoryId>
 
 export const HISUI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   {
@@ -353,17 +345,15 @@ export const HISUI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-export const HISUI_CATEGORIES = HISUI_CATEGORY_GROUPS.flatMap((group) => group.categories)
-const categoryIds = new Set(HISUI_CATEGORIES.map((item) => item.id))
-
-export const HISUI_MARKERS = parseGameMapMarkers(
+const catalog = createGameMapCatalog(
   rawMarkers,
-  categoryIds,
+  HISUI_CATEGORY_GROUPS,
   { width: HISUI_MAP_WIDTH, height: HISUI_MAP_HEIGHT },
   'Hisui',
 )
-
-export const HISUI_TOTAL = HISUI_CATEGORIES.reduce((total, item) => total + item.count, 0)
+export const HISUI_CATEGORIES = catalog.categories
+export const HISUI_MARKERS = catalog.markers
+export const HISUI_TOTAL = catalog.total
 
 export const HISUI_MAP = defineGameMap({
   id: 'hisui-region',

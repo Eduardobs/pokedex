@@ -1,8 +1,7 @@
-import type { TranslationKey } from '../contexts/LanguageContext'
 import {
+  createGameMapCatalog,
   defineGameMap,
-  parseGameMapMarkers,
-  type GameMapCategory,
+  gameMapCategory,
   type GameMapCategoryGroup,
 } from './game-map'
 import rawMarkers from './paldea-map-markers.json'
@@ -46,14 +45,7 @@ export const PALDEA_MAP_HEIGHT = 16_384
 export const PALDEA_TILE_BASE_ZOOM = 15
 export const PALDEA_TILE_ORIGIN = { x: 16_288, y: 16_288 } as const
 
-const category = (
-  id: PaldeaCategoryId,
-  labelKey: TranslationKey,
-  summaryKey: TranslationKey,
-  count: number,
-  color: string,
-  icon: GameMapCategory['icon'],
-): GameMapCategory => ({ id, labelKey, summaryKey, count, color, icon })
+const category = gameMapCategory<PaldeaCategoryId>
 
 export const PALDEA_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   {
@@ -349,17 +341,15 @@ export const PALDEA_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-export const PALDEA_CATEGORIES = PALDEA_CATEGORY_GROUPS.flatMap((group) => group.categories)
-const categoryIds = new Set(PALDEA_CATEGORIES.map((item) => item.id))
-
-export const PALDEA_MARKERS = parseGameMapMarkers(
+const catalog = createGameMapCatalog(
   rawMarkers,
-  categoryIds,
+  PALDEA_CATEGORY_GROUPS,
   { width: PALDEA_MAP_WIDTH, height: PALDEA_MAP_HEIGHT },
   'Paldea',
 )
-
-export const PALDEA_TOTAL = PALDEA_CATEGORIES.reduce((total, item) => total + item.count, 0)
+export const PALDEA_CATEGORIES = catalog.categories
+export const PALDEA_MARKERS = catalog.markers
+export const PALDEA_TOTAL = catalog.total
 
 export const PALDEA_MAP = defineGameMap({
   id: 'paldea',
