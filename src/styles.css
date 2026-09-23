@@ -6081,13 +6081,13 @@ footer a {
 }
 .game-map-grid {
   display: grid;
-  grid-template-columns: minmax(0, 760px);
-  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
 }
 .game-map-card {
-  min-height: 390px;
+  min-height: 360px;
   display: grid;
-  grid-template-columns: minmax(230px, 0.86fr) 1.35fr;
+  grid-template-columns: minmax(160px, 0.72fr) 1.28fr;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 24px;
@@ -6108,11 +6108,11 @@ footer a {
   outline-offset: 4px;
 }
 .game-map-cover {
-  min-height: 390px;
+  min-height: 360px;
   position: relative;
   display: grid;
   place-items: center;
-  padding: 30px;
+  padding: 22px;
   overflow: hidden;
   background:
     radial-gradient(circle at 23% 18%, #ffb052cc 0 9%, transparent 10%),
@@ -6126,7 +6126,7 @@ footer a {
   transform: rotate(-12deg);
 }
 .game-map-cover img {
-  width: min(100%, 250px);
+  width: min(100%, 190px);
   height: auto;
   position: relative;
   z-index: 1;
@@ -6138,7 +6138,7 @@ footer a {
     linear-gradient(145deg, #a72b34 0 49%, #5d3a91 51% 100%);
 }
 .game-map-card--scarlet-violet .game-map-cover img {
-  width: min(100%, 225px);
+  width: min(100%, 180px);
 }
 .game-map-card--arceus .game-map-cover {
   background: linear-gradient(180deg, #91cbcb 0 50%, #748b5f 50% 100%);
@@ -6177,7 +6177,7 @@ footer a {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 42px;
+  padding: 26px 24px;
 }
 .game-map-platform {
   display: inline-flex;
@@ -6191,22 +6191,23 @@ footer a {
 }
 .game-map-card h2 {
   max-width: 390px;
-  margin: 12px 0 10px;
-  font: 750 clamp(27px, 3vw, 38px) Outfit;
-  letter-spacing: -1px;
-  line-height: 1.06;
+  margin: 10px 0 8px;
+  font: 750 clamp(22px, 2.1vw, 28px) Outfit;
+  letter-spacing: -0.7px;
+  line-height: 1.08;
 }
 .game-map-card-copy > p {
   margin: 0;
   color: var(--muted);
-  line-height: 1.65;
+  font-size: 13px;
+  line-height: 1.5;
 }
 .game-map-card-meta {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 24px 0;
+  margin: 18px 0;
 }
 .game-map-card-meta span {
   padding: 7px 10px;
@@ -6233,7 +6234,7 @@ footer a {
 }
 .game-map-regions {
   width: 100%;
-  margin-top: 22px;
+  margin-top: 16px;
 }
 .game-map-card-copy .game-map-region-label {
   margin: 0 0 9px;
@@ -6248,12 +6249,12 @@ footer a {
 }
 .game-map-region-options a,
 .game-map-region-options button {
-  min-height: 48px;
+  min-height: 44px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 9px 12px;
+  padding: 7px 10px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface-soft);
@@ -6897,6 +6898,9 @@ footer a {
 }
 
 @media (max-width: 950px) {
+  .game-map-grid {
+    grid-template-columns: 1fr;
+  }
   .map-page-header {
     align-items: flex-start;
     flex-direction: column;
@@ -6913,9 +6917,6 @@ footer a {
 }
 
 @media (max-width: 720px) {
-  .game-map-grid {
-    grid-template-columns: 1fr;
-  }
   .game-map-card {
     grid-template-columns: 1fr;
   }

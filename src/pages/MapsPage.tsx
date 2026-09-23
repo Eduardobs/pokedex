@@ -52,6 +52,32 @@ export function MapsPage() {
           </div>
         </Link>
 
+        <Link className="game-map-card game-map-card--arceus" to="/mapas/hisui-region">
+          <div className="game-map-cover">
+            <img
+              src={`${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`}
+              alt={t('maps.arceusMapAlt')}
+              width="1024"
+              height="1024"
+            />
+            <span className="game-map-generation">{t('maps.arceusGeneration')}</span>
+          </div>
+          <div className="game-map-card-copy">
+            <span className="game-map-platform">
+              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch
+            </span>
+            <h2>Pokémon Legends: Arceus</h2>
+            <p>{t('maps.arceusDescription')}</p>
+            <div className="game-map-card-meta">
+              <span>{t('maps.hisuiRegion')}</span>
+              <span>{t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) })}</span>
+            </div>
+            <span className="game-map-open">
+              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
+            </span>
+          </div>
+        </Link>
+
         <article className="game-map-card game-map-card--scarlet-violet">
           <div className="game-map-cover">
             <img
@@ -88,32 +114,6 @@ export function MapsPage() {
             </div>
           </div>
         </article>
-
-        <Link className="game-map-card game-map-card--arceus" to="/mapas/hisui-region">
-          <div className="game-map-cover">
-            <img
-              src={`${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`}
-              alt={t('maps.arceusMapAlt')}
-              width="1024"
-              height="1024"
-            />
-            <span className="game-map-generation">{t('maps.arceusGeneration')}</span>
-          </div>
-          <div className="game-map-card-copy">
-            <span className="game-map-platform">
-              <Gamepad2 size={15} aria-hidden="true" /> Nintendo Switch
-            </span>
-            <h2>Pokémon Legends: Arceus</h2>
-            <p>{t('maps.arceusDescription')}</p>
-            <div className="game-map-card-meta">
-              <span>{t('maps.hisuiRegion')}</span>
-              <span>{t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) })}</span>
-            </div>
-            <span className="game-map-open">
-              {t('maps.openMap')} <ArrowRight size={18} aria-hidden="true" />
-            </span>
-          </div>
-        </Link>
       </div>
     </section>
   )

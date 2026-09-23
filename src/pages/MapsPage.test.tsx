@@ -48,5 +48,13 @@ describe('MapsPage', () => {
       '/maps/legends-arceus-map.jpg',
     )
     expect(screen.getByText('2.525 pontos catalogados')).toBeVisible()
+
+    expect(
+      screen.getAllByRole('heading', { level: 2 }).map((heading) => heading.textContent),
+    ).toEqual([
+      'Pokémon FireRed & LeafGreen',
+      'Pokémon Legends: Arceus',
+      'Pokémon Scarlet & Violet',
+    ])
   })
 })
