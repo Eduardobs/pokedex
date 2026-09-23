@@ -26,23 +26,18 @@ vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
   fetchPokemonSortDetails: fetchPokemonSortDetailsMock,
 }))
 vi.mock('../components/PokemonCard', () => ({
-  PokemonCard: ({ name, shiny }: { name: string; shiny?: boolean }) => (
-    <div data-shiny={shiny ? 'true' : 'false'}>{name}</div>
-  ),
-}))
-vi.mock('../components/PokemonFormDirectoryCard', async (importOriginal) => {
-  const original = await importOriginal<typeof import('../components/PokemonFormDirectoryCard')>()
-  return {
-    ...original,
-    PokemonFormDirectoryCard: ({
-      resource,
-      shiny,
-      sortMetric,
-    }: {
-      resource: NamedResource
-      shiny?: boolean
-      sortMetric?: { value: number }
-    }) => (
+  PokemonCard: ({
+    name,
+    resource,
+    shiny,
+    sortMetric,
+  }: {
+    name?: string
+    resource?: NamedResource
+    shiny?: boolean
+    sortMetric?: { value: number }
+  }) =>
+    resource ? (
       <div
         data-testid="form-card"
         data-shiny={shiny ? 'true' : 'false'}
@@ -50,9 +45,10 @@ vi.mock('../components/PokemonFormDirectoryCard', async (importOriginal) => {
       >
         {resource.name}
       </div>
+    ) : (
+      <div data-shiny={shiny ? 'true' : 'false'}>{name}</div>
     ),
-  }
-})
+}))
 
 class IntersectionObserverMock implements IntersectionObserver {
   static instances: IntersectionObserverMock[] = []

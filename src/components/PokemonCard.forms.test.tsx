@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { PokemonFormDirectoryCard } from './PokemonFormDirectoryCard'
+import { PokemonCard } from './PokemonCard'
 import { PokemonDetailBackLink } from './pokemon-detail/PokemonDetailBackLink'
 
 const { retryMock, useApiMock } = vi.hoisted(() => ({ retryMock: vi.fn(), useApiMock: vi.fn() }))
@@ -12,7 +12,7 @@ vi.mock('../hooks/useIntersectionVisibility', () => ({
   useIntersectionVisibility: () => ({ targetRef: { current: null }, visible: true }),
 }))
 
-describe('PokemonFormDirectoryCard', () => {
+describe('PokemonCard with form resources', () => {
   beforeEach(() => {
     retryMock.mockReset()
     useApiMock.mockReset()
@@ -30,7 +30,7 @@ describe('PokemonFormDirectoryCard', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
-          <PokemonFormDirectoryCard
+          <PokemonCard
             resource={{
               name: 'charizard-mega-x',
               url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
@@ -65,7 +65,7 @@ describe('PokemonFormDirectoryCard', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
-          <PokemonFormDirectoryCard
+          <PokemonCard
             resource={{
               name: 'charizard-mega-x',
               url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
@@ -101,7 +101,7 @@ describe('PokemonFormDirectoryCard', () => {
             <Route
               path="/formas"
               element={
-                <PokemonFormDirectoryCard
+                <PokemonCard
                   resource={{
                     name: 'charizard-mega-x',
                     url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
@@ -116,7 +116,7 @@ describe('PokemonFormDirectoryCard', () => {
       </MemoryRouter>,
     )
 
-    fireEvent.click(screen.getByRole('link'))
+    fireEvent.click(screen.getByRole('link', { name: 'Charizard — Mega Forma X — Normal' }))
 
     expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/formas')
   })
@@ -140,7 +140,7 @@ describe('PokemonFormDirectoryCard', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>
-          <PokemonFormDirectoryCard
+          <PokemonCard
             resource={{
               name: 'zygarde-mega',
               url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
@@ -177,7 +177,7 @@ describe('PokemonFormDirectoryCard', () => {
     const card = (shiny: boolean) => (
       <MemoryRouter>
         <LanguageProvider>
-          <PokemonFormDirectoryCard
+          <PokemonCard
             resource={{
               name: 'zygarde-mega',
               url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
@@ -227,7 +227,7 @@ describe('PokemonFormDirectoryCard', () => {
       render(
         <MemoryRouter>
           <LanguageProvider>
-            <PokemonFormDirectoryCard
+            <PokemonCard
               resource={{ name, url: `https://pokeapi.co/api/v2/pokemon-form/${pokemonId}/` }}
               category="mega"
               shiny={shiny}

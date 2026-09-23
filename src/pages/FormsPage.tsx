@@ -18,12 +18,7 @@ import { useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { CardSkeleton } from '../components/Loading'
 import { MegaEvolutionIcon } from '../components/MegaEvolutionIcon'
-import {
-  FormCategory,
-  formCategory,
-  formLabels,
-  PokemonFormDirectoryCard,
-} from '../components/PokemonFormDirectoryCard'
+import { PokemonCard } from '../components/PokemonCard'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
 import { typeLabel } from '../components/TypeBadge'
@@ -40,6 +35,7 @@ import {
   type PokemonRarityDetails,
   type PokemonRegion,
 } from '../lib/pokemon-catalog'
+import { formCategory, formLabels, type FormCategory } from '../lib/pokemon-forms'
 import {
   getPokemonSortValue,
   pokemonSortNeedsDetails,
@@ -799,7 +795,7 @@ export function FormsPage() {
             const sortMetric =
               value === undefined ? undefined : { label: selectedSortMetric, value }
             return resourceCategory ? (
-              <PokemonFormDirectoryCard
+              <PokemonCard
                 resource={resource}
                 category={resourceCategory}
                 shiny={shiny}
