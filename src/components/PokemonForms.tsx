@@ -2,6 +2,7 @@ import { Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { apiFetch, prettyName } from '../lib/api'
+import { pokemonFormImageSources } from '../lib/pokemon-form-artwork'
 import type { Pokemon, PokemonForm, Species } from '../types'
 import { TypeBadge } from './TypeBadge'
 import { Translate, useLanguage } from '../contexts/LanguageContext'
@@ -15,6 +16,25 @@ type FormEntry = {
 
 type PresentedForm = FormEntry & {
   presentation: ReturnType<typeof formPresentation>
+}
+
+function FormArtwork({ sources, alt }: { sources: string[]; alt: string }) {
+  const [sourceIndex, setSourceIndex] = useState(0)
+  const source = sources[sourceIndex] ?? ''
+
+  return (
+    <img
+      src={source}
+      alt={alt}
+      width="92"
+      height="92"
+      loading="lazy"
+      decoding="async"
+      onError={() =>
+        setSourceIndex((current) => (current + 1 < sources.length ? current + 1 : current))
+      }
+    />
+  )
 }
 
 function localizedFormName(form: PokemonForm | null, language: string) {
@@ -93,10 +113,7 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
   const { t } = useLanguage()
   const { pokemon, form, presentation } = entry
   const Icon = presentation.icon
-  const artwork =
-    pokemon.sprites.other?.['official-artwork']?.front_default ??
-    form?.sprites.front_default ??
-    pokemon.sprites.front_default
+  const artworkSources = pokemonFormImageSources(pokemon, form)
   const active = pokemon.name === currentPokemon.name
 
   return (
@@ -107,13 +124,10 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
     >
       <div className="form-art">
         <span />
-        <img
-          src={artwork ?? ''}
+        <FormArtwork
+          key={artworkSources.join('|')}
+          sources={artworkSources}
           alt={presentation.label}
-          width="92"
-          height="92"
-          loading="lazy"
-          decoding="async"
         />
         {active && <small>{t('pokemonForms.current')}</small>}
       </div>
