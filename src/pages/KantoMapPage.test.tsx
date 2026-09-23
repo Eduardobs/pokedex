@@ -33,6 +33,25 @@ describe('KantoMapPage', () => {
     expect(screen.getByText('1.963 pins visíveis')).toBeInTheDocument()
   })
 
+  it('shows no pins or empty-state message when all categories are cleared', () => {
+    renderPage()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))
+
+    expect(screen.getByText('0 pins visíveis')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Nenhum pin encontrado' })).not.toBeInTheDocument()
+  })
+
+  it('keeps the empty-state message for an unmatched search with active categories', () => {
+    renderPage()
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Buscar um ponto no mapa' }), {
+      target: { value: 'local inexistente' },
+    })
+
+    expect(screen.getByRole('heading', { name: 'Nenhum pin encontrado' })).toBeVisible()
+  })
+
   it('searches and opens accessible pin details', () => {
     renderPage()
 

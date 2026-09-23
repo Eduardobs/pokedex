@@ -6476,6 +6476,7 @@ footer a {
 }
 .map-category-list label {
   min-height: 39px;
+  position: relative;
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) auto;
   align-items: center;
@@ -6496,9 +6497,12 @@ footer a {
 }
 .map-category-list input {
   position: absolute;
+  top: 50%;
+  left: 20px;
   width: 1px;
   height: 1px;
   opacity: 0;
+  transform: translate(-50%, -50%);
 }
 .map-category-icon {
   width: 27px;

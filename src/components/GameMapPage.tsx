@@ -663,7 +663,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
               </article>
             )}
 
-            {!visibleMarkers.length && (
+            {!visibleMarkers.length && activeCategories.size > 0 && (
               <div className="map-empty">
                 <Search aria-hidden="true" />
                 <h2>{t('maps.emptyTitle')}</h2>
