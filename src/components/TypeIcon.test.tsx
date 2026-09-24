@@ -11,7 +11,7 @@ describe('TypeIcon', () => {
     expect(icon).toBeInTheDocument()
     expect(icon?.children.length).toBeGreaterThan(0)
     expect(icon).toHaveAttribute('aria-hidden', 'true')
-    expect(icon?.querySelector('use')).toHaveAttribute('href', `/type-icons.svg#type-${type}`)
+    expect(icon?.querySelector('use')).toHaveAttribute('href', `${import.meta.env.BASE_URL}type-icons.svg#type-${type}`)
   })
 
   it('uses a safe fallback for API types outside the reference palette', () => {

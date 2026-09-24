@@ -21,6 +21,8 @@ const referenceTypes = new Set([
   'fairy',
 ])
 
+const typeIconsUrl = `${import.meta.env.BASE_URL}type-icons.svg`
+
 export function TypeIcon({ type, ...props }: SVGProps<SVGSVGElement> & { type: string }) {
   if (!referenceTypes.has(type)) {
     return (
@@ -38,7 +40,7 @@ export function TypeIcon({ type, ...props }: SVGProps<SVGSVGElement> & { type: s
 
   return (
     <svg viewBox="0 0 30 30" fill="currentColor" aria-hidden="true" {...props}>
-      <use href={`/type-icons.svg#type-${type}`} />
+      <use href={`${typeIconsUrl}#type-${type}`} />
     </svg>
   )
 }
