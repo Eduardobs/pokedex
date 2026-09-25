@@ -74,8 +74,14 @@ describe('ResourceDetailPage berry presentation', () => {
     )
 
     expect(screen.getByText('Especial')).toBeVisible()
-    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute('src', '/icons/damage-special.png')
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-special.png')
+    expect(container.querySelector('.damage-class-detail-icon img')).toHaveAttribute(
+      'src',
+      `${import.meta.env.BASE_URL}icons/damage-special.png`,
+    )
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
+      'src',
+      `${import.meta.env.BASE_URL}icons/damage-special.png`,
+    )
   })
 
   it('shows the berry sprite instead of the generic resource icon', () => {

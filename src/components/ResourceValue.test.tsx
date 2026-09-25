@@ -118,6 +118,9 @@ describe('ResourceValue', () => {
     const { container } = renderValue({ name: 'status', url: `${API_BASE}/move-damage-class/1/` })
 
     expect(screen.getByRole('link', { name: /Status/ })).toHaveAttribute('href', '/explorar/move-damage-class/1')
-    expect(container.querySelector('.damage-status img')).toHaveAttribute('src', '/icons/damage-status.png')
+    expect(container.querySelector('.damage-status img')).toHaveAttribute(
+      'src',
+      `${import.meta.env.BASE_URL}icons/damage-status.png`,
+    )
   })
 })

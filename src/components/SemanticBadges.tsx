@@ -10,9 +10,9 @@ export function normalizedDamageClass(value: string): DamageClass {
 }
 
 const damageClassIcons: Record<DamageClass, string> = {
-  physical: '/icons/damage-physical.png',
-  special: '/icons/damage-special.png',
-  status: '/icons/damage-status.png',
+  physical: `${import.meta.env.BASE_URL}icons/damage-physical.png`,
+  special: `${import.meta.env.BASE_URL}icons/damage-special.png`,
+  status: `${import.meta.env.BASE_URL}icons/damage-status.png`,
 }
 
 export function DamageClassIcon({ value, ...props }: ImgHTMLAttributes<HTMLImageElement> & { value: string }) {

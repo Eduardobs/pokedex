@@ -59,9 +59,12 @@ describe('ResourceListPage item presentation', () => {
     expect(screen.getByText('Físico')).toBeVisible()
     expect(container.querySelector('.damage-class-resource-icon img')).toHaveAttribute(
       'src',
-      '/icons/damage-physical.png',
+      `${import.meta.env.BASE_URL}icons/damage-physical.png`,
     )
-    expect(container.querySelector('.damage-badge img')).toHaveAttribute('src', '/icons/damage-physical.png')
+    expect(container.querySelector('.damage-badge img')).toHaveAttribute(
+      'src',
+      `${import.meta.env.BASE_URL}icons/damage-physical.png`,
+    )
   })
 
   it.each([
