@@ -182,6 +182,9 @@
   gap: 12px;
   margin-top: 20px;
 }
+.favorites-toolbar {
+  margin-bottom: 30px;
+}
 .move-toolbar .sort-field,
 .favorites-toolbar .sort-field {
   min-width: 0;

@@ -10,6 +10,7 @@
   --page-bg: #f7f8fa;
   --surface: #fff;
   --surface-soft: #f7f8fa;
+  --field-control-height: 52px;
   --topbar-height: 76px;
 }
 * {

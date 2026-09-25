@@ -40,7 +40,7 @@
   box-shadow: 0 8px 25px #26344208;
 }
 .search-field {
-  height: 48px;
+  height: var(--field-control-height);
   padding: 0 14px;
 }
 .search-field.compact {
@@ -159,7 +159,7 @@
 }
 .catalog-select-trigger {
   width: 100%;
-  height: 52px;
+  height: var(--field-control-height);
   padding: 7px 11px;
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr) 18px;
