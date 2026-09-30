@@ -1,19 +1,24 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ResourceListPage } from './ResourceListPage'
 
-const { useApiMock, useMoveListDetailsMock } = vi.hoisted(() => ({
+const { useAbilityListDetailsMock, useApiMock, useMoveListDetailsMock } = vi.hoisted(() => ({
+  useAbilityListDetailsMock: vi.fn(),
   useApiMock: vi.fn(),
   useMoveListDetailsMock: vi.fn(),
 }))
+vi.mock('../hooks/useAbilityListDetails', () => ({ useAbilityListDetails: useAbilityListDetailsMock }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
 vi.mock('../hooks/useMoveListDetails', () => ({ useMoveListDetails: useMoveListDetailsMock }))
 
 beforeEach(() => {
+  useAbilityListDetailsMock.mockReturnValue({ data: null, loading: false, error: null, retry: vi.fn() })
   useMoveListDetailsMock.mockReturnValue({ data: null, loading: false, error: null, retry: vi.fn() })
 })
+
+afterEach(cleanup)
 
 describe('ResourceListPage pagination', () => {
   it('redirects an offset beyond the collection to the last valid page', async () => {
@@ -41,6 +46,99 @@ describe('ResourceListPage pagination', () => {
 })
 
 describe('ResourceListPage item presentation', () => {
+  it('shows the localized ability description in its own column', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name: 'stench', url: 'https://pokeapi.co/api/v2/ability/1/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    useAbilityListDetailsMock.mockReturnValue({
+      data: {
+        stench: {
+          id: 1,
+          name: 'stench',
+          effectEntries: [
+            {
+              short_effect: 'Pode fazer o alvo recuar a cada golpe.',
+              language: { name: 'pt-br' },
+            },
+          ],
+        },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explorar/ability']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const heading = container.querySelector('.ability-list-heading')
+    expect(heading).toHaveTextContent('Habilidade')
+    expect(heading).toHaveTextContent('Descrição')
+    expect(screen.getByText('Pode fazer o alvo recuar a cada golpe.')).toHaveAttribute('lang', 'pt-br')
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+  })
+
+  it('marks an English fallback with a tooltip when the ability translation is missing', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name: 'stench', url: 'https://pokeapi.co/api/v2/ability/1/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    useAbilityListDetailsMock.mockReturnValue({
+      data: {
+        stench: {
+          id: 1,
+          name: 'stench',
+          effectEntries: [
+            {
+              short_effect: 'May make the target flinch with each hit.',
+              language: { name: 'en' },
+            },
+          ],
+        },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/ability']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByText('May make the target flinch with each hit.')).toHaveAttribute('lang', 'en')
+    const tooltip = screen.getByRole('tooltip')
+    expect(tooltip).toHaveTextContent('Esta descrição não existe no idioma selecionado')
+    expect(tooltip.closest('a')).toHaveAttribute('aria-describedby', tooltip.id)
+  })
+
   it('shows the type, damage class, power, accuracy and PP for moves', () => {
     useApiMock.mockReturnValue({
       data: {

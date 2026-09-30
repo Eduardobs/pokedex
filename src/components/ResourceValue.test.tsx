@@ -123,4 +123,15 @@ describe('ResourceValue', () => {
       `${import.meta.env.BASE_URL}icons/damage-status.png`,
     )
   })
+
+  it('renders type references with the shared Pokemon type icon and color treatment', () => {
+    const { container } = renderValue({ name: 'fire', url: `${API_BASE}/type/10/` })
+
+    expect(screen.getByRole('link', { name: 'Fogo' })).toHaveAttribute('href', '/explorar/type/10')
+    expect(container.querySelector('.type-badge')).toHaveClass('type-fire')
+    expect(container.querySelector('.type-fire use')).toHaveAttribute(
+      'href',
+      `${import.meta.env.BASE_URL}type-icons.svg#type-fire`,
+    )
+  })
 })

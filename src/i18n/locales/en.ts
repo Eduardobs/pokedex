@@ -827,6 +827,12 @@ export const en = {
   'damage.class': 'Class: {name}',
   'ability.hidden': 'Hidden',
   'ability.common': 'Standard',
+  'ability.name': 'Ability',
+  'ability.description': 'Description',
+  'ability.detailsError': 'Descriptions could not be loaded. The abilities are still available.',
+  'ability.translationMissing':
+    'This description is unavailable in the selected language; an alternative translation is shown.',
+  'ability.descriptionUnavailable': 'No description is available in the selected language.',
   'gender.none': 'Genderless',
   'gender.male': 'male',
   'gender.female': 'female',

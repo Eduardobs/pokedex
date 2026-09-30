@@ -81,6 +81,36 @@
   .move-list-heading {
     display: none;
   }
+  .ability-list-heading {
+    display: none;
+  }
+  .data-list.ability-data-list .ability-list-row {
+    grid-template-columns: 34px 34px minmax(0, 1fr) 20px;
+    gap: 8px;
+    padding: 13px 14px;
+  }
+  .ability-list-row .data-index {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .ability-list-row .data-resource-icon {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .ability-list-row .named-resource {
+    grid-column: 3;
+    grid-row: 1;
+    min-width: 0;
+  }
+  .ability-list-description {
+    grid-column: 2 / 4;
+    grid-row: 2;
+    align-items: flex-start;
+  }
+  .ability-list-row > svg {
+    grid-column: 4;
+    grid-row: 1;
+  }
   .data-list.move-data-list .move-list-row {
     position: relative;
     grid-template-columns: minmax(84px, 1fr) 42px 52px 44px 20px;

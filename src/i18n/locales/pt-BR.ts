@@ -828,6 +828,12 @@ export const ptBR = {
   'damage.class': 'Classe: {name}',
   'ability.hidden': 'Oculta',
   'ability.common': 'Comum',
+  'ability.name': 'Habilidade',
+  'ability.description': 'Descrição',
+  'ability.detailsError': 'Não foi possível carregar as descrições. As habilidades continuam disponíveis.',
+  'ability.translationMissing':
+    'Esta descrição não existe no idioma selecionado; uma tradução alternativa está sendo exibida.',
+  'ability.descriptionUnavailable': 'Não há uma descrição disponível no idioma selecionado.',
   'gender.none': 'Sem gênero',
   'gender.male': 'masculino',
   'gender.female': 'feminino',

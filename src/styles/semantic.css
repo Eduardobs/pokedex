@@ -79,7 +79,12 @@
   display: inline-flex;
   border-radius: 20px;
 }
-.damage-class-link:focus-visible {
+.type-reference-link {
+  display: inline-flex;
+  border-radius: 20px;
+}
+.damage-class-link:focus-visible,
+.type-reference-link:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--resource-color) 30%, transparent);
   outline-offset: 3px;
 }

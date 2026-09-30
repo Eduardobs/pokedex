@@ -84,6 +84,47 @@ describe('ResourceDetailPage berry presentation', () => {
     )
   })
 
+  it('uses the standardized Pokemon type treatment in the move type card', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 44,
+        name: 'bite',
+        names: [],
+        type: { name: 'dark', url: 'https://pokeapi.co/api/v2/type/17/' },
+        damage_class: { name: 'physical', url: 'https://pokeapi.co/api/v2/move-damage-class/2/' },
+        power: 60,
+        accuracy: 100,
+        pp: 25,
+        priority: 0,
+        target: { name: 'selected-pokemon', url: 'https://pokeapi.co/api/v2/move-target/10/' },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explorar/move/bite']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const typeCard = screen.getByRole('heading', { name: 'Tipo' }).closest('article')
+    const typeLink = typeCard?.querySelector('a')
+
+    expect(typeLink).toHaveAttribute('href', '/explorar/type/17')
+    expect(typeLink?.querySelector('.type-badge')).toHaveClass('type-dark')
+    expect(typeLink?.querySelector('use')).toHaveAttribute(
+      'href',
+      `${import.meta.env.BASE_URL}type-icons.svg#type-dark`,
+    )
+    expect(container.querySelectorAll('.type-dark')).toHaveLength(2)
+  })
+
   it('shows the berry sprite instead of the generic resource icon', () => {
     useApiMock.mockReturnValue({
       data: { id: 1, name: 'cheri' },

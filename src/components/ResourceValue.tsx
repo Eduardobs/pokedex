@@ -10,6 +10,7 @@ import { pokemonVariantForSpeciesGender } from '../lib/pokemon-species'
 import { parseRelatedPokemonList } from '../lib/related-pokemon'
 import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
 import { DamageClassBadge } from './SemanticBadges'
+import { TypeBadge } from './TypeBadge'
 
 const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
 const PAGE_SIZE = 6
@@ -240,6 +241,12 @@ export function ResourceValue({
       return (
         <Link className="damage-class-link" to={route}>
           <DamageClassBadge value={object.name} />
+        </Link>
+      )
+    if (route?.startsWith('/explorar/type/'))
+      return (
+        <Link className="type-reference-link" to={route}>
+          <TypeBadge type={object.name} />
         </Link>
       )
     return route ? (

@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Database, Search, Swords, Zap } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Database, Search, Swords, TriangleAlert, Zap } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
@@ -15,6 +15,7 @@ import {
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
+import { useAbilityListDetails } from '../hooks/useAbilityListDetails'
 import { useApi } from '../hooks/useApi'
 import { useMoveListDetails } from '../hooks/useMoveListDetails'
 import {
@@ -22,6 +23,7 @@ import {
   formatNumber,
   itemSprite,
   localizedName,
+  localizedTextResult,
   normalizeSearchText,
   pokemonArtwork,
   prettyName,
@@ -53,6 +55,7 @@ export function ResourceListPage() {
     valid ? `${resource}?limit=${LIMIT}&offset=${offset}` : null,
   )
   const moveDetails = useMoveListDetails(resource === 'move' && data ? data.results : [], apiLanguage)
+  const abilityDetails = useAbilityListDetails(resource === 'ability' && data ? data.results : [], apiLanguage)
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
@@ -233,9 +236,16 @@ export function ResourceListPage() {
       {resource === 'move' && moveDetails.error && (
         <InlineRetryError message={t('move.detailsError')} retryLabel={t('common.retry')} onRetry={moveDetails.retry} />
       )}
+      {resource === 'ability' && abilityDetails.error && (
+        <InlineRetryError
+          message={t('ability.detailsError')}
+          retryLabel={t('common.retry')}
+          onRetry={abilityDetails.retry}
+        />
+      )}
       <div
-        className={`data-list${resource === 'move' ? ' move-data-list' : ''}`}
-        aria-busy={resource === 'move' && moveDetails.loading}
+        className={`data-list${resource === 'move' ? ' move-data-list' : ''}${resource === 'ability' ? ' ability-data-list' : ''}`}
+        aria-busy={(resource === 'move' && moveDetails.loading) || (resource === 'ability' && abilityDetails.loading)}
       >
         {resource === 'move' && (
           <div className="move-list-heading" aria-hidden="true">
@@ -246,6 +256,15 @@ export function ResourceListPage() {
             <span>{t('move.power')}</span>
             <span>{t('move.accuracy')}</span>
             <span>{t('move.pp')}</span>
+            <span />
+          </div>
+        )}
+        {resource === 'ability' && (
+          <div className="ability-list-heading" aria-hidden="true">
+            <span>#</span>
+            <span />
+            <span>{t('ability.name')}</span>
+            <span>{t('ability.description')}</span>
             <span />
           </div>
         )}
@@ -310,6 +329,51 @@ export function ResourceListPage() {
                     <b>{detail.pp === null ? '—' : formatNumber(detail.pp, language)}</b>
                   ) : (
                     <i className="skeleton" />
+                  )}
+                </span>
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            )
+          }
+          if (resource === 'ability') {
+            const detail = abilityDetails.data?.[item.name]
+            const description = localizedTextResult(detail?.effectEntries, ['short_effect'], apiLanguage)
+            const translationMissing = detail
+              ? !detail.effectEntries.some((entry) => entry.language.name === apiLanguage)
+              : false
+            const warningText = description.text ? t('ability.translationMissing') : t('ability.descriptionUnavailable')
+            const tooltipId = `ability-translation-${item.id}`
+            return (
+              <Link
+                className="ability-list-row"
+                to={itemRoute(item.name)}
+                key={item.name}
+                aria-describedby={translationMissing ? tooltipId : undefined}
+              >
+                <span className="data-index">{hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}</span>
+                <span className="data-resource-icon">
+                  <Zap size={17} aria-hidden="true" />
+                </span>
+                <span className="named-resource ability">
+                  <b>{prettyName(item.name)}</b>
+                </span>
+                <span className="ability-list-description">
+                  {detail ? (
+                    <>
+                      <span lang={description.language}>{description.text || '—'}</span>
+                      {translationMissing && (
+                        <span className="translation-warning">
+                          <TriangleAlert size={16} aria-hidden="true" />
+                          <span className="translation-tooltip" id={tooltipId} role="tooltip">
+                            {warningText}
+                          </span>
+                        </span>
+                      )}
+                    </>
+                  ) : abilityDetails.loading ? (
+                    <i className="ability-description-skeleton skeleton" />
+                  ) : (
+                    '—'
                   )}
                 </span>
                 <ChevronRight aria-hidden="true" />
