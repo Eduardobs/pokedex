@@ -251,6 +251,10 @@
 :root[data-theme='dark'] .detail-field-icon {
   background: color-mix(in srgb, var(--resource-color) 18%, #202731);
 }
+:root[data-theme='dark'] .move-list-heading {
+  background: #1c232b;
+  border-color: #303842;
+}
 :root[data-theme='dark'] .icon-button {
   color: var(--resource-color);
 }

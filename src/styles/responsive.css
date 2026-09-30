@@ -78,6 +78,52 @@
   .data-list a {
     grid-template-columns: 34px 34px minmax(0, 1fr) 20px;
   }
+  .move-list-heading {
+    display: none;
+  }
+  .data-list.move-data-list .move-list-row {
+    position: relative;
+    grid-template-columns: minmax(84px, 1fr) 42px 52px 44px 20px;
+    gap: 8px;
+    padding: 13px 14px;
+  }
+  .move-list-row .data-index {
+    display: none;
+  }
+  .move-list-name {
+    grid-column: 1 / -1;
+    padding-right: 24px;
+  }
+  .move-list-type {
+    align-self: stretch;
+  }
+  .move-list-type .type-badge {
+    justify-content: center;
+    width: 100%;
+  }
+  .move-list-damage,
+  .move-list-stat {
+    align-self: stretch;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+  .move-list-stat small {
+    display: block;
+    color: var(--muted);
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .move-list-stat b {
+    font-size: 12px;
+  }
+  .move-list-row > svg {
+    position: absolute;
+    top: 17px;
+    right: 12px;
+  }
 }
 @media (max-width: 340px) {
   .pokemon-grid {

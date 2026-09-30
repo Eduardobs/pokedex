@@ -1,11 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ResourceListPage } from './ResourceListPage'
 
-const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
+const { useApiMock, useMoveListDetailsMock } = vi.hoisted(() => ({
+  useApiMock: vi.fn(),
+  useMoveListDetailsMock: vi.fn(),
+}))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
+vi.mock('../hooks/useMoveListDetails', () => ({ useMoveListDetails: useMoveListDetailsMock }))
+
+beforeEach(() => {
+  useMoveListDetailsMock.mockReturnValue({ data: null, loading: false, error: null, retry: vi.fn() })
+})
 
 describe('ResourceListPage pagination', () => {
   it('redirects an offset beyond the collection to the last valid page', async () => {
@@ -33,6 +41,56 @@ describe('ResourceListPage pagination', () => {
 })
 
 describe('ResourceListPage item presentation', () => {
+  it('shows the type, damage class, power, accuracy and PP for moves', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name: 'thunderbolt', url: 'https://pokeapi.co/api/v2/move/85/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    useMoveListDetailsMock.mockReturnValue({
+      data: {
+        thunderbolt: {
+          id: 85,
+          name: 'thunderbolt',
+          names: [{ name: 'Thunderbolt', language: { name: 'en' } }],
+          type: 'electric',
+          damageClass: 'special',
+          power: 90,
+          accuracy: 100,
+          pp: 15,
+        },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explorar/move']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explorar/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(
+      screen.getByRole('link', { name: /Abrir detalhes de Thunderbolt.*Tipo: Elétrico.*Classe: Especial/ }),
+    ).toHaveAttribute('href', '/explorar/move/thunderbolt')
+    expect(screen.getByText('Elétrico')).toBeVisible()
+    expect(screen.getByLabelText('Classe: Especial')).toBeVisible()
+    expect(screen.getByText('90')).toBeVisible()
+    expect(screen.getByText('100%')).toBeVisible()
+    expect(screen.getByText('15')).toBeVisible()
+  })
+
   it('uses the referenced Scarlet/Violet icon and badge for damage classes', () => {
     useApiMock.mockReturnValue({
       data: {

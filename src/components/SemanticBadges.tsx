@@ -46,7 +46,11 @@ export function DamageClassBadge({ value, compact = false }: { value: string; co
   }
   const label = damageClass[normalizedValue]
   return (
-    <span className={`damage-badge damage-${normalizedValue}`} title={t('damage.class', { name: label })}>
+    <span
+      className={`damage-badge damage-${normalizedValue}`}
+      title={t('damage.class', { name: label })}
+      aria-label={compact ? t('damage.class', { name: label }) : undefined}
+    >
       <DamageClassIcon value={normalizedValue} width={compact ? 18 : 20} height={compact ? 14 : 16} />
       {!compact && label}
     </span>

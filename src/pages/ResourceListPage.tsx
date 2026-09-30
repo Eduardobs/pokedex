@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight, Database, Search, Swords, Zap } from 'lucide
 import { useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
-import { EmptyState } from '../components/FeedbackState'
+import { EmptyState, InlineRetryError } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
 import { SearchField } from '../components/SearchField'
 import {
@@ -12,11 +12,20 @@ import {
   GenderBadge,
   normalizedDamageClass,
 } from '../components/SemanticBadges'
-import { TypeBadge } from '../components/TypeBadge'
+import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import { berrySprite, formatNumber, itemSprite, normalizeSearchText, pokemonArtwork, prettyName } from '../lib/api'
+import { useMoveListDetails } from '../hooks/useMoveListDetails'
+import {
+  berrySprite,
+  formatNumber,
+  itemSprite,
+  localizedName,
+  normalizeSearchText,
+  pokemonArtwork,
+  prettyName,
+} from '../lib/api'
 import { defaultPokemonNameForSpecies } from '../lib/pokemon-species'
 import type { ApiList, NamedResource } from '../types'
 
@@ -24,7 +33,7 @@ const LIMIT = 40
 const MAX_OFFSET = 100_000
 const MAX_QUERY_LENGTH = 64
 export function ResourceListPage() {
-  const { language, t } = useLanguage()
+  const { apiLanguage, language, t } = useLanguage()
   const { resource = '' } = useParams()
   const valid = allResources.some((item) => item.endpoint === resource)
   const meta = getResourceMeta(resource, language)
@@ -43,6 +52,7 @@ export function ResourceListPage() {
   const { data, loading, error, retry } = useApi<ApiList<NamedResource | { url: string }>>(
     valid ? `${resource}?limit=${LIMIT}&offset=${offset}` : null,
   )
+  const moveDetails = useMoveListDetails(resource === 'move' && data ? data.results : [], apiLanguage)
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
@@ -118,7 +128,15 @@ export function ResourceListPage() {
     const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
     return { ...item, id, name: 'name' in item && item.name ? item.name : id }
   })
-  const filtered = items.filter((item) => normalizeSearchText(item.name).includes(normalizeSearchText(query)))
+  const moveDisplayName = (name: string) =>
+    localizedName(moveDetails.data?.[name]?.names, apiLanguage) || prettyName(name)
+  const filtered = items.filter((item) => {
+    const normalizedQuery = normalizeSearchText(query)
+    return (
+      normalizeSearchText(item.name).includes(normalizedQuery) ||
+      (resource === 'move' && normalizeSearchText(moveDisplayName(item.name)).includes(normalizedQuery))
+    )
+  })
   const itemRoute = (name: string) => {
     if (resource === 'pokemon-species') return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
     if (resource === 'pokemon') return `/pokemon/${encodeURIComponent(name)}`
@@ -212,7 +230,25 @@ export function ResourceListPage() {
         </div>
       </div>
       {data.count > LIMIT && pagination('top')}
-      <div className="data-list">
+      {resource === 'move' && moveDetails.error && (
+        <InlineRetryError message={t('move.detailsError')} retryLabel={t('common.retry')} onRetry={moveDetails.retry} />
+      )}
+      <div
+        className={`data-list${resource === 'move' ? ' move-data-list' : ''}`}
+        aria-busy={resource === 'move' && moveDetails.loading}
+      >
+        {resource === 'move' && (
+          <div className="move-list-heading" aria-hidden="true">
+            <span>#</span>
+            <span>{t('move.name')}</span>
+            <span>{t('move.type')}</span>
+            <span>{t('move.damageClass')}</span>
+            <span>{t('move.power')}</span>
+            <span>{t('move.accuracy')}</span>
+            <span>{t('move.pp')}</span>
+            <span />
+          </div>
+        )}
         {filtered.map((item) => {
           const numericId = /^\d+$/.test(item.id) ? Number(item.id) : 0
           const hasValidId = Number.isSafeInteger(numericId) && numericId > 0
@@ -225,6 +261,61 @@ export function ResourceListPage() {
                   ? pokemonArtwork(numericId)
                   : undefined
           const damageClass = resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
+          if (resource === 'move') {
+            const detail = moveDetails.data?.[item.name]
+            const displayName = moveDisplayName(item.name)
+            const accuracy = detail && detail.accuracy !== null ? `${formatNumber(detail.accuracy, language)}%` : '—'
+            const accessibleLabel = detail
+              ? t('move.openDetailsSummary', {
+                  name: displayName,
+                  type: typeLabel(detail.type, language),
+                  damageClass: t(`damage.${detail.damageClass}`),
+                  power: detail.power === null ? '—' : formatNumber(detail.power, language),
+                  accuracy,
+                  pp: detail.pp === null ? '—' : formatNumber(detail.pp, language),
+                })
+              : t('move.openDetails', { name: displayName })
+            return (
+              <Link className="move-list-row" to={itemRoute(item.name)} key={item.name} aria-label={accessibleLabel}>
+                <span className="data-index">{hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}</span>
+                <span className="move-list-name">
+                  <Swords size={17} aria-hidden="true" />
+                  <b>{displayName}</b>
+                </span>
+                <span className="move-list-type">
+                  {detail ? <TypeBadge type={detail.type} /> : <i className="move-list-field-skeleton skeleton" />}
+                </span>
+                <span className="move-list-damage">
+                  {detail ? (
+                    <DamageClassBadge value={detail.damageClass} compact />
+                  ) : (
+                    <i className="move-list-icon-skeleton skeleton" />
+                  )}
+                </span>
+                <span className="move-list-stat">
+                  <small>{t('move.power')}</small>
+                  {detail ? (
+                    <b>{detail.power === null ? '—' : formatNumber(detail.power, language)}</b>
+                  ) : (
+                    <i className="skeleton" />
+                  )}
+                </span>
+                <span className="move-list-stat">
+                  <small>{t('move.accuracy')}</small>
+                  {detail ? <b>{accuracy}</b> : <i className="skeleton" />}
+                </span>
+                <span className="move-list-stat">
+                  <small>{t('move.pp')}</small>
+                  {detail ? (
+                    <b>{detail.pp === null ? '—' : formatNumber(detail.pp, language)}</b>
+                  ) : (
+                    <i className="skeleton" />
+                  )}
+                </span>
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            )
+          }
           return (
             <Link to={itemRoute(item.name)} key={item.name}>
               <span className="data-index">{hasValidId ? `#${item.id.padStart(3, '0')}` : '—'}</span>

@@ -16,6 +16,7 @@ Este documento reúne definições duradouras que toda alteração no Atlas Pok�
 - O detalhe de um Pokémon aberto por um catálogo deve oferecer retorno ao catálogo de origem; sem uma origem reconhecida, deve retornar à Pokédex.
 - Todas as páginas com rolagem vertical devem oferecer um controle global de retorno ao topo, visível somente quando a página não estiver no topo.
 - Classes de dano devem usar os sprites de categoria de Pokémon Scarlet/Violet fornecidos como referência, com as cores laranja, azul e cinza para Físico, Especial e Status, respectivamente.
+- A listagem de golpes deve exibir nome, tipo, classe de dano, poder, precisão e PP.
 - Mapas de jogos devem preservar a geografia da versão representada e oferecer zoom detalhado, navegação e filtros de pontos de interesse acessíveis por teclado; a roda do mouse sobre o mapa deve controlar somente o zoom, sem rolar a página.
 - Mapas não devem deslocar a página ao alterar filtros nem exibir estado vazio quando nenhuma categoria estiver selecionada.
 - Pokémon Scarlet/Violet deve oferecer mapas distintos para Paldea, Kitakami e Terarium.

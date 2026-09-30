@@ -251,6 +251,82 @@
 .data-list a:hover > svg {
   color: var(--resource-color);
 }
+.move-list-heading,
+.data-list.move-data-list .move-list-row {
+  display: grid;
+  grid-template-columns: 48px minmax(180px, 1fr) 120px 72px 70px 80px 54px 24px;
+  gap: 10px;
+  align-items: center;
+}
+.move-list-heading {
+  min-height: 42px;
+  padding: 8px 20px;
+  border-bottom: 1px solid #e6e9ec;
+  background: #f7f8fa;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.data-list.move-data-list .move-list-row {
+  padding-block: 11px;
+}
+.move-list-name {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+.move-list-name svg {
+  flex: none;
+  color: var(--resource-color);
+}
+.move-list-name b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.move-list-type,
+.move-list-damage,
+.move-list-stat {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.move-list-damage {
+  justify-content: center;
+}
+.move-list-damage .damage-badge {
+  padding-inline: 5px;
+}
+.move-list-stat {
+  justify-content: center;
+  color: var(--ink);
+}
+.move-list-stat small {
+  display: none;
+}
+.move-list-stat b {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.move-list-field-skeleton,
+.move-list-icon-skeleton,
+.move-list-stat > i {
+  display: block;
+  height: 20px;
+  border-radius: 7px;
+}
+.move-list-field-skeleton {
+  width: 82px;
+}
+.move-list-icon-skeleton {
+  width: 30px;
+}
+.move-list-stat > i {
+  width: 30px;
+}
 .resource-detail-header {
   display: flex;
   align-items: center;
