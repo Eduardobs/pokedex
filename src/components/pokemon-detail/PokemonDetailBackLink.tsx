@@ -13,7 +13,7 @@ export function PokemonDetailBackLink() {
     typeof state === 'object' && state !== null && (state as DetailLocationState).fromCatalog === 'forms'
 
   return (
-    <Link to={fromForms ? '/formas' : '/pokemon'} className="back-link">
+    <Link to={fromForms ? '/forms' : '/pokemon'} className="back-link">
       <ArrowLeft aria-hidden="true" /> {t(fromForms ? 'nav.forms' : 'nav.pokedex')}
     </Link>
   )

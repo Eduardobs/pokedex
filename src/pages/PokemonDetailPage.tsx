@@ -329,7 +329,7 @@ export function PokemonDetailPage() {
             <article className="info-card abilities-card">
               <h2>{t('detail.abilities')}</h2>
               {pokemon.abilities.map(({ ability, is_hidden }) => (
-                <Link key={ability.name} to={`/explorar/ability/${ability.name}`}>
+                <Link key={ability.name} to={`/explore/ability/${ability.name}`}>
                   <div>
                     <b>
                       <LocalizedResourceName resource={ability} />

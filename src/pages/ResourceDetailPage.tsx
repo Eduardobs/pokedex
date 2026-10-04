@@ -81,7 +81,7 @@ export function ResourceDetailPage() {
       style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}
     >
       <div className="breadcrumbs">
-        <Link to="/explorar">{t('explore.breadcrumb')}</Link>
+        <Link to="/explore">{t('explore.breadcrumb')}</Link>
         <span>/</span>
         {meta?.groupTitle && GroupIcon && (
           <>
@@ -92,13 +92,13 @@ export function ResourceDetailPage() {
             <span>/</span>
           </>
         )}
-        <Link to={`/explorar/${resource}`}>{getResourceLabel(resource, language)}</Link>
+        <Link to={`/explore/${resource}`}>{getResourceLabel(resource, language)}</Link>
         <span>/</span>
         <span>{prettyName(String(title))}</span>
       </div>
       <header className="resource-detail-header">
         <Link
-          to={`/explorar/${resource}`}
+          to={`/explore/${resource}`}
           className="icon-button"
           aria-label={t('resource.back')}
           title={t('resource.back')}

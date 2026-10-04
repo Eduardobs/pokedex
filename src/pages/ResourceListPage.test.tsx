@@ -30,10 +30,10 @@ describe('ResourceListPage pagination', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/ability?offset=100000']}>
+      <MemoryRouter initialEntries={['/explore/ability?offset=100000']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -77,10 +77,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/ability']}>
+      <MemoryRouter initialEntries={['/explore/ability']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -124,10 +124,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/ability']}>
+      <MemoryRouter initialEntries={['/explore/ability']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -170,10 +170,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/move']}>
+      <MemoryRouter initialEntries={['/explore/move']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -181,7 +181,7 @@ describe('ResourceListPage item presentation', () => {
 
     expect(
       screen.getByRole('link', { name: /Abrir detalhes de Thunderbolt.*Tipo: Elétrico.*Classe: Especial/ }),
-    ).toHaveAttribute('href', '/explorar/move/thunderbolt')
+    ).toHaveAttribute('href', '/explore/move/thunderbolt')
     expect(screen.getByText('Elétrico')).toBeVisible()
     expect(screen.getByLabelText('Classe: Especial')).toBeVisible()
     expect(screen.getByText('90')).toBeVisible()
@@ -203,10 +203,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/move-damage-class']}>
+      <MemoryRouter initialEntries={['/explore/move-damage-class']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -240,10 +240,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/pokemon-species']}>
+      <MemoryRouter initialEntries={['/explore/pokemon-species']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -266,10 +266,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/pokemon']}>
+      <MemoryRouter initialEntries={['/explore/pokemon']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -302,10 +302,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/item']}>
+      <MemoryRouter initialEntries={['/explore/item']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -337,10 +337,10 @@ describe('ResourceListPage item presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/berry']}>
+      <MemoryRouter initialEntries={['/explore/berry']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource" element={<ResourceListPage />} />
+            <Route path="explore/:resource" element={<ResourceListPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,

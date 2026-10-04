@@ -112,7 +112,7 @@ export function PokemonHistoryCard({ pokemon }: Props) {
                           <Link
                             className="history-ability"
                             key={`${ability.name}-${slot}`}
-                            to={`/explorar/ability/${encodeURIComponent(ability.name)}`}
+                            to={`/explore/ability/${encodeURIComponent(ability.name)}`}
                           >
                             <span>{prettyName(ability.name)}</span>
                             <AbilityBadge hidden={is_hidden} />

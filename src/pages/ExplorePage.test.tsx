@@ -8,13 +8,13 @@ function LocationProbe() {
   return <output data-testid="location">{useLocation().search}</output>
 }
 
-function renderPage(initialEntry = '/explorar') {
+function renderPage(initialEntry = '/explore') {
   return render(
     <MemoryRouter initialEntries={[initialEntry]}>
       <LanguageProvider>
         <Routes>
           <Route
-            path="explorar"
+            path="explore"
             element={
               <>
                 <ExplorePage />
@@ -42,12 +42,12 @@ describe('ExplorePage', () => {
 
     expect(screen.getByTestId('location')).toHaveTextContent('?q=classes+de+dano')
     expect(screen.getByRole('heading', { level: 2, name: 'Combate' })).toBeVisible()
-    expect(screen.getByRole('link', { name: /Classes de dano/ })).toHaveAttribute('href', '/explorar/move-damage-class')
+    expect(screen.getByRole('link', { name: /Classes de dano/ })).toHaveAttribute('href', '/explore/move-damage-class')
     expect(screen.queryByRole('heading', { level: 2, name: 'Itens' })).not.toBeInTheDocument()
   })
 
   it('shows an empty result and lets the user restore every resource', () => {
-    renderPage('/explorar?q=not-a-resource')
+    renderPage('/explore?q=not-a-resource')
 
     expect(screen.getByRole('heading', { name: 'Nenhuma categoria encontrada' })).toBeVisible()
     fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))

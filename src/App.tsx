@@ -36,19 +36,19 @@ export default function App() {
               <Route index element={<HomePage />} />
               <Route path="pokemon" element={<PokedexPage />} />
               <Route path="pokemon/:name" element={<PokemonDetailPage />} />
-              <Route path="formas" element={<FormsPage />} />
-              <Route path="explorar" element={<ExplorePage />} />
-              <Route path="explorar/:resource" element={<ResourceListPage />} />
-              <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
-              <Route path="favoritos" element={<FavoritesPage />} />
+              <Route path="forms" element={<FormsPage />} />
+              <Route path="explore" element={<ExplorePage />} />
+              <Route path="explore/:resource" element={<ResourceListPage />} />
+              <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
+              <Route path="favorites" element={<FavoritesPage />} />
               <Route path="types-table" element={<TypesTablePage />} />
-              <Route path="mapas" element={<MapsPage />} />
-              <Route path="mapas/kanto" element={<KantoMapPage />} />
-              <Route path="mapas/paldea" element={<PaldeaMapPage />} />
-              <Route path="mapas/kitakami" element={<KitakamiMapPage />} />
-              <Route path="mapas/terrarium" element={<TerrariumMapPage />} />
-              <Route path="mapas/hisui-region" element={<HisuiMapPage />} />
-              <Route path="mapas/lumiose-city" element={<LumioseMapPage />} />
+              <Route path="maps" element={<MapsPage />} />
+              <Route path="maps/kanto" element={<KantoMapPage />} />
+              <Route path="maps/paldea" element={<PaldeaMapPage />} />
+              <Route path="maps/kitakami" element={<KitakamiMapPage />} />
+              <Route path="maps/terrarium" element={<TerrariumMapPage />} />
+              <Route path="maps/hisui-region" element={<HisuiMapPage />} />
+              <Route path="maps/lumiose-city" element={<LumioseMapPage />} />
               <Route
                 path="*"
                 element={<ErrorState titleKey="error.notFoundTitle" messageKey="error.notFoundDesc" home />}

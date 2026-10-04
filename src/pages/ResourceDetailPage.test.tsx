@@ -37,10 +37,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/location-area/283']}>
+      <MemoryRouter initialEntries={['/explore/location-area/283']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -64,10 +64,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/move-damage-class/special']}>
+      <MemoryRouter initialEntries={['/explore/move-damage-class/special']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -104,10 +104,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/move/bite']}>
+      <MemoryRouter initialEntries={['/explore/move/bite']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -116,7 +116,7 @@ describe('ResourceDetailPage berry presentation', () => {
     const typeCard = screen.getByRole('heading', { name: 'Tipo' }).closest('article')
     const typeLink = typeCard?.querySelector('a')
 
-    expect(typeLink).toHaveAttribute('href', '/explorar/type/17')
+    expect(typeLink).toHaveAttribute('href', '/explore/type/17')
     expect(typeLink?.querySelector('.type-badge')).toHaveClass('type-dark')
     expect(typeLink?.querySelector('use')).toHaveAttribute(
       'href',
@@ -134,10 +134,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     const { container } = render(
-      <MemoryRouter initialEntries={['/explorar/berry/cheri']}>
+      <MemoryRouter initialEntries={['/explore/berry/cheri']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -167,10 +167,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/pokemon-color/black']}>
+      <MemoryRouter initialEntries={['/explore/pokemon-color/black']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,
@@ -195,10 +195,10 @@ describe('ResourceDetailPage berry presentation', () => {
     })
 
     render(
-      <MemoryRouter initialEntries={['/explorar/gender/female']}>
+      <MemoryRouter initialEntries={['/explore/gender/female']}>
         <LanguageProvider>
           <Routes>
-            <Route path="explorar/:resource/:name" element={<ResourceDetailPage />} />
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
           </Routes>
         </LanguageProvider>
       </MemoryRouter>,

@@ -60,7 +60,7 @@ export function MoveCard({ move, method, level }: Props) {
     <Link
       ref={cardRef}
       className={`move-card ${data ? `damage-border-${data.damage_class.name}` : ''}`}
-      to={`/explorar/move/${move.name}`}
+      to={`/explore/move/${move.name}`}
     >
       <div className="move-card-title">
         <b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>

@@ -16,24 +16,21 @@ describe('MapsPage', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('link', { name: /Pokémon FireRed & LeafGreen/i })).toHaveAttribute('href', '/mapas/kanto')
+    expect(screen.getByRole('link', { name: /Pokémon FireRed & LeafGreen/i })).toHaveAttribute('href', '/maps/kanto')
     expect(screen.getByRole('heading', { name: 'Pokémon Scarlet & Violet' })).toBeVisible()
     expect(screen.getByAltText(/Koraidon e Miraidon/i)).toHaveAttribute('src', '/maps/scarlet-violet-cover.webp')
 
-    expect(screen.getByRole('link', { name: /Região de Paldea/i })).toHaveAttribute('href', '/mapas/paldea')
-    expect(screen.getByRole('link', { name: /Região de Kitakami/i })).toHaveAttribute('href', '/mapas/kitakami')
-    expect(screen.getByRole('link', { name: /Terarium/i })).toHaveAttribute('href', '/mapas/terrarium')
+    expect(screen.getByRole('link', { name: /Região de Paldea/i })).toHaveAttribute('href', '/maps/paldea')
+    expect(screen.getByRole('link', { name: /Região de Kitakami/i })).toHaveAttribute('href', '/maps/kitakami')
+    expect(screen.getByRole('link', { name: /Terarium/i })).toHaveAttribute('href', '/maps/terrarium')
     expect(screen.queryByText('Em breve')).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Pokémon Legends: Arceus/i })).toHaveAttribute(
-      'href',
-      '/mapas/hisui-region',
-    )
+    expect(screen.getByRole('link', { name: /Pokémon Legends: Arceus/i })).toHaveAttribute('href', '/maps/hisui-region')
     expect(screen.getByAltText(/arte de capa de Pokémon Legends: Arceus/i)).toHaveAttribute(
       'src',
       '/maps/legends-arceus-map.jpg',
     )
     expect(screen.getByText('2.525 pontos catalogados')).toBeVisible()
-    expect(screen.getByRole('link', { name: /Pokémon Legends: Z-A/i })).toHaveAttribute('href', '/mapas/lumiose-city')
+    expect(screen.getByRole('link', { name: /Pokémon Legends: Z-A/i })).toHaveAttribute('href', '/maps/lumiose-city')
     expect(screen.getByAltText(/arte de capa de Pokémon Legends: Z-A/i)).toHaveAttribute(
       'src',
       '/maps/pokemon-legends-za-cover.png',

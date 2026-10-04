@@ -70,7 +70,7 @@ describe('App integration', () => {
     fireEvent.click(screen.getByRole('link', { name: /Favoritos 1/ }))
     expect(await screen.findByRole('heading', { level: 1, name: 'Pokémon favoritos' })).toBeVisible()
     expect(await screen.findByRole('heading', { level: 3, name: 'Pikachu' })).toBeVisible()
-    await waitFor(() => expect(window.location.hash).toBe('#/favoritos'))
+    await waitFor(() => expect(window.location.hash).toBe('#/favorites'))
 
     expect(listRequests).toBe(2)
     expect(fetchMock).toHaveBeenCalledTimes(3)

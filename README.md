@@ -24,19 +24,19 @@ The application is a client-side static site: it has no application server or da
 | `#/` | Home page and featured Pokémon |
 | `#/pokemon` | Searchable and sortable National Pokédex |
 | `#/pokemon/:name` | Pokémon detail page |
-| `#/formas` | Regional, Mega, and Gigantamax forms |
+| `#/forms` | Regional, Mega, and Gigantamax forms |
 | `#/types-table` | Type effectiveness table and calculator |
-| `#/mapas` | Available interactive game maps |
-| `#/mapas/kanto` | Interactive FireRed/LeafGreen map of Kanto |
-| `#/mapas/paldea` | Interactive Scarlet/Violet map of Paldea |
-| `#/mapas/kitakami` | Interactive Scarlet/Violet map of Kitakami |
-| `#/mapas/terrarium` | Interactive Scarlet/Violet map of the Terarium |
-| `#/mapas/hisui-region` | Interactive Pokémon Legends: Arceus map of Hisui |
-| `#/mapas/lumiose-city` | Interactive Pokémon Legends: Z-A map of Lumiose City |
-| `#/favoritos` | Locally stored favorites |
-| `#/explorar` | Categories from the PokéAPI encyclopedia |
-| `#/explorar/:resource` | Paginated records for an API collection |
-| `#/explorar/:resource/:name` | Details for an individual API record |
+| `#/maps` | Available interactive game maps |
+| `#/maps/kanto` | Interactive FireRed/LeafGreen map of Kanto |
+| `#/maps/paldea` | Interactive Scarlet/Violet map of Paldea |
+| `#/maps/kitakami` | Interactive Scarlet/Violet map of Kitakami |
+| `#/maps/terrarium` | Interactive Scarlet/Violet map of the Terarium |
+| `#/maps/hisui-region` | Interactive Pokémon Legends: Arceus map of Hisui |
+| `#/maps/lumiose-city` | Interactive Pokémon Legends: Z-A map of Lumiose City |
+| `#/favorites` | Locally stored favorites |
+| `#/explore` | Categories from the PokéAPI encyclopedia |
+| `#/explore/:resource` | Paginated records for an API collection |
+| `#/explore/:resource/:name` | Details for an individual API record |
 
 The app uses `HashRouter`, which makes the same build work at both a domain root and a GitHub Pages project path without server-side rewrite rules.
 

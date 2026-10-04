@@ -18,7 +18,7 @@ describe('PokemonDetailBackLink', () => {
   it('returns to the forms catalog when it is the recognized origin', () => {
     renderBackLink({ fromCatalog: 'forms' })
 
-    expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/formas')
+    expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/forms')
   })
 
   it('returns to the Pokédex without a recognized origin', () => {

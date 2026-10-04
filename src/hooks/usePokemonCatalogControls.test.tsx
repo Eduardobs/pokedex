@@ -32,7 +32,7 @@ describe('usePokemonCatalogControls', () => {
 
   it('preserves page-specific parameters, removes defaults and resets pagination', () => {
     const { result } = renderHook(() => ({ controls: usePokemonCatalogControls(24), location: useLocation() }), {
-      wrapper: wrapper('/formas?category=mega&type=fire'),
+      wrapper: wrapper('/forms?category=mega&type=fire'),
     })
 
     act(() => result.current.controls.setVisibleCount(72))

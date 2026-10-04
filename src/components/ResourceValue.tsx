@@ -30,7 +30,7 @@ function routeFromReference(url: string, resourceName: string) {
     if ((endpoint === 'pokemon' || endpoint === 'pokemon-species') && resourceName) {
       return `/pokemon/${encodeURIComponent(resourceName)}`
     }
-    return endpoint && name ? `/explorar/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
+    return endpoint && name ? `/explore/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
   } catch {
     return null
   }
@@ -237,13 +237,13 @@ export function ResourceValue({
   const object = value as Record<string, unknown>
   if (typeof object.name === 'string' && typeof object.url === 'string') {
     const route = routeFromReference(object.url, object.name)
-    if (route?.startsWith('/explorar/move-damage-class/'))
+    if (route?.startsWith('/explore/move-damage-class/'))
       return (
         <Link className="damage-class-link" to={route}>
           <DamageClassBadge value={object.name} />
         </Link>
       )
-    if (route?.startsWith('/explorar/type/'))
+    if (route?.startsWith('/explore/type/'))
       return (
         <Link className="type-reference-link" to={route}>
           <TypeBadge type={object.name} />

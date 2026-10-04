@@ -73,7 +73,7 @@ describe('PokemonEncounters', () => {
     expect(screen.getByText('À noite')).toBeVisible()
     expect(screen.getByRole('link', { name: 'Abrir dados completos do local' })).toHaveAttribute(
       'href',
-      '/explorar/location-area/viridian-forest-area',
+      '/explore/location-area/viridian-forest-area',
     )
   })
 })

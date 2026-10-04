@@ -11,13 +11,13 @@ import { LUMIOSE_TOTAL } from '../data/maps/lumiose-map'
 export function MapsPage() {
   const { language, t } = useLanguage()
   const scarletVioletMaps = [
-    { label: t('maps.paldeaRegion'), to: '/mapas/paldea' },
-    { label: t('maps.kitakamiRegion'), to: '/mapas/kitakami' },
-    { label: t('maps.terarium'), to: '/mapas/terrarium' },
+    { label: t('maps.paldeaRegion'), to: '/maps/paldea' },
+    { label: t('maps.kitakamiRegion'), to: '/maps/kitakami' },
+    { label: t('maps.terarium'), to: '/maps/terrarium' },
   ]
   const mapCards = [
     {
-      to: '/mapas/kanto',
+      to: '/maps/kanto',
       cover: {
         src: `${import.meta.env.BASE_URL}maps/firered-leafgreen-cover.webp`,
         alt: t('maps.gameCoverAlt'),
@@ -32,7 +32,7 @@ export function MapsPage() {
       pointCount: t('maps.pointCount', { count: formatNumber(MAP_TOTAL, language) }),
     },
     {
-      to: '/mapas/hisui-region',
+      to: '/maps/hisui-region',
       className: 'game-map-card--arceus',
       cover: {
         src: `${import.meta.env.BASE_URL}maps/legends-arceus-map.jpg`,
@@ -48,7 +48,7 @@ export function MapsPage() {
       pointCount: t('maps.pointCount', { count: formatNumber(HISUI_TOTAL, language) }),
     },
     {
-      to: '/mapas/lumiose-city',
+      to: '/maps/lumiose-city',
       className: 'game-map-card--legends-za',
       cover: {
         src: `${import.meta.env.BASE_URL}maps/pokemon-legends-za-cover.png`,

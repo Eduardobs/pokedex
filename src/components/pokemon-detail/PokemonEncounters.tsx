@@ -114,7 +114,7 @@ export function PokemonEncounters({ encounters }: Props) {
                 </ul>
                 <Link
                   className="encounter-location-link"
-                  to={`/explorar/location-area/${encodeURIComponent(area.location_area.name)}`}
+                  to={`/explore/location-area/${encodeURIComponent(area.location_area.name)}`}
                 >
                   {t('detail.openLocation')}
                 </Link>

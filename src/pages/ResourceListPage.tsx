@@ -96,7 +96,7 @@ export function ResourceListPage() {
         style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}
       >
         <div className="breadcrumbs">
-          <Link to="/explorar">{t('explore.breadcrumb')}</Link>
+          <Link to="/explore">{t('explore.breadcrumb')}</Link>
           <span>/</span>
           <span>{getResourceLabel(resource, language)}</span>
         </div>
@@ -143,7 +143,7 @@ export function ResourceListPage() {
   const itemRoute = (name: string) => {
     if (resource === 'pokemon-species') return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
     if (resource === 'pokemon') return `/pokemon/${encodeURIComponent(name)}`
-    return `/explorar/${resource}/${encodeURIComponent(name)}`
+    return `/explore/${resource}/${encodeURIComponent(name)}`
   }
   const resourceName = (name: string) => {
     if (resource === 'type') return <TypeBadge type={name} />
@@ -194,7 +194,7 @@ export function ResourceListPage() {
       style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}
     >
       <div className="breadcrumbs">
-        <Link to="/explorar">{t('explore.breadcrumb')}</Link>
+        <Link to="/explore">{t('explore.breadcrumb')}</Link>
         <span>/</span>
         {meta?.groupTitle && GroupIcon && (
           <>

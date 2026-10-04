@@ -30,7 +30,7 @@ export function HomePage() {
             <Link to="/pokemon" className="button primary">
               {t('home.openPokedex')} <ArrowRight size={18} />
             </Link>
-            <Link to="/explorar" className="button secondary">
+            <Link to="/explore" className="button secondary">
               {t('home.explore')}
             </Link>
           </div>
@@ -78,7 +78,7 @@ export function HomePage() {
             <span className="eyebrow">{t('home.start')}</span>
             <h2>{t('home.allInOne')}</h2>
           </div>
-          <Link to="/explorar">
+          <Link to="/explore">
             {t('home.allCategories')} <ArrowRight size={17} />
           </Link>
         </div>
@@ -93,7 +93,7 @@ export function HomePage() {
             </div>
             <ArrowRight />
           </Link>
-          <Link to="/explorar/move" className="quick-card purple">
+          <Link to="/explore/move" className="quick-card purple">
             <div className="quick-icon">
               <Sparkles />
             </div>
@@ -103,7 +103,7 @@ export function HomePage() {
             </div>
             <ArrowRight />
           </Link>
-          <Link to="/explorar/region" className="quick-card green">
+          <Link to="/explore/region" className="quick-card green">
             <div className="quick-icon">
               <MapPin />
             </div>
@@ -113,7 +113,7 @@ export function HomePage() {
             </div>
             <ArrowRight />
           </Link>
-          <Link to="/explorar" className="quick-card blue">
+          <Link to="/explore" className="quick-card blue">
             <div className="quick-icon">
               <Database />
             </div>

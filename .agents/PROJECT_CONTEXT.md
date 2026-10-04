@@ -26,6 +26,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Search fields and selectors displayed side by side must use the shared components and have the same visual height.
 - Source code, identifiers, comments, and test descriptions must be written in English; user-visible text must remain in the catalogs for the supported languages.
 - Every translation must live in the corresponding file under `src/i18n/locales`; `messages.ts` must only compose and type the catalogs.
+- Application route segments must be written in English, independently of the selected interface language.
 
 ## Maintenance
 

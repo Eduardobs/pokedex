@@ -93,11 +93,11 @@ describe('PokemonCard with form resources', () => {
       error: null,
     })
     render(
-      <MemoryRouter initialEntries={['/formas']}>
+      <MemoryRouter initialEntries={['/forms']}>
         <LanguageProvider>
           <Routes>
             <Route
-              path="/formas"
+              path="/forms"
               element={
                 <PokemonCard
                   resource={{
@@ -116,7 +116,7 @@ describe('PokemonCard with form resources', () => {
 
     fireEvent.click(screen.getByRole('link', { name: 'Charizard — Mega Forma X — Normal' }))
 
-    expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/formas')
+    expect(screen.getByRole('link', { name: 'Formas' })).toHaveAttribute('href', '/forms')
   })
 
   it('shows shiny artwork for Zygarde Mega even when form sprites are null', () => {

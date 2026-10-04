@@ -228,7 +228,7 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     <section className={`game-map-page ${map.themeClassName}`}>
       <header className="map-page-header content-width">
         <div>
-          <Link to="/mapas" className="map-back-link">
+          <Link to="/maps" className="map-back-link">
             <ArrowLeft size={16} aria-hidden="true" /> {t('maps.back')}
           </Link>
           <div className="map-title-row">

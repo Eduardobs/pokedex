@@ -51,27 +51,27 @@ export function Layout() {
     ? t('pokedex.title')
     : location.pathname === '/pokemon'
       ? t('nav.pokedex')
-      : location.pathname === '/formas'
+      : location.pathname === '/forms'
         ? t('nav.forms')
         : location.pathname === '/types-table'
           ? t('typesTable.title')
-          : location.pathname === '/mapas/kanto'
+          : location.pathname === '/maps/kanto'
             ? t('maps.kantoTitle')
-            : location.pathname === '/mapas/paldea'
+            : location.pathname === '/maps/paldea'
               ? t('maps.paldeaTitle')
-              : location.pathname === '/mapas/kitakami'
+              : location.pathname === '/maps/kitakami'
                 ? t('maps.kitakamiTitle')
-                : location.pathname === '/mapas/terrarium'
+                : location.pathname === '/maps/terrarium'
                   ? t('maps.terrariumTitle')
-                  : location.pathname === '/mapas/hisui-region'
+                  : location.pathname === '/maps/hisui-region'
                     ? t('maps.hisuiTitle')
-                    : location.pathname === '/mapas/lumiose-city'
+                    : location.pathname === '/maps/lumiose-city'
                       ? t('maps.lumioseTitle')
-                      : location.pathname === '/mapas'
+                      : location.pathname === '/maps'
                         ? t('maps.title')
-                        : location.pathname === '/favoritos'
+                        : location.pathname === '/favorites'
                           ? t('nav.favorites')
-                          : location.pathname.startsWith('/explorar')
+                          : location.pathname.startsWith('/explore')
                             ? t('nav.explore')
                             : location.pathname === '/'
                               ? 'Atlas Pokémon'
@@ -80,15 +80,15 @@ export function Layout() {
     ? t('pokedex.description')
     : location.pathname === '/pokemon'
       ? t('pokedex.description')
-      : location.pathname === '/formas'
+      : location.pathname === '/forms'
         ? t('forms.description')
         : location.pathname === '/types-table'
           ? t('typesTable.description')
-          : location.pathname.startsWith('/mapas')
+          : location.pathname.startsWith('/maps')
             ? t('maps.description')
-            : location.pathname === '/favoritos'
+            : location.pathname === '/favorites'
               ? t('favorites.description')
-              : location.pathname.startsWith('/explorar')
+              : location.pathname.startsWith('/explore')
                 ? t('explore.description')
                 : location.pathname === '/'
                   ? t('home.description')
@@ -242,19 +242,19 @@ export function Layout() {
           <NavLink to="/pokemon" onClick={() => setMenuOpen(false)}>
             {t('nav.pokedex')}
           </NavLink>
-          <NavLink to="/formas" onClick={() => setMenuOpen(false)}>
+          <NavLink to="/forms" onClick={() => setMenuOpen(false)}>
             <Sparkles size={17} /> {t('nav.forms')}
           </NavLink>
-          <NavLink to="/explorar" onClick={() => setMenuOpen(false)}>
+          <NavLink to="/explore" onClick={() => setMenuOpen(false)}>
             <Compass size={17} /> {t('nav.explore')}
           </NavLink>
           <NavLink to="/types-table" onClick={() => setMenuOpen(false)}>
             <Grid3X3 size={17} /> {t('nav.types')}
           </NavLink>
-          <NavLink to="/mapas" onClick={() => setMenuOpen(false)}>
+          <NavLink to="/maps" onClick={() => setMenuOpen(false)}>
             <MapPinned size={17} /> {t('nav.maps')}
           </NavLink>
-          <NavLink to="/favoritos" onClick={() => setMenuOpen(false)}>
+          <NavLink to="/favorites" onClick={() => setMenuOpen(false)}>
             <Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span>
           </NavLink>
         </nav>

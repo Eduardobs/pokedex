@@ -72,7 +72,7 @@ export function ExplorePage() {
               {group.resources.map((resource) => {
                 const ResourceIcon = resource.icon
                 return (
-                  <Link key={resource.endpoint} to={`/explorar/${resource.endpoint}`}>
+                  <Link key={resource.endpoint} to={`/explore/${resource.endpoint}`}>
                     <span className="resource-link-icon">
                       {resource.endpoint === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon size={17} />}
                     </span>
