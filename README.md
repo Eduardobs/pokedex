@@ -74,11 +74,18 @@ npm run preview
 | `npm run build` | Type-check the project and create `dist/` |
 | `npm run preview` | Serve the generated production build locally |
 | `npm run lint` | Run ESLint across the project |
-| `npm test` | Run the Vitest test suite once |
+| `npm test` | Run the Vitest unit and integration suite once |
+| `npm run test:e2e` | Run the browser end-to-end suite with Playwright |
 | `npm run release:patch` | Increment the patch version and create a Git commit and tag |
 | `npm run release:minor` | Increment the minor version and create a Git commit and tag |
 | `npm run release:major` | Increment the major version and create a Git commit and tag |
 | `npm run check` | Run linting, tests, and the production build |
+
+Install Chromium once before running the end-to-end tests locally:
+
+```bash
+npx playwright install chromium
+```
 
 Before opening a pull request, run:
 
