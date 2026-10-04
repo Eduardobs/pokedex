@@ -9,6 +9,12 @@ updates:
         dependency-type: production
       development-dependencies:
         dependency-type: development
+    ignore:
+      # @typescript-eslint/parser currently requires TypeScript < 6.1.0.
+      # Remove this limit when the parser adds support for newer releases.
+      - dependency-name: typescript
+        versions:
+          - '>=6.1.0'
   - package-ecosystem: github-actions
     directory: /
     schedule:
