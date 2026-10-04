@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tsParser from '@typescript-eslint/parser'
 
 export default [
-  { ignores: ['dist'] },
+  { ignores: ['coverage', 'dist', 'playwright-report', 'test-results'] },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {

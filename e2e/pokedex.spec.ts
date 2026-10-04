@@ -99,3 +99,19 @@ test('recovers the Pokédex after a failed API request', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 3, name: 'Pikachu' })).toBeVisible()
   expect(api.listRequests).toBe(2)
 })
+
+test('persists language and theme preferences across a reload', async ({ page }) => {
+  await page.goto('/#/')
+
+  await page.getByRole('button', { name: 'Ativar tema escuro' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await page.getByRole('button', { name: 'Idioma' }).click()
+  await page.getByRole('option', { name: /English/ }).click()
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Discover. Explore.')
+
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await expect(page.locator('html')).toHaveAttribute('lang', 'en')
+  await expect(page.getByRole('button', { name: 'Enable light theme' })).toBeVisible()
+})
