@@ -175,7 +175,7 @@ export function PokemonDetailPage() {
           <div className="detail-copy">
             <span className="pokemon-number">#{String(pokemon.id).padStart(4, '0')}</span>
             <h1>{prettyName(pokemon.name)}</h1>
-            <p className="genus">{genus ?? 'Pokémon'}</p>
+            <p className="genus">{genus ?? t('detail.pokemonFallback')}</p>
             <div className="type-row">
               {pokemon.types.map(({ type }) => (
                 <TypeBadge key={type.name} type={type.name} />

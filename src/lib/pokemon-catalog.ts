@@ -72,10 +72,10 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
     !Array.isArray(payload.data.pokemon) ||
     payload.data.pokemon.length === 0
   ) {
-    throw new ApiError('A PokéAPI retornou dados de ordenação inválidos.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid sorting data.', undefined, 'invalid-response')
   }
   if (payload.data.pokemon.length > POKEMON_CATALOG_LIMIT) {
-    throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned too much data.', undefined, 'invalid-response')
   }
 
   const details: Record<string, PokemonSortDetails> = Object.create(null) as Record<string, PokemonSortDetails>
@@ -88,7 +88,7 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
       entry.pokemonstats.length !== STAT_NAMES.size ||
       details[entry.name]
     ) {
-      throw new ApiError('A PokéAPI retornou dados de ordenação inválidos.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned invalid sorting data.', undefined, 'invalid-response')
     }
 
     const foundStats = new Set<string>()
@@ -103,7 +103,7 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
         !STAT_NAMES.has(rawStat.stat.name) ||
         foundStats.has(rawStat.stat.name)
       ) {
-        throw new ApiError('A PokéAPI retornou atributos inválidos.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned invalid stats.', undefined, 'invalid-response')
       }
       foundStats.add(rawStat.stat.name)
       return {
@@ -126,10 +126,10 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
     !Array.isArray(payload.data.pokemonspecies) ||
     payload.data.pokemonspecies.length === 0
   ) {
-    throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid rarity data.', undefined, 'invalid-response')
   }
   if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
-    throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned too much data.', undefined, 'invalid-response')
   }
 
   const details: Record<string, PokemonRarityDetails> = Object.create(null) as Record<string, PokemonRarityDetails>
@@ -144,7 +144,7 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
       !Array.isArray(species.pokemons) ||
       species.pokemons.length === 0
     ) {
-      throw new ApiError('A PokéAPI retornou dados de raridade inválidos.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned invalid rarity data.', undefined, 'invalid-response')
     }
 
     for (const pokemon of species.pokemons) {
@@ -154,7 +154,7 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
         !/^[a-z0-9-]{1,100}$/.test(pokemon.name) ||
         details[pokemon.name]
       ) {
-        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned invalid varieties.', undefined, 'invalid-response')
       }
       details[pokemon.name] = { isLegendary: species.is_legendary, isMythical: species.is_mythical }
     }
@@ -171,10 +171,10 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
     !Array.isArray(payload.data.pokemonspecies) ||
     payload.data.pokemonspecies.length === 0
   ) {
-    throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid region data.', undefined, 'invalid-response')
   }
   if (payload.data.pokemonspecies.length > POKEMON_CATALOG_LIMIT) {
-    throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned too much data.', undefined, 'invalid-response')
   }
 
   const details: Record<string, PokemonRegion> = Object.create(null) as Record<string, PokemonRegion>
@@ -191,14 +191,13 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
       !Array.isArray(species.pokemons) ||
       species.pokemons.length === 0
     ) {
-      throw new ApiError('A PokéAPI retornou dados de região inválidos.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned invalid region data.', undefined, 'invalid-response')
     }
     speciesIds.add(Number(species.id))
     const region = POKEMON_REGIONS.find(
       ({ firstSpecies, lastSpecies }) => Number(species.id) >= firstSpecies && Number(species.id) <= lastSpecies,
     )?.name
-    if (!region)
-      throw new ApiError('A PokéAPI retornou uma espécie sem região conhecida.', undefined, 'invalid-response')
+    if (!region) throw new ApiError('PokéAPI returned a species without a known region.', undefined, 'invalid-response')
 
     for (const pokemon of species.pokemons) {
       if (
@@ -207,7 +206,7 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
         !/^[a-z0-9-]{1,100}$/.test(pokemon.name) ||
         details[pokemon.name]
       ) {
-        throw new ApiError('A PokéAPI retornou variedades inválidas.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned invalid varieties.', undefined, 'invalid-response')
       }
       details[pokemon.name] = region
     }
@@ -237,11 +236,11 @@ async function fetchPokemonCatalogDetails<T>(
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
-    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
+    if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
     return parse(await response.json())
   } catch (error) {
     if (controller.signal.aborted && !signal?.aborted) {
-      throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+      throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     }
     throw error
   } finally {

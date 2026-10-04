@@ -11,7 +11,7 @@ const stats = [
   { base_stat: 45, stat: { name: 'speed' } },
 ]
 
-it('exibe somente os atributos base no radar', () => {
+it('shows only base stats in the radar', () => {
   const { container } = render(
     <BaseStatsRadar stats={stats} statNames={{ hp: 'HP', attack: 'Ataque' }} label="Atributos base" baseLabel="Base" />,
   )
@@ -24,7 +24,7 @@ it('exibe somente os atributos base no radar', () => {
   expect(screen.queryByText('200–294')).not.toBeInTheDocument()
 })
 
-it('organiza os atributos na ordem definida para o radar', () => {
+it('organizes stats in the order defined for the radar', () => {
   const { container } = render(
     <BaseStatsRadar
       stats={stats}

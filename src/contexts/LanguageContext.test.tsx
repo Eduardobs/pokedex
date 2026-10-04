@@ -12,7 +12,7 @@ afterEach(cleanup)
 const wrapper = ({ children }: { children: React.ReactNode }) => <LanguageProvider>{children}</LanguageProvider>
 
 describe('LanguageProvider', () => {
-  it('usa português quando o idioma persistido não é permitido', () => {
+  it('uses Portuguese when the persisted language is unsupported', () => {
     localStorage.setItem(STORAGE_KEYS.language, 'de')
 
     const { result } = renderHook(() => useLanguage(), { wrapper })
@@ -22,7 +22,7 @@ describe('LanguageProvider', () => {
     expect(document.documentElement.lang).toBe('pt-BR')
   })
 
-  it('troca idioma, interpola variáveis e persiste a escolha', () => {
+  it('switches language, interpolates variables, and persists the choice', () => {
     const { result } = renderHook(() => useLanguage(), { wrapper })
 
     act(() => result.current.setLanguage('es'))
@@ -36,7 +36,7 @@ describe('LanguageProvider', () => {
     expect(document.documentElement.lang).toBe('es')
   })
 
-  it('falha de forma explícita quando usado fora do provider', () => {
+  it('fails explicitly when used outside the provider', () => {
     expect(() => renderHook(() => useLanguage())).toThrow('LanguageProvider is missing')
   })
 })

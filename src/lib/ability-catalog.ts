@@ -54,7 +54,7 @@ function validateRequest(ids: number[], languages: string[]) {
     new Set(languages).size !== languages.length ||
     languages.some((language) => !SUPPORTED_API_LANGUAGES.has(language))
   ) {
-    throw new ApiError('A página de habilidades solicitada é inválida.', undefined, 'invalid-response')
+    throw new ApiError('The requested ability page is invalid.', undefined, 'invalid-response')
   }
 }
 
@@ -68,7 +68,7 @@ export function parseAbilityListDetails(payload: unknown, expectedIds: number[])
     payload.data.ability.length !== expectedIds.length ||
     payload.data.ability.length > MAX_ABILITY_PAGE_SIZE
   ) {
-    throw new ApiError('A PokéAPI retornou dados de habilidades inválidos.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid ability data.', undefined, 'invalid-response')
   }
 
   const expected = new Set(expectedIds)
@@ -87,7 +87,7 @@ export function parseAbilityListDetails(payload: unknown, expectedIds: number[])
       !Array.isArray(entry.abilityeffecttexts) ||
       entry.abilityeffecttexts.length > 2
     ) {
-      throw new ApiError('A PokéAPI retornou dados de habilidades inválidos.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned invalid ability data.', undefined, 'invalid-response')
     }
 
     const foundLanguages = new Set<string>()
@@ -102,7 +102,7 @@ export function parseAbilityListDetails(payload: unknown, expectedIds: number[])
         !SUPPORTED_API_LANGUAGES.has(value.language.name) ||
         foundLanguages.has(value.language.name)
       ) {
-        throw new ApiError('A PokéAPI retornou descrições de habilidades inválidas.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned invalid ability descriptions.', undefined, 'invalid-response')
       }
       foundLanguages.add(value.language.name)
       return { short_effect: value.short_effect, language: { name: value.language.name } }
@@ -139,10 +139,10 @@ async function requestAbilityListDetails(
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
-    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
+    if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
     return parseAbilityListDetails(await response.json(), ids)
   } catch (error) {
-    if (timedOut) throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+    if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error
   } finally {
     window.clearTimeout(timeout)

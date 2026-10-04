@@ -8,13 +8,13 @@ afterEach(() => {
   vi.resetModules()
 })
 
-describe('catálogo de atributos da Pokédex', () => {
+describe('Pokédex stat catalog', () => {
   const stats = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name, index) => ({
     base_stat: 50 + index,
     stat: { name },
   }))
 
-  it('mantém somente os campos necessários para ordenar', () => {
+  it('keeps only the fields required for sorting', () => {
     expect(
       parsePokemonSortDetails({
         data: {
@@ -38,7 +38,7 @@ describe('catálogo de atributos da Pokédex', () => {
     })
   })
 
-  it('rejeita nomes e atributos inesperados', () => {
+  it('rejects unexpected names and stats', () => {
     expect(() => parsePokemonSortDetails({ data: { pokemon: [{ name: '__proto__', pokemonstats: stats }] } })).toThrow(
       ApiError,
     )
@@ -62,7 +62,7 @@ describe('catálogo de atributos da Pokédex', () => {
     ).toThrow(ApiError)
   })
 
-  it('rejeita catálogos vazios, Pokémon duplicados e atributos duplicados', () => {
+  it('rejects empty catalogs, duplicate Pokémon, and duplicate stats', () => {
     expect(() => parsePokemonSortDetails({ data: { pokemon: [] } })).toThrow(ApiError)
     expect(() =>
       parsePokemonSortDetails({
@@ -88,7 +88,7 @@ describe('catálogo de atributos da Pokédex', () => {
     ).toThrow(ApiError)
   })
 
-  it('busca o catálogo com POST e reutiliza o resultado validado', async () => {
+  it('fetches the catalog with POST and reuses the validated result', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ data: { pokemon: [{ name: 'pikachu', pokemonstats: stats }] } }), {
         status: 200,
@@ -115,14 +115,14 @@ describe('catálogo de atributos da Pokédex', () => {
     expect(body.query).toContain('pokemonstats')
   })
 
-  it('preserva o status de falhas HTTP do catálogo', async () => {
+  it('preserves the status of catalog HTTP failures', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}', { status: 503 }))
     const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
 
     await expect(fetchPokemonSortDetails()).rejects.toMatchObject({ status: 503, code: 'http' })
   })
 
-  it('distingue timeout de cancelamento solicitado pelo consumidor', async () => {
+  it('distinguishes a timeout from cancellation requested by the consumer', async () => {
     vi.useFakeTimers()
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       (_input, init) =>
@@ -147,7 +147,7 @@ describe('catálogo de atributos da Pokédex', () => {
   })
 })
 
-describe('catálogo de raridade da Pokédex', () => {
+describe('Pokédex rarity catalog', () => {
   const rarityPayload = {
     data: {
       pokemonspecies: [
@@ -167,7 +167,7 @@ describe('catálogo de raridade da Pokédex', () => {
     },
   }
 
-  it('aplica a classificação da espécie a todas as suas variedades', () => {
+  it('applies the species classification to all of its varieties', () => {
     expect(parsePokemonRarityDetails(rarityPayload)).toEqual({
       mewtwo: { isLegendary: true, isMythical: false },
       'deoxys-normal': { isLegendary: false, isMythical: true },
@@ -175,7 +175,7 @@ describe('catálogo de raridade da Pokédex', () => {
     })
   })
 
-  it('rejeita respostas parciais e variedades inválidas', () => {
+  it('rejects partial responses and invalid varieties', () => {
     expect(() => parsePokemonRarityDetails({ ...rarityPayload, errors: [{ message: 'partial response' }] })).toThrow(
       ApiError,
     )
@@ -196,7 +196,7 @@ describe('catálogo de raridade da Pokédex', () => {
     ).toThrow(ApiError)
   })
 
-  it('busca e reutiliza a classificação validada', async () => {
+  it('fetches and reuses the validated classification', async () => {
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(new Response(JSON.stringify(rarityPayload), { status: 200 }))
@@ -215,7 +215,7 @@ describe('catálogo de raridade da Pokédex', () => {
   })
 })
 
-describe('catálogo de regiões da Pokédex', () => {
+describe('Pokédex region catalog', () => {
   const regionPayload = {
     data: {
       pokemonspecies: [
@@ -226,7 +226,7 @@ describe('catálogo de regiões da Pokédex', () => {
     },
   }
 
-  it('associa todas as variedades à região de estreia da espécie', () => {
+  it('associates all varieties with the species debut region', () => {
     expect(parsePokemonRegionDetails(regionPayload)).toEqual({
       bulbasaur: 'kanto',
       wooper: 'johto',
@@ -235,7 +235,7 @@ describe('catálogo de regiões da Pokédex', () => {
     })
   })
 
-  it('rejeita respostas parciais, espécies sem região e variedades duplicadas', () => {
+  it('rejects partial responses, species without a region, and duplicate varieties', () => {
     expect(() => parsePokemonRegionDetails({ ...regionPayload, errors: [{ message: 'partial response' }] })).toThrow(
       ApiError,
     )
@@ -264,7 +264,7 @@ describe('catálogo de regiões da Pokédex', () => {
     ).toThrow(ApiError)
   })
 
-  it('busca e reutiliza a classificação regional validada', async () => {
+  it('fetches and reuses the validated regional classification', async () => {
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
       .mockResolvedValue(new Response(JSON.stringify(regionPayload), { status: 200 }))

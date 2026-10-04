@@ -35,7 +35,7 @@ function renderCard(shiny = false) {
 }
 
 describe('PokemonCard', () => {
-  it('exibe a arte definida pela listagem sem renderizar um toggle individual', () => {
+  it('shows the artwork defined by the list without rendering an individual toggle', () => {
     const view = renderCard()
 
     expect(screen.getByRole('img', { name: 'Bulbasaur — Normal' })).toHaveAttribute('src', 'normal-artwork.png')

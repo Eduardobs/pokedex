@@ -11,6 +11,6 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
 
 export function useFavoritesContext() {
   const context = useContext(FavoritesContext)
-  if (!context) throw new Error('FavoritesProvider ausente')
+  if (!context) throw new Error('FavoritesProvider is missing')
   return context
 }

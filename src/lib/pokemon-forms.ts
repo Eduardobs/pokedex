@@ -23,7 +23,7 @@ export function formLabels(name: string, category: FormCategory, t?: FormLabelTr
     return {
       baseName: base,
       pokemon: prettyName(base),
-      variation: `${t?.('form.mega') ?? 'Mega Forma'}${suffix ? ` ${prettyName(suffix.replace(/^-/, ''))}` : ''}`,
+      variation: `${t?.('form.mega') ?? 'Mega Form'}${suffix ? ` ${prettyName(suffix.replace(/^-/, ''))}` : ''}`,
     }
   }
 
@@ -39,7 +39,7 @@ export function formLabels(name: string, category: FormCategory, t?: FormLabelTr
     const baseName = name.slice(0, regionalMatch.index)
     const regionLabel = t
       ? t('pokemonForms.regionForm', { region: regionNames[regionalMatch[1]] })
-      : `Forma de ${regionNames[regionalMatch[1]]}`
+      : `${regionNames[regionalMatch[1]]} form`
     return { baseName, pokemon: prettyName(baseName), variation: `${regionLabel}${detail}` }
   }
 

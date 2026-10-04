@@ -30,7 +30,7 @@ afterEach(() => {
 })
 
 describe('TrainingBreedingCard', () => {
-  it('transforma os dados técnicos em informações úteis para o jogador', () => {
+  it('turns technical data into useful information for the player', () => {
     render(
       <LanguageProvider>
         <TrainingBreedingCard pokemon={pokemon} species={species} />
@@ -45,7 +45,7 @@ describe('TrainingBreedingCard', () => {
     expect(screen.getByLabelText('50% masculino / 50% feminino')).toBeVisible()
   })
 
-  it('localiza o rótulo de HP usado nos EVs', () => {
+  it('localizes the HP label used for EVs', () => {
     localStorage.setItem(STORAGE_KEYS.language, 'es')
     const hpPokemon = {
       ...pokemon,

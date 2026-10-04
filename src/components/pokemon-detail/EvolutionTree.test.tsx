@@ -65,7 +65,7 @@ function evolutionNode(
 }
 
 describe('evolutionCondition', () => {
-  it('preserva a relação de atributos zero e condições clássicas', () => {
+  it('preserves zero-value stat relationships and classic conditions', () => {
     expect(
       evolutionCondition(
         evolutionDetail({
@@ -78,7 +78,7 @@ describe('evolutionCondition', () => {
     ).toBe('Nível 20 · Beleza 170+ · Ataque igual à Defesa')
   })
 
-  it('explica condições modernas combinadas retornadas pela API', () => {
+  it('explains combined modern conditions returned by the API', () => {
     expect(
       evolutionCondition(
         evolutionDetail({
@@ -93,7 +93,7 @@ describe('evolutionCondition', () => {
     ).toBe('Em sessão multijogador · Usar Rage Fist 20 vezes · Caminhar 1.000 passos · Sofrer ao menos 49 de dano')
   })
 
-  it('remove alternativas repetidas sem esconder condições diferentes', () => {
+  it('removes duplicate alternatives without hiding different conditions', () => {
     const level20 = evolutionDetail({ min_level: 20 })
     expect(evolutionConditions([level20, level20, evolutionDetail({ min_level: 30 })], t)).toEqual([
       'Nível 20',
@@ -118,7 +118,7 @@ describe('EvolutionTreeNode', () => {
     expect(screen.getByRole('link', { name: new RegExp(name, 'i') })).toHaveAttribute('href', href)
   })
 
-  it('mantém evoluções alternativas como ramos irmãos do mesmo Pokémon', () => {
+  it('keeps alternate evolutions as sibling branches of the same Pokémon', () => {
     const chain = evolutionNode('oddish', 43, [
       evolutionNode(
         'gloom',

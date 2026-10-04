@@ -22,14 +22,14 @@ afterEach(() => {
 })
 
 describe('useApi', () => {
-  it('permanece inativo quando não há endpoint', () => {
+  it('remains idle when no endpoint is provided', () => {
     const { result } = renderHook(() => useApi<PokemonSummary>(null))
 
     expect(result.current).toMatchObject({ data: null, error: null, loading: false })
     expect(apiFetchMock).not.toHaveBeenCalled()
   })
 
-  it('expõe os dados quando a requisição termina', async () => {
+  it('exposes data when the request finishes', async () => {
     apiFetchMock.mockResolvedValue({ name: 'pikachu' })
 
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/pikachu'))
@@ -44,7 +44,7 @@ describe('useApi', () => {
     )
   })
 
-  it('valida e transforma uma resposta antes de publicá-la', async () => {
+  it('validates and transforms a response before publishing it', async () => {
     apiFetchMock.mockResolvedValue({ name: 'PIKACHU' })
     const parse = (value: unknown): PokemonSummary => ({
       name: String((value as PokemonSummary).name).toLowerCase(),
@@ -55,7 +55,7 @@ describe('useApi', () => {
     await waitFor(() => expect(result.current.data).toEqual({ name: 'pikachu' }))
   })
 
-  it('expõe como falha uma resposta rejeitada pelo parser', async () => {
+  it('exposes a parser-rejected response as a failure', async () => {
     apiFetchMock.mockResolvedValue({ invalid: true })
     const parse = (): PokemonSummary => {
       throw new Error('invalid response')
@@ -67,7 +67,7 @@ describe('useApi', () => {
     expect(result.current.error).toMatchObject({ message: 'invalid response' })
   })
 
-  it('expõe falhas e consegue repetir a requisição', async () => {
+  it('exposes failures and can retry the request', async () => {
     apiFetchMock.mockRejectedValueOnce(new Error('network unavailable')).mockResolvedValueOnce({ name: 'raichu' })
     const { result } = renderHook(() => useApi<PokemonSummary>('pokemon/raichu'))
 
@@ -81,7 +81,7 @@ describe('useApi', () => {
     expect(apiFetchMock).toHaveBeenCalledTimes(2)
   })
 
-  it('cancela a requisição ao desmontar sem publicar erro', () => {
+  it('cancels the request on unmount without publishing an error', () => {
     let signal: AbortSignal | undefined
     apiFetchMock.mockImplementation((_path, requestSignal) => {
       signal = requestSignal

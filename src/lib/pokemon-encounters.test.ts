@@ -42,7 +42,7 @@ const payload = [
 ]
 
 describe('parsePokemonEncounters', () => {
-  it('valida os detalhes documentados e descarta campos desconhecidos', () => {
+  it('validates documented details and discards unknown fields', () => {
     const highAggregateChance = structuredClone(payload[0])
     highAggregateChance.version_details[0].max_chance = 870
     const encounters = parsePokemonEncounters([{ ...highAggregateChance, ignored: 'remote extension' }])
@@ -57,7 +57,7 @@ describe('parsePokemonEncounters', () => {
     })
   })
 
-  it('rejeita níveis incoerentes e referências fora da origem permitida', () => {
+  it('rejects inconsistent levels and references outside the allowed origin', () => {
     const invalidLevel = structuredClone(payload)
     invalidLevel[0].version_details[0].encounter_details[0].max_level = 2
     expect(() => parsePokemonEncounters(invalidLevel)).toThrow(ApiError)
@@ -71,7 +71,7 @@ describe('parsePokemonEncounters', () => {
 })
 
 describe('encounter selectors', () => {
-  it('ordena versões pelo identificador da API e filtra áreas sem perder os detalhes', () => {
+  it('sorts versions by API identifier and filters areas without losing details', () => {
     const encounters = parsePokemonEncounters(payload)
 
     expect(encounterVersions(encounters).map(({ name }) => name)).toEqual(['red', 'blue'])
@@ -84,7 +84,7 @@ describe('encounter selectors', () => {
     expect(encountersForVersion(encounters, 'yellow')).toEqual([])
   })
 
-  it('não trata relançamentos japoneses com IDs novos como versões recentes', () => {
+  it('does not treat Japanese rereleases with new IDs as recent versions', () => {
     const encounters = parsePokemonEncounters([
       {
         location_area: resource('location-area', 2, 'viridian-forest-area'),

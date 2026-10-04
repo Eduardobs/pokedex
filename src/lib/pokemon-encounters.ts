@@ -66,7 +66,7 @@ const versionReleaseIndex = new Map<string, number>(VERSION_RELEASE_ORDER.map((n
 type UnknownRecord = Record<string, unknown>
 
 function invalidResponse(): never {
-  throw new ApiError('A PokéAPI retornou encontros inválidos.', undefined, 'invalid-response')
+  throw new ApiError('PokéAPI returned invalid encounters.', undefined, 'invalid-response')
 }
 
 function record(value: unknown): UnknownRecord {

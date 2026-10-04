@@ -50,7 +50,7 @@ const encounters: Encounter[] = [
 ]
 
 describe('PokemonEncounters', () => {
-  it('mostra a versão mais recente e permite consultar outra versão com seus detalhes', () => {
+  it('shows the latest version and allows viewing another version with its details', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>

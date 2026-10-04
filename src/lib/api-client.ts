@@ -25,14 +25,14 @@ export class ApiError extends Error {
 /** Only the documented HTTPS API is a valid data source, including URLs returned by it. */
 export function resolveApiUrl(pathOrUrl: string): string {
   const input = pathOrUrl.trim()
-  if (!input) throw new ApiError('Caminho da API inválido.', undefined, 'unsafe-url')
+  if (!input) throw new ApiError('Invalid API path.', undefined, 'unsafe-url')
 
   let url: URL
   try {
     const absolute = /^[a-z][a-z\d+.-]*:/i.test(input)
     url = absolute ? new URL(input) : new URL(input.replace(/^\/+/, ''), `${API_BASE_URL}/`)
   } catch {
-    throw new ApiError('URL da API inválida.', undefined, 'unsafe-url')
+    throw new ApiError('Invalid API URL.', undefined, 'unsafe-url')
   }
 
   const apiPath = `${new URL(API_BASE_URL).pathname}/`
@@ -43,7 +43,7 @@ export function resolveApiUrl(pathOrUrl: string): string {
     url.username ||
     url.password
   ) {
-    throw new ApiError('Origem da API não permitida.', undefined, 'unsafe-url')
+    throw new ApiError('API origin is not allowed.', undefined, 'unsafe-url')
   }
   url.hash = ''
   return url.toString()
@@ -68,19 +68,19 @@ function validateJsonBounds(value: unknown) {
   const visit = (current: unknown, depth: number) => {
     nodes += 1
     if (nodes > NETWORK.maxJsonNodes || depth > NETWORK.maxJsonDepth)
-      throw new ApiError('A PokéAPI retornou dados demais.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned too much data.', undefined, 'invalid-response')
     if (typeof current === 'string' && current.length > NETWORK.maxStringLength)
-      throw new ApiError('A PokéAPI retornou um texto grande demais.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned text that is too large.', undefined, 'invalid-response')
     if (Array.isArray(current)) {
       if (current.length > NETWORK.maxArrayItems)
-        throw new ApiError('A PokéAPI retornou uma lista grande demais.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned a list that is too large.', undefined, 'invalid-response')
       current.forEach((item) => visit(item, depth + 1))
       return
     }
     if (current === null || typeof current !== 'object') return
     const entries = Object.entries(current)
     if (entries.length > NETWORK.maxObjectKeys)
-      throw new ApiError('A PokéAPI retornou um objeto grande demais.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned an object that is too large.', undefined, 'invalid-response')
     entries.forEach(([, item]) => visit(item, depth + 1))
   }
   visit(value, 0)
@@ -89,11 +89,11 @@ function validateJsonBounds(value: unknown) {
 async function readJsonResponse(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type')
   if (contentType && !/\b(?:application|text)\/[\w.+-]*json\b/i.test(contentType)) {
-    throw new ApiError('A PokéAPI retornou um formato inesperado.', response.status, 'invalid-response')
+    throw new ApiError('PokéAPI returned an unexpected format.', response.status, 'invalid-response')
   }
   const declaredLength = Number(response.headers.get('content-length'))
   if (Number.isFinite(declaredLength) && declaredLength > NETWORK.maxResponseBytes) {
-    throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
+    throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
   }
 
   const reader = response.body?.getReader()
@@ -107,7 +107,7 @@ async function readJsonResponse(response: Response): Promise<unknown> {
       received += value.byteLength
       if (received > NETWORK.maxResponseBytes) {
         await reader.cancel()
-        throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
+        throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
       }
       text += decoder.decode(value, { stream: true })
     }
@@ -115,7 +115,7 @@ async function readJsonResponse(response: Response): Promise<unknown> {
   } else {
     text = await response.text()
     if (new TextEncoder().encode(text).byteLength > NETWORK.maxResponseBytes) {
-      throw new ApiError('A PokéAPI retornou uma resposta grande demais.', response.status, 'invalid-response')
+      throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
     }
   }
 
@@ -123,10 +123,10 @@ async function readJsonResponse(response: Response): Promise<unknown> {
   try {
     data = JSON.parse(text)
   } catch {
-    throw new ApiError('A PokéAPI retornou JSON inválido.', response.status, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid JSON.', response.status, 'invalid-response')
   }
   if (data === null || typeof data !== 'object')
-    throw new ApiError('A PokéAPI retornou dados inválidos.', response.status, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid data.', response.status, 'invalid-response')
   validateJsonBounds(data)
   return data
 }
@@ -197,7 +197,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
       .then(async (response) => {
         if (!response.ok)
           throw new ApiError(
-            response.status === 404 ? 'Conteúdo não encontrado.' : 'A PokéAPI não respondeu como esperado.',
+            response.status === 404 ? 'Content not found.' : 'PokéAPI did not respond as expected.',
             response.status,
           )
         const data = await readJsonResponse(response)
@@ -205,7 +205,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
         return data
       })
       .catch((error: unknown) => {
-        if (timedOut) throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+        if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
         throw error
       })
       .finally(() => {

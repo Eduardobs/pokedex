@@ -7,7 +7,7 @@ beforeEach(() => localStorage.clear())
 afterEach(cleanup)
 
 describe('useFavorites', () => {
-  it('restaura uma coleção válida e persiste alterações', async () => {
+  it('restores a valid collection and persists changes', async () => {
     localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(['eevee']))
     const { result } = renderHook(() => useFavorites())
 
@@ -23,7 +23,7 @@ describe('useFavorites', () => {
     )
   })
 
-  it('descarta toda a coleção persistida se ela contiver dados inválidos', () => {
+  it('discards the entire persisted collection when it contains invalid data', () => {
     localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(['pikachu', 'Invalid Name']))
 
     const { result } = renderHook(() => useFavorites())
@@ -31,7 +31,7 @@ describe('useFavorites', () => {
     expect(result.current.favorites).toEqual([])
   })
 
-  it('remove favoritos e permite limpar a notificação', () => {
+  it('removes favorites and allows clearing the notification', () => {
     localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(['pikachu']))
     const { result } = renderHook(() => useFavorites())
 
@@ -43,7 +43,7 @@ describe('useFavorites', () => {
     expect(result.current.notice).toBeNull()
   })
 
-  it('ignora nomes que não podem pertencer à PokéAPI', () => {
+  it('ignores names that cannot belong to PokéAPI', () => {
     const { result } = renderHook(() => useFavorites())
 
     act(() => {
@@ -55,7 +55,7 @@ describe('useFavorites', () => {
     expect(result.current.notice).toBeNull()
   })
 
-  it('não ultrapassa o limite configurado', () => {
+  it('does not exceed the configured limit', () => {
     const favorites = Array.from({ length: FAVORITES_LIMIT }, (_, index) => `pokemon-${index}`)
     localStorage.setItem(STORAGE_KEYS.favorites, JSON.stringify(favorites))
     const { result } = renderHook(() => useFavorites())
@@ -66,7 +66,7 @@ describe('useFavorites', () => {
     expect(result.current.notice).toEqual({ name: 'overflow', action: 'limit' })
   })
 
-  it('processa atualizações consecutivas sem duplicar um favorito', () => {
+  it('processes consecutive updates without duplicating a favorite', () => {
     const { result } = renderHook(() => useFavorites())
 
     act(() => {

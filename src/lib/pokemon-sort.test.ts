@@ -46,13 +46,13 @@ const details = {
   }),
 }
 
-describe('ordenação da Pokédex', () => {
-  it('filtra por nome parcial ou número no catálogo recebido', () => {
+describe('Pokédex sorting', () => {
+  it('filters the received catalog by partial name or number', () => {
     expect(filterPokemonList(list, 'saur').map(({ name }) => name)).toEqual(['bulbasaur'])
     expect(filterPokemonList(list, ' 9 ').map(({ name }) => name)).toEqual(['blastoise'])
   })
 
-  it('ordena por número e por nome nas duas direções', () => {
+  it('sorts by number and name in both directions', () => {
     expect(sortPokemonList(list, 'number', 'asc', details, 'pt-BR').map(({ id }) => id)).toEqual([1, 6, 9])
     expect(sortPokemonList(list, 'number', 'desc', details, 'pt-BR').map(({ id }) => id)).toEqual([9, 6, 1])
     expect(sortPokemonList(list, 'name', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual([
@@ -67,7 +67,7 @@ describe('ordenação da Pokédex', () => {
     ])
   })
 
-  it('ordena atributos nas duas direções', () => {
+  it('sorts stats in both directions', () => {
     expect(sortPokemonList(list, 'defense', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual([
       'bulbasaur',
       'charizard',
@@ -80,7 +80,7 @@ describe('ordenação da Pokédex', () => {
     ])
   })
 
-  it('calcula o total dos seis atributos base', () => {
+  it('calculates the total of all six base stats', () => {
     expect(getPokemonSortValue(details.charizard, 'total')).toBe(534)
     expect(sortPokemonList(list, 'total', 'asc', details, 'pt-BR').map(({ name }) => name)).toEqual([
       'bulbasaur',
@@ -89,7 +89,7 @@ describe('ordenação da Pokédex', () => {
     ])
   })
 
-  it('mantém dados ainda indisponíveis depois dos Pokémon ordenáveis', () => {
+  it('keeps unavailable data after sortable Pokémon', () => {
     expect(
       sortPokemonList(list, 'hp', 'asc', { charizard: details.charizard }, 'pt-BR').map(({ name }) => name),
     ).toEqual(['charizard', 'bulbasaur', 'blastoise'])

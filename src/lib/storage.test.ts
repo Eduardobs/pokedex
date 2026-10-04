@@ -10,7 +10,7 @@ afterEach(() => {
 })
 
 describe('storage', () => {
-  it('lê JSON apenas quando o conteúdo passa pela validação', () => {
+  it('reads JSON only when the content passes validation', () => {
     localStorage.setItem('valid', JSON.stringify(['pikachu', 'eevee']))
     localStorage.setItem('invalid', JSON.stringify([25, 133]))
 
@@ -18,14 +18,14 @@ describe('storage', () => {
     expect(readStorage('invalid', isStringArray, [])).toEqual([])
   })
 
-  it('usa o fallback para chave ausente ou JSON corrompido', () => {
+  it('uses the fallback for a missing key or corrupted JSON', () => {
     localStorage.setItem('broken', '{not-json')
 
     expect(readStorage('missing', isStringArray, ['fallback'])).toEqual(['fallback'])
     expect(readStorage('broken', isStringArray, ['fallback'])).toEqual(['fallback'])
   })
 
-  it('isola falhas lançadas pelo navegador durante leitura e escrita', () => {
+  it('isolates browser failures during reads and writes', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new DOMException('Denied')
     })
@@ -40,7 +40,7 @@ describe('storage', () => {
     expect(writeStorageString('theme', 'dark')).toBe(false)
   })
 
-  it('serializa objetos e mantém strings simples sem aspas JSON', () => {
+  it('serializes objects and keeps plain strings without JSON quotes', () => {
     expect(writeStorage('favorites', ['pikachu'])).toBe(true)
     expect(localStorage.getItem('favorites')).toBe('["pikachu"]')
 
@@ -49,7 +49,7 @@ describe('storage', () => {
     expect(readStorageString('theme', ['light', 'dark'] as const, 'light')).toBe('dark')
   })
 
-  it('rejeita strings fora da lista permitida', () => {
+  it('rejects strings outside the allowlist', () => {
     localStorage.setItem('language', 'de')
     expect(readStorageString('language', ['pt-BR', 'en', 'es'] as const, 'pt-BR')).toBe('pt-BR')
   })

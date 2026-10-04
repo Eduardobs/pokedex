@@ -1,4 +1,4 @@
-/* Legibilidade, estados de erro e densidade responsiva */
+/* Readability, error states, and responsive density */
 .data-list a {
   grid-template-columns: 48px 38px minmax(180px, 1fr) 24px;
 }

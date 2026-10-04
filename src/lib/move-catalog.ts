@@ -64,7 +64,7 @@ function validateRequest(ids: number[], languages: string[]) {
     new Set(languages).size !== languages.length ||
     languages.some((language) => !SUPPORTED_API_LANGUAGES.has(language))
   ) {
-    throw new ApiError('A página de golpes solicitada é inválida.', undefined, 'invalid-response')
+    throw new ApiError('The requested move page is invalid.', undefined, 'invalid-response')
   }
 }
 
@@ -78,7 +78,7 @@ export function parseMoveListDetails(payload: unknown, expectedIds: number[]): M
     payload.data.move.length !== expectedIds.length ||
     payload.data.move.length > MAX_MOVE_PAGE_SIZE
   ) {
-    throw new ApiError('A PokéAPI retornou dados de golpes inválidos.', undefined, 'invalid-response')
+    throw new ApiError('PokéAPI returned invalid move data.', undefined, 'invalid-response')
   }
 
   const expected = new Set(expectedIds)
@@ -106,7 +106,7 @@ export function parseMoveListDetails(payload: unknown, expectedIds: number[]): M
       !Array.isArray(entry.movenames) ||
       entry.movenames.length > 2
     ) {
-      throw new ApiError('A PokéAPI retornou dados de golpes inválidos.', undefined, 'invalid-response')
+      throw new ApiError('PokéAPI returned invalid move data.', undefined, 'invalid-response')
     }
 
     const names = entry.movenames.map((value) => {
@@ -119,7 +119,7 @@ export function parseMoveListDetails(payload: unknown, expectedIds: number[]): M
         typeof value.language.name !== 'string' ||
         !SUPPORTED_API_LANGUAGES.has(value.language.name)
       ) {
-        throw new ApiError('A PokéAPI retornou nomes de golpes inválidos.', undefined, 'invalid-response')
+        throw new ApiError('PokéAPI returned invalid move names.', undefined, 'invalid-response')
       }
       return { name: value.name, language: { name: value.language.name } }
     })
@@ -164,10 +164,10 @@ async function requestMoveListDetails(
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
-    if (!response.ok) throw new ApiError('A PokéAPI não respondeu como esperado.', response.status)
+    if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
     return parseMoveListDetails(await response.json(), ids)
   } catch (error) {
-    if (timedOut) throw new ApiError('A PokéAPI demorou demais para responder.', undefined, 'timeout')
+    if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error
   } finally {
     window.clearTimeout(timeout)

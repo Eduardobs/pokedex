@@ -32,7 +32,7 @@ const pokemon = {
 } as Pokemon
 
 describe('PokemonHistoryCard', () => {
-  it('traduz o histórico técnico em uma linha do tempo legível', () => {
+  it('turns technical history into a readable timeline', () => {
     render(
       <MemoryRouter>
         <LanguageProvider>

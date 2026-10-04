@@ -5,7 +5,7 @@ import { AppErrorBoundary } from './components/AppErrorBoundary'
 import './styles.css'
 
 const root = document.getElementById('root')
-if (!root) throw new Error('Elemento raiz da aplicação não encontrado')
+if (!root) throw new Error('Application root element not found')
 
 createRoot(root).render(
   <StrictMode>

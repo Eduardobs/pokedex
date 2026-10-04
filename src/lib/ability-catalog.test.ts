@@ -25,8 +25,8 @@ afterEach(() => {
   vi.resetModules()
 })
 
-describe('catálogo resumido de habilidades', () => {
-  it('mantém somente a descrição curta e o idioma usados pela listagem', () => {
+describe('ability summary catalog', () => {
+  it('keeps only the short description and language used by the list', () => {
     expect(parseAbilityListDetails(abilityPayload, [1])).toEqual({
       stench: {
         id: 1,
@@ -41,7 +41,7 @@ describe('catálogo resumido de habilidades', () => {
     })
   })
 
-  it('rejeita respostas parciais, IDs inesperados e idiomas duplicados', () => {
+  it('rejects partial responses, unexpected IDs, and duplicate languages', () => {
     expect(() => parseAbilityListDetails({ ...abilityPayload, errors: [{ message: 'partial' }] }, [1])).toThrow(
       ApiError,
     )
@@ -66,7 +66,7 @@ describe('catálogo resumido de habilidades', () => {
     ).toThrow(ApiError)
   })
 
-  it('faz uma consulta limitada por idioma e reutiliza o resultado validado', async () => {
+  it('performs a language-limited query and reuses the validated result', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(abilityPayload)))
     const { fetchAbilityListDetails } = await import('./ability-catalog')
 
@@ -85,7 +85,7 @@ describe('catálogo resumido de habilidades', () => {
     expect(body.query).toContain('short_effect')
   })
 
-  it('cancela a chamada quando o último consumidor sai', async () => {
+  it('cancels the request when the last consumer leaves', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       (_input, init) =>
         new Promise((_resolve, reject) => {

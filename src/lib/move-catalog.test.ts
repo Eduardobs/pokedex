@@ -28,8 +28,8 @@ afterEach(() => {
   vi.resetModules()
 })
 
-describe('catálogo resumido de golpes', () => {
-  it('mantém somente os campos usados pela listagem', () => {
+describe('move summary catalog', () => {
+  it('keeps only the fields used by the list', () => {
     expect(parseMoveListDetails(movePayload, [85])).toEqual({
       thunderbolt: {
         id: 85,
@@ -47,7 +47,7 @@ describe('catálogo resumido de golpes', () => {
     })
   })
 
-  it('rejeita respostas parciais, IDs inesperados e classes inválidas', () => {
+  it('rejects partial responses, unexpected IDs, and invalid classes', () => {
     expect(() => parseMoveListDetails({ ...movePayload, errors: [{ message: 'partial' }] }, [85])).toThrow(ApiError)
     expect(() => parseMoveListDetails(movePayload, [1])).toThrow(ApiError)
     expect(() =>
@@ -62,7 +62,7 @@ describe('catálogo resumido de golpes', () => {
     ).toThrow(ApiError)
   })
 
-  it('faz uma consulta limitada, traduzida e reutiliza o resultado validado', async () => {
+  it('performs a limited localized query and reuses the validated result', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(movePayload)))
     const { fetchMoveListDetails } = await import('./move-catalog')
 
@@ -81,7 +81,7 @@ describe('catálogo resumido de golpes', () => {
     expect(body.query).toContain('movedamageclass')
   })
 
-  it('cancela a chamada quando o último consumidor sai', async () => {
+  it('cancels the request when the last consumer leaves', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(
       (_input, init) =>
         new Promise((_resolve, reject) => {
