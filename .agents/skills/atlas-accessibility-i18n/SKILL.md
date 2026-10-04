@@ -13,8 +13,10 @@ Before analyzing or changing the project, read [`../../PROJECT_CONTEXT.md`](../.
 
 ## Internationalize the change
 
-- Add user-visible copy, labels, announcements, errors, empty states, placeholders, tooltips, and image context to `src/i18n/messages.ts` for `pt-BR`, `en`, and `es` in the same change.
-- Keep the Portuguese dictionary as the typed key source through `TranslationKey`. Reuse existing keys only when meaning is identical.
+- Keep source code, identifiers, comments, and test descriptions in English. Put user-visible copy, labels, announcements, errors, empty states, placeholders, tooltips, and image context in the translation catalogs rather than inline in components or domain modules.
+- Add each translation to the corresponding catalog in `src/i18n/locales/pt-BR.ts`, `en.ts`, and `es.ts` in the same change. Keep `src/i18n/messages.ts` limited to importing, composing, and typing those catalogs; never add translated strings there.
+- Keep the `ptBR` catalog as the typed key source through `TranslationKey`, and preserve key parity across the three catalogs. Reuse an existing key only when its meaning and interpolation contract are identical.
+- Keep locale-specific fatal errors, type labels, API terms, resource groups, and resource labels in their existing exports inside each locale file, then compose them in `messages.ts`.
 - Use interpolation through `t(key, variables)` and locale-aware `formatNumber` or `formatDecimal`; do not assemble grammar from translated fragments when word order can vary.
 - Use `apiLanguage` and the localized API helpers for PokéAPI names or prose. Make English or Portuguese fallback visible only when that distinction helps the user.
 - For a new route, provide localized page title and description through `Layout.tsx`. Preserve `document.documentElement.lang` updates.
