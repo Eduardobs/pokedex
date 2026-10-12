@@ -12,6 +12,49 @@ function wrapper(initialEntry: string) {
 }
 
 describe('usePokemonCatalogControls', () => {
+  it.each(['', '&type=water', '&type=water,ice'])('clears only types with All from %s', (types) => {
+    const { result } = renderHook(() => usePokemonCatalogControls(24), {
+      wrapper: wrapper(`/forms?category=mega&q=charizard&order=desc${types}`),
+    })
+    act(() => result.current.setVisibleCount(72))
+    act(() => result.current.selectType('all'))
+    expect(result.current.types).toEqual([])
+    expect(result.current.searchParams.toString()).toBe('category=mega&q=charizard&order=desc')
+    expect(result.current.visibleCount).toBe(24)
+  })
+
+  it.each([
+    ['', []],
+    ['?type=water', ['water']],
+    ['?type=water,ice', ['water', 'ice']],
+    ['?type=water,invalid,water,ice,psychic', ['ice', 'psychic']],
+    ['?type=all', []],
+  ])('restores valid ordered selections from %s', (query, types) => {
+    const { result } = renderHook(() => usePokemonCatalogControls(24), {
+      wrapper: wrapper(`/pokemon${query}`),
+    })
+    expect(result.current.types).toEqual(types)
+  })
+
+  it('persists ordered type selections, resets pagination and preserves other filters', () => {
+    const { result } = renderHook(() => usePokemonCatalogControls(24), {
+      wrapper: wrapper('/forms?category=mega'),
+    })
+    act(() => result.current.selectType('water'))
+    act(() => result.current.selectType('ice'))
+    expect(result.current.searchParams.get('type')).toBe('water,ice')
+    act(() => result.current.setVisibleCount(72))
+    act(() => result.current.selectType('psychic'))
+    expect(result.current.types).toEqual(['ice', 'psychic'])
+    expect(result.current.searchParams.get('type')).toBe('ice,psychic')
+    expect(result.current.searchParams.get('category')).toBe('mega')
+    expect(result.current.visibleCount).toBe(24)
+    act(() => result.current.selectType('psychic'))
+    expect(result.current.types).toEqual(['ice'])
+    act(() => result.current.selectType('ice'))
+    expect(result.current.searchParams.has('type')).toBe(false)
+  })
+
   it('accepts supported catalog parameters and safely falls back from invalid values', () => {
     const { result } = renderHook(() => usePokemonCatalogControls(24), {
       wrapper: wrapper('/pokemon?q=pika&type=invalid&region=kanto&sort=attack&order=desc&legendary=true'),
@@ -19,7 +62,7 @@ describe('usePokemonCatalogControls', () => {
 
     expect(result.current).toMatchObject({
       query: 'pika',
-      type: 'all',
+      types: [],
       region: 'kanto',
       sort: 'attack',
       direction: 'desc',

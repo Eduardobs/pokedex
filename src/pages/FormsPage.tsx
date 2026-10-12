@@ -12,6 +12,7 @@ import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
 import { usePokemonCatalogDetails } from '../hooks/usePokemonCatalogDetails'
+import { usePokemonTypeFilter } from '../hooks/usePokemonTypeFilter'
 import { formatNumber, idFromUrl, normalizeSearchText } from '../lib/api'
 import {
   filterPokemonCatalogMetadata,
@@ -24,7 +25,6 @@ import type { ApiList, NamedResource, PokemonListItem } from '../types'
 
 const PAGE_SIZE = 32
 type SelectedCategory = 'all' | FormCategory
-type PokemonTypeResponse = { pokemon: { pokemon: NamedResource }[] }
 
 export function FormsPage() {
   const { language, t } = useLanguage()
@@ -32,7 +32,8 @@ export function FormsPage() {
     searchParams,
     query,
     deferredQuery,
-    type,
+    types,
+    selectType,
     region,
     sort,
     direction,
@@ -68,12 +69,7 @@ export function FormsPage() {
     error: speciesError,
     retry: retrySpecies,
   } = useApi<ApiList>('pokemon-species?limit=2000&offset=0')
-  const {
-    data: typeData,
-    loading: typeLoading,
-    error: typeError,
-    retry: retryType,
-  } = useApi<PokemonTypeResponse>(type === 'all' ? null : `type/${type}`)
+  const { data: typeData, loading: typeLoading, error: typeError, retry: retryType } = usePokemonTypeFilter(types)
 
   const categories: {
     value: SelectedCategory
@@ -134,17 +130,17 @@ export function FormsPage() {
     [grouped, nationalDex],
   )
   const selectedForms = category === 'all' ? specialForms : grouped[category]
-  const typeNames = useMemo(() => new Set(typeData?.pokemon.map((entry) => entry.pokemon.name) ?? []), [typeData])
+  const typeNames = useMemo(() => new Set(typeData?.map((entry) => entry.name) ?? []), [typeData])
   const typedForms = useMemo<PokemonListItem[]>(
     () =>
       selectedForms.flatMap((resource) => {
         const resourceCategory = formCategory(resource.name)
         if (!resourceCategory) return []
-        if (type !== 'all' && !typeNames.has(resource.name)) return []
+        if (types.length > 0 && !typeNames.has(resource.name)) return []
         const baseName = formLabels(resource.name, resourceCategory).baseName
         return [{ ...resource, id: nationalDex.get(baseName) ?? Number.MAX_SAFE_INTEGER }]
       }),
-    [nationalDex, selectedForms, type, typeNames],
+    [nationalDex, selectedForms, types.length, typeNames],
   )
   const filterableForms = useMemo(
     () =>
@@ -202,7 +198,6 @@ export function FormsPage() {
 
   const selectCategory = (value: SelectedCategory) => updateSearchParam('category', value, 'all')
   const updateQuery = (value: string) => updateSearchParam('q', value)
-  const selectType = (value: string) => updateSearchParam('type', value, 'all')
   const changeRegion = (value: string) => updateSearchParam('region', value, 'all')
   const changeSort = (value: typeof sort) => updateSearchParam('sort', value, 'number')
   const changeDirection = (value: typeof direction) => updateSearchParam('order', value, 'asc')
@@ -210,11 +205,13 @@ export function FormsPage() {
     updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
-  const hasResultFilter = Boolean(query || category !== 'all' || type !== 'all' || region !== 'all' || hasRarityFilter)
+  const hasResultFilter = Boolean(
+    query || category !== 'all' || types.length > 0 || region !== 'all' || hasRarityFilter,
+  )
   const hasActiveFilters = hasResultFilter || sort !== 'number' || direction !== 'asc'
   const isRarityPending = hasRarityFilter && !rarityDetails && rarity.loading
   const isRegionPending = region !== 'all' && !regionDetails && regions.loading
-  const isTypePending = type !== 'all' && !typeData && typeLoading
+  const isTypePending = types.length > 0 && !typeData && typeLoading
   const isFilterPending = isRarityPending || isRegionPending || isTypePending
 
   if (loading || speciesLoading)
@@ -278,7 +275,7 @@ export function FormsPage() {
           }
         })}
         onQueryChange={updateQuery}
-        type={type}
+        types={types}
         typeHelp={t('forms.typeHelp')}
         onTypeChange={selectType}
         region={region}
@@ -335,7 +332,7 @@ export function FormsPage() {
       </div>
       {isFilterPending ? (
         <CardSkeleton count={8} />
-      ) : typeError && type !== 'all' && !typeData ? (
+      ) : typeError && types.length > 0 && !typeData ? (
         <InlineRetryError message={t('forms.typeError')} retryLabel={t('common.retry')} onRetry={retryType} />
       ) : regionError && region !== 'all' && !regionDetails ? (
         <InlineRetryError message={t('pokedex.region.error')} retryLabel={t('common.retry')} onRetry={regions.retry} />

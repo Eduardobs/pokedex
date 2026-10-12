@@ -12,6 +12,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Related Pokémon lists in Explore resources must display an image, name, number, and, when relevant, the data that defines the relationship.
 - The list of Pokémon required for evolution on gender pages must use the variety and artwork corresponding to the selected gender.
 - Lists of a species' forms must display the artwork corresponding to each form when available, preserving the variety artwork as a fallback.
+- The Pokédex and variations catalogs start with no type selected and allow up to two types, numbered by selection order; selecting a third replaces the oldest selection. The All button clears only the selected types.
 - The variations catalog must combine search, region, sorting, type, rarity, and shiny display with the dedicated filters for regional forms, Mega Forms, and Gigantamax.
 - Pokémon details opened from a catalog must offer a return path to the source catalog; without a recognized source, they must return to the Pokédex.
 - Every vertically scrollable page must provide a global back-to-top control that is visible only when the page is not at the top.

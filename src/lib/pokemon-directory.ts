@@ -4,7 +4,6 @@ import { POKEMON_REGIONS, type PokemonRarityDetails, type PokemonRegion } from '
 import type { PokemonSortKey } from './pokemon-sort'
 
 export const POKEMON_TYPES = [
-  'all',
   'normal',
   'fire',
   'water',
@@ -24,6 +23,24 @@ export const POKEMON_TYPES = [
   'steel',
   'fairy',
 ] as const
+
+export type PokemonType = (typeof POKEMON_TYPES)[number]
+
+export function parsePokemonTypes(value: string | null): PokemonType[] {
+  const types = (value ?? '')
+    .split(',')
+    .filter((type): type is PokemonType => POKEMON_TYPES.some((supported) => supported === type))
+  return [...new Set(types)].slice(-2)
+}
+
+export function togglePokemonType(types: readonly PokemonType[], type: PokemonType): PokemonType[] {
+  return types.includes(type) ? types.filter((selected) => selected !== type) : [...types.slice(-1), type]
+}
+
+export function intersectPokemonTypes<T extends { name: string }>(first: T[], second: T[]): T[] {
+  const names = new Set(second.map(({ name }) => name))
+  return first.filter(({ name }) => names.has(name))
+}
 
 export const POKEMON_SORT_KEYS: PokemonSortKey[] = [
   'number',

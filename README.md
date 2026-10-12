@@ -6,7 +6,7 @@ The application is a client-side static site: it has no application server or da
 
 ## Highlights
 
-- **National Pokédex** with name/number search, type filtering, infinite scrolling, rarity indicators, and sorting by name, number, or base stats.
+- **National Pokédex** with name/number search, filtering by up to two simultaneous types, infinite scrolling, rarity indicators, and sorting by name, number, or base stats.
 - **Detailed Pokémon pages** with species information, training and breeding data, complete evolution requirements, abilities, forms, shiny sprites, cries, held items, game indices, present and past base stats, defensive type matchups, compatible moves, and version-filtered encounter methods, levels, chances, and conditions.
 - **Special forms catalog** for regional variants, Mega Evolutions, and Gigantamax forms.
 - **Pokémon type chart** with an interactive damage calculator for one or two defending types.

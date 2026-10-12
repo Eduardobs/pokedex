@@ -335,7 +335,8 @@
   background: color-mix(in srgb, var(--type-color) 10%, var(--surface));
   box-shadow: inset 0 -2px var(--type-color);
 }
-.type-filter-option:has(input:focus-visible) {
+.type-filter-option:has(input:focus-visible),
+.type-filter-option:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--type-color) 28%, transparent);
   outline-offset: 2px;
 }
@@ -364,7 +365,10 @@
 .type-filter-check {
   width: 17px;
   height: 17px;
-  padding: 3px;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  line-height: 1;
   border-radius: 50%;
   background: var(--ink);
   color: var(--surface);
@@ -380,6 +384,7 @@
 }
 .type-filter-option.type-all {
   --type-color: var(--ink);
+  text-align: left;
 }
 .rarity-filter {
   display: flex;

@@ -2,7 +2,6 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  Check,
   ChevronDown,
   Layers3,
   LoaderCircle,
@@ -13,7 +12,7 @@ import {
 import { type ReactNode, useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { POKEMON_REGIONS, type PokemonRegion } from '../lib/pokemon-catalog'
-import { POKEMON_TYPES, pokemonSortOptions } from '../lib/pokemon-directory'
+import { POKEMON_TYPES, pokemonSortOptions, type PokemonType } from '../lib/pokemon-directory'
 import type { PokemonSortDirection, PokemonSortKey } from '../lib/pokemon-sort'
 import { SearchField } from './SearchField'
 import { SelectMenu } from './SelectMenu'
@@ -34,9 +33,9 @@ type Props = {
   searchLabel: string
   suggestions: CatalogSuggestion[]
   onQueryChange: (value: string) => void
-  type: string
+  types: readonly PokemonType[]
   typeHelp: string
-  onTypeChange: (value: string) => void
+  onTypeChange: (value: PokemonType | 'all') => void
   region: PokemonRegion | 'all'
   onRegionChange: (value: string) => void
   regionPending: boolean
@@ -65,7 +64,7 @@ export function PokemonCatalogFilters({
   searchLabel,
   suggestions,
   onQueryChange,
-  type,
+  types,
   typeHelp,
   onTypeChange,
   region,
@@ -106,7 +105,7 @@ export function PokemonCatalogFilters({
   const suggestionListId = `${idPrefix}-suggestions`
   const additionalFiltersId = `additional-${idPrefix}-filters`
   const typeHelpId = `${idPrefix}-type-filter-help`
-  const additionalFilterCount = Number(type !== 'all') + Number(legendary) + Number(mythical)
+  const additionalFilterCount = types.length + Number(legendary) + Number(mythical)
 
   const selectSuggestion = (name: string) => {
     onQueryChange(name)
@@ -257,22 +256,38 @@ export function PokemonCatalogFilters({
           <legend>{t('pokedex.type.label')}</legend>
           <p id={typeHelpId}>{typeHelp}</p>
           <div className="type-filter-grid">
+            <button className="type-filter-option type-all" type="button" onClick={() => onTypeChange('all')}>
+              <span className="type-filter-icon" aria-hidden="true">
+                <Layers3 />
+              </span>
+              <span>{t('pokedex.all')}</span>
+            </button>
             {POKEMON_TYPES.map((item) => {
-              const label = item === 'all' ? t('pokedex.all') : typeLabel(item, language)
+              const label = typeLabel(item, language)
+              const selectionOrder = types.indexOf(item) + 1
+              const selectionId = `${idPrefix}-type-${item}-selection`
               return (
-                <label className={`type-filter-option${item === 'all' ? ' type-all' : ` type-${item}`}`} key={item}>
+                <label className={`type-filter-option type-${item}`} key={item}>
                   <input
-                    type="radio"
+                    type="checkbox"
                     name={`${idPrefix}-type`}
                     value={item}
-                    checked={type === item}
+                    checked={selectionOrder > 0}
+                    aria-describedby={selectionOrder > 0 ? selectionId : undefined}
                     onChange={() => onTypeChange(item)}
                   />
                   <span className="type-filter-icon" aria-hidden="true">
-                    {item === 'all' ? <Layers3 /> : <TypeIcon type={item} />}
+                    <TypeIcon type={item} />
                   </span>
                   <span>{label}</span>
-                  <Check className="type-filter-check" aria-hidden="true" />
+                  <span className="type-filter-check" aria-hidden="true">
+                    {selectionOrder || ''}
+                  </span>
+                  {selectionOrder > 0 && (
+                    <span hidden id={selectionId}>
+                      {t('pokedex.type.selectionOrder', { order: selectionOrder })}
+                    </span>
+                  )}
                 </label>
               )
             })}

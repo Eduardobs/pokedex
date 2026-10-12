@@ -198,7 +198,7 @@ describe('Pokédex filters', () => {
 
     expect(screen.getByRole('button', { name: 'Esconder filtros' })).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('checkbox', { name: 'Lendário' })).toBeVisible()
-    expect(screen.getByRole('radio', { name: 'Fogo' })).toBeVisible()
+    expect(screen.getByRole('checkbox', { name: 'Fogo' })).toBeVisible()
   })
 
   it('changes the ordering direction independently from the selected field', () => {
@@ -229,22 +229,82 @@ describe('Pokédex filters', () => {
     expect(within(suggestions).getAllByRole('option')[0]).toHaveTextContent('Pokemon 2')
   })
 
-  it('shows every type by name in an exclusive selection group', () => {
-    useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
-    render(renderPage(<PokedexPage />))
+  it.each([
+    ['Pokédex', <PokedexPage />],
+    ['forms', <FormsPage />],
+  ])('numbers up to two selected types and replaces the oldest selection in %s', (_name, page) => {
+    const resources = page.type === FormsPage ? forms.slice(0, 4) : pokemon.slice(0, 4)
+    useApiMock.mockImplementation((path: string | null) => {
+      let data = null
+      if (path?.startsWith('type/')) {
+        const matches =
+          path === 'type/water'
+            ? resources.slice(0, 2)
+            : path === 'type/ice'
+              ? resources.slice(1, 3)
+              : resources.slice(2)
+        data = { pokemon: matches.map((pokemon) => ({ pokemon })) }
+      } else if (path) {
+        data = apiList(path.startsWith('pokemon-species') ? species : resources)
+      }
+      return { data, loading: false, error: null }
+    })
+    render(renderPage(page))
     fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
 
     const typeGroup = screen.getByRole('group', { name: 'Tipo' })
-    const allFilter = within(typeGroup).getByRole('radio', { name: 'Todos' })
-    const fireFilter = within(typeGroup).getByRole('radio', { name: 'Fogo' })
+    const water = within(typeGroup).getByRole('checkbox', { name: 'Água' })
+    const ice = within(typeGroup).getByRole('checkbox', { name: 'Gelo' })
+    const psychic = within(typeGroup).getByRole('checkbox', { name: 'Psíquico' })
+    expect(within(typeGroup).getAllByRole('checkbox')).toHaveLength(18)
+    expect(within(typeGroup).queryAllByRole('checkbox', { checked: true })).toHaveLength(0)
 
-    expect(allFilter).toBeChecked()
-    expect(fireFilter).not.toBeChecked()
-    expect(fireFilter.closest('label')).toHaveTextContent('Fogo')
+    fireEvent.click(water)
+    expect(water).toBeChecked()
+    expect(water.closest('label')).toHaveTextContent('Água1')
+    expect(water).toHaveAccessibleDescription('Ordem de seleção: 1')
+    expect(screen.getByText(resources[0].name)).toBeInTheDocument()
+    expect(screen.queryByText(resources[2].name)).not.toBeInTheDocument()
 
-    fireEvent.click(fireFilter)
-    expect(fireFilter).toBeChecked()
-    expect(allFilter).not.toBeChecked()
+    fireEvent.click(ice)
+    expect(water).toBeChecked()
+    expect(ice).toBeChecked()
+    expect(ice.closest('label')).toHaveTextContent('Gelo2')
+    expect(screen.getByText(resources[1].name)).toBeInTheDocument()
+    expect(screen.queryByText(resources[0].name)).not.toBeInTheDocument()
+    expect(screen.queryByText(resources[2].name)).not.toBeInTheDocument()
+
+    fireEvent.click(psychic)
+    expect(water).not.toBeChecked()
+    expect(ice).toBeChecked()
+    expect(ice.closest('label')).toHaveTextContent('Gelo1')
+    expect(psychic).toBeChecked()
+    expect(psychic.closest('label')).toHaveTextContent('Psíquico2')
+    expect(screen.getByText(resources[2].name)).toBeInTheDocument()
+    expect(screen.queryByText(resources[1].name)).not.toBeInTheDocument()
+
+    fireEvent.click(ice)
+    expect(ice).not.toBeChecked()
+    expect(psychic.closest('label')).toHaveTextContent('Psíquico1')
+    expect(screen.getByText(resources[3].name)).toBeInTheDocument()
+
+    fireEvent.click(psychic)
+    expect(within(typeGroup).queryAllByRole('checkbox', { checked: true })).toHaveLength(0)
+    resources.forEach(({ name }) => expect(screen.getByText(name)).toBeInTheDocument())
+
+    fireEvent.click(water)
+    fireEvent.click(ice)
+    fireEvent.click(screen.getByRole('combobox', { name: 'Ordem' }))
+    fireEvent.click(screen.getByRole('option', { name: 'Decrescente' }))
+    fireEvent.click(within(typeGroup).getByRole('button', { name: 'Todos' }))
+    expect(within(typeGroup).queryAllByRole('checkbox', { checked: true })).toHaveLength(0)
+    expect(screen.getByRole('combobox', { name: 'Ordem' })).toHaveTextContent('Decrescente')
+    resources.forEach(({ name }) => expect(screen.getByText(name)).toBeInTheDocument())
+
+    fireEvent.click(water)
+    expect(water).toHaveAccessibleDescription('Ordem de seleção: 1')
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }))
+    expect(within(typeGroup).queryAllByRole('checkbox', { checked: true })).toHaveLength(0)
   })
 
   it('filters legendary and mythical Pokémon with unchecked checkboxes by default', async () => {
@@ -342,7 +402,7 @@ describe('Forms filters', () => {
     expect(screen.queryByText('raichu-alola')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
-    fireEvent.click(screen.getByRole('radio', { name: 'Fogo' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Fogo' }))
 
     expect(screen.getByText('charizard-mega-x')).toBeInTheDocument()
     expect(screen.queryByText('butterfree-gmax')).not.toBeInTheDocument()

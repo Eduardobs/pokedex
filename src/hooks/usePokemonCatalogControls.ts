@@ -1,6 +1,12 @@
 import { useCallback, useDeferredValue, useState } from 'react'
 import type { PokemonRegion } from '../lib/pokemon-catalog'
-import { isPokemonRegion, POKEMON_SORT_KEYS, POKEMON_TYPES } from '../lib/pokemon-directory'
+import {
+  isPokemonRegion,
+  parsePokemonTypes,
+  POKEMON_SORT_KEYS,
+  togglePokemonType,
+  type PokemonType,
+} from '../lib/pokemon-directory'
 import type { PokemonSortDirection, PokemonSortKey } from '../lib/pokemon-sort'
 import { useSearchParamUpdater } from './useSearchParamUpdater'
 
@@ -12,8 +18,9 @@ export function usePokemonCatalogControls(pageSize: number) {
 
   const query = searchParams.get('q') ?? ''
   const deferredQuery = useDeferredValue(query)
-  const requestedType = searchParams.get('type') ?? 'all'
-  const type = POKEMON_TYPES.includes(requestedType as (typeof POKEMON_TYPES)[number]) ? requestedType : 'all'
+  const types = parsePokemonTypes(searchParams.get('type'))
+  const selectType = (type: PokemonType | 'all') =>
+    updateSearchParam('type', type === 'all' ? '' : togglePokemonType(types, type).join(','))
   const requestedRegion = searchParams.get('region') ?? 'all'
   const region: PokemonRegion | 'all' = isPokemonRegion(requestedRegion) ? requestedRegion : 'all'
   const requestedSort = searchParams.get('sort') as PokemonSortKey | null
@@ -27,7 +34,8 @@ export function usePokemonCatalogControls(pageSize: number) {
     searchParams,
     query,
     deferredQuery,
-    type,
+    types,
+    selectType,
     region,
     sort,
     direction,

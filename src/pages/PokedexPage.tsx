@@ -10,6 +10,7 @@ import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
 import { usePokemonCatalogDetails } from '../hooks/usePokemonCatalogDetails'
+import { usePokemonTypeFilter } from '../hooks/usePokemonTypeFilter'
 import { formatNumber, pokemonListItems, prettyName } from '../lib/api'
 import {
   filterPokemonCatalogMetadata,
@@ -18,7 +19,7 @@ import {
 } from '../lib/pokemon-directory'
 import { filterPokemonList, getPokemonSortValue, sortPokemonList } from '../lib/pokemon-sort'
 import { POKEMON_CATALOG_LIMIT } from '../config/app'
-import type { ApiList, NamedResource, PokemonListItem } from '../types'
+import type { ApiList, PokemonListItem } from '../types'
 
 const LIMIT = 24
 export function PokedexPage() {
@@ -26,7 +27,8 @@ export function PokedexPage() {
   const {
     query,
     deferredQuery,
-    type,
+    types,
+    selectType,
     region,
     sort,
     direction,
@@ -52,13 +54,11 @@ export function PokedexPage() {
   const sortError = sorting.error
   const rarityError = rarity.error
   const regionError = regions.error
-  const endpoint = type === 'all' ? `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0` : `type/${type}`
-  const { data, loading, error, retry } = useApi<ApiList | { pokemon: { pokemon: NamedResource }[] }>(endpoint)
-
-  const catalog = useMemo<PokemonListItem[]>(() => {
-    if (!data) return []
-    return pokemonListItems('results' in data ? data.results : data.pokemon.map((entry) => entry.pokemon))
-  }, [data])
+  const list = useApi<ApiList>(types.length ? null : `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0`)
+  const typeFilter = usePokemonTypeFilter(types)
+  const { loading, error, retry } = types.length ? typeFilter : list
+  const resources = types.length ? typeFilter.data : list.data?.results
+  const catalog = useMemo<PokemonListItem[]>(() => pokemonListItems(resources ?? []), [resources])
   const scopedCatalog = useMemo(
     () =>
       filterPokemonCatalogMetadata(catalog, {
@@ -94,7 +94,6 @@ export function PokedexPage() {
     observationKey: visibleCount,
   })
 
-  const selectType = (value: string) => updateSearchParam('type', value, 'all')
   const changeQuery = (value: string) => updateSearchParam('q', value)
   const changeSort = (value: typeof sort) => updateSearchParam('sort', value, 'number')
   const changeDirection = (value: typeof direction) => updateSearchParam('order', value, 'asc')
@@ -103,7 +102,7 @@ export function PokedexPage() {
     updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
-  const hasResultFilter = Boolean(query || type !== 'all' || region !== 'all' || hasRarityFilter)
+  const hasResultFilter = Boolean(query || types.length > 0 || region !== 'all' || hasRarityFilter)
   const hasActiveFilters = hasResultFilter || sort !== 'number' || direction !== 'asc'
   const isRarityPending = hasRarityFilter && !rarityDetails && rarity.loading
   const isRegionPending = region !== 'all' && !regionDetails && regions.loading
@@ -132,7 +131,7 @@ export function PokedexPage() {
           label: prettyName(pokemon.name),
         }))}
         onQueryChange={changeQuery}
-        type={type}
+        types={types}
         typeHelp={t('pokedex.type.help')}
         onTypeChange={selectType}
         region={region}
