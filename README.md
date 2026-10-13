@@ -9,10 +9,14 @@ The application is a client-side static site: it has no application server or da
 - **National Pokédex** with name/number search, filtering by up to two simultaneous types, infinite scrolling, rarity indicators, and sorting by name, number, or base stats.
 - **Detailed Pokémon pages** with species information, training and breeding data, complete evolution requirements, abilities, forms, shiny sprites, cries, held items, game indices, present and past base stats, defensive type matchups, compatible moves, and version-filtered encounter methods, levels, chances, and conditions.
 - **Special forms catalog** for regional variants, Mega Evolutions, and Gigantamax forms.
-- **Pokémon type chart** with an interactive damage calculator for one or two defending types.
+- **Pokémon type chart** with an interactive damage calculator and generation-specific matchups loaded from PokéAPI. The selected generation is shareable in the URL.
+- **Move comparison** with two independently selected moves, secondary effects, stat changes, and historical values. Open it from Explore or an individual move.
+- **Expanded Pokémon data** with game-specific learnsets, regional Pokédex numbers, versioned descriptions, form explanations, historical and female sprites, and opt-in animations.
+- **Evolution and transformation guides** with linked form requirements, readable special evolution expressions, and on-demand variable explanations.
+- **Item and training tools** with versioned item descriptions, purchase/sale prices by game and currency, and an experience planner with a growth chart and accessible level table.
 - **Interactive game maps** for FireRed/LeafGreen's Kanto, Scarlet/Violet's Paldea, Kitakami, and Terarium, and Legends: Arceus's Hisui, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
-- **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, encounters, contests, and languages.
+- **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, evolution variables, currencies, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
 - **Light and dark themes**, responsive layouts, keyboard-friendly controls, loading and error states, and reduced-motion support.
 - **Code splitting** for secondary pages, so route-specific code is loaded on demand.
@@ -25,6 +29,7 @@ The application is a client-side static site: it has no application server or da
 | `#/pokemon` | Searchable and sortable National Pokédex |
 | `#/pokemon/:name` | Pokémon detail page |
 | `#/forms` | Regional, Mega, and Gigantamax forms |
+| `#/compare-moves?left=thunderbolt&right=ember` | Move comparison with shareable selections |
 | `#/types-table` | Type effectiveness table and calculator |
 | `#/maps` | Available interactive game maps |
 | `#/maps/kanto` | Interactive FireRed/LeafGreen map of Kanto |
@@ -37,6 +42,8 @@ The application is a client-side static site: it has no application server or da
 | `#/explore` | Categories from the PokéAPI encyclopedia |
 | `#/explore/:resource` | Paginated records for an API collection |
 | `#/explore/:resource/:name` | Details for an individual API record |
+
+Historical records, prices, translations, and media vary by resource; missing data is displayed explicitly. Animated sprites load only after the user enables them. Experience planning is available at `#/explore/growth-rate/:name`, with links from Pokémon data tabs. The `meta` endpoint is not used.
 
 The app uses `HashRouter`, which makes the same build work at both a domain root and a GitHub Pages project path without server-side rewrite rules.
 

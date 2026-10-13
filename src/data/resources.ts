@@ -104,6 +104,7 @@ const resourceGroupDefinitions: ResourceGroupDefinition[] = [
     color: '#0ea5e9',
     resources: [
       { endpoint: 'item', icon: Gem },
+      { endpoint: 'currency', icon: Gem },
       { endpoint: 'item-attribute', icon: BadgeInfo },
       { endpoint: 'item-category', icon: Boxes },
       { endpoint: 'item-fling-effect', icon: Send },
@@ -146,6 +147,7 @@ const resourceGroupDefinitions: ResourceGroupDefinition[] = [
     resources: [
       { endpoint: 'evolution-chain', icon: GitBranch },
       { endpoint: 'evolution-trigger', icon: Zap },
+      { endpoint: 'evolution-variable', icon: SlidersHorizontal },
     ],
   },
   {

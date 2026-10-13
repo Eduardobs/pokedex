@@ -22,6 +22,11 @@ export interface Pokemon {
   is_default: boolean
   location_area_encounters: string
   sprites: {
+    versions?: Record<string, Record<string, unknown>>
+    front_female?: string | null
+    front_shiny_female?: string | null
+    back_female?: string | null
+    back_shiny_female?: string | null
     front_default: string | null
     front_shiny: string | null
     back_default?: string | null
@@ -29,6 +34,8 @@ export interface Pokemon {
     other?: {
       ['official-artwork']?: { front_default: string | null; front_shiny: string | null }
       home?: { front_default: string | null; front_shiny: string | null }
+      dream_world?: Record<string, string | null>
+      showdown?: Record<string, string | null>
     }
   }
   types: { slot: number; type: NamedResource }[]
@@ -74,6 +81,8 @@ export interface PokemonType {
 }
 
 export interface Species {
+  pokedex_numbers?: { entry_number: number; pokedex: NamedResource }[]
+  form_descriptions?: { description: string; language: NamedResource }[]
   id: number
   name: string
   flavor_text_entries: { flavor_text: string; language: NamedResource; version: NamedResource }[]

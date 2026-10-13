@@ -1,4 +1,6 @@
-import { Database, ExternalLink, Gamepad2, Image, PackageOpen, Volume2 } from 'lucide-react'
+import { SpriteGallery } from './SpriteGallery'
+import { PokemonSpeciesDetails } from './PokemonSpeciesDetails'
+import { Database, ExternalLink, Gamepad2, PackageOpen, Volume2 } from 'lucide-react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { API_BASE } from '../../lib/api'
 import type { Pokemon, Species } from '../../types'
@@ -21,12 +23,6 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
     ) : (
       <span className={`boolean ${value}`}>{t(value ? 'common.yes' : 'common.no')}</span>
     )
-  const sprites = [
-    { label: `${t('detail.front')} · ${t('detail.normal')}`, url: pokemon.sprites.front_default },
-    { label: `${t('detail.front')} · ${t('detail.shiny')}`, url: pokemon.sprites.front_shiny },
-    { label: `${t('detail.back')} · ${t('detail.normal')}`, url: pokemon.sprites.back_default },
-    { label: `${t('detail.back')} · ${t('detail.shiny')}`, url: pokemon.sprites.back_shiny },
-  ].filter((sprite): sprite is { label: string; url: string } => Boolean(sprite.url))
   const cries = [
     { label: t('detail.latestCry'), url: pokemon.cries?.latest },
     { label: t('detail.legacyCry'), url: pokemon.cries?.legacy },
@@ -92,20 +88,8 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
         )}
       </article>
 
-      <article className="info-card technical-card sprites-card">
-        <h2>
-          <Image />
-          {t('detail.sprites')}
-        </h2>
-        <div className="sprite-grid">
-          {sprites.map((sprite) => (
-            <figure key={sprite.label}>
-              <img src={sprite.url} alt={sprite.label} width="96" height="96" loading="lazy" />
-              <figcaption>{sprite.label}</figcaption>
-            </figure>
-          ))}
-        </div>
-      </article>
+      <SpriteGallery sprites={pokemon.sprites} />
+      {species && <PokemonSpeciesDetails species={species} />}
 
       <article className="info-card technical-card">
         <h2>

@@ -1,3 +1,5 @@
+import { EvolutionRules } from '../EvolutionRules'
+import { localizedApiTerm } from '../../lib/api'
 import { ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Language, Translate } from '../../contexts/LanguageContext'
@@ -70,12 +72,13 @@ export function evolutionCondition(detail: EvolutionDetail, t: Translate, langua
         natures: detail.allowed_natures.map(({ name }) => prettyName(name)).join(', '),
       }),
     )
-  if (detail.condition_expression?.percentage_chance)
+  if (presentNumber(detail.condition_expression?.percentage_chance))
     conditions.push(
       t('evolution.specialChance', {
         chance: number(detail.condition_expression.percentage_chance),
       }),
     )
+  if (detail.version_group) conditions.push(localizedApiTerm(detail.version_group.name, language))
   if (!conditions.length && trigger && trigger !== 'level-up') conditions.push(prettyName(trigger))
   if (!conditions.length && trigger === 'level-up') conditions.push(t('evolution.levelUp'))
 
@@ -112,6 +115,10 @@ export function EvolutionTreeNode({ node, t, language, root = false }: Props) {
             </span>
           </span>
         )}
+        {!root &&
+          node.evolution_details
+            .filter((detail) => detail.condition_expression?.expression)
+            .map((detail, index) => <EvolutionRules key={index} detail={detail} />)}
         <Link to={`/pokemon/${encodeURIComponent(pokemonName)}`} className="evolution-pokemon">
           <img
             src={pokemonArtwork(id)}

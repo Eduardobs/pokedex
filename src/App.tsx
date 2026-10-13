@@ -18,6 +18,7 @@ const ResourceListPage = lazyPage(() => import('./pages/ResourceListPage'), 'Res
 const ResourceDetailPage = lazyPage(() => import('./pages/ResourceDetailPage'), 'ResourceDetailPage')
 const FavoritesPage = lazyPage(() => import('./pages/FavoritesPage'), 'FavoritesPage')
 const TypesTablePage = lazyPage(() => import('./pages/TypesTablePage'), 'TypesTablePage')
+const MoveComparisonPage = lazyPage(() => import('./pages/MoveComparisonPage'), 'MoveComparisonPage')
 const MapsPage = lazyPage(() => import('./pages/MapsPage'), 'MapsPage')
 const KantoMapPage = lazyPage(() => import('./pages/KantoMapPage'), 'KantoMapPage')
 const PaldeaMapPage = lazyPage(() => import('./pages/PaldeaMapPage'), 'PaldeaMapPage')
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="explore/:resource" element={<ResourceListPage />} />
               <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
+              <Route path="compare-moves" element={<MoveComparisonPage />} />
               <Route path="types-table" element={<TypesTablePage />} />
               <Route path="maps" element={<MapsPage />} />
               <Route path="maps/kanto" element={<KantoMapPage />} />

@@ -1,3 +1,4 @@
+import { MemoryRouter } from 'react-router-dom'
 import { fireEvent, render, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -7,9 +8,11 @@ import { TypesTablePage } from './TypesTablePage'
 describe('TypesTablePage', () => {
   it('highlights the row and column of the hovered matchup', () => {
     const { container } = render(
-      <LanguageProvider>
-        <TypesTablePage />
-      </LanguageProvider>,
+      <MemoryRouter>
+        <LanguageProvider>
+          <TypesTablePage />
+        </LanguageProvider>
+      </MemoryRouter>,
     )
     const table = container.querySelector('.type-chart')
     const rows = container.querySelectorAll<HTMLTableRowElement>('.type-chart tbody tr')
@@ -35,9 +38,11 @@ describe('TypesTablePage', () => {
 
   it('colors the calculator result according to its effectiveness', () => {
     const { container } = render(
-      <LanguageProvider>
-        <TypesTablePage />
-      </LanguageProvider>,
+      <MemoryRouter>
+        <LanguageProvider>
+          <TypesTablePage />
+        </LanguageProvider>
+      </MemoryRouter>,
     )
     const output = container.querySelector('output')
     const view = within(container)
@@ -53,9 +58,11 @@ describe('TypesTablePage', () => {
 
   it('clears a duplicate second defender when a matchup changes the first defender', () => {
     const { container } = render(
-      <LanguageProvider>
-        <TypesTablePage />
-      </LanguageProvider>,
+      <MemoryRouter>
+        <LanguageProvider>
+          <TypesTablePage />
+        </LanguageProvider>
+      </MemoryRouter>,
     )
     const view = within(container)
     const attackSelect = view.getByRole('combobox', { name: 'Tipo atacante' })
@@ -74,9 +81,11 @@ describe('TypesTablePage', () => {
 
   it('clears a duplicate second defender when the first selector changes', () => {
     const { container } = render(
-      <LanguageProvider>
-        <TypesTablePage />
-      </LanguageProvider>,
+      <MemoryRouter>
+        <LanguageProvider>
+          <TypesTablePage />
+        </LanguageProvider>
+      </MemoryRouter>,
     )
     const view = within(container)
     const firstDefenseSelect = view.getByRole('combobox', { name: 'Primeiro tipo defensor' })

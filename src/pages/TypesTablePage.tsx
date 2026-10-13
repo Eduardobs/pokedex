@@ -1,3 +1,7 @@
+import { useSearchParamUpdater } from '../hooks/useSearchParamUpdater'
+import { useTypeHistory } from '../hooks/useTypeHistory'
+import { historicalMultiplier } from '../lib/type-history'
+import { InlineRetryError } from '../components/FeedbackState'
 import { useState } from 'react'
 import { ArrowDown, ArrowRight, Grid3X3, Shield, ShieldPlus, Swords } from 'lucide-react'
 import { PageHeader } from '../components/PageHeader'
@@ -32,6 +36,21 @@ function resultClass(multiplier: number) {
 
 export function TypesTablePage() {
   const { language, t } = useLanguage()
+  const { searchParams, updateSearchParam } = useSearchParamUpdater()
+  const requestedGeneration = searchParams.get('generation') ?? ''
+  const generation = /^[1-9]$/.test(requestedGeneration) ? requestedGeneration : 'current'
+  const setGeneration = (value: string) => updateSearchParam('generation', value, 'current')
+  const history = useTypeHistory(generation !== 'current')
+  const generationNumber = Number(generation)
+  const types = BATTLE_TYPES.filter(
+    (type) =>
+      generation === 'current' ||
+      (history.data?.find((entry) => entry.name === type)?.generation ?? 100) <= generationNumber,
+  )
+  const multiplierFor = (attack: BattleType, defense: BattleType) =>
+    generation === 'current'
+      ? getDamageMultiplier(attack, defense)
+      : historicalMultiplier(history.data ?? [], generationNumber, attack, defense)
   const [hoveredCell, setHoveredCell] = useState<{
     attackingType: BattleType
     defendingType: BattleType
@@ -44,19 +63,26 @@ export function TypesTablePage() {
   const [calculatorDefense, setCalculatorDefense] = useState<BattleType>('grass')
   const [calculatorSecondDefense, setCalculatorSecondDefense] = useState<BattleType | ''>('')
   const activeCell = hoveredCell ?? selectedCell
+  const attack = types.includes(calculatorAttack) ? calculatorAttack : types[0]
+  const defense = types.includes(calculatorDefense) ? calculatorDefense : types[0]
+  const secondDefense =
+    calculatorSecondDefense && types.includes(calculatorSecondDefense) && calculatorSecondDefense !== defense
+      ? calculatorSecondDefense
+      : ''
   const calculatorResult =
-    getDamageMultiplier(calculatorAttack, calculatorDefense) *
-    (calculatorSecondDefense ? getDamageMultiplier(calculatorAttack, calculatorSecondDefense) : 1)
-  const typeOptions = BATTLE_TYPES.map((type) => ({
+    attack && defense ? multiplierFor(attack, defense) * (secondDefense ? multiplierFor(attack, secondDefense) : 1) : 1
+  const typeOptions = types.map((type) => ({
     value: type,
     label: typeLabel(type, language),
   }))
   const secondTypeOptions: Array<{ value: BattleType | ''; label: string }> = [
     { value: '', label: t('typesTable.noSecond') },
-    ...BATTLE_TYPES.filter((type) => type !== calculatorDefense).map((type) => ({
-      value: type,
-      label: typeLabel(type, language),
-    })),
+    ...types
+      .filter((type) => type !== defense)
+      .map((type) => ({
+        value: type,
+        label: typeLabel(type, language),
+      })),
   ]
 
   function changeFirstDefense(type: BattleType) {
@@ -88,136 +114,164 @@ export function TypesTablePage() {
         description={t('typesTable.description')}
       />
 
-      <section className="type-calculator" aria-labelledby="type-calculator-title">
-        <div>
-          <h2 id="type-calculator-title">{t('typesTable.calculator')}</h2>
-          <p>{t('typesTable.calculatorDesc')}</p>
-        </div>
+      <div className="tool-controls">
         <SelectMenu
-          icon={<Swords size={18} />}
-          label={t('typesTable.attacking')}
-          options={typeOptions}
-          value={calculatorAttack}
-          onChange={setCalculatorAttack}
+          icon={<Grid3X3 size={18} />}
+          label={t('tools.generation')}
+          value={generation}
+          onChange={(value) => {
+            setGeneration(value)
+            setHoveredCell(null)
+            setSelectedCell(null)
+          }}
+          options={[
+            { value: 'current', label: t('tools.current') },
+            ...Array.from({ length: 9 }, (_, i) => ({
+              value: String(i + 1),
+              label: `${t('tools.generation')} ${i + 1}`,
+            })),
+          ]}
         />
-        <SelectMenu
-          icon={<Shield size={18} />}
-          label={t('typesTable.defenderOne')}
-          options={typeOptions}
-          value={calculatorDefense}
-          onChange={changeFirstDefense}
-        />
-        <SelectMenu
-          icon={<ShieldPlus size={18} />}
-          label={t('typesTable.defenderTwo')}
-          options={secondTypeOptions}
-          value={calculatorSecondDefense}
-          onChange={setCalculatorSecondDefense}
-        />
-        <output className={resultClass(calculatorResult)} aria-live="polite">
-          <span>{t('typesTable.result')}</span>
-          <b>{formatDecimal(calculatorResult, language)}×</b>
-        </output>
-      </section>
-
-      <div className="type-chart-guide">
-        <div className="type-chart-axis">
-          <span>
-            <ArrowDown size={16} /> {t('typesTable.attack')}
-          </span>
-          <span>
-            <ArrowRight size={16} /> {t('typesTable.defense')}
-          </span>
-        </div>
-        <div className="type-chart-legend" aria-label={t('typesTable.legend')}>
-          <span>
-            <i className="multiplier super">2×</i>
-            {t('typesTable.super')}
-          </span>
-          <span>
-            <i className="multiplier neutral">1×</i>
-            {t('typesTable.neutral')}
-          </span>
-          <span>
-            <i className="multiplier resisted">½×</i>
-            {t('typesTable.resisted')}
-          </span>
-          <span>
-            <i className="multiplier immune">0×</i>
-            {t('typesTable.immune')}
-          </span>
-        </div>
       </div>
+      {history.loading && <p role="status">{t('common.loading')}</p>}
+      {generation !== 'current' && history.error && (
+        <InlineRetryError message={t('error.message')} retryLabel={t('common.retry')} onRetry={history.retry} />
+      )}
+      {types.length > 0 && (
+        <>
+          <section className="type-calculator" aria-labelledby="type-calculator-title">
+            <div>
+              <h2 id="type-calculator-title">{t('typesTable.calculator')}</h2>
+              <p>{t('typesTable.calculatorDesc')}</p>
+            </div>
+            <SelectMenu
+              icon={<Swords size={18} />}
+              label={t('typesTable.attacking')}
+              options={typeOptions}
+              value={attack}
+              onChange={setCalculatorAttack}
+            />
+            <SelectMenu
+              icon={<Shield size={18} />}
+              label={t('typesTable.defenderOne')}
+              options={typeOptions}
+              value={defense}
+              onChange={changeFirstDefense}
+            />
+            <SelectMenu
+              icon={<ShieldPlus size={18} />}
+              label={t('typesTable.defenderTwo')}
+              options={secondTypeOptions}
+              value={secondDefense}
+              onChange={setCalculatorSecondDefense}
+            />
+            <output className={resultClass(calculatorResult)} aria-live="polite">
+              <span>{t('typesTable.result')}</span>
+              <b>{formatDecimal(calculatorResult, language)}×</b>
+            </output>
+          </section>
 
-      <div className="type-chart-scroll" tabIndex={0} aria-label={t('typesTable.scrollLabel')}>
-        <table className="type-chart" onMouseLeave={() => setHoveredCell(null)}>
-          <caption className="sr-only">{t('typesTable.caption')}</caption>
-          <thead>
-            <tr>
-              <th className="type-chart-corner" scope="col">
-                <ArrowDown size={15} aria-hidden="true" />
-                <span>/</span>
-                <ArrowRight size={15} aria-hidden="true" />
-                <span className="sr-only">{t('typesTable.attackDefense')}</span>
-              </th>
-              {BATTLE_TYPES.map((type) => (
-                <th
-                  scope="col"
-                  key={type}
-                  className={activeCell?.defendingType === type ? 'is-column-highlighted' : undefined}
-                >
-                  <TypeBadge type={type} iconOnly />
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {BATTLE_TYPES.map((attackingType) => (
-              <tr
-                key={attackingType}
-                className={activeCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
-              >
-                <th scope="row">
-                  <TypeBadge type={attackingType} />
-                </th>
-                {BATTLE_TYPES.map((defendingType) => {
-                  const multiplier = getDamageMultiplier(attackingType, defendingType)
-                  const isHovered =
-                    activeCell?.attackingType === attackingType && activeCell.defendingType === defendingType
-                  const classes = [
-                    multiplierClass(multiplier),
-                    activeCell?.defendingType === defendingType && 'is-column-highlighted',
-                    isHovered && 'is-cell-highlighted',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
+          <div className="type-chart-guide">
+            <div className="type-chart-axis">
+              <span>
+                <ArrowDown size={16} /> {t('typesTable.attack')}
+              </span>
+              <span>
+                <ArrowRight size={16} /> {t('typesTable.defense')}
+              </span>
+            </div>
+            <div className="type-chart-legend" aria-label={t('typesTable.legend')}>
+              <span>
+                <i className="multiplier super">2×</i>
+                {t('typesTable.super')}
+              </span>
+              <span>
+                <i className="multiplier neutral">1×</i>
+                {t('typesTable.neutral')}
+              </span>
+              <span>
+                <i className="multiplier resisted">½×</i>
+                {t('typesTable.resisted')}
+              </span>
+              <span>
+                <i className="multiplier immune">0×</i>
+                {t('typesTable.immune')}
+              </span>
+            </div>
+          </div>
 
-                  return (
-                    <td
-                      key={defendingType}
-                      className={classes}
-                      onMouseEnter={() => setHoveredCell({ attackingType, defendingType })}
+          <div className="type-chart-scroll" tabIndex={0} aria-label={t('typesTable.scrollLabel')}>
+            <table className="type-chart" onMouseLeave={() => setHoveredCell(null)}>
+              <caption className="sr-only">{t('typesTable.caption')}</caption>
+              <thead>
+                <tr>
+                  <th className="type-chart-corner" scope="col">
+                    <ArrowDown size={15} aria-hidden="true" />
+                    <span>/</span>
+                    <ArrowRight size={15} aria-hidden="true" />
+                    <span className="sr-only">{t('typesTable.attackDefense')}</span>
+                  </th>
+                  {types.map((type) => (
+                    <th
+                      scope="col"
+                      key={type}
+                      className={activeCell?.defendingType === type ? 'is-column-highlighted' : undefined}
                     >
-                      <button
-                        type="button"
-                        aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}
-                        aria-pressed={
-                          selectedCell?.attackingType === attackingType && selectedCell.defendingType === defendingType
-                        }
-                        onClick={() => selectMatchup(attackingType, defendingType)}
-                      >
-                        <span aria-hidden="true">{multiplierLabels[multiplier]}</span>
-                      </button>
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="type-chart-tap-hint">{t('typesTable.tapHint')}</p>
-      <p className="type-chart-note">{t('typesTable.note')}</p>
+                      <TypeBadge type={type} iconOnly />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {types.map((attackingType) => (
+                  <tr
+                    key={attackingType}
+                    className={activeCell?.attackingType === attackingType ? 'is-row-highlighted' : undefined}
+                  >
+                    <th scope="row">
+                      <TypeBadge type={attackingType} />
+                    </th>
+                    {types.map((defendingType) => {
+                      const multiplier = multiplierFor(attackingType, defendingType)
+                      const isHovered =
+                        activeCell?.attackingType === attackingType && activeCell.defendingType === defendingType
+                      const classes = [
+                        multiplierClass(multiplier),
+                        activeCell?.defendingType === defendingType && 'is-column-highlighted',
+                        isHovered && 'is-cell-highlighted',
+                      ]
+                        .filter(Boolean)
+                        .join(' ')
+
+                      return (
+                        <td
+                          key={defendingType}
+                          className={classes}
+                          onMouseEnter={() => setHoveredCell({ attackingType, defendingType })}
+                        >
+                          <button
+                            type="button"
+                            aria-label={`${typeLabel(attackingType, language)} → ${typeLabel(defendingType, language)}: ${t('typesTable.damageValue', { multiplier: multiplierLabels[multiplier] })}`}
+                            aria-pressed={
+                              selectedCell?.attackingType === attackingType &&
+                              selectedCell.defendingType === defendingType
+                            }
+                            onClick={() => selectMatchup(attackingType, defendingType)}
+                          >
+                            <span aria-hidden="true">{multiplierLabels[multiplier]}</span>
+                          </button>
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="type-chart-tap-hint">{t('typesTable.tapHint')}</p>
+          <p className="type-chart-note">{t(generation === 'current' ? 'typesTable.note' : 'tools.historicalTypes')}</p>
+        </>
+      )}
     </section>
   )
 }

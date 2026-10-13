@@ -51,6 +51,11 @@ export function ExplorePage() {
           />
         }
       />
+      <p>
+        <Link className="button secondary" to="/compare-moves">
+          {t('tools.compare')}
+        </Link>
+      </p>
       <div className="resource-groups">
         {groups.map((group) => (
           <article

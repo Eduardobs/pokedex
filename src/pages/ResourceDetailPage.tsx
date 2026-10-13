@@ -1,3 +1,7 @@
+import { FormConditions } from '../components/FormConditions'
+import { ExperiencePlanner } from '../components/ExperiencePlanner'
+import { ItemPrices } from '../components/ItemPrices'
+import { VersionDescriptions } from '../components/VersionDescriptions'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -16,7 +20,7 @@ const hidden = new Set(['id', 'name', 'names', 'flavor_text_entries', 'effect_en
 const summaryFields: Record<string, string[]> = {
   move: ['type', 'damage_class', 'power', 'accuracy', 'pp', 'priority', 'target'],
   ability: ['generation', 'is_main_series'],
-  item: ['cost', 'category', 'attributes', 'fling_power', 'fling_effect'],
+  item: ['prices', 'category', 'attributes', 'fling_power', 'fling_effect'],
   berry: ['size', 'growth_time', 'max_harvest', 'natural_gift_power', 'natural_gift_type'],
   type: ['generation', 'move_damage_class'],
   region: ['main_generation', 'locations', 'pokedexes'],
@@ -149,6 +153,15 @@ export function ResourceDetailPage() {
           JSON <ExternalLink size={16} />
         </a>
       </header>
+      <VersionDescriptions key={resourcePath} entries={data.flavor_text_entries} />
+      {resource === 'item' && <ItemPrices key={resourcePath} value={data.prices} />}
+      {resource === 'pokemon-form' && <FormConditions conditions={data.trigger_conditions} />}
+      {resource === 'growth-rate' && <ExperiencePlanner key={resourcePath} data={data} />}
+      {resource === 'move' && (
+        <Link className="button secondary" to={`/compare-moves?left=${encodeURIComponent(String(data.name))}`}>
+          {t('tools.compare')}
+        </Link>
+      )}
       <section className="resource-summary" aria-labelledby="resource-summary-title">
         <h2 id="resource-summary-title">{t('resource.summary')}</h2>
         <div className="resource-detail-grid">

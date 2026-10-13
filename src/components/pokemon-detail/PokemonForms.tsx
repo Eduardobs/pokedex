@@ -1,3 +1,4 @@
+import { FormConditions } from '../FormConditions'
 import { Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -105,30 +106,33 @@ function FormTile({ entry, currentPokemon }: { entry: PresentedForm; currentPoke
   const active = pokemon.name === currentPokemon.name
 
   return (
-    <Link
-      className={`form-card form-${presentation.kind} ${active ? 'active' : ''}`}
-      to={`/pokemon/${pokemon.name}`}
-      aria-current={active ? 'page' : undefined}
-    >
-      <div className="form-art">
-        <span />
-        <FormArtwork key={artworkSources.join('|')} sources={artworkSources} alt={presentation.label} />
-        {active && <small>{t('pokemonForms.current')}</small>}
-      </div>
-      <div className="form-info">
-        <span className="form-category">
-          <Icon size={13} />
-          {presentation.category}
-        </span>
-        <h3>{presentation.label}</h3>
-        <p>{prettyName(pokemon.name)}</p>
-        <div className="type-row">
-          {(form?.types ?? pokemon.types).map(({ type }) => (
-            <TypeBadge key={type.name} type={type.name} />
-          ))}
+    <div className="form-with-guide">
+      <Link
+        className={`form-card form-${presentation.kind} ${active ? 'active' : ''}`}
+        to={`/pokemon/${pokemon.name}`}
+        aria-current={active ? 'page' : undefined}
+      >
+        <div className="form-art">
+          <span />
+          <FormArtwork key={artworkSources.join('|')} sources={artworkSources} alt={presentation.label} />
+          {active && <small>{t('pokemonForms.current')}</small>}
         </div>
-      </div>
-    </Link>
+        <div className="form-info">
+          <span className="form-category">
+            <Icon size={13} />
+            {presentation.category}
+          </span>
+          <h3>{presentation.label}</h3>
+          <p>{prettyName(pokemon.name)}</p>
+          <div className="type-row">
+            {(form?.types ?? pokemon.types).map(({ type }) => (
+              <TypeBadge key={type.name} type={type.name} />
+            ))}
+          </div>
+        </div>
+      </Link>
+      <FormConditions conditions={form?.trigger_conditions} />
+    </div>
   )
 }
 

@@ -1,9 +1,11 @@
+import { useSearchParamUpdater } from '../../hooks/useSearchParamUpdater'
 import { GraduationCap, Search, Shapes } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { useApi } from '../../hooks/useApi'
 import { normalizeSearchText } from '../../lib/api'
-import { groupMovesByLearningMethod } from '../../lib/move-learning'
+import { groupMovesByLearningMethod, moveVersionGroups } from '../../lib/move-learning'
+import { localizedApiTerm } from '../../lib/api'
 import { BATTLE_TYPES, type BattleType } from '../../lib/type-chart'
 import type { Pokemon, PokemonType } from '../../types'
 import { EmptyState, InlineRetryError } from '../FeedbackState'
@@ -23,6 +25,11 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
   const [query, setQuery] = useState('')
   const [method, setMethod] = useState('all')
   const [type, setType] = useState<BattleType | 'all'>('all')
+  const { searchParams, updateSearchParam } = useSearchParamUpdater()
+  const selectedVersion = searchParams.get('move-game') ?? ''
+  const setSelectedVersion = (value: string) => updateSearchParam('move-game', value)
+  const versions = useMemo(() => moveVersionGroups(pokemon.moves), [pokemon.moves])
+  const version = versions.includes(selectedVersion) ? selectedVersion : versions[0]
   const deferredQuery = useDeferredValue(query)
   const {
     data: selectedType,
@@ -30,7 +37,7 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
     error: typeError,
     retry: retryType,
   } = useApi<PokemonType & { moves: Array<{ name: string }> }>(active && type !== 'all' ? `type/${type}` : null)
-  const groups = useMemo(() => groupMovesByLearningMethod(pokemon.moves), [pokemon.moves])
+  const groups = useMemo(() => groupMovesByLearningMethod(pokemon.moves, version), [pokemon.moves, version])
   const methods = useMemo(() => groups.map((group) => group.method), [groups])
   const moveNamesForType = useMemo(
     () => (type === 'all' ? null : new Set(selectedType?.moves.map((move) => move.name) ?? [])),
@@ -88,6 +95,18 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
         </div>
       </div>
       <div className="move-toolbar">
+        {versions.length > 0 && (
+          <SelectMenu
+            icon={<GraduationCap size={18} />}
+            label={t('tools.game')}
+            options={versions.map((value) => ({ value, label: localizedApiTerm(value, language) }))}
+            value={version}
+            onChange={(value) => {
+              setSelectedVersion(value)
+              setMethod('all')
+            }}
+          />
+        )}
         <SearchField
           value={query}
           onChange={setQuery}
@@ -132,7 +151,7 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
               </header>
               <div className="moves-grid">
                 {group.moves.map(({ move, method: learningMethod, level }) => (
-                  <MoveCard key={move.name} move={move} method={learningMethod} level={level} />
+                  <MoveCard key={`${move.name}-${level}`} move={move} method={learningMethod} level={level} />
                 ))}
               </div>
             </section>

@@ -1,3 +1,4 @@
+import { MemoryRouter } from 'react-router-dom'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../../contexts/LanguageContext'
@@ -49,9 +50,11 @@ afterEach(() => {
 
 function renderTab(active = true) {
   return render(
-    <LanguageProvider>
-      <PokemonMovesTab active={active} pokemon={pokemon} />
-    </LanguageProvider>,
+    <MemoryRouter>
+      <LanguageProvider>
+        <PokemonMovesTab active={active} pokemon={pokemon} />
+      </LanguageProvider>
+    </MemoryRouter>,
   )
 }
 

@@ -18,9 +18,9 @@ const pokemon = {
   species: resource('pokemon-species', 25, 'pikachu'),
   forms: [resource('pokemon-form', 25, 'pikachu')],
   sprites: {
-    front_default: 'front.png',
-    front_shiny: 'front-shiny.png',
-    back_default: 'back.png',
+    front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/front.png',
+    front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/front-shiny.png',
+    back_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back.png',
     back_shiny: null,
   },
   cries: { latest: 'latest.ogg', legacy: null },
@@ -56,9 +56,18 @@ describe('PokemonDataTab', () => {
     expect(registry).not.toBeNull()
     expect(within(registry!).getByText('Lendário').parentElement).toHaveTextContent('Sim')
     expect(within(registry!).getByText('Mítico').parentElement).toHaveTextContent('Não')
-    expect(screen.getByRole('img', { name: 'Frente · Normal' })).toHaveAttribute('src', 'front.png')
-    expect(screen.getByRole('img', { name: 'Frente · Shiny' })).toHaveAttribute('src', 'front-shiny.png')
-    expect(screen.getByRole('img', { name: 'Costas · Normal' })).toHaveAttribute('src', 'back.png')
+    expect(screen.getByRole('img', { name: 'Frente · Normal' })).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/front.png',
+    )
+    expect(screen.getByRole('img', { name: 'Frente · Shiny' })).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/front-shiny.png',
+    )
+    expect(screen.getByRole('img', { name: 'Costas · Normal' })).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back.png',
+    )
     expect(container.querySelector('audio')).toHaveAttribute('src', 'latest.ogg')
     expect(screen.getByRole('link', { name: /JSON/ })).toHaveAttribute(
       'href',

@@ -65,7 +65,7 @@ export type LocalizedTextResult = { text: string; language: string; fallback: bo
 
 export function localizedTextResult(
   entries: unknown,
-  keys: string[] = ['flavor_text', 'effect', 'description'],
+  keys: string[] = ['flavor_text', 'text', 'effect', 'description'],
   language = 'pt-br',
 ): LocalizedTextResult {
   if (!Array.isArray(entries)) return { text: '', language, fallback: false }
@@ -87,7 +87,7 @@ export function localizedTextResult(
 
 export function localizedText(
   entries: unknown,
-  keys: string[] = ['flavor_text', 'effect', 'description'],
+  keys: string[] = ['flavor_text', 'text', 'effect', 'description'],
   language = 'pt-br',
 ): string {
   return localizedTextResult(entries, keys, language).text
