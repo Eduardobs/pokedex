@@ -202,17 +202,19 @@ export function PokemonDetailPage() {
               </span>
             </div>
           </div>
-          <div className="detail-art">
-            <span className="giant-number">{String(pokemon.id).padStart(3, '0')}</span>
-            <span className="detail-orb" />
-            <img
-              src={artwork}
-              alt={`${prettyName(pokemon.name)}${shiny ? ` — ${t('detail.shiny')}` : ''}`}
-              width="420"
-              height="420"
-              decoding="async"
-              fetchPriority="high"
-            />
+          <div className="detail-visual">
+            <div className="detail-art">
+              <span className="giant-number">{String(pokemon.id).padStart(3, '0')}</span>
+              <span className="detail-orb" />
+              <img
+                src={artwork}
+                alt={`${prettyName(pokemon.name)}${shiny ? ` — ${t('detail.shiny')}` : ''}`}
+                width="420"
+                height="420"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </div>
             <button
               type="button"
               aria-pressed={shiny}

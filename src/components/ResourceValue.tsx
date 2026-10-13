@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
+import { Pagination } from './Pagination'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { API_BASE, formatNumber, localizedApiTerm, pokemonArtwork, prettyName, resolveApiUrl } from '../lib/api'
@@ -61,7 +62,7 @@ type PokemonGender = 'female' | 'male'
 function useResourcePagination(total: number) {
   const [page, setPage] = useState(0)
   const pageCount = Math.ceil(total / PAGE_SIZE)
-  const currentPage = Math.min(page, pageCount - 1)
+  const currentPage = Math.max(0, Math.min(page, pageCount - 1))
   const start = currentPage * PAGE_SIZE
   const end = Math.min(start + PAGE_SIZE, total)
 
@@ -75,30 +76,15 @@ function ResourceValuePagination({
   pagination: ReturnType<typeof useResourcePagination>
   live?: boolean
 }) {
-  const { t } = useLanguage()
-  const { currentPage, pageCount, setPage, start, end, total } = pagination
-  const label = t('resource.range', { start: start + 1, end, total })
-
+  const { currentPage, setPage, total } = pagination
   return (
-    <nav className="resource-value-pagination" aria-label={label}>
-      <button
-        type="button"
-        disabled={currentPage === 0}
-        onClick={() => setPage((value) => Math.max(0, value - 1))}
-        aria-label={t('resource.previous')}
-      >
-        <ChevronLeft />
-      </button>
-      <span aria-live={live ? 'polite' : undefined}>{label}</span>
-      <button
-        type="button"
-        disabled={currentPage === pageCount - 1}
-        onClick={() => setPage((value) => Math.min(pageCount - 1, value + 1))}
-        aria-label={t('resource.next')}
-      >
-        <ChevronRight />
-      </button>
-    </nav>
+    <Pagination
+      page={currentPage + 1}
+      pageSize={PAGE_SIZE}
+      total={total}
+      onPageChange={(page) => setPage(page - 1)}
+      live={live}
+    />
   )
 }
 

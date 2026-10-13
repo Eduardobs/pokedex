@@ -153,6 +153,12 @@
   text-transform: uppercase;
   letter-spacing: 0.7px;
 }
+.detail-visual {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 8px;
+  padding-bottom: 16px;
+}
 .detail-art {
   height: 100%;
   display: grid;
@@ -182,8 +188,8 @@
   top: 80px;
 }
 .shiny-toggle {
-  position: absolute;
-  bottom: 35px;
+  position: relative;
+  justify-self: center;
   z-index: 3;
   border: 1px solid color-mix(in srgb, var(--theme) 30%, white);
   background: white;

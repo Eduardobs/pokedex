@@ -33,6 +33,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Mobile map filters must overlay the map without shifting its position and restore focus to their trigger when closed.
 - The header must hide the Atlas Pokémon wordmark before replacing its navigation links with a hamburger menu at narrower widths.
 
+- All paginated lists must use the shared pagination component with direct page selection and first/last navigation.
+
 ## Maintenance
 
 - Record in this section every new lasting, project-wide definition introduced by a request.

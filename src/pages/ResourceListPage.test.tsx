@@ -21,6 +21,35 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('ResourceListPage pagination', () => {
+  it('jumps to the last page while preserving the collection search', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 125,
+        results: Array.from({ length: 125 }, (_, index) => ({
+          name: `ability-${index + 1}`,
+          url: `https://pokeapi.co/api/v2/ability/${index + 1}/`,
+        })),
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    render(
+      <MemoryRouter initialEntries={['/explore/ability?q=ability']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+    fireEvent.click(screen.getAllByRole('button', { name: 'Última página' })[0])
+    expect(screen.getAllByText('Página 4')).toHaveLength(2)
+    expect(screen.getByRole('textbox', { name: 'Buscar em toda a coleção…' })).toHaveValue('ability')
+    expect(screen.getByRole('link', { name: /Ability 125/ })).toBeVisible()
+    expect(screen.queryByRole('link', { name: /Ability 1$/ })).not.toBeInTheDocument()
+  })
+
   it('redirects an offset beyond the collection to the last valid page', async () => {
     useApiMock.mockReturnValue({
       data: { count: 100, previous: 'previous', next: null, results: [] },

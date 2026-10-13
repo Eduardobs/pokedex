@@ -1,5 +1,7 @@
-import { ChevronLeft, ChevronRight, Database, Search, Swords, TriangleAlert, Zap } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { ChevronRight } from 'lucide-react'
+import { Pagination } from '../components/Pagination'
+import { Database, Search, Swords, TriangleAlert, Zap } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { EmptyState, InlineRetryError } from '../components/FeedbackState'
@@ -66,7 +68,13 @@ export function ResourceListPage() {
     return { ...item, id, name: 'name' in item && item.name ? item.name : id }
   })
   const matches = searching ? items.filter((item) => matchesResource(item.name, item.url, query)) : items
-  const resultCount = searching ? matches.length : data.count
+  const collectionKey = JSON.stringify([resource, query])
+  const [knownCount, setKnownCount] = useState({ key: collectionKey, total: 0 })
+  const responseCount = searching ? matches.length : data.count
+  if (response && (knownCount.key !== collectionKey || knownCount.total !== responseCount)) {
+    setKnownCount({ key: collectionKey, total: responseCount })
+  }
+  const resultCount = response ? responseCount : knownCount.key === collectionKey ? knownCount.total : 0
   const filtered = searching ? matches.slice(offset, offset + LIMIT) : matches
   const moveDetails = useMoveListDetails(resource === 'move' ? filtered : [], apiLanguage)
   const abilityDetails = useAbilityListDetails(resource === 'ability' ? filtered : [], apiLanguage)
@@ -130,35 +138,14 @@ export function ResourceListPage() {
     return <b>{prettyName(name)}</b>
   }
   const pagination = (position: 'top' | 'bottom') => (
-    <nav
-      className={`pagination pagination-${position}`}
-      aria-label={`${t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })} · ${t('resource.range', { start: resultCount ? offset + 1 : 0, end: Math.min(offset + LIMIT, resultCount), total: resultCount })}`}
-    >
-      <button
-        type="button"
-        disabled={loading || offset === 0}
-        onClick={() => updateParams(Math.max(0, offset - LIMIT))}
-      >
-        <ChevronLeft /> {t('resource.previous')}
-      </button>
-      <span>
-        <b>{t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })}</b>
-        <small>
-          {t('resource.range', {
-            start: resultCount ? offset + 1 : 0,
-            end: Math.min(offset + LIMIT, resultCount),
-            total: resultCount,
-          })}
-        </small>
-      </span>
-      <button
-        type="button"
-        disabled={loading || offset + LIMIT >= resultCount}
-        onClick={() => updateParams(offset + LIMIT)}
-      >
-        {t('resource.next')} <ChevronRight />
-      </button>
-    </nav>
+    <Pagination
+      className={`collection-pagination collection-pagination-${position}`}
+      page={Math.floor(offset / LIMIT) + 1}
+      pageSize={LIMIT}
+      total={resultCount}
+      disabled={loading}
+      onPageChange={(page) => updateParams((page - 1) * LIMIT)}
+    />
   )
   return (
     <section

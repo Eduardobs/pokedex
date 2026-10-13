@@ -18,6 +18,7 @@ The application is a client-side static site: it has no application server or da
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, evolution variables, currencies, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
+- **Shared pagination** with numbered pages, first/last shortcuts, and responsive keyboard-accessible controls across Explore collections and related-data lists.
 - **Collection-wide search** by original resource name or number, with paginated results and details loaded only for the visible page.
 - **Compact navigation and maps** with mobile filter overlays, removable catalog filters, and arrow-key navigation inside the type matrix.
 - **Light and dark themes**, responsive layouts, keyboard-friendly controls, loading and error states, and reduced-motion support.

@@ -12,3 +12,5 @@
 @import './styles/game-map.css';
 @import './styles/data-tools.css';
 @import './styles/usability.css';
+
+@import './styles/pagination.css';

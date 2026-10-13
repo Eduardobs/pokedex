@@ -1,0 +1,74 @@
+.page-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 20px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.collection-pagination {
+  margin-top: 35px;
+}
+.collection-pagination-top {
+  margin: 0 0 20px;
+}
+.page-navigation-summary {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+.page-navigation-summary b {
+  color: var(--ink);
+}
+.page-navigation-controls,
+.page-navigation-numbers {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.page-navigation-controls {
+  flex-wrap: wrap;
+}
+.page-navigation button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+}
+.page-navigation button:not(:disabled):not([aria-disabled='true']):hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.page-navigation button[aria-current='page'] {
+  border: 2px solid var(--red);
+  color: var(--red);
+  background: var(--surface-soft);
+}
+.page-navigation button:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+.page-navigation button:disabled,
+.page-navigation button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+@media (max-width: 720px) {
+  .page-navigation-controls {
+    width: 100%;
+  }
+  .page-navigation-numbers {
+    order: -1;
+    flex-basis: 100%;
+  }
+}
