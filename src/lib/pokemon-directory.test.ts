@@ -19,13 +19,34 @@ describe('filterPokemonCatalogMetadata', () => {
         },
         legendary: true,
         mythical: false,
+        baby: false,
         rarityDetails: {
-          'charizard-mega-x': { isLegendary: true, isMythical: false },
-          'butterfree-gmax': { isLegendary: false, isMythical: false },
+          'charizard-mega-x': { isLegendary: true, isMythical: false, isBaby: false },
+          'butterfree-gmax': { isLegendary: false, isMythical: false, isBaby: false },
         },
       }),
     ).toEqual([pokemon[0]])
     expect(pokemon).toHaveLength(3)
+  })
+
+  it('combines baby and legendary selections while intersecting the region', () => {
+    const entries = [{ name: 'pichu' }, { name: 'cleffa' }, { name: 'raikou' }, { name: 'pikachu' }]
+    const filters = {
+      region: 'johto' as const,
+      regionDetails: { pichu: 'johto' as const, cleffa: 'johto' as const, raikou: 'johto' as const },
+      legendary: false,
+      mythical: false,
+      baby: true,
+      rarityDetails: {
+        pichu: { isLegendary: false, isMythical: false, isBaby: true },
+        cleffa: { isLegendary: false, isMythical: false, isBaby: true },
+        raikou: { isLegendary: true, isMythical: false, isBaby: false },
+      },
+    }
+    expect(filterPokemonCatalogMetadata(entries, filters)).toEqual(entries.slice(0, 2))
+    expect(filterPokemonCatalogMetadata(entries, { ...filters, legendary: true })).toEqual(entries.slice(0, 3))
+    expect(filterPokemonCatalogMetadata(entries, { ...filters, region: 'kanto' })).toEqual([])
+    expect(filterPokemonCatalogMetadata(entries, { ...filters, rarityDetails: null })).toEqual([])
   })
 
   it('returns no speculative matches while required metadata is unavailable', () => {
@@ -35,6 +56,7 @@ describe('filterPokemonCatalogMetadata', () => {
         regionDetails: null,
         legendary: false,
         mythical: false,
+        baby: false,
         rarityDetails: null,
       }),
     ).toEqual([])

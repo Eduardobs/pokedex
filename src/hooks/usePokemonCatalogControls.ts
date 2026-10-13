@@ -28,7 +28,8 @@ export function usePokemonCatalogControls(pageSize: number) {
   const direction: PokemonSortDirection = searchParams.get('order') === 'desc' ? 'desc' : 'asc'
   const legendary = searchParams.get('legendary') === 'true'
   const mythical = searchParams.get('mythical') === 'true'
-  const hasRarityFilter = legendary || mythical
+  const baby = searchParams.get('baby') === 'true'
+  const hasRarityFilter = legendary || mythical || baby
 
   return {
     searchParams,
@@ -41,6 +42,7 @@ export function usePokemonCatalogControls(pageSize: number) {
     direction,
     legendary,
     mythical,
+    baby,
     hasRarityFilter,
     visibleCount,
     setVisibleCount,

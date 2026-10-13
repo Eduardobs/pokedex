@@ -47,7 +47,8 @@ type Props = {
   sortError: boolean
   legendary: boolean
   mythical: boolean
-  onRarityChange: (filter: 'legendary' | 'mythical', checked: boolean) => void
+  baby: boolean
+  onRarityChange: (filter: 'legendary' | 'mythical' | 'baby', checked: boolean) => void
   rarityPending: boolean
   hasActiveFilters: boolean
   onClearFilters: () => void
@@ -78,6 +79,7 @@ export function PokemonCatalogFilters({
   sortError,
   legendary,
   mythical,
+  baby,
   onRarityChange,
   rarityPending,
   hasActiveFilters,
@@ -105,7 +107,7 @@ export function PokemonCatalogFilters({
   const suggestionListId = `${idPrefix}-suggestions`
   const additionalFiltersId = `additional-${idPrefix}-filters`
   const typeHelpId = `${idPrefix}-type-filter-help`
-  const additionalFilterCount = types.length + Number(legendary) + Number(mythical)
+  const additionalFilterCount = types.length + Number(legendary) + Number(mythical) + Number(baby)
 
   const selectSuggestion = (name: string) => {
     onQueryChange(name)
@@ -310,6 +312,10 @@ export function PokemonCatalogFilters({
               onChange={(event) => onRarityChange('mythical', event.target.checked)}
             />
             {t('pokedex.rarity.mythical')}
+          </label>
+          <label>
+            <input type="checkbox" checked={baby} onChange={(event) => onRarityChange('baby', event.target.checked)} />
+            {t('pokedex.rarity.baby')}
           </label>
         </div>
       </div>

@@ -39,6 +39,7 @@ export function FormsPage() {
     direction,
     legendary,
     mythical,
+    baby,
     hasRarityFilter,
     visibleCount,
     setVisibleCount,
@@ -149,9 +150,10 @@ export function FormsPage() {
         regionDetails,
         legendary,
         mythical,
+        baby,
         rarityDetails,
       }),
-    [legendary, mythical, rarityDetails, region, regionDetails, typedForms],
+    [legendary, mythical, baby, rarityDetails, region, regionDetails, typedForms],
   )
   const normalizedQuery = normalizeSearchText(deferredQuery)
   const filtered = useMemo(
@@ -201,7 +203,7 @@ export function FormsPage() {
   const changeRegion = (value: string) => updateSearchParam('region', value, 'all')
   const changeSort = (value: typeof sort) => updateSearchParam('sort', value, 'number')
   const changeDirection = (value: typeof direction) => updateSearchParam('order', value, 'asc')
-  const changeRarityFilter = (filter: 'legendary' | 'mythical', checked: boolean) =>
+  const changeRarityFilter = (filter: 'legendary' | 'mythical' | 'baby', checked: boolean) =>
     updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
@@ -289,6 +291,7 @@ export function FormsPage() {
         sortError={sortError}
         legendary={legendary}
         mythical={mythical}
+        baby={baby}
         onRarityChange={changeRarityFilter}
         rarityPending={isRarityPending}
         hasActiveFilters={hasActiveFilters}

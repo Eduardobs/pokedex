@@ -155,12 +155,21 @@ describe('Pokédex rarity catalog', () => {
           name: 'mewtwo',
           is_legendary: true,
           is_mythical: false,
+          is_baby: false,
           pokemons: [{ name: 'mewtwo' }],
+        },
+        {
+          name: 'pichu',
+          is_legendary: false,
+          is_mythical: false,
+          is_baby: true,
+          pokemons: [{ name: 'pichu' }],
         },
         {
           name: 'deoxys',
           is_legendary: false,
           is_mythical: true,
+          is_baby: false,
           pokemons: [{ name: 'deoxys-normal' }, { name: 'deoxys-attack' }],
         },
       ],
@@ -169,9 +178,10 @@ describe('Pokédex rarity catalog', () => {
 
   it('applies the species classification to all of its varieties', () => {
     expect(parsePokemonRarityDetails(rarityPayload)).toEqual({
-      mewtwo: { isLegendary: true, isMythical: false },
-      'deoxys-normal': { isLegendary: false, isMythical: true },
-      'deoxys-attack': { isLegendary: false, isMythical: true },
+      pichu: { isLegendary: false, isMythical: false, isBaby: true },
+      mewtwo: { isLegendary: true, isMythical: false, isBaby: false },
+      'deoxys-normal': { isLegendary: false, isMythical: true, isBaby: false },
+      'deoxys-attack': { isLegendary: false, isMythical: true, isBaby: false },
     })
   })
 
@@ -188,10 +198,19 @@ describe('Pokédex rarity catalog', () => {
               name: 'mewtwo',
               is_legendary: true,
               is_mythical: false,
+              is_baby: false,
               pokemons: [{ name: '__proto__' }],
             },
           ],
         },
+      }),
+    ).toThrow(ApiError)
+  })
+
+  it.each([undefined, null, 'true', 1])('rejects an invalid baby flag: %s', (isBaby) => {
+    expect(() =>
+      parsePokemonRarityDetails({
+        data: { pokemonspecies: [{ ...rarityPayload.data.pokemonspecies[0], is_baby: isBaby }] },
       }),
     ).toThrow(ApiError)
   })
@@ -211,6 +230,7 @@ describe('Pokédex rarity catalog', () => {
     expect(body).toMatchObject({ operationName: 'PokemonRarityDetails' })
     expect(body.query).toContain('is_legendary')
     expect(body.query).toContain('is_mythical')
+    expect(body.query).toContain('is_baby: { _eq: true }')
     expect(body.query).toContain('pokemons { name }')
   })
 })

@@ -36,7 +36,7 @@ describe('usePokemonCatalogDetails', () => {
   it('retries a failed request and exposes the recovered data', async () => {
     fetchRarity
       .mockRejectedValueOnce(new Error('network unavailable'))
-      .mockResolvedValueOnce({ mew: { isLegendary: false, isMythical: true } })
+      .mockResolvedValueOnce({ mew: { isLegendary: false, isMythical: true, isBaby: false } })
 
     const { result } = renderHook(() =>
       usePokemonCatalogDetails({ hasRarityFilter: true, region: 'all', sort: 'number' }),
@@ -46,7 +46,7 @@ describe('usePokemonCatalogDetails', () => {
     act(() => result.current.rarity.retry())
     await waitFor(() =>
       expect(result.current.rarity.data).toEqual({
-        mew: { isLegendary: false, isMythical: true },
+        mew: { isLegendary: false, isMythical: true, isBaby: false },
       }),
     )
     expect(fetchRarity).toHaveBeenCalledTimes(2)

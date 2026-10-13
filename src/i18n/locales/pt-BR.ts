@@ -280,6 +280,7 @@ export const ptBR = {
   'pokedex.rarity.label': 'Raridade',
   'pokedex.rarity.legendary': 'Lendário',
   'pokedex.rarity.mythical': 'Mítico',
+  'pokedex.rarity.baby': 'Forma bebê',
   'pokedex.rarity.loading': 'Carregando classificação de raridade...',
   'pokedex.rarity.error': 'Não foi possível carregar a classificação de raridade.',
   'pokedex.region.label': 'Região',

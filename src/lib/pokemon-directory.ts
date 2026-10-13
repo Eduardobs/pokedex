@@ -63,19 +63,20 @@ type CatalogMetadataFilters = {
   regionDetails: Record<string, PokemonRegion> | null
   legendary: boolean
   mythical: boolean
+  baby: boolean
   rarityDetails: Record<string, PokemonRarityDetails> | null
 }
 
 export function filterPokemonCatalogMetadata<T extends { name: string }>(
   pokemon: T[],
-  { region, regionDetails, legendary, mythical, rarityDetails }: CatalogMetadataFilters,
+  { region, regionDetails, legendary, mythical, baby, rarityDetails }: CatalogMetadataFilters,
 ) {
   return pokemon.filter(({ name }) => {
     if (region !== 'all' && regionDetails?.[name] !== region) return false
-    if (!legendary && !mythical) return true
+    if (!legendary && !mythical && !baby) return true
 
     const rarity = rarityDetails?.[name]
-    return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical))
+    return Boolean((legendary && rarity?.isLegendary) || (mythical && rarity?.isMythical) || (baby && rarity?.isBaby))
   })
 }
 

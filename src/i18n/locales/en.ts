@@ -278,6 +278,7 @@ export const en = {
   'pokedex.rarity.label': 'Rarity',
   'pokedex.rarity.legendary': 'Legendary',
   'pokedex.rarity.mythical': 'Mythical',
+  'pokedex.rarity.baby': 'Baby form',
   'pokedex.rarity.loading': 'Loading rarity classification...',
   'pokedex.rarity.error': 'Could not load the rarity classification.',
   'pokedex.region.label': 'Region',

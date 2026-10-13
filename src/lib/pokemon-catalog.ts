@@ -16,11 +16,12 @@ const RARITY_DETAILS_QUERY = `query PokemonRarityDetails {
   pokemonspecies(
     limit: ${POKEMON_CATALOG_LIMIT}
     order_by: { id: asc }
-    where: { _or: [{ is_legendary: { _eq: true } }, { is_mythical: { _eq: true } }] }
+    where: { _or: [{ is_legendary: { _eq: true } }, { is_mythical: { _eq: true } }, { is_baby: { _eq: true } }] }
   ) {
     name
     is_legendary
     is_mythical
+    is_baby
     pokemons { name }
   }
 }`
@@ -56,6 +57,7 @@ let cachedRegionDetails: Record<string, PokemonRegion> | undefined
 export type PokemonRarityDetails = {
   isLegendary: boolean
   isMythical: boolean
+  isBaby: boolean
 }
 
 type UnknownRecord = Record<string, unknown>
@@ -117,7 +119,7 @@ export function parsePokemonSortDetails(payload: unknown): Record<string, Pokemo
   return details
 }
 
-/** Maps each Pokémon variety to the legendary/mythical flags of its species. */
+/** Maps each Pokémon variety to the legendary, mythical, and baby flags of its species. */
 export function parsePokemonRarityDetails(payload: unknown): Record<string, PokemonRarityDetails> {
   if (
     !isRecord(payload) ||
@@ -140,7 +142,8 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
       !/^[a-z0-9-]{1,100}$/.test(species.name) ||
       typeof species.is_legendary !== 'boolean' ||
       typeof species.is_mythical !== 'boolean' ||
-      (!species.is_legendary && !species.is_mythical) ||
+      typeof species.is_baby !== 'boolean' ||
+      (!species.is_legendary && !species.is_mythical && !species.is_baby) ||
       !Array.isArray(species.pokemons) ||
       species.pokemons.length === 0
     ) {
@@ -156,7 +159,11 @@ export function parsePokemonRarityDetails(payload: unknown): Record<string, Poke
       ) {
         throw new ApiError('PokéAPI returned invalid varieties.', undefined, 'invalid-response')
       }
-      details[pokemon.name] = { isLegendary: species.is_legendary, isMythical: species.is_mythical }
+      details[pokemon.name] = {
+        isLegendary: species.is_legendary,
+        isMythical: species.is_mythical,
+        isBaby: species.is_baby,
+      }
     }
   }
   return details

@@ -34,6 +34,7 @@ export function PokedexPage() {
     direction,
     legendary,
     mythical,
+    baby,
     hasRarityFilter,
     visibleCount,
     setVisibleCount,
@@ -66,9 +67,10 @@ export function PokedexPage() {
         regionDetails,
         legendary,
         mythical,
+        baby,
         rarityDetails,
       }),
-    [catalog, legendary, mythical, rarityDetails, region, regionDetails],
+    [catalog, legendary, mythical, baby, rarityDetails, region, regionDetails],
   )
   const filteredPokemon = useMemo(() => filterPokemonList(scopedCatalog, deferredQuery), [deferredQuery, scopedCatalog])
   const suggestions = useMemo(
@@ -98,7 +100,7 @@ export function PokedexPage() {
   const changeSort = (value: typeof sort) => updateSearchParam('sort', value, 'number')
   const changeDirection = (value: typeof direction) => updateSearchParam('order', value, 'asc')
   const changeRegion = (value: string) => updateSearchParam('region', value, 'all')
-  const changeRarityFilter = (filter: 'legendary' | 'mythical', checked: boolean) =>
+  const changeRarityFilter = (filter: 'legendary' | 'mythical' | 'baby', checked: boolean) =>
     updateSearchParam(filter, checked ? 'true' : '')
 
   const selectedSortMetric = pokemonSortMetricLabel(sort, t)
@@ -145,6 +147,7 @@ export function PokedexPage() {
         sortError={sortError}
         legendary={legendary}
         mythical={mythical}
+        baby={baby}
         onRarityChange={changeRarityFilter}
         rarityPending={isRarityPending}
         hasActiveFilters={hasActiveFilters}

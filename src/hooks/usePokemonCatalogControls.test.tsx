@@ -55,6 +55,14 @@ describe('usePokemonCatalogControls', () => {
     expect(result.current.searchParams.has('type')).toBe(false)
   })
 
+  it.each(['true', 'false', 'invalid', ''])('restores the baby filter from the URL value %s', (value) => {
+    const { result } = renderHook(() => usePokemonCatalogControls(24), {
+      wrapper: wrapper(`/pokemon?baby=${value}`),
+    })
+    expect(result.current.baby).toBe(value === 'true')
+    expect(result.current.hasRarityFilter).toBe(value === 'true')
+  })
+
   it('accepts supported catalog parameters and safely falls back from invalid values', () => {
     const { result } = renderHook(() => usePokemonCatalogControls(24), {
       wrapper: wrapper('/pokemon?q=pika&type=invalid&region=kanto&sort=attack&order=desc&legendary=true'),

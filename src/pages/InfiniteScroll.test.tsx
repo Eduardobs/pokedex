@@ -307,21 +307,29 @@ describe('Pokédex filters', () => {
     expect(within(typeGroup).queryAllByRole('checkbox', { checked: true })).toHaveLength(0)
   })
 
-  it('filters legendary and mythical Pokémon with unchecked checkboxes by default', async () => {
+  it('filters baby, legendary and mythical Pokémon with unchecked checkboxes by default', async () => {
     useApiMock.mockReturnValue({ data: apiList(pokemon), loading: false, error: null })
     fetchPokemonRarityDetailsMock.mockResolvedValue({
-      'pokemon-1': { isLegendary: true, isMythical: false },
-      'pokemon-2': { isLegendary: false, isMythical: true },
+      'pokemon-1': { isLegendary: true, isMythical: false, isBaby: false },
+      'pokemon-2': { isLegendary: false, isMythical: true, isBaby: false },
+      'pokemon-3': { isLegendary: false, isMythical: false, isBaby: true },
     })
     render(renderPage(<PokedexPage />))
     fireEvent.click(screen.getByRole('button', { name: 'Exibir filtros' }))
 
     const legendary = screen.getByRole('checkbox', { name: 'Lendário' })
     const mythical = screen.getByRole('checkbox', { name: 'Mítico' })
+    const baby = screen.getByRole('checkbox', { name: 'Forma bebê' })
+    expect(baby).not.toBeChecked()
     expect(legendary).not.toBeChecked()
     expect(mythical).not.toBeChecked()
     expect(fetchPokemonRarityDetailsMock).not.toHaveBeenCalled()
 
+    fireEvent.click(baby)
+    await waitFor(() => expect(screen.getByText('pokemon-3')).toBeInTheDocument())
+    expect(screen.queryByText('pokemon-1')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('1 filtro ativo')).toBeInTheDocument()
+    fireEvent.click(baby)
     fireEvent.click(legendary)
     await waitFor(() => expect(screen.getByText('pokemon-1')).toBeInTheDocument())
     expect(screen.queryByText('pokemon-2')).not.toBeInTheDocument()
@@ -329,6 +337,14 @@ describe('Pokédex filters', () => {
     fireEvent.click(mythical)
     await waitFor(() => expect(screen.getByText('pokemon-2')).toBeInTheDocument())
     expect(screen.getByText('pokemon-1')).toBeInTheDocument()
+    fireEvent.click(baby)
+    expect(screen.getByText('pokemon-3')).toBeInTheDocument()
+    expect(screen.queryByText('pokemon-4')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar filtros' }))
+    expect(baby).not.toBeChecked()
+    expect(legendary).not.toBeChecked()
+    expect(mythical).not.toBeChecked()
+    expect(screen.getByText('pokemon-4')).toBeInTheDocument()
     expect(fetchPokemonRarityDetailsMock).toHaveBeenCalledTimes(1)
   })
 
@@ -430,7 +446,7 @@ describe('Forms filters', () => {
       'butterfree-gmax': 'galar',
     })
     fetchPokemonRarityDetailsMock.mockResolvedValue({
-      'charizard-mega-x': { isLegendary: true, isMythical: false },
+      'charizard-mega-x': { isLegendary: true, isMythical: false, isBaby: false },
     })
     render(renderPage(<FormsPage />))
 
