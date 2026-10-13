@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Database, MapPin, Sparkles } from 'lucide-react'
+import { ArrowRight, BookOpen, Database, MapPin, Sparkles, Swords } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { RESOURCE_COLLECTION_COUNT } from '../data/resource-summary'
@@ -95,7 +95,7 @@ export function HomePage() {
           </Link>
           <Link to="/explore/move" className="quick-card purple">
             <div className="quick-icon">
-              <Sparkles />
+              <Swords />
             </div>
             <div>
               <h3>{t('home.moves')}</h3>

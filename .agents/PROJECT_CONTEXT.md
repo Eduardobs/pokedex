@@ -29,6 +29,10 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Every translation must live in the corresponding file under `src/i18n/locales`; `messages.ts` must only compose and type the catalogs.
 - Application route segments must be written in English, independently of the selected interface language.
 
+- Explore collection search must cover the entire resource directory by original name or number, not only the current page.
+- Mobile map filters must overlay the map without shifting its position and restore focus to their trigger when closed.
+- The header must hide the Atlas Pokémon wordmark before replacing its navigation links with a hamburger menu at narrower widths.
+
 ## Maintenance
 
 - Record in this section every new lasting, project-wide definition introduced by a request.

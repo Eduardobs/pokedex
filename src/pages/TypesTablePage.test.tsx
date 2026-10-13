@@ -1,9 +1,11 @@
 import { MemoryRouter } from 'react-router-dom'
-import { fireEvent, render, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { cleanup, fireEvent, render, within } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { BATTLE_TYPES } from '../lib/type-chart'
 import { TypesTablePage } from './TypesTablePage'
+
+afterEach(cleanup)
 
 describe('TypesTablePage', () => {
   it('highlights the row and column of the hovered matchup', () => {
@@ -98,4 +100,24 @@ describe('TypesTablePage', () => {
 
     expect(secondDefenseSelect).toHaveTextContent('Sem segundo tipo')
   })
+})
+
+it('navigates matchups with arrows without placing every cell in the tab sequence', () => {
+  const { container } = render(
+    <MemoryRouter>
+      <LanguageProvider>
+        <TypesTablePage />
+      </LanguageProvider>
+    </MemoryRouter>,
+  )
+  const first = container.querySelector<HTMLButtonElement>('.type-chart button[aria-label="Normal → Normal: Dano 1×"]')!
+  first.focus()
+  fireEvent.keyDown(first, { key: 'ArrowRight' })
+  const next = container.querySelector<HTMLButtonElement>('.type-chart button[aria-label="Normal → Fogo: Dano 1×"]')!
+  expect(next).toHaveFocus()
+  fireEvent.click(next)
+  expect(within(container).getByRole('combobox', { name: 'Primeiro tipo defensor' })).toHaveTextContent('Fogo')
+  expect(container.querySelectorAll('.type-chart button[tabindex="0"]')).toHaveLength(1)
+  fireEvent.keyDown(next, { key: 'End', ctrlKey: true })
+  expect(container.querySelector('.type-chart button[aria-label="Fada → Fada: Dano 1×"]')).toHaveFocus()
 })

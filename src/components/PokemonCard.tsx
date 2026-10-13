@@ -148,9 +148,11 @@ function PokemonSummaryCard({ id, name, pokemon, sortMetric, shiny = false }: Po
         </button>
       }
       typeFallback={
-        <span className={error ? 'inline-card-error' : 'muted'}>
-          {error ? t('error.message') : t('common.details')}
-        </span>
+        error ? (
+          <span className="inline-card-error">{t('error.message')}</span>
+        ) : (
+          <span className="card-type-skeleton skeleton" aria-label={t('common.loadingShort')} />
+        )
       }
       footer={
         error && !pokemon ? (

@@ -1,4 +1,4 @@
-import { ArrowRight, Search } from 'lucide-react'
+import { ArrowRight, Search, Swords, Zap, Package } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/FeedbackState'
 import { PageHeader } from '../components/PageHeader'
@@ -51,11 +51,23 @@ export function ExplorePage() {
           />
         }
       />
-      <p>
+      <nav className="quick-tools" aria-label={t('ui.quickTools')}>
+        <Link className="button secondary" to="/explore/move">
+          <Swords size={18} aria-hidden="true" />
+          {t('move.name')}
+        </Link>
+        <Link className="button secondary" to="/explore/ability">
+          <Zap size={18} aria-hidden="true" />
+          {t('ability.name')}
+        </Link>
+        <Link className="button secondary" to="/explore/item">
+          <Package size={18} aria-hidden="true" />
+          {t('ui.items')}
+        </Link>
         <Link className="button secondary" to="/compare-moves">
           {t('tools.compare')}
         </Link>
-      </p>
+      </nav>
       <div className="resource-groups">
         {groups.map((group) => (
           <article
@@ -90,7 +102,13 @@ export function ExplorePage() {
           </article>
         ))}
       </div>
-      {!groups.length && <EmptyState icon={<Search />} title={t('explore.empty')} />}
+      {!groups.length && (
+        <EmptyState icon={<Search />} title={t('explore.empty')}>
+          <button className="button secondary" onClick={() => updateSearchParam('q', '')}>
+            {t('ui.clearSearch')}
+          </button>
+        </EmptyState>
+      )}
     </section>
   )
 }

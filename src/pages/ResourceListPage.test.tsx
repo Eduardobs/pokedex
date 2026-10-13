@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -41,7 +41,7 @@ describe('ResourceListPage pagination', () => {
 
     await waitFor(() => expect(screen.getAllByText('Página 3').length).toBeGreaterThan(0))
     expect(screen.getAllByText('81–100 de 100').length).toBeGreaterThan(0)
-    expect(useApiMock).toHaveBeenLastCalledWith('ability?limit=40&offset=80')
+    expect(useApiMock).toHaveBeenLastCalledWith('ability?limit=40&offset=80', undefined)
   })
 })
 
@@ -356,5 +356,44 @@ describe('ResourceListPage item presentation', () => {
     expect(berryImage).toHaveAttribute('width', '30')
     expect(berryImage).toHaveAttribute('height', '30')
     expect(container.querySelector('.data-resource-icon svg')).not.toBeInTheDocument()
+  })
+})
+
+describe('ResourceListPage collection search', () => {
+  it('finds an item beyond the first page and preserves input focus while searching', async () => {
+    const resources = Array.from({ length: 45 }, (_, index) => ({
+      name: index === 44 ? 'thunderbolt' : `move-${index}`,
+      url: `https://pokeapi.co/api/v2/move/${index + 1}/`,
+    }))
+    useApiMock.mockImplementation((path: string) => ({
+      data: {
+        count: 45,
+        results: path.includes('limit=10000') ? resources : resources.slice(0, 40),
+        next: 'next',
+        previous: null,
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    }))
+    render(
+      <MemoryRouter initialEntries={['/explore/move']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+    expect(screen.queryByRole('link', { name: /Thunderbolt/ })).not.toBeInTheDocument()
+    const search = screen.getByRole('textbox', { name: 'Buscar em toda a coleção…' })
+    search.focus()
+    fireEvent.change(search, { target: { value: 'thunder' } })
+    expect(await screen.findByRole('link', { name: /Thunderbolt/ })).toBeVisible()
+    expect(search).toHaveFocus()
+    fireEvent.change(search, { target: { value: 'missing' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar busca' }))
+    expect(search).toHaveValue('')
+    expect(screen.getAllByText('Página 1').length).toBeGreaterThan(0)
   })
 })

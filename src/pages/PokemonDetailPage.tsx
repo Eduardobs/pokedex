@@ -408,7 +408,7 @@ export function PokemonDetailPage() {
                 <p className="muted">{t('detail.evolutionUnavailable')}</p>
               ) : evolution ? (
                 <>
-                  <ul className="evolution-tree">
+                  <ul className="evolution-tree" tabIndex={0} aria-label={t('detail.evolution')}>
                     <EvolutionTreeNode node={evolution.chain} t={t} language={language} root />
                   </ul>
                   {evolution.baby_trigger_item && (

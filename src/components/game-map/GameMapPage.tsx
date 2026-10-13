@@ -5,7 +5,7 @@ import {
   MapPinned,
   Minus,
   PanelLeftClose,
-  PanelLeftOpen,
+  SlidersHorizontal,
   Plus,
   RefreshCcw,
   Search,
@@ -37,7 +37,10 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
   const [zoom, setZoom] = useState(MIN_ZOOM)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [viewport, setViewport] = useState<ViewportSize>({ width: 1024, height: 720 })
-  const [filtersOpen, setFiltersOpen] = useState(true)
+  const [compact, setCompact] = useState(() => window.matchMedia?.('(max-width: 720px)').matches ?? false)
+  const [filtersOpen, setFiltersOpen] = useState(() => !(window.matchMedia?.('(max-width: 720px)').matches ?? false))
+  const filterRef = useRef<HTMLElement>(null)
+  const filterTriggerRef = useRef<HTMLButtonElement>(null)
   const [selectedMarker, setSelectedMarker] = useState<GameMapMarker | null>(null)
   const [fullscreen, setFullscreen] = useState(false)
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -49,6 +52,53 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     panY: number
   } | null>(null)
 
+  useEffect(() => {
+    if (!window.matchMedia) return
+    const media = window.matchMedia('(max-width: 720px)')
+    const update = () => {
+      setCompact(media.matches)
+      setFiltersOpen(!media.matches)
+    }
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    if (!compact || !filtersOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const panel = filterRef.current
+    panel?.querySelector<HTMLButtonElement>('button')?.focus()
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setFiltersOpen(false)
+        filterTriggerRef.current?.focus()
+      }
+      if (event.key !== 'Tab') return
+      const elements = Array.from(
+        panel?.querySelectorAll<HTMLElement>('button:not(:disabled), input, [tabindex="0"]') ?? [],
+      )
+      const first = elements[0],
+        last = elements.at(-1)
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last?.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [compact, filtersOpen])
+
+  const closeFilters = () => {
+    setFiltersOpen(false)
+    requestAnimationFrame(() => filterTriggerRef.current?.focus())
+  }
   const query = searchParams.get('q') ?? ''
   const categoryParam = searchParams.get('categories')
   const categories = useMemo(() => map.groups.flatMap((group) => group.categories), [map.groups])
@@ -253,14 +303,22 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
       </header>
 
       <div className={`map-explorer ${filtersOpen ? '' : 'filters-collapsed'}`}>
-        <aside className="map-filters" aria-label={t('maps.filters')}>
+        {compact && filtersOpen && <div className="map-filter-backdrop" onClick={closeFilters} aria-hidden="true" />}
+        <aside
+          id="map-filters"
+          ref={filterRef}
+          className="map-filters"
+          role={compact ? 'dialog' : undefined}
+          aria-modal={compact && filtersOpen ? true : undefined}
+          aria-label={t('maps.filters')}
+        >
           <div className="map-filter-heading">
             <div>
               <span>{t('maps.filters')}</span>
               <small>{t('maps.filterHint')}</small>
             </div>
-            <button type="button" onClick={() => setFiltersOpen(false)} aria-label={t('maps.hideFilters')}>
-              <PanelLeftClose size={19} aria-hidden="true" />
+            <button type="button" onClick={closeFilters} aria-label={t('maps.hideFilters')}>
+              {compact ? <X size={19} aria-hidden="true" /> : <PanelLeftClose size={19} aria-hidden="true" />}
             </button>
           </div>
           <SearchField
@@ -307,9 +365,16 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
 
         <div className="map-view-column">
           <div className="map-toolbar">
-            {!filtersOpen && (
-              <button type="button" className="map-show-filters" onClick={() => setFiltersOpen(true)}>
-                <PanelLeftOpen size={18} aria-hidden="true" /> {t('maps.showFilters')}
+            {(!filtersOpen || compact) && (
+              <button
+                ref={filterTriggerRef}
+                type="button"
+                className="map-show-filters"
+                aria-controls="map-filters"
+                aria-expanded={filtersOpen}
+                onClick={() => setFiltersOpen(true)}
+              >
+                <SlidersHorizontal size={18} aria-hidden="true" /> {t('maps.showFilters')}
               </button>
             )}
             <p role="status">{t('maps.visiblePins', { count: formatNumber(visibleMarkers.length, language) })}</p>

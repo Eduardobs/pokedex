@@ -5,7 +5,16 @@ test('compares moves through Explore and preserves both selections after reload'
   const unexpected: string[] = []
   await page.route('https://pokeapi.co/api/v2/**', async (route) => {
     const name = new URL(route.request().url()).pathname.split('/').filter(Boolean).at(-1)
-    if (name === 'thunderbolt' || name === 'ember') {
+    if (name === 'move') {
+      await route.fulfill({
+        json: {
+          count: 2,
+          next: null,
+          previous: null,
+          results: [ref('thunderbolt', 'move', 85), ref('ember', 'move', 52)],
+        },
+      })
+    } else if (name === 'thunderbolt' || name === 'ember') {
       await route.fulfill({
         json: {
           name,
@@ -23,20 +32,23 @@ test('compares moves through Explore and preserves both selections after reload'
       await route.fulfill({ status: 404, json: {} })
     }
   })
+  await page.route('https://graphql.pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
   await page.goto('/#/explore')
   await page.getByRole('link', { name: 'Comparar golpes' }).click()
-  await page.getByRole('textbox', { name: 'Primeiro golpe' }).fill('thunderbolt')
-  await page.getByRole('textbox', { name: 'Primeiro golpe' }).press('Enter')
+  await page.getByRole('combobox', { name: 'Primeiro golpe' }).fill('thund')
+  await expect(page.getByRole('option', { name: 'Thunderbolt' })).toBeVisible()
+  await page.getByRole('combobox', { name: 'Primeiro golpe' }).press('ArrowDown')
+  await page.getByRole('combobox', { name: 'Primeiro golpe' }).press('Enter')
   await expect(page.getByRole('heading', { name: 'Thunderbolt' })).toBeVisible()
-  await page.getByRole('textbox', { name: 'Segundo golpe' }).fill('ember')
-  await page.getByRole('textbox', { name: 'Segundo golpe' }).press('Enter')
+  await page.getByRole('combobox', { name: 'Segundo golpe' }).fill('ember')
+  await page.getByRole('combobox', { name: 'Segundo golpe' }).press('Enter')
   await expect(page.getByRole('heading', { name: 'Ember' })).toBeVisible()
   await expect(page).toHaveURL(/left=thunderbolt&right=ember/)
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Thunderbolt' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Ember' })).toBeVisible()
   await page.setViewportSize({ width: 390, height: 844 })
-  await expect(page.getByRole('textbox', { name: 'Segundo golpe' })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Segundo golpe' })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   expect(unexpected).toEqual([])
 })
@@ -72,4 +84,36 @@ test('shares historical type selection and updates the calculator with the chart
   await expect(page.getByRole('combobox', { name: 'Geração' })).toContainText('Geração 5')
   await expect(page.getByRole('button', { name: 'Fantasma → Metal: Dano ½×' })).toBeVisible()
   await expect(page.getByRole('button', { name: /Fada →/ })).toHaveCount(0)
+})
+
+test('searches beyond the current resource page without losing the search field', async ({ page }) => {
+  const results = Array.from({ length: 45 }, (_, index) =>
+    ref(index === 44 ? 'thunderbolt' : `move-${index}`, 'move', index + 1),
+  )
+  await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+    const url = new URL(route.request().url())
+    if (url.pathname === '/api/v2/move') {
+      await route.fulfill({
+        json: {
+          count: 45,
+          next: null,
+          previous: null,
+          results: url.searchParams.get('limit') === '10000' ? results : results.slice(0, 40),
+        },
+      })
+    } else await route.fulfill({ status: 404, json: {} })
+  })
+  await page.route('https://graphql.pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.goto('/#/explore/move')
+  const search = page.getByRole('textbox', { name: 'Buscar em toda a coleção…' })
+  await expect(page.getByRole('link', { name: /Thunderbolt/ })).toHaveCount(0)
+  await search.fill('thunder')
+  await expect(page.getByRole('link', { name: /Thunderbolt/ })).toBeVisible()
+  await expect(search).toBeFocused()
+  await search.fill('#045')
+  await expect(page.getByRole('link', { name: /Thunderbolt/ })).toBeVisible()
+  await search.fill('missing')
+  await page.getByRole('button', { name: 'Limpar busca' }).click()
+  await expect(search).toHaveValue('')
+  await expect(page.getByRole('link', { name: /Move 0/ })).toBeVisible()
 })

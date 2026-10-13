@@ -68,7 +68,11 @@ export function FavoritesPage() {
               ))}
             </div>
           ) : (
-            <EmptyState icon={<Search />} title={t('pokedex.empty')} description={prettyName(query)} />
+            <EmptyState icon={<Search />} title={t('pokedex.empty')} description={prettyName(query)}>
+              <button className="button secondary" onClick={() => updateSearchParam('q', '')}>
+                {t('ui.clearSearch')}
+              </button>
+            </EmptyState>
           )}
         </>
       ) : (

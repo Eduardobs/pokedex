@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { EmptyState, InlineRetryError } from '../components/FeedbackState'
-import { Loading } from '../components/Loading'
 import { SearchField } from '../components/SearchField'
 import {
   DamageClassBadge,
@@ -24,12 +23,12 @@ import {
   itemSprite,
   localizedName,
   localizedTextResult,
-  normalizeSearchText,
   pokemonArtwork,
   prettyName,
 } from '../lib/api'
 import { defaultPokemonNameForSpecies } from '../lib/pokemon-species'
 import type { ApiList, NamedResource } from '../types'
+import { matchesResource, parseResourceDirectory, RESOURCE_SEARCH_LIMIT } from '../lib/resource-search'
 
 const LIMIT = 40
 const MAX_OFFSET = 100_000
@@ -51,18 +50,33 @@ export function ResourceListPage() {
   const rawQuery = searchParams.get('q') ?? ''
   const query = rawQuery.slice(0, MAX_QUERY_LENGTH)
   const firstRender = useRef(true)
-  const { data, loading, error, retry } = useApi<ApiList<NamedResource | { url: string }>>(
-    valid ? `${resource}?limit=${LIMIT}&offset=${offset}` : null,
+  const searching = Boolean(query.trim())
+  const {
+    data: response,
+    loading,
+    error,
+    retry,
+  } = useApi<ApiList<NamedResource | { url: string }>>(
+    valid ? `${resource}?limit=${searching ? RESOURCE_SEARCH_LIMIT : LIMIT}&offset=${searching ? 0 : offset}` : null,
+    searching ? parseResourceDirectory : undefined,
   )
-  const moveDetails = useMoveListDetails(resource === 'move' && data ? data.results : [], apiLanguage)
-  const abilityDetails = useAbilityListDetails(resource === 'ability' && data ? data.results : [], apiLanguage)
+  const data = response ?? { results: [], count: 0, next: null, previous: null }
+  const items = data.results.map((item) => {
+    const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
+    return { ...item, id, name: 'name' in item && item.name ? item.name : id }
+  })
+  const matches = searching ? items.filter((item) => matchesResource(item.name, item.url, query)) : items
+  const resultCount = searching ? matches.length : data.count
+  const filtered = searching ? matches.slice(offset, offset + LIMIT) : matches
+  const moveDetails = useMoveListDetails(resource === 'move' ? filtered : [], apiLanguage)
+  const abilityDetails = useAbilityListDetails(resource === 'ability' ? filtered : [], apiLanguage)
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
       return
     }
-    document.querySelector('.resource-list-hero')?.scrollIntoView?.({ block: 'start' })
-  }, [offset])
+    if (!searching) document.querySelector('.resource-list-hero')?.scrollIntoView?.({ block: 'start' })
+  }, [offset, searching])
   useEffect(() => {
     const normalizedOffset = offset > 0 ? String(offset) : ''
     if (rawOffset === normalizedOffset && rawQuery === query) return
@@ -74,13 +88,13 @@ export function ResourceListPage() {
     setSearchParams(next, { replace: true })
   }, [offset, query, rawOffset, rawQuery, searchParams, setSearchParams])
   useEffect(() => {
-    if (!data || offset === 0 || offset < data.count) return
-    const lastOffset = data.count > 0 ? Math.floor((data.count - 1) / LIMIT) * LIMIT : 0
+    if (!response || offset === 0 || offset < resultCount) return
+    const lastOffset = resultCount > 0 ? Math.floor((resultCount - 1) / LIMIT) * LIMIT : 0
     const next = new URLSearchParams(searchParams)
     if (lastOffset > 0) next.set('offset', String(lastOffset))
     else next.delete('offset')
     setSearchParams(next, { replace: true })
-  }, [data, offset, searchParams, setSearchParams])
+  }, [response, resultCount, offset, searchParams, setSearchParams])
   const updateParams = (nextOffset: number, nextQuery = query) => {
     const next = new URLSearchParams()
     if (nextOffset > 0) next.set('offset', String(nextOffset))
@@ -88,58 +102,8 @@ export function ResourceListPage() {
     setSearchParams(next, { replace: true })
   }
   if (!valid) return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
-  if (loading)
-    return (
-      <section
-        className="page content-width resource-page"
-        aria-busy="true"
-        style={{ '--resource-color': meta?.groupColor ?? '#64748b' } as React.CSSProperties}
-      >
-        <div className="breadcrumbs">
-          <Link to="/explore">{t('explore.breadcrumb')}</Link>
-          <span>/</span>
-          <span>{getResourceLabel(resource, language)}</span>
-        </div>
-        <div className="page-title resource-list-hero">
-          <div className="resource-title-lockup">
-            <span className="resource-page-icon">
-              {resource === 'move-damage-class' ? <DamageClassIconSet /> : <ResourceIcon />}
-            </span>
-            <div>
-              <span className="eyebrow">
-                <Database size={14} /> {t('resource.apiCollection')}
-              </span>
-              <h1>{getResourceLabel(resource, language)}</h1>
-              <p>
-                {t('resource.loading', {
-                  name: getResourceLabel(resource, language).toLowerCase(),
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="data-list resource-list-skeleton" aria-label={t('common.loadingShort')}>
-          {Array.from({ length: 8 }, (_, index) => (
-            <div className="data-row-skeleton skeleton" key={index} />
-          ))}
-        </div>
-      </section>
-    )
-  if (error || !data) return <ErrorState message={t('resource.loadError')} retry={retry} />
-  if (offset > 0 && offset >= data.count) return <Loading />
-  const items = data.results.map((item) => {
-    const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
-    return { ...item, id, name: 'name' in item && item.name ? item.name : id }
-  })
   const moveDisplayName = (name: string) =>
     localizedName(moveDetails.data?.[name]?.names, apiLanguage) || prettyName(name)
-  const filtered = items.filter((item) => {
-    const normalizedQuery = normalizeSearchText(query)
-    return (
-      normalizeSearchText(item.name).includes(normalizedQuery) ||
-      (resource === 'move' && normalizeSearchText(moveDisplayName(item.name)).includes(normalizedQuery))
-    )
-  })
   const itemRoute = (name: string) => {
     if (resource === 'pokemon-species') return `/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(name))}`
     if (resource === 'pokemon') return `/pokemon/${encodeURIComponent(name)}`
@@ -168,22 +132,30 @@ export function ResourceListPage() {
   const pagination = (position: 'top' | 'bottom') => (
     <nav
       className={`pagination pagination-${position}`}
-      aria-label={`${t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })} · ${t('resource.range', { start: offset + 1, end: Math.min(offset + LIMIT, data.count), total: data.count })}`}
+      aria-label={`${t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })} · ${t('resource.range', { start: resultCount ? offset + 1 : 0, end: Math.min(offset + LIMIT, resultCount), total: resultCount })}`}
     >
-      <button type="button" disabled={!data.previous} onClick={() => updateParams(Math.max(0, offset - LIMIT))}>
+      <button
+        type="button"
+        disabled={loading || offset === 0}
+        onClick={() => updateParams(Math.max(0, offset - LIMIT))}
+      >
         <ChevronLeft /> {t('resource.previous')}
       </button>
       <span>
         <b>{t('resource.page', { page: Math.floor(offset / LIMIT) + 1 })}</b>
         <small>
           {t('resource.range', {
-            start: offset + 1,
-            end: Math.min(offset + LIMIT, data.count),
-            total: data.count,
+            start: resultCount ? offset + 1 : 0,
+            end: Math.min(offset + LIMIT, resultCount),
+            total: resultCount,
           })}
         </small>
       </span>
-      <button type="button" disabled={!data.next} onClick={() => updateParams(offset + LIMIT)}>
+      <button
+        type="button"
+        disabled={loading || offset + LIMIT >= resultCount}
+        onClick={() => updateParams(offset + LIMIT)}
+      >
         {t('resource.next')} <ChevronRight />
       </button>
     </nav>
@@ -223,16 +195,24 @@ export function ResourceListPage() {
         <div className="resource-page-search">
           <SearchField
             value={query}
-            onChange={(value) => updateParams(offset, value)}
+            onChange={(value) => updateParams(0, value)}
             clearLabel={t('common.clear')}
             compact
-            aria-label={t('resource.filter')}
-            placeholder={t('resource.filter')}
+            aria-label={t('ui.collectionSearch')}
+            placeholder={t('ui.collectionSearch')}
           />
-          <small>{t('resource.filterScope')}</small>
+          <small>{t('ui.collectionSearchHint')}</small>
         </div>
       </div>
-      {data.count > LIMIT && pagination('top')}
+      {resultCount > LIMIT && pagination('top')}
+      {loading && (
+        <div className="resource-list-skeleton" role="status" aria-label={t('common.loadingShort')}>
+          {Array.from({ length: 8 }, (_, index) => (
+            <div className="data-row-skeleton skeleton" key={index} />
+          ))}
+        </div>
+      )}
+      {error && <InlineRetryError message={t('resource.loadError')} retryLabel={t('common.retry')} onRetry={retry} />}
       {resource === 'move' && moveDetails.error && (
         <InlineRetryError message={t('move.detailsError')} retryLabel={t('common.retry')} onRetry={moveDetails.retry} />
       )}
@@ -408,8 +388,14 @@ export function ResourceListPage() {
           )
         })}
       </div>
-      {!filtered.length && <EmptyState icon={<Search />} title={t('resource.emptyPage')} />}
-      {data.count > LIMIT && pagination('bottom')}
+      {!loading && !error && !filtered.length && (
+        <EmptyState icon={<Search />} title={t('resource.emptyPage')}>
+          <button className="button secondary" onClick={() => updateParams(0, '')}>
+            {t('ui.clearSearch')}
+          </button>
+        </EmptyState>
+      )}
+      {resultCount > LIMIT && pagination('bottom')}
     </section>
   )
 }

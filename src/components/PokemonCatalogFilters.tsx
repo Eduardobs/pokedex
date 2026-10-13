@@ -8,6 +8,7 @@ import {
   MapPin,
   SlidersHorizontal,
   Sparkles,
+  X,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -16,7 +17,7 @@ import { POKEMON_TYPES, pokemonSortOptions, type PokemonType } from '../lib/poke
 import type { PokemonSortDirection, PokemonSortKey } from '../lib/pokemon-sort'
 import { SearchField } from './SearchField'
 import { SelectMenu } from './SelectMenu'
-import { typeLabel } from './TypeBadge'
+import { TypeBadge, typeLabel } from './TypeBadge'
 import { TypeIcon } from './TypeIcon'
 
 type CatalogSuggestion = {
@@ -249,10 +250,55 @@ export function PokemonCatalogFilters({
             onClick={() => onShinyChange(!shiny)}
           >
             <Sparkles size={17} aria-hidden="true" />
-            <span>{t(shiny ? 'detail.normal' : 'detail.shiny')}</span>
+            <span>{t('detail.shiny')}</span>
           </button>
         </div>
       </div>
+      {(query || region !== 'all' || types.length > 0 || legendary || mythical || baby) && (
+        <div className="catalog-active-filters" role="group" aria-label={t('ui.activeFilters')}>
+          {query && (
+            <button type="button" onClick={() => onQueryChange('')} aria-label={t('ui.removeFilter', { name: query })}>
+              {query}
+              <X size={14} aria-hidden="true" />
+            </button>
+          )}
+          {region !== 'all' && (
+            <button
+              type="button"
+              onClick={() => onRegionChange('all')}
+              aria-label={t('ui.removeFilter', { name: t(`pokedex.region.${region}`) })}
+            >
+              {t(`pokedex.region.${region}`)}
+              <X size={14} aria-hidden="true" />
+            </button>
+          )}
+          {types.map((type, index) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => onTypeChange(type)}
+              aria-label={t('ui.removeFilter', { name: typeLabel(type, language) })}
+            >
+              <span>{index + 1}</span>
+              <TypeBadge type={type} />
+              <X size={14} aria-hidden="true" />
+            </button>
+          ))}
+          {(['legendary', 'mythical', 'baby'] as const)
+            .filter((key) => ({ legendary, mythical, baby })[key])
+            .map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onRarityChange(key, false)}
+                aria-label={t('ui.removeFilter', { name: t(`pokedex.rarity.${key}`) })}
+              >
+                {t(`pokedex.rarity.${key}`)}
+                <X size={14} aria-hidden="true" />
+              </button>
+            ))}
+        </div>
+      )}
       <div id={additionalFiltersId} className="additional-filters" hidden={!additionalFiltersOpen}>
         <fieldset className="type-filter" aria-describedby={typeHelpId}>
           <legend>{t('pokedex.type.label')}</legend>

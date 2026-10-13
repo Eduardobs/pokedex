@@ -38,6 +38,15 @@ for (const catalog of ['pokemon', 'forms']) {
     await expect(baby).toBeChecked()
     await expect(page).toHaveURL(new RegExp(`#/${catalog}\\?baby=true$`))
 
+    await page.getByRole('button', { name: /Esconder filtros/ }).click()
+    await page.getByRole('button', { name: 'Remover filtro: Forma bebê' }).click()
+    await expect(page).toHaveURL(new RegExp(`#/${catalog}$`))
+    await page.getByRole('button', { name: /Exibir filtros/ }).click()
+    await baby.focus()
+    await page.keyboard.press('Space')
+    await expect(baby).toBeChecked()
+    await expect(page).toHaveURL(new RegExp(`#/${catalog}\\?baby=true$`))
+
     await page.reload()
     await page.getByRole('button', { name: /Exibir filtros/ }).click()
     await expect(baby).toBeChecked()

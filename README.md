@@ -10,7 +10,7 @@ The application is a client-side static site: it has no application server or da
 - **Detailed Pokémon pages** with species information, training and breeding data, complete evolution requirements, abilities, forms, shiny sprites, cries, held items, game indices, present and past base stats, defensive type matchups, compatible moves, and version-filtered encounter methods, levels, chances, and conditions.
 - **Special forms catalog** for regional variants, Mega Evolutions, and Gigantamax forms.
 - **Pokémon type chart** with an interactive damage calculator and generation-specific matchups loaded from PokéAPI. The selected generation is shareable in the URL.
-- **Move comparison** with two independently selected moves, secondary effects, stat changes, and historical values. Open it from Explore or an individual move.
+- **Move comparison** with searchable move suggestions, aligned attribute comparisons, explicit difference labels, and expandable effects and historical values. Open it from Explore or an individual move.
 - **Expanded Pokémon data** with game-specific learnsets, regional Pokédex numbers, versioned descriptions, form explanations, historical and female sprites, and opt-in animations.
 - **Evolution and transformation guides** with linked form requirements, readable special evolution expressions, and on-demand variable explanations.
 - **Item and training tools** with versioned item descriptions, purchase/sale prices by game and currency, and an experience planner with a growth chart and accessible level table.
@@ -18,6 +18,8 @@ The application is a client-side static site: it has no application server or da
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, evolution variables, currencies, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
+- **Collection-wide search** by original resource name or number, with paginated results and details loaded only for the visible page.
+- **Compact navigation and maps** with mobile filter overlays, removable catalog filters, and arrow-key navigation inside the type matrix.
 - **Light and dark themes**, responsive layouts, keyboard-friendly controls, loading and error states, and reduced-motion support.
 - **Code splitting** for secondary pages, so route-specific code is loaded on demand.
 

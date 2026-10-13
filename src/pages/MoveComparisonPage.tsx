@@ -1,117 +1,28 @@
-import { useState } from 'react'
 import { Swords } from 'lucide-react'
 import { useSearchParamUpdater } from '../hooks/useSearchParamUpdater'
 import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
-import { localizedName, localizedTextResult, prettyName } from '../lib/api'
-import {
-  comparisonFields,
-  moveHistory,
-  moveIdentifier,
-  moveMetaFields,
-  parseComparisonMove,
-} from '../lib/move-comparison'
-import { record } from '../lib/resource-data'
+import { localizedName, prettyName } from '../lib/api'
+import { comparisonFields, moveIdentifier, parseComparisonMove } from '../lib/move-comparison'
 import { PageHeader } from '../components/PageHeader'
-import { SearchField } from '../components/SearchField'
+import { MovePicker } from '../components/MovePicker'
+import { MoveComparisonDetails } from '../components/MoveComparisonDetails'
 import { ResourceValue, resourceFieldLabel } from '../components/ResourceValue'
 import { InlineRetryError } from '../components/FeedbackState'
 
-function ComparisonSlot({
-  name,
-  side,
-  onSelect,
-}: {
-  name: string
-  side: 'firstMove' | 'secondMove'
-  onSelect: (value: string) => void
-}) {
-  const { language, apiLanguage, t } = useLanguage()
-  const [query, setQuery] = useState(name)
-  const [invalid, setInvalid] = useState(false)
-  const identifier = moveIdentifier(name)
-  const { data, loading, error, retry } = useApi(identifier ? `move/${identifier}` : null, parseComparisonMove)
-  const description = localizedTextResult(data?.effect_entries, ['effect', 'short_effect'], apiLanguage)
-  const history = moveHistory(data?.past_values)
-  const meta = record(data?.meta)
-  const effect = description.text.replace(/\$effect_chance/g, String(data?.effect_chance ?? '—'))
-  return (
-    <section className="info-card resource-tool">
-      <h2>{t(`tools.${side}`)}</h2>
-      <form
-        className="tool-controls"
-        onSubmit={(event) => {
-          event.preventDefault()
-          const value = moveIdentifier(query)
-          setInvalid(!value)
-          if (value) onSelect(value)
-        }}
-      >
-        <SearchField
-          value={query}
-          onChange={setQuery}
-          clearLabel={t('common.clear')}
-          aria-label={t(`tools.${side}`)}
-          placeholder={t('tools.movePrompt')}
-        />
-        <button type="submit" className="button secondary">
-          {t('tools.compare')}
-        </button>
-      </form>
-      {invalid && <p role="alert">{t('tools.invalidMove')}</p>}
-      {loading && <p role="status">{t('common.loading')}</p>}
-      {error && <InlineRetryError message={t('error.message')} retryLabel={t('common.retry')} onRetry={retry} />}
-      {!identifier && <p>{t('tools.movePrompt')}</p>}
-      {data && (
-        <>
-          <h3>{localizedName(data.names, apiLanguage) || prettyName(String(data.name))}</h3>
-          <dl className="comparison-fields">
-            {comparisonFields.map((key) => (
-              <div key={key}>
-                <dt>{resourceFieldLabel(key, language)}</dt>
-                <dd>
-                  <ResourceValue value={data[key]} />
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <h3>{t('tools.effects')}</h3>
-          <p lang={description.language}>{effect || t('tools.noData')}</p>
-          {description.fallback && <small className="language-fallback">{t('detail.fallbackLanguage')}</small>}
-          <dl className="comparison-fields">
-            {moveMetaFields.map((key) => (
-              <div key={key}>
-                <dt>{resourceFieldLabel(key, language)}</dt>
-                <dd>
-                  <ResourceValue value={meta[key]} />
-                </dd>
-              </div>
-            ))}
-          </dl>
-          <h3>{t('tools.history')}</h3>
-          <p>{t('tools.historyHint')}</p>
-          {history.length ? (
-            history.map(({ version, changes }) => (
-              <section key={version.name} className="move-history">
-                <h4>
-                  <ResourceValue value={version} />
-                </h4>
-                <ResourceValue value={changes} />
-              </section>
-            ))
-          ) : (
-            <p>{t('tools.noHistory')}</p>
-          )}
-        </>
-      )}
-    </section>
-  )
-}
 export function MoveComparisonPage() {
-  const { t } = useLanguage()
+  const { t, language, apiLanguage } = useLanguage()
   const { searchParams, updateSearchParam } = useSearchParamUpdater()
   const left = searchParams.get('left') ?? ''
   const right = searchParams.get('right') ?? ''
+  const leftId = moveIdentifier(left),
+    rightId = moveIdentifier(right)
+  const first = useApi(leftId ? `move/${leftId}` : null, parseComparisonMove)
+  const second = useApi(rightId ? `move/${rightId}` : null, parseComparisonMove)
+  const nameFor = (data: ReturnType<typeof parseComparisonMove> | null, fallback: string) =>
+    data ? localizedName(data.names, apiLanguage) || prettyName(String(data.name)) : fallback
+  const firstName = nameFor(first.data, t('tools.firstMove'))
+  const secondName = nameFor(second.data, t('tools.secondMove'))
   return (
     <section className="page content-width">
       <PageHeader
@@ -120,19 +31,76 @@ export function MoveComparisonPage() {
         description={t('tools.compareDescription')}
       />
       <div className="comparison-grid">
-        <ComparisonSlot
-          key={`left-${left}`}
-          name={left}
-          side="firstMove"
-          onSelect={(value) => updateSearchParam('left', value)}
-        />
-        <ComparisonSlot
-          key={`right-${right}`}
+        <MovePicker name={left} label={t('tools.firstMove')} onSelect={(value) => updateSearchParam('left', value)} />
+        <MovePicker
           name={right}
-          side="secondMove"
+          label={t('tools.secondMove')}
           onSelect={(value) => updateSearchParam('right', value)}
         />
       </div>
+      <div className="comparison-feedback">
+        {(first.loading || second.loading) && <p role="status">{t('common.loading')}</p>}
+        {first.error && (
+          <InlineRetryError
+            message={`${firstName}: ${t('error.message')}`}
+            retryLabel={t('common.retry')}
+            onRetry={first.retry}
+          />
+        )}
+        {second.error && (
+          <InlineRetryError
+            message={`${secondName}: ${t('error.message')}`}
+            retryLabel={t('common.retry')}
+            onRetry={second.retry}
+          />
+        )}
+      </div>
+      {(first.data || second.data) && (
+        <>
+          <div className="comparison-table-wrap">
+            <table className="comparison-table">
+              <caption>{t('ui.attributeComparison')}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{t('ui.attribute')}</th>
+                  <th scope="col">{firstName}</th>
+                  <th scope="col">{secondName}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonFields.map((key) => {
+                  const different =
+                    first.data && second.data && JSON.stringify(first.data[key]) !== JSON.stringify(second.data[key])
+                  return (
+                    <tr key={key} className={different ? 'comparison-different' : undefined}>
+                      <th scope="row">
+                        {resourceFieldLabel(key, language)} {different && <small>{t('ui.different')}</small>}
+                      </th>
+                      {[first.data, second.data].map((data, index) => (
+                        <td key={index}>
+                          {data ? (
+                            key === 'accuracy' && typeof data[key] === 'number' ? (
+                              `${data[key]}%`
+                            ) : (
+                              <ResourceValue value={data[key]} />
+                            )
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+          <div className="comparison-grid">
+            {first.data && <MoveComparisonDetails data={first.data} name={firstName} />}
+            {second.data && <MoveComparisonDetails data={second.data} name={secondName} />}
+          </div>
+        </>
+      )}
     </section>
   )
 }

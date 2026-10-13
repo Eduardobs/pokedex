@@ -172,7 +172,11 @@ export function PokedexPage() {
           })}
         </div>
       ) : (
-        <EmptyState icon={<Search />} title={t('pokedex.empty')} description={t('pokedex.tryAnother')} />
+        <EmptyState icon={<Search />} title={t('pokedex.empty')} description={t('pokedex.tryAnother')}>
+          <button className="button secondary" onClick={clearSearchParams}>
+            {t('ui.resetResults')}
+          </button>
+        </EmptyState>
       )}
       {hasMore && (
         <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite">

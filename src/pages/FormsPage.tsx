@@ -359,7 +359,11 @@ export function FormsPage() {
           })}
         </div>
       ) : (
-        <EmptyState icon={<Search />} title={t('forms.empty')} description={t('forms.tryAnother')} />
+        <EmptyState icon={<Search />} title={t('forms.empty')} description={t('forms.tryAnother')}>
+          <button className="button secondary" onClick={clearSearchParams}>
+            {t('ui.resetResults')}
+          </button>
+        </EmptyState>
       )}
       {hasMore && !isFilterPending && (
         <div className="infinite-loader" ref={sentinelRef} role="status" aria-live="polite">

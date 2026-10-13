@@ -51,14 +51,20 @@ describe('MoveComparisonPage', () => {
     )
     show('/?left=thunderbolt')
     expect(await screen.findByRole('heading', { name: 'Thunderbolt' })).toBeVisible()
+    fireEvent.click(screen.getByText('Efeitos', { selector: 'summary' }))
     expect(screen.getByText('Chance: 10%.')).toBeVisible()
+    fireEvent.click(screen.getByText('Alterações históricas', { selector: 'summary' }))
     expect(screen.getByText('95')).toBeVisible()
-    fireEvent.change(screen.getByRole('textbox', { name: 'Segundo golpe' }), { target: { value: 'Ember' } })
+    fireEvent.change(screen.getByRole('combobox', { name: 'Segundo golpe' }), { target: { value: 'Ember' } })
     const right = screen.getByRole('heading', { name: 'Segundo golpe' }).closest('section')!
-    fireEvent.click(within(right).getByRole('button', { name: 'Comparar golpes' }))
+    fireEvent.click(within(right).getByRole('button', { name: 'Selecionar golpe' }))
     expect(await screen.findByRole('heading', { name: 'Ember' })).toBeVisible()
     expect(screen.getByTestId('url')).toHaveTextContent('left=thunderbolt&right=ember')
+    const ember = screen.getByRole('heading', { name: 'Ember' }).closest('section')!
+    fireEvent.click(within(ember).getByText('Alterações históricas', { selector: 'summary' }))
     expect(screen.getByText('Nenhuma alteração histórica informada.')).toBeVisible()
+    expect(screen.getByRole('row', { name: /Poder Valores diferentes 90 40/ })).toBeVisible()
+    expect(screen.getByRole('table', { name: 'Comparação por atributo' })).toBeVisible()
   })
   it('rejects unsafe identifiers and retries failed requests', async () => {
     vi.stubGlobal(
@@ -71,9 +77,9 @@ describe('MoveComparisonPage', () => {
     show('/?left=retry-move')
     fireEvent.click(await screen.findByRole('button', { name: 'Tentar novamente' }))
     expect(await screen.findByRole('heading', { name: 'Retry Move' })).toBeVisible()
-    fireEvent.change(screen.getByRole('textbox', { name: 'Segundo golpe' }), { target: { value: '../pokemon' } })
+    fireEvent.change(screen.getByRole('combobox', { name: 'Segundo golpe' }), { target: { value: '../pokemon' } })
     const right = screen.getByRole('heading', { name: 'Segundo golpe' }).closest('section')!
-    fireEvent.click(within(right).getByRole('button', { name: 'Comparar golpes' }))
+    fireEvent.click(within(right).getByRole('button', { name: 'Selecionar golpe' }))
     expect(screen.getByRole('alert')).toHaveTextContent('Use um nome da API ou número válido.')
   })
 })

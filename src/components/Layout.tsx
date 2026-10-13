@@ -9,7 +9,7 @@ import {
   Menu,
   Moon,
   Search,
-  Sparkles,
+  Layers3,
   Sun,
   X,
 } from 'lucide-react'
@@ -25,6 +25,9 @@ import { ScrollToTop } from './ScrollToTop'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  const searchButtonRef = useRef<HTMLButtonElement>(null)
   const [languageOpen, setLanguageOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [theme, setTheme] = useState<'light' | 'dark'>(() =>
@@ -213,11 +216,12 @@ export function Layout() {
       navigate(`/pokemon?q=${encodeURIComponent(value)}`)
       setQuery('')
       setMenuOpen(false)
+      setSearchOpen(false)
     }
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${searchOpen ? ' search-open' : ''}`}>
       <a className="skip-link" href="#main-content">
         {t('nav.skip')}
       </a>
@@ -225,9 +229,35 @@ export function Layout() {
         <NavLink to="/" className="brand">
           <Logo />
         </NavLink>
-        <form className="global-search" onSubmit={submit} role="search">
+        <button
+          className="global-search-toggle"
+          type="button"
+          ref={searchButtonRef}
+          aria-label={t('nav.searchLabel')}
+          aria-expanded={searchOpen}
+          aria-controls="global-search"
+          onClick={() => {
+            setSearchOpen(!searchOpen)
+            if (!searchOpen) requestAnimationFrame(() => searchInputRef.current?.focus())
+          }}
+        >
+          <Search size={20} aria-hidden="true" />
+        </button>
+        <form
+          id="global-search"
+          className="global-search"
+          onSubmit={submit}
+          role="search"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape' && searchOpen) {
+              setSearchOpen(false)
+              searchButtonRef.current?.focus()
+            }
+          }}
+        >
           <Search size={18} />
           <input
+            ref={searchInputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={t('nav.searchPlaceholder')}
@@ -249,7 +279,7 @@ export function Layout() {
             {t('nav.pokedex')}
           </NavLink>
           <NavLink to="/forms" onClick={() => setMenuOpen(false)}>
-            <Sparkles size={17} /> {t('nav.forms')}
+            <Layers3 size={17} /> {t('nav.forms')}
           </NavLink>
           <NavLink to="/explore" onClick={() => setMenuOpen(false)}>
             <Compass size={17} /> {t('nav.explore')}
