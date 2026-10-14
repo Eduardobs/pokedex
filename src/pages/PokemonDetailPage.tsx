@@ -13,6 +13,7 @@ import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounter
 import { PokemonDetailBackLink } from '../components/pokemon-detail/PokemonDetailBackLink'
 import { PokemonForms } from '../components/pokemon-detail/PokemonForms'
 import { PokemonMovesTab } from '../components/pokemon-detail/PokemonMovesTab'
+import { ShinyToggle } from '../components/ShinyToggle'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { AbilityBadge } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
@@ -215,16 +216,14 @@ export function PokemonDetailPage() {
                 fetchPriority="high"
               />
             </div>
-            <button
-              type="button"
-              aria-pressed={shiny}
-              className={`shiny-toggle ${shiny ? 'active' : ''}`}
+            <ShinyToggle
+              className="shiny-toggle"
+              pressed={shiny}
+              label={shiny ? t('detail.shinyVersion') : t('detail.showShiny')}
               disabled={!shinyArtwork}
               title={!shinyArtwork ? t('detail.shinyUnavailable') : undefined}
-              onClick={() => setShiny((value) => !value)}
-            >
-              <Sparkles size={16} /> {shiny ? t('detail.shinyVersion') : t('detail.showShiny')}
-            </button>
+              onChange={setShiny}
+            />
           </div>
           <button
             type="button"

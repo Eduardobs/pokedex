@@ -49,6 +49,7 @@ export const en = {
   'teams.saved': 'Teams saved in this browser.',
   'teams.saveError': 'Could not save. Your changes are only in this session; please retry.',
   'teams.level': 'Level',
+  'teams.build': 'Setup',
   'teams.shiny': 'Shiny',
   'teams.random': 'Random',
   'teams.tera': 'Tera type',

@@ -1,4 +1,17 @@
-import { CircleSlash2, Dices, Mars, RotateCcw, Trophy, Venus } from 'lucide-react'
+import {
+  CircleSlash2,
+  Dices,
+  Dumbbell,
+  Info,
+  Mars,
+  RotateCcw,
+  Settings2,
+  Swords,
+  Trash2,
+  Trophy,
+  Venus,
+} from 'lucide-react'
+import { useId, type ReactNode } from 'react'
 import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
 import { localizedApiTerm, localizedName, localizedText, pokemonArtwork, prettyName } from '../lib/api'
@@ -22,6 +35,7 @@ import { EvSlider } from './EvSlider'
 import { ItemSelect } from './ItemSelect'
 import { RadioSelection } from './RadioSelection'
 import { SelectMenu } from './SelectMenu'
+import { ShinyToggle } from './ShinyToggle'
 import { TypeBadge, typeLabel } from './TypeBadge'
 import { TypeIcon } from './TypeIcon'
 import { InlineRetryError } from './FeedbackState'
@@ -45,13 +59,38 @@ function ResourceDescription({ resource, name }: { resource: string; name: strin
     <>
       <ApiFeedback state={state} />
       {state.data && (
-        <p className="team-hint">
-          <strong>{localizedName(state.data.names, apiLanguage) || prettyName(name)}</strong> —{' '}
-          {localizedText(state.data.effect_entries, ['short_effect', 'effect'], apiLanguage) ||
-            localizedText(state.data.flavor_text_entries, ['flavor_text'], apiLanguage)}
-        </p>
+        <details className="team-resource-note">
+          <summary>{localizedName(state.data.names, apiLanguage) || prettyName(name)}</summary>
+          <p>
+            {localizedText(state.data.effect_entries, ['short_effect', 'effect'], apiLanguage) ||
+              localizedText(state.data.flavor_text_entries, ['flavor_text'], apiLanguage)}
+          </p>
+        </details>
       )}
     </>
+  )
+}
+
+function SectionTitle({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <h4 className="team-section-title">
+      <span aria-hidden="true">{icon}</span>
+      {children}
+    </h4>
+  )
+}
+
+function HelpTooltip({ label, children }: { label: string; children: ReactNode }) {
+  const id = useId()
+  return (
+    <span className="team-help-tooltip">
+      <button type="button" aria-label={label} aria-describedby={id}>
+        <Info size={16} aria-hidden="true" />
+      </button>
+      <span id={id} role="tooltip">
+        {children}
+      </span>
+    </span>
   )
 }
 export function TeamMemberEditor({
@@ -166,15 +205,26 @@ export function TeamMemberEditor({
             ))}
           </div>
         </div>
-        <button className="button secondary" onClick={onRemove}>
-          {t('teams.remove')}
+        <button
+          type="button"
+          className="team-icon-action team-remove-action"
+          aria-label={t('teams.remove')}
+          title={t('teams.remove')}
+          onClick={onRemove}
+        >
+          <Trash2 size={18} aria-hidden="true" />
         </button>
       </header>
       <ApiFeedback state={species} />
       <div className="team-editor-grid">
-        <div className="team-build">
+        <section className="team-editor-section team-build" aria-labelledby={`build-${m.id}`}>
+          <header className="team-section-header">
+            <SectionTitle icon={<Settings2 size={18} />}>
+              <span id={`build-${m.id}`}>{t('teams.build')}</span>
+            </SectionTitle>
+          </header>
           <div className="team-fields">
-            <label>
+            <label className="team-level-field">
               {t('teams.level')}
               <input
                 type="number"
@@ -184,10 +234,12 @@ export function TeamMemberEditor({
                 onChange={(e) => patch({ level: Math.max(1, Math.min(100, Math.trunc(Number(e.target.value)) || 1)) })}
               />
             </label>
-            <label className="team-checkbox">
-              <input type="checkbox" checked={m.shiny} onChange={(e) => patch({ shiny: e.target.checked })} />
-              {t('teams.shiny')}
-            </label>
+            <ShinyToggle
+              className="list-shiny-toggle team-shiny-toggle"
+              pressed={m.shiny}
+              label={t('teams.shiny')}
+              onChange={(shiny) => patch({ shiny })}
+            />
             {species.data && (
               <RadioSelection
                 legend={t('resource.field.gender')}
@@ -258,13 +310,49 @@ export function TeamMemberEditor({
               )}
             </>
           )}
-        </div>
-        <div className="team-training">
-          <div className="team-training-header">
-            <h4>{t('teams.stats')}</h4>
+        </section>
+        <section className="team-editor-section team-moves-section" aria-labelledby={`moves-${m.id}`}>
+          <header className="team-section-header team-moves-header">
+            <div className="team-heading-with-help">
+              <SectionTitle icon={<Swords size={18} />}>
+                <span id={`moves-${m.id}`}>{t('teams.moves')}</span>
+              </SectionTitle>
+              <HelpTooltip label={t('teams.compatibility')}>{t('teams.movesNote')}</HelpTooltip>
+            </div>
+            <SelectMenu
+              className="competitive-format-select"
+              icon={<Trophy size={18} />}
+              label={t('teams.competitiveFormat')}
+              value={competitiveFormat}
+              options={formatOptions}
+              onChange={onFormatChange}
+            />
+          </header>
+          <p className="team-format-description">{t(formatMessages[competitiveFormat][1])}</p>
+          <div className="team-moves">
+            {m.moves.map((move, i) => (
+              <MoveSelect
+                key={i}
+                label={t('teams.moveSlot', { number: i + 1 })}
+                value={p.moves.includes(move) ? move : ''}
+                options={p.moves.filter((v) => v === move || !m.moves.includes(v))}
+                onChange={(value) => patch({ moves: m.moves.map((old, j) => (i === j ? value : old)) })}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="team-editor-section team-training" aria-labelledby={`training-${m.id}`}>
+          <header className="team-section-header team-training-header">
+            <div className="team-heading-with-help">
+              <SectionTitle icon={<Dumbbell size={18} />}>
+                <span id={`training-${m.id}`}>{t('teams.stats')}</span>
+              </SectionTitle>
+              <HelpTooltip label={t('teams.calculationHelp')}>{t('teams.statsNote')}</HelpTooltip>
+            </div>
             <button
               type="button"
-              className="button secondary compact-button"
+              className="team-icon-action"
+              aria-label={t('teams.clearTraining')}
               title={t('teams.clearTrainingDescription')}
               onClick={() =>
                 patch({
@@ -273,14 +361,9 @@ export function TeamMemberEditor({
                 })
               }
             >
-              <RotateCcw size={14} aria-hidden="true" />
-              {t('teams.clearTraining')}
+              <RotateCcw size={17} aria-hidden="true" />
             </button>
-          </div>
-          <details className="team-notes">
-            <summary>{t('teams.calculationHelp')}</summary>
-            <p className="team-hint">{t('teams.statsNote')}</p>
-          </details>
+          </header>
           <EstimatedSpreadSuggestion
             pokemon={p}
             member={m}
@@ -344,34 +427,7 @@ export function TeamMemberEditor({
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
-      <div className="team-moves-header">
-        <h4>{t('teams.moves')}</h4>
-        <SelectMenu
-          className="competitive-format-select"
-          icon={<Trophy size={18} />}
-          label={t('teams.competitiveFormat')}
-          value={competitiveFormat}
-          options={formatOptions}
-          onChange={onFormatChange}
-        />
-      </div>
-      <p className="team-format-description">{t(formatMessages[competitiveFormat][1])}</p>
-      <details className="team-notes">
-        <summary>{t('teams.compatibility')}</summary>
-        <p className="team-hint">{t('teams.movesNote')}</p>
-      </details>
-      <div className="team-moves">
-        {m.moves.map((move, i) => (
-          <MoveSelect
-            key={i}
-            label={t('teams.moveSlot', { number: i + 1 })}
-            value={p.moves.includes(move) ? move : ''}
-            options={p.moves.filter((v) => v === move || !m.moves.includes(v))}
-            onChange={(value) => patch({ moves: m.moves.map((old, j) => (i === j ? value : old)) })}
-          />
-        ))}
+        </section>
       </div>
     </article>
   )

@@ -7,7 +7,6 @@ import {
   LoaderCircle,
   MapPin,
   SlidersHorizontal,
-  Sparkles,
   X,
 } from 'lucide-react'
 import { type ReactNode, useState } from 'react'
@@ -17,6 +16,7 @@ import { POKEMON_TYPES, pokemonSortOptions, type PokemonType } from '../lib/poke
 import type { PokemonSortDirection, PokemonSortKey } from '../lib/pokemon-sort'
 import { SearchField } from './SearchField'
 import { SelectMenu } from './SelectMenu'
+import { ShinyToggle } from './ShinyToggle'
 import { TypeBadge, typeLabel } from './TypeBadge'
 import { TypeIcon } from './TypeIcon'
 
@@ -242,16 +242,12 @@ export function PokemonCatalogFilters({
               {t('pokedex.clearFilters')}
             </button>
           )}
-          <button
-            className={`list-shiny-toggle${shiny ? ' active' : ''}`}
-            type="button"
-            aria-label={t(shiny ? 'pokedex.showNormal' : 'pokedex.showShiny')}
-            aria-pressed={shiny}
-            onClick={() => onShinyChange(!shiny)}
-          >
-            <Sparkles size={17} aria-hidden="true" />
-            <span>{t('detail.shiny')}</span>
-          </button>
+          <ShinyToggle
+            pressed={shiny}
+            label={t('detail.shiny')}
+            accessibleLabel={t(shiny ? 'pokedex.showNormal' : 'pokedex.showShiny')}
+            onChange={onShinyChange}
+          />
         </div>
       </div>
       {(query || region !== 'all' || types.length > 0 || legendary || mythical || baby) && (

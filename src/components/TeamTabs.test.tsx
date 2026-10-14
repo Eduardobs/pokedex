@@ -67,6 +67,22 @@ it('switches one visible editor with arrow keys and keeps edits when switching b
   }
   const view = render(<Show />)
   await screen.findByLabelText('Nível')
+  expect(screen.getByRole('heading', { name: 'Configuração' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Atributos e treinamento' })).toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Golpes' })).toBeInTheDocument()
+  expect(
+    screen
+      .getAllByRole('heading', { level: 4 })
+      .filter((heading) => ['Configuração', 'Golpes', 'Atributos e treinamento'].includes(heading.textContent ?? ''))
+      .map((heading) => heading.textContent),
+  ).toEqual(['Configuração', 'Golpes', 'Atributos e treinamento'])
+  const calculationHelp = screen.getByRole('button', { name: 'Regras do cálculo e limites' })
+  const calculationTooltip = document.getElementById(calculationHelp.getAttribute('aria-describedby')!)
+  expect(calculationTooltip).toHaveAttribute('role', 'tooltip')
+  expect(calculationTooltip).toHaveTextContent('IVs: 0–31')
+  fireEvent.change(screen.getByLabelText('IV HP'), { target: { value: '0' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))
+  expect(screen.getByLabelText('IV HP')).toHaveValue(31)
   await waitFor(() =>
     expect(view.container.querySelector('[role="tab"] img')).toHaveAttribute(
       'src',

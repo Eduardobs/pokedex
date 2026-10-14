@@ -49,6 +49,7 @@ export const ptBR = {
   'teams.saved': 'Equipes salvas neste navegador.',
   'teams.saveError': 'Não foi possível salvar. Suas alterações estão apenas nesta sessão; tente novamente.',
   'teams.level': 'Nível',
+  'teams.build': 'Configuração',
   'teams.shiny': 'Shiny',
   'teams.random': 'Aleatório',
   'teams.tera': 'Tipo Tera',
