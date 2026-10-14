@@ -53,6 +53,7 @@ describe('team rules', () => {
   })
   it('rejects corrupted storage, excessive members, moves and training', () => {
     const member = newMember(pokemon)
+    expect(member.friendship).toBe(255)
     const team = { id: 'team-1', name: 'Team', members: [member] }
     expect(validTeams([team])).toBe(true)
     expect(validTeams([{ ...team, competitiveFormat: 'doubles-4v4' }])).toBe(true)
@@ -63,6 +64,10 @@ describe('team rules', () => {
       false,
     )
     expect(validTeams([{ ...team, members: [{ ...member, level: 101 }] }])).toBe(false)
+    expect(validTeams([{ ...team, members: [{ ...member, friendship: -1 }] }])).toBe(false)
+    expect(validTeams([{ ...team, members: [{ ...member, friendship: 256 }] }])).toBe(false)
+    const { friendship: _legacyFriendship, ...legacyMember } = member
+    expect(validTeams([{ ...team, members: [legacyMember] }])).toBe(true)
     expect(validTeams(null)).toBe(false)
   })
   it('rejects malformed remote Pokémon', () => {

@@ -73,6 +73,11 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   const levelBox = await page.getByLabel('Nível', { exact: true }).boundingBox()
   expect(levelBox?.width).toBeLessThanOrEqual(84)
   const shinyToggle = page.getByRole('button', { name: 'Shiny', exact: true })
+  const primaryFieldTops = await page
+    .locator('.team-primary-fields input, .team-primary-fields button')
+    .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().top))
+  expect(primaryFieldTops).toHaveLength(3)
+  expect(Math.max(...primaryFieldTops) - Math.min(...primaryFieldTops)).toBeLessThanOrEqual(1)
   await shinyToggle.click()
   await expect(shinyToggle).toHaveAttribute('aria-pressed', 'true')
   await page.getByText('Feminino', { exact: true }).click()
@@ -158,6 +163,16 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await expect(page.getByLabel('Nome da equipe')).toHaveValue('Kanto')
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(page.getByRole('heading', { name: 'Pikachu', exact: true })).toBeVisible()
+  const mobileGenderOptions = page.locator('.team-build .radio-selection label')
+  await expect(mobileGenderOptions).toHaveCount(3)
+  const mobileViewportWidth = await page.evaluate(() => document.documentElement.clientWidth)
+  const mobileGenderBoxes = await mobileGenderOptions.evaluateAll((options) =>
+    options.map((option) => {
+      const box = option.getBoundingClientRect()
+      return { left: box.left, right: box.right }
+    }),
+  )
+  expect(mobileGenderBoxes.every(({ left, right }) => left >= 0 && right <= mobileViewportWidth)).toBe(true)
   await page.getByRole('button', { name: 'Golpe 1', exact: true }).click()
   await expect(page.getByRole('option', { name: /Thunderbolt/ })).toBeVisible()
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)

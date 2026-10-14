@@ -156,10 +156,27 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
 }
-.team-level-field {
-  justify-self: start;
+.team-primary-fields {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(64px, 84px) max-content minmax(64px, 84px);
+  align-items: end;
+  gap: 10px;
+  min-width: 0;
 }
-.teams-page .team-level-field input {
+.team-primary-fields > label {
+  align-self: stretch;
+}
+.team-primary-fields > label input {
+  margin-top: auto;
+}
+.team-level-field,
+.team-friendship-field {
+  min-width: 0;
+}
+.teams-page .team-level-field input,
+.teams-page .team-friendship-field input {
+  min-width: 0;
   width: 84px;
 }
 .team-shiny-toggle {
@@ -704,10 +721,41 @@
   .competitive-format-select {
     width: 100%;
   }
+  .team-build .radio-selection {
+    grid-column: 1 / -1;
+  }
+  .teams-page .team-build .radio-selection label {
+    gap: 3px;
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 12px;
+  }
+  .team-build .radio-selection-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+  .team-build .radio-selection label > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 @media (max-width: 400px) {
-  .team-fields {
+  .team-fields,
+  .team-editor-grid .team-fields {
     grid-template-columns: 1fr;
+  }
+  .team-primary-fields {
+    gap: 6px;
+  }
+  .teams-page .team-level-field input,
+  .teams-page .team-friendship-field input {
+    width: 100%;
+  }
+  .team-shiny-toggle {
+    gap: 5px;
+    padding-inline: 8px;
   }
 }
 

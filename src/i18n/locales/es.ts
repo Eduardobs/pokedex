@@ -49,6 +49,7 @@ export const es = {
   'teams.saved': 'Equipos guardados en este navegador.',
   'teams.saveError': 'No se pudo guardar. Los cambios solo están en esta sesión; inténtalo de nuevo.',
   'teams.level': 'Nivel',
+  'teams.friendship': 'Amistad',
   'teams.build': 'Configuración',
   'teams.shiny': 'Shiny',
   'teams.random': 'Aleatorio',

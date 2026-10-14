@@ -225,22 +225,38 @@ export function TeamMemberEditor({
             </SectionTitle>
           </header>
           <div className="team-fields">
-            <label className="team-level-field">
-              {t('teams.level')}
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={m.level}
-                onChange={(e) => patch({ level: Math.max(1, Math.min(100, Math.trunc(Number(e.target.value)) || 1)) })}
+            <div className="team-primary-fields">
+              <label className="team-level-field">
+                {t('teams.level')}
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={m.level}
+                  onChange={(e) =>
+                    patch({ level: Math.max(1, Math.min(100, Math.trunc(Number(e.target.value)) || 1)) })
+                  }
+                />
+              </label>
+              <ShinyToggle
+                className="list-shiny-toggle team-shiny-toggle"
+                pressed={m.shiny}
+                label={t('teams.shiny')}
+                onChange={(shiny) => patch({ shiny })}
               />
-            </label>
-            <ShinyToggle
-              className="list-shiny-toggle team-shiny-toggle"
-              pressed={m.shiny}
-              label={t('teams.shiny')}
-              onChange={(shiny) => patch({ shiny })}
-            />
+              <label className="team-friendship-field">
+                {t('teams.friendship')}
+                <input
+                  type="number"
+                  min={0}
+                  max={255}
+                  value={m.friendship ?? 255}
+                  onChange={(e) =>
+                    patch({ friendship: Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)) || 0)) })
+                  }
+                />
+              </label>
+            </div>
             {species.data && (
               <RadioSelection
                 legend={t('resource.field.gender')}

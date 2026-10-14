@@ -68,6 +68,7 @@ export type TeamMember = {
   id: string
   pokemon: string
   level: number
+  friendship?: number
   shiny: boolean
   gender: string
   tera: string
@@ -109,6 +110,7 @@ export function validTeams(value: unknown): value is Team[] {
             identifier(m.id) &&
             identifier(m.pokemon) &&
             integer(m.level, 1, 100) &&
+            (m.friendship === undefined || integer(m.friendship, 0, 255)) &&
             typeof m.shiny === 'boolean' &&
             ['random', 'male', 'female', 'none'].includes(String(m.gender)) &&
             teraTypes.includes(String(m.tera)) &&
@@ -183,6 +185,7 @@ export function newMember(p: TeamPokemon): TeamMember {
     id: crypto.randomUUID(),
     pokemon: p.name,
     level: 100,
+    friendship: 255,
     shiny: false,
     gender: 'random',
     tera: p.types[0],

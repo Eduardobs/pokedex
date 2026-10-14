@@ -121,6 +121,7 @@ it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', 
   fireEvent.click(await screen.findByRole('button', { name: 'Adicionar Pikachu' }))
   await screen.findByRole('heading', { name: 'Pikachu' })
   fireEvent.change(screen.getByLabelText('Nível'), { target: { value: '50' } })
+  fireEvent.change(screen.getByLabelText('Amizade'), { target: { value: '120' } })
   fireEvent.click(screen.getByLabelText('Shiny'))
   const female = await screen.findByRole('radio', { name: 'Feminino' })
   expect(female.closest('label')?.querySelector('svg')).toBeInTheDocument()
@@ -142,8 +143,8 @@ it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', 
   fireEvent.click(screen.getByRole('button', { name: 'Item equipado' }))
   fireEvent.click(await screen.findByRole('option', { name: /Eviolite/ }))
   fireEvent.click(await screen.findByLabelText(/Este Pokémon ainda pode evoluir/))
-  fireEvent.change(screen.getAllByRole('spinbutton')[1], { target: { value: '20' } })
-  fireEvent.change(screen.getAllByRole('spinbutton')[2], { target: { value: '252' } })
+  fireEvent.change(screen.getByLabelText('IV HP'), { target: { value: '20' } })
+  fireEvent.change(screen.getByLabelText('EV HP'), { target: { value: '252' } })
   fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))
   expect(screen.getByLabelText('IV HP')).toHaveValue(31)
   expect(screen.getByLabelText('EV HP')).toHaveValue(0)
@@ -161,6 +162,7 @@ it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', 
   expect(savedTeam.competitiveFormat).toBe('doubles-4v4')
   expect(member).toMatchObject({
     level: 50,
+    friendship: 120,
     shiny: true,
     gender: 'female',
     tera: 'fire',
