@@ -6,7 +6,13 @@ import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { prettyName } from '../lib/api'
 
-export function FavoritePokemonCard({ name }: { name: string }) {
+type FavoritePokemonCardProps = {
+  name: string
+  shiny?: boolean
+  sortMetric?: { label: string; value: number }
+}
+
+export function FavoritePokemonCard({ name, shiny, sortMetric }: FavoritePokemonCardProps) {
   const { data, loading, error, retry } = useApi<Pokemon>(`pokemon/${name}`)
   const { toggle } = useFavoritesContext()
   const { t } = useLanguage()
@@ -31,5 +37,5 @@ export function FavoritePokemonCard({ name }: { name: string }) {
         </div>
       </article>
     )
-  return <PokemonCard id={data.id} name={data.name} pokemon={data} />
+  return <PokemonCard id={data.id} name={data.name} pokemon={data} shiny={shiny} sortMetric={sortMetric} />
 }
