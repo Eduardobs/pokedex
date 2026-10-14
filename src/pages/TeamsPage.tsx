@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
@@ -19,7 +19,13 @@ export function TeamsPage() {
   const [teams, setTeams] = useState(() => readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []))
   const [selected, setSelected] = useState(teams[0]?.id ?? '')
   const [saved, setSaved] = useState<boolean | null>(null)
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
+  const deleteButtonRef = useRef<HTMLButtonElement>(null)
+  const cancelDeleteButtonRef = useRef<HTMLButtonElement>(null)
   const team = teams.find((v) => v.id === selected)
+  useEffect(() => {
+    if (deleteConfirmationOpen) cancelDeleteButtonRef.current?.focus()
+  }, [deleteConfirmationOpen])
   const update = (next: Team[]) => {
     setTeams(next)
     setSaved(writeStorage(STORAGE_KEYS.teams, next))
@@ -34,6 +40,17 @@ export function TeamsPage() {
     }
     update([...teams, next])
     setSelected(next.id)
+  }
+  const deleteTeam = () => {
+    if (!team) return
+    const next = teams.filter((value) => value.id !== team.id)
+    update(next)
+    setSelected(next[0]?.id ?? '')
+    setDeleteConfirmationOpen(false)
+  }
+  const closeDeleteConfirmation = () => {
+    setDeleteConfirmationOpen(false)
+    deleteButtonRef.current?.focus()
   }
   return (
     <section className="page content-width teams-page">
@@ -76,14 +93,7 @@ export function TeamsPage() {
               {t('teams.name')}
               <input maxLength={80} value={team.name} onChange={(e) => change({ ...team, name: e.target.value })} />
             </label>
-            <button
-              className="button secondary"
-              onClick={() => {
-                const next = teams.filter((v) => v.id !== team.id)
-                update(next)
-                setSelected(next[0]?.id ?? '')
-              }}
-            >
+            <button ref={deleteButtonRef} className="button secondary" onClick={() => setDeleteConfirmationOpen(true)}>
               {t('teams.delete')}
             </button>
             <strong>{team.members.length} / 6</strong>
@@ -100,6 +110,30 @@ export function TeamsPage() {
           )}
           {!team.members.length && <p>{t('teams.addHint')}</p>}
           <TeamTabs team={team} onChange={change} />
+        </div>
+      )}
+      {deleteConfirmationOpen && team && (
+        <div
+          className="team-delete-confirmation"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="delete-team-title"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') closeDeleteConfirmation()
+          }}
+        >
+          <div className="team-delete-confirmation-content">
+            <h2 id="delete-team-title">{t('teams.deleteConfirmationTitle')}</h2>
+            <p>{t('teams.deleteConfirmationDescription', { name: team.name })}</p>
+            <div className="team-delete-confirmation-actions">
+              <button ref={cancelDeleteButtonRef} className="button secondary" onClick={closeDeleteConfirmation}>
+                {t('teams.cancelDelete')}
+              </button>
+              <button className="button primary" onClick={deleteTeam}>
+                {t('teams.confirmDelete')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </section>

@@ -846,6 +846,33 @@
   align-items: center;
   min-height: 44px;
 }
+.team-delete-confirmation {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.team-delete-confirmation-content {
+  width: min(100%, 440px);
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--ink) 22%, transparent);
+}
+.team-delete-confirmation-content h2,
+.team-delete-confirmation-content p {
+  margin-top: 0;
+}
+.team-delete-confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 .teams-page .search-field input {
   border: 0;
   background: transparent;

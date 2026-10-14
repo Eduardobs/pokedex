@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamsPage } from './TeamsPage'
@@ -34,6 +34,16 @@ it('creates and renames separate teams and restores saved teams', async () => {
   show()
   expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Kanto')
   fireEvent.click(screen.getByRole('button', { name: 'Excluir equipe' }))
+  const deleteConfirmation = screen.getByRole('alertdialog', { name: 'Excluir equipe?' })
+  expect(deleteConfirmation).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Cancelar' })).toHaveFocus()
+  fireEvent.keyDown(deleteConfirmation, { key: 'Escape' })
+  expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Kanto')
+  fireEvent.click(screen.getByRole('button', { name: 'Excluir equipe' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
+  expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Kanto')
+  fireEvent.click(screen.getByRole('button', { name: 'Excluir equipe' }))
+  fireEvent.click(within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Excluir equipe' }))
   expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe 2')
 })
 it('reports storage failure without discarding the current team', () => {
