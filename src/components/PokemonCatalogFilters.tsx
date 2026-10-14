@@ -14,6 +14,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { POKEMON_REGIONS, type PokemonRegion } from '../lib/pokemon-catalog'
 import { POKEMON_TYPES, pokemonSortOptions, type PokemonType } from '../lib/pokemon-directory'
 import type { PokemonSortDirection, PokemonSortKey } from '../lib/pokemon-sort'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { SearchField } from './SearchField'
 import { SelectMenu } from './SelectMenu'
 import { ShinyToggle } from './ShinyToggle'
@@ -99,7 +100,7 @@ export function PokemonCatalogFilters({
     { value: 'desc', label: t('pokedex.sort.descending') },
   ]
   const regionOptions = [
-    { value: 'all', label: t('pokedex.region.all') },
+    { value: 'all', label: t('pokedex.region.all'), pinned: true },
     ...POKEMON_REGIONS.map(({ name }) => ({
       value: name,
       label: t(`pokedex.region.${name}`),
@@ -109,6 +110,7 @@ export function PokemonCatalogFilters({
   const additionalFiltersId = `additional-${idPrefix}-filters`
   const typeHelpId = `${idPrefix}-type-filter-help`
   const additionalFilterCount = types.length + Number(legendary) + Number(mythical) + Number(baby)
+  const orderedSuggestions = sortByLocalizedLabel(suggestions, (suggestion) => suggestion.name, language)
 
   const selectSuggestion = (name: string) => {
     onQueryChange(name)
@@ -121,16 +123,16 @@ export function PokemonCatalogFilters({
       setActiveSuggestion(-1)
       return
     }
-    if (!suggestions.length || !suggestionsOpen) return
+    if (!orderedSuggestions.length || !suggestionsOpen) return
     if (event.key === 'ArrowDown') {
       event.preventDefault()
-      setActiveSuggestion((current) => (current + 1) % suggestions.length)
+      setActiveSuggestion((current) => (current + 1) % orderedSuggestions.length)
     } else if (event.key === 'ArrowUp') {
       event.preventDefault()
-      setActiveSuggestion((current) => (current <= 0 ? suggestions.length - 1 : current - 1))
+      setActiveSuggestion((current) => (current <= 0 ? orderedSuggestions.length - 1 : current - 1))
     } else if (event.key === 'Enter' && activeSuggestion >= 0) {
       event.preventDefault()
-      selectSuggestion(suggestions[activeSuggestion].name)
+      selectSuggestion(orderedSuggestions[activeSuggestion].name)
     }
   }
 
@@ -155,7 +157,7 @@ export function PokemonCatalogFilters({
             iconSize={20}
             role="combobox"
             aria-autocomplete="list"
-            aria-expanded={suggestionsOpen && suggestions.length > 0}
+            aria-expanded={suggestionsOpen && orderedSuggestions.length > 0}
             aria-controls={suggestionListId}
             aria-activedescendant={activeSuggestion >= 0 ? `${idPrefix}-suggestion-${activeSuggestion}` : undefined}
             aria-label={searchLabel}
@@ -165,9 +167,9 @@ export function PokemonCatalogFilters({
             placeholder={searchLabel}
             autoComplete="off"
           />
-          {suggestionsOpen && suggestions.length > 0 && (
+          {suggestionsOpen && orderedSuggestions.length > 0 && (
             <ul id={suggestionListId} className="pokemon-suggestions" role="listbox">
-              {suggestions.map((suggestion, index) => (
+              {orderedSuggestions.map((suggestion, index) => (
                 <li
                   id={`${idPrefix}-suggestion-${index}`}
                   key={suggestion.name}
@@ -199,6 +201,7 @@ export function PokemonCatalogFilters({
             icon={sorting ? <LoaderCircle className="sort-spinner" size={18} /> : <ArrowUpDown size={18} />}
             label={t('pokedex.sort.label')}
             options={options}
+            sortOptions={false}
             value={sort}
             onChange={onSortChange}
           />
@@ -207,6 +210,7 @@ export function PokemonCatalogFilters({
             icon={direction === 'asc' ? <ArrowUp size={18} /> : <ArrowDown size={18} />}
             label={t('pokedex.sort.direction')}
             options={directionOptions}
+            sortOptions={false}
             value={direction}
             onChange={onDirectionChange}
           />

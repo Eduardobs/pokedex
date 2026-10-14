@@ -129,6 +129,9 @@ it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', 
   const fireType = screen.getByRole('option', { name: 'Fogo' })
   expect(fireType.querySelector('use')).toHaveAttribute('href', expect.stringContaining('#type-fire'))
   fireEvent.click(fireType)
+  expect(
+    Array.from(screen.getByLabelText('Habilidade').querySelectorAll('option')).map((option) => option.textContent),
+  ).toEqual(['Lightning Rod', 'Static'])
   fireEvent.change(screen.getByLabelText('Habilidade'), { target: { value: 'lightning-rod' } })
   const nature = screen.getByLabelText('Natureza')
   expect(Array.from(nature.querySelectorAll('option')).map((option) => option.textContent?.split(' ')[0])).toEqual(

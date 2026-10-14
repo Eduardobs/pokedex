@@ -60,14 +60,14 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
     [groups, method, moveNamesForType, normalizedQuery],
   )
   const methodOptions = [
-    { value: 'all', label: t('detail.allMethods') },
+    { value: 'all', label: t('detail.allMethods'), pinned: true },
     ...methods.map((moveMethod) => ({
       value: moveMethod,
       label: moveLearningMethodLabel(moveMethod, t),
     })),
   ]
-  const typeOptions: Array<{ value: BattleType | 'all'; label: string }> = [
-    { value: 'all', label: t('detail.allTypes') },
+  const typeOptions: Array<{ value: BattleType | 'all'; label: string; pinned?: boolean }> = [
+    { value: 'all', label: t('detail.allTypes'), pinned: true },
     ...BATTLE_TYPES.map((battleType) => ({
       value: battleType,
       label: typeLabel(battleType, language),

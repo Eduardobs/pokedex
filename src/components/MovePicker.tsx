@@ -4,6 +4,7 @@ import { useApi } from '../hooks/useApi'
 import { useMoveListDetails } from '../hooks/useMoveListDetails'
 import { prettyName } from '../lib/api'
 import { moveIdentifier } from '../lib/move-comparison'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { matchesResource, parseResourceDirectory, RESOURCE_SEARCH_LIMIT } from '../lib/resource-search'
 import { SearchField } from './SearchField'
 import { TypeBadge } from './TypeBadge'
@@ -18,7 +19,7 @@ export function MovePicker({
   label: string
   onSelect: (value: string) => void
 }) {
-  const { apiLanguage, t } = useLanguage()
+  const { apiLanguage, language, t } = useLanguage()
   const [query, setQuery] = useState(name)
   const [focused, setFocused] = useState(false)
   const [active, setActive] = useState(-1)
@@ -33,9 +34,11 @@ export function MovePicker({
     focused && query.trim().length >= 2 ? `move?limit=${RESOURCE_SEARCH_LIMIT}&offset=0` : null,
     parseResourceDirectory,
   )
-  const suggestions = (directory.data?.results ?? [])
-    .filter((entry) => matchesResource(entry.name, entry.url, query))
-    .slice(0, 6)
+  const suggestions = sortByLocalizedLabel(
+    (directory.data?.results ?? []).filter((entry) => matchesResource(entry.name, entry.url, query)),
+    (entry) => prettyName(entry.name),
+    language,
+  ).slice(0, 6)
   const details = useMoveListDetails(suggestions, apiLanguage)
   const choose = (value: string) => {
     const identifier = moveIdentifier(value)

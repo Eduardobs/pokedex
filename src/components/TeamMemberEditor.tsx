@@ -40,6 +40,7 @@ import { TypeBadge, typeLabel } from './TypeBadge'
 import { TypeIcon } from './TypeIcon'
 import { InlineRetryError } from './FeedbackState'
 import { EstimatedSpreadSuggestion } from './EstimatedSpreadSuggestion'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 
 export function ApiFeedback({ state }: { state: { loading: boolean; error: Error | null; retry: () => void } }) {
   const { t } = useLanguage()
@@ -184,7 +185,7 @@ export function TeamMemberEditor({
     <label>
       {label}
       <select aria-label={label} value={value} onChange={(e) => onSelect(e.target.value)}>
-        {values.map((v) => (
+        {sortByLocalizedLabel(values, (v) => (v ? display(v) : t('teams.none')), language).map((v) => (
           <option key={v} value={v}>
             {v ? display(v) : t('teams.none')}
           </option>
@@ -270,9 +271,7 @@ export function TeamMemberEditor({
             {select(
               t('resource.field.nature'),
               m.nature,
-              [...natureNames].sort((first, second) =>
-                localizedApiTerm(first, language).localeCompare(localizedApiTerm(second, language), language),
-              ),
+              [...natureNames],
               (v) => patch({ nature: v }),
               (name) => {
                 const modifiers = natureModifiers(name)

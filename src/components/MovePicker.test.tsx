@@ -34,10 +34,15 @@ describe('MovePicker', () => {
       input = show(select)
     fireEvent.focus(input)
     fireEvent.change(input, { target: { value: 'thunder' } })
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      'Thunder',
+      'Thunder Punch',
+      'Thunderbolt',
+    ])
     fireEvent.keyDown(input, { key: 'ArrowUp' })
-    expect(screen.getByRole('option', { name: 'Thunder Punch' })).toHaveAttribute('aria-selected', 'true')
+    expect(screen.getByRole('option', { name: 'Thunderbolt' })).toHaveAttribute('aria-selected', 'true')
     fireEvent.submit(input.closest('form')!)
-    expect(select).toHaveBeenCalledWith('thunder-punch')
+    expect(select).toHaveBeenCalledWith('thunderbolt')
     expect(input).toHaveAttribute('aria-expanded', 'false')
     fireEvent.change(input, { target: { value: 'thunder' } })
     expect(input).toHaveAttribute('aria-expanded', 'true')

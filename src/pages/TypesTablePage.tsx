@@ -78,8 +78,8 @@ export function TypesTablePage() {
     value: type,
     label: typeLabel(type, language),
   }))
-  const secondTypeOptions: Array<{ value: BattleType | ''; label: string }> = [
-    { value: '', label: t('typesTable.noSecond') },
+  const secondTypeOptions: Array<{ value: BattleType | ''; label: string; pinned?: boolean }> = [
+    { value: '', label: t('typesTable.noSecond'), pinned: true },
     ...types
       .filter((type) => type !== defense)
       .map((type) => ({
@@ -157,6 +157,7 @@ export function TypesTablePage() {
               label: `${t('tools.generation')} ${i + 1}`,
             })),
           ]}
+          sortOptions={false}
         />
       </div>
       {history.loading && <p role="status">{t('common.loading')}</p>}

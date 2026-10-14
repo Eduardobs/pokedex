@@ -600,11 +600,19 @@
   align-items: center;
   gap: 10px;
 }
-.item-select-row img {
+.item-select-row img,
+.item-select-row > .item-image-fallback {
   width: 40px;
   height: 40px;
+}
+.item-select-row img {
   object-fit: contain;
   image-rendering: pixelated;
+}
+.item-select-row > .item-image-fallback {
+  box-sizing: border-box;
+  padding: 8px;
+  color: var(--text-muted);
 }
 .item-select-row > span {
   display: flex;

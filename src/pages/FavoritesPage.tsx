@@ -57,6 +57,7 @@ export function FavoritesPage() {
               icon={<ArrowUpDown size={18} />}
               label={t('favorites.sort')}
               options={sortOptions}
+              sortOptions={false}
               value={sort}
               onChange={(value) => updateSearchParam('sort', value, 'recent')}
             />

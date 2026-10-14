@@ -3,9 +3,11 @@ import { ChevronDown } from 'lucide-react'
 import { useApi } from '../hooks/useApi'
 import { useProgressiveList } from '../hooks/useProgressiveList'
 import { useLanguage } from '../contexts/LanguageContext'
-import { itemSprite, localizedName, localizedText, prettyName } from '../lib/api'
+import { localizedName, localizedText, prettyName } from '../lib/api'
 import { parseItemDirectory, parseTeamItem } from '../lib/team-items'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { SearchField } from './SearchField'
+import { ItemImage } from './ItemImage'
 
 function ItemRow({ name, onError }: { name: string; onError: () => void }) {
   const { apiLanguage, t } = useLanguage()
@@ -22,7 +24,7 @@ function ItemRow({ name, onError }: { name: string; onError: () => void }) {
 
   return (
     <span className="item-select-row">
-      <img src={item?.sprite ?? itemSprite(name)} alt="" width={40} height={40} />
+      <ItemImage name={name} preferredSource={item?.sprite} alt="" width={40} height={40} />
       <span>
         <strong>{displayName}</strong>
         <small>{description || t(state.error ? 'teams.itemUnavailable' : 'common.loadingShort')}</small>
@@ -40,7 +42,7 @@ export function ItemSelect({
   label: string
   onChange: (value: string) => void
 }) {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const id = useId()
   const trigger = useRef<HTMLButtonElement>(null)
   const popup = useRef<HTMLDivElement>(null)
@@ -51,8 +53,12 @@ export function ItemSelect({
   const [hasDetailError, setHasDetailError] = useState(false)
   const reportError = useCallback(() => setHasDetailError(true), [])
   const directory = useApi(open ? 'item?limit=2500' : null, parseItemDirectory)
-  const filtered = (directory.data ?? []).filter((name) =>
-    prettyName(name).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase().replaceAll('-', ' ')),
+  const filtered = sortByLocalizedLabel(
+    (directory.data ?? []).filter((name) =>
+      prettyName(name).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase().replaceAll('-', ' ')),
+    ),
+    prettyName,
+    language,
   )
   const { visible, hasMore, loadMore, sentinelRef } = useProgressiveList(filtered, query, 8, open)
 

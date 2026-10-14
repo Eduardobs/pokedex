@@ -7,13 +7,14 @@ import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap 
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
+import { ItemImage } from '../components/ItemImage'
 import { ResourceValue, resourceFieldLabel } from '../components/ResourceValue'
 import { DamageClassBadge, DamageClassIcon, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
-import { berrySprite, itemSprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
+import { berrySprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
 import { isRelatedPokemonList } from '../lib/related-pokemon'
 
 const hidden = new Set(['id', 'name', 'names', 'flavor_text_entries', 'effect_entries', 'sprites'])
@@ -109,7 +110,18 @@ export function ResourceDetailPage() {
         >
           <ArrowLeft />
         </Link>
-        {berryName ? (
+        {resource === 'item' ? (
+          <ItemImage
+            name={String(data.name)}
+            fallbackIcon={ResourceIcon}
+            fallbackClassName="resource-detail-mark"
+            alt=""
+            width="72"
+            height="72"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : berryName ? (
           <img src={berrySprite(berryName)} alt="" width="72" height="72" loading="lazy" decoding="async" />
         ) : damageClass ? (
           <span className={`resource-detail-mark damage-class-detail-icon damage-${damageClass}`}>
@@ -120,7 +132,6 @@ export function ResourceDetailPage() {
             <ResourceIcon />
           </span>
         )}
-        {resource === 'item' && <img src={itemSprite(String(data.name))} alt="" loading="lazy" decoding="async" />}
         <div>
           <span className="eyebrow">
             {getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}

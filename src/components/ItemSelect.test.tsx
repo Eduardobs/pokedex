@@ -37,7 +37,7 @@ it('shows item art, name and description and progressively loads the directory',
     return Promise.resolve(
       Response.json(
         parsed.searchParams.has('limit')
-          ? { results: names.map((name) => ref(name, 'item')) }
+          ? { results: [...names].reverse().map((name) => ref(name, 'item')) }
           : item(parsed.pathname.split('/').at(-1)!),
       ),
     )
@@ -46,6 +46,7 @@ it('shows item art, name and description and progressively loads the directory',
   render(<Show />)
   fireEvent.click(screen.getByRole('button', { name: 'Item equipado' }))
   const first = await screen.findByRole('option', { name: /Test Item 0/ })
+  expect(screen.getAllByRole('option')[1]).toHaveAccessibleName(/Test Item 0/)
   await waitFor(() => expect(first).toHaveTextContent('Description for test-item-0.'))
   expect(first.querySelector('img')).toHaveAttribute('src', expect.stringContaining('test-item-0.png'))
   expect(screen.queryByRole('option', { name: /Test Item 8/ })).toBeNull()

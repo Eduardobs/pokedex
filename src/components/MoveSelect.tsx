@@ -5,6 +5,7 @@ import { useApi } from '../hooks/useApi'
 import { useProgressiveList } from '../hooks/useProgressiveList'
 import { localizedName, prettyName } from '../lib/api'
 import { moveIdentifier, parseComparisonMove } from '../lib/move-comparison'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { reference } from '../lib/resource-data'
 import { TypeBadge } from './TypeBadge'
 import { DamageClassBadge } from './SemanticBadges'
@@ -50,7 +51,7 @@ export function MoveSelect({
   label: string
   onChange: (value: string) => void
 }) {
-  const { t } = useLanguage()
+  const { language, t } = useLanguage()
   const id = useId()
   const trigger = useRef<HTMLButtonElement>(null)
   const popup = useRef<HTMLDivElement>(null)
@@ -60,10 +61,14 @@ export function MoveSelect({
   const [retry, setRetry] = useState(0)
   const [hasError, setHasError] = useState(false)
   const reportError = useCallback(() => setHasError(true), [])
-  const filtered = [...new Set(options)].filter(
-    (name) =>
-      moveIdentifier(name) === name &&
-      prettyName(name).toLowerCase().includes(query.trim().toLowerCase().replaceAll('-', ' ')),
+  const filtered = sortByLocalizedLabel(
+    [...new Set(options)].filter(
+      (name) =>
+        moveIdentifier(name) === name &&
+        prettyName(name).toLowerCase().includes(query.trim().toLowerCase().replaceAll('-', ' ')),
+    ),
+    prettyName,
+    language,
   )
   const { visible, hasMore, loadMore, sentinelRef } = useProgressiveList(filtered, query, 6, open)
   useEffect(() => {

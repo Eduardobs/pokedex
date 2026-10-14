@@ -6,6 +6,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { EmptyState, InlineRetryError } from '../components/FeedbackState'
 import { SearchField } from '../components/SearchField'
+import { ItemImage } from '../components/ItemImage'
 import {
   DamageClassBadge,
   DamageClassIcon,
@@ -19,15 +20,7 @@ import { allResources, getResourceLabel, getResourceMeta } from '../data/resourc
 import { useAbilityListDetails } from '../hooks/useAbilityListDetails'
 import { useApi } from '../hooks/useApi'
 import { useMoveListDetails } from '../hooks/useMoveListDetails'
-import {
-  berrySprite,
-  formatNumber,
-  itemSprite,
-  localizedName,
-  localizedTextResult,
-  pokemonArtwork,
-  prettyName,
-} from '../lib/api'
+import { berrySprite, formatNumber, localizedName, localizedTextResult, pokemonArtwork, prettyName } from '../lib/api'
 import { defaultPokemonNameForSpecies } from '../lib/pokemon-species'
 import type { ApiList, NamedResource } from '../types'
 import { matchesResource, parseResourceDirectory, RESOURCE_SEARCH_LIMIT } from '../lib/resource-search'
@@ -239,13 +232,11 @@ export function ResourceListPage() {
           const numericId = /^\d+$/.test(item.id) ? Number(item.id) : 0
           const hasValidId = Number.isSafeInteger(numericId) && numericId > 0
           const sprite =
-            resource === 'item'
-              ? itemSprite(item.name)
-              : resource === 'berry'
-                ? berrySprite(item.name)
-                : resource === 'pokemon' && hasValidId
-                  ? pokemonArtwork(numericId)
-                  : undefined
+            resource === 'berry'
+              ? berrySprite(item.name)
+              : resource === 'pokemon' && hasValidId
+                ? pokemonArtwork(numericId)
+                : undefined
           const damageClass = resource === 'move-damage-class' ? normalizedDamageClass(item.name) : null
           if (resource === 'move') {
             const detail = moveDetails.data?.[item.name]
@@ -353,7 +344,17 @@ export function ResourceListPage() {
               <span
                 className={`data-resource-icon${damageClass ? ` damage-class-resource-icon damage-${damageClass}` : ''}`}
               >
-                {damageClass ? (
+                {resource === 'item' ? (
+                  <ItemImage
+                    name={item.name}
+                    fallbackIcon={ResourceIcon}
+                    alt=""
+                    width="30"
+                    height="30"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : damageClass ? (
                   <DamageClassIcon value={damageClass} width="25" height="20" />
                 ) : sprite ? (
                   <img

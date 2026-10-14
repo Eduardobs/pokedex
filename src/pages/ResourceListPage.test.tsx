@@ -21,6 +21,36 @@ beforeEach(() => {
 afterEach(cleanup)
 
 describe('ResourceListPage pagination', () => {
+  it('preserves the numeric API order inside explore collections', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 2,
+        results: [
+          { name: 'zeta-item', url: 'https://pokeapi.co/api/v2/item/1/' },
+          { name: 'alpha-item', url: 'https://pokeapi.co/api/v2/item/2/' },
+        ],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explore/item']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    expect(Array.from(container.querySelectorAll('.data-list > a b')).map((entry) => entry.textContent)).toEqual([
+      'Zeta Item',
+      'Alpha Item',
+    ])
+  })
+
   it('jumps to the last page while preserving the collection search', () => {
     useApiMock.mockReturnValue({
       data: {
@@ -350,6 +380,37 @@ describe('ResourceListPage item presentation', () => {
     expect(itemImage).toHaveAttribute('width', '30')
     expect(itemImage).toHaveAttribute('height', '30')
     expect(container.querySelector('.data-resource-icon svg')).not.toBeInTheDocument()
+  })
+
+  it('shows an item glyph when an item has no available sprite', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 1,
+        previous: null,
+        next: null,
+        results: [{ name: 'axew-scales', url: 'https://pokeapi.co/api/v2/item/2000/' }],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    const { container } = render(
+      <MemoryRouter initialEntries={['/explore/item']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    fireEvent.error(container.querySelector('.data-resource-icon img')!)
+    fireEvent.error(container.querySelector('.data-resource-icon img')!)
+    fireEvent.error(container.querySelector('.data-resource-icon img')!)
+
+    expect(container.querySelector('.data-resource-icon img')).not.toBeInTheDocument()
+    expect(container.querySelector('.data-resource-icon svg.item-image-fallback')).toBeInTheDocument()
   })
 
   it('shows each berry sprite instead of the generic resource icon', () => {

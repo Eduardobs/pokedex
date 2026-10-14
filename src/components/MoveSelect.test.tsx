@@ -34,12 +34,15 @@ it('shows move data in options, supports keyboard selection, clearing and escape
     'fetch',
     vi.fn((url: string) => Promise.resolve(Response.json(move(url.split('/').at(-1)!)))),
   )
-  render(<Show options={['ember', 'flamethrower']} />)
+  render(<Show options={['flamethrower', 'ember']} />)
   const trigger = screen.getByRole('button', { name: 'Move' })
   fireEvent.keyDown(trigger, { key: 'ArrowDown' })
   const search = screen.getByRole('textbox', { name: 'Buscar golpe pelo nome' })
   expect(search).toHaveFocus()
   const option = await screen.findByRole('option', { name: /Ember/ })
+  expect(
+    screen.getAllByRole('option').map((entry) => entry.textContent?.match(/None|Nenhum|Ember|Flamethrower/)?.[0]),
+  ).toEqual(['Nenhum', 'Ember', 'Flamethrower'])
   await waitFor(() => expect(option).toHaveTextContent('Poder40'))
   expect(option).toHaveTextContent('Precisão100')
   expect(option).toHaveTextContent('PP25')

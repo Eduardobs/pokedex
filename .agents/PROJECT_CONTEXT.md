@@ -34,6 +34,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - The header must hide the Atlas Pokémon wordmark before replacing its navigation links with a hamburger menu at narrower widths.
 
 - All paginated lists must use the shared pagination component with direct page selection and first/last navigation.
+- Selectable item, move, nature, ability, and other option lists use alphabetical order while preserving semantic placeholder and numeric sequences.
+- Resource lists under `/explore` preserve the PokéAPI numeric order.
 
 ## Maintenance
 

@@ -1,9 +1,12 @@
 import { Check, ChevronDown } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import { useLanguage } from '../contexts/LanguageContext'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 
 type SelectOption<T extends string> = {
   value: T
   label: string
+  pinned?: boolean
   icon?: ReactNode
   description?: string
   className?: string
@@ -16,6 +19,7 @@ type SelectMenuProps<T extends string> = {
   options: SelectOption<T>[]
   value: T
   onChange: (value: T) => void
+  sortOptions?: boolean
 }
 
 export function SelectMenu<T extends string>({
@@ -25,7 +29,9 @@ export function SelectMenu<T extends string>({
   options,
   value,
   onChange,
+  sortOptions = true,
 }: SelectMenuProps<T>) {
+  const { language } = useLanguage()
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -33,6 +39,16 @@ export function SelectMenu<T extends string>({
   const optionsId = useId()
   const selected = options.find((option) => option.value === value) ?? options[0]
   const hasRichOptions = options.some((option) => option.icon || option.description)
+  const orderedOptions = sortOptions
+    ? [
+        ...options.filter((option) => option.pinned),
+        ...sortByLocalizedLabel(
+          options.filter((option) => !option.pinned),
+          (option) => option.label,
+          language,
+        ),
+      ]
+    : options
 
   useEffect(() => {
     if (!open) return
@@ -113,7 +129,7 @@ export function SelectMenu<T extends string>({
           aria-label={label}
           onKeyDown={handleOptionsKeyDown}
         >
-          {options.map((option) => (
+          {orderedOptions.map((option) => (
             <button
               ref={option.value === value ? selectedRef : undefined}
               type="button"

@@ -20,6 +20,7 @@ import { Language, useLanguage } from '../contexts/LanguageContext'
 import { STORAGE_KEYS } from '../config/app'
 import { FEATURE_FLAGS } from '../config/feature-flags'
 import { writeStorageString } from '../lib/storage'
+import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { Logo } from './Logo'
 import { Loading } from './Loading'
 import { ScrollToTop } from './ScrollToTop'
@@ -50,6 +51,11 @@ export function Layout() {
   })
   const { favorites, notice, clearNotice, toggle } = useFavoritesContext()
   const { language, setLanguage, t } = useLanguage()
+  const languageOptions = sortByLocalizedLabel(
+    ['pt-BR', 'en', 'es'] as const,
+    (item) => t(`language.${item}`),
+    language,
+  )
 
   const routeTitle =
     location.pathname === '/teams'
@@ -180,21 +186,22 @@ export function Layout() {
   }
 
   const handleLanguageOptionsKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    const languages: Language[] = ['pt-BR', 'en', 'es']
-    const currentIndex = languages.findIndex((item) => languageOptionRefs.current[item] === document.activeElement)
+    const currentIndex = languageOptions.findIndex(
+      (item) => languageOptionRefs.current[item] === document.activeElement,
+    )
     const nextIndex =
       event.key === 'Home'
         ? 0
         : event.key === 'End'
-          ? languages.length - 1
+          ? languageOptions.length - 1
           : event.key === 'ArrowDown'
-            ? (currentIndex + 1) % languages.length
+            ? (currentIndex + 1) % languageOptions.length
             : event.key === 'ArrowUp'
-              ? (currentIndex - 1 + languages.length) % languages.length
+              ? (currentIndex - 1 + languageOptions.length) % languageOptions.length
               : -1
     if (nextIndex < 0) return
     event.preventDefault()
-    languageOptionRefs.current[languages[nextIndex]]?.focus()
+    languageOptionRefs.current[languageOptions[nextIndex]]?.focus()
   }
 
   useEffect(() => {
@@ -334,7 +341,7 @@ export function Layout() {
               aria-label={t('language.label')}
               onKeyDown={handleLanguageOptionsKeyDown}
             >
-              {(['pt-BR', 'en', 'es'] as Language[]).map((item) => (
+              {languageOptions.map((item) => (
                 <button
                   ref={(node) => {
                     languageOptionRefs.current[item] = node

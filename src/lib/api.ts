@@ -18,6 +18,20 @@ export const pokemonHomeSprite = (id: number, shiny = false) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${shiny ? 'shiny/' : ''}${encodeURIComponent(String(id))}.png`
 export const itemSprite = (name: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${encodeURIComponent(name)}.png`
+const generationItemSprite = (name: string, generation: 8 | 9) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/gen${generation}/${encodeURIComponent(name)}.png`
+const alternateItemSprites = new Map<string, string>([
+  // This official game sprite is not present in PokeAPI's sprite repository.
+  ['ability-patch', 'https://raw.githubusercontent.com/msikma/pokesprite/master/items/other-item/ability-patch.png'],
+])
+export const itemSpriteSources = (name: string, preferred?: string | null) =>
+  [
+    preferred,
+    itemSprite(name),
+    alternateItemSprites.get(name),
+    generationItemSprite(name, 9),
+    generationItemSprite(name, 8),
+  ].filter((source, index, sources): source is string => Boolean(source) && sources.indexOf(source) === index)
 export const berrySprite = (name: string) => itemSprite(`${name}-berry`)
 export const pokemonListItems = (resources: NamedResource[]): PokemonListItem[] =>
   resources.flatMap((item) => {
