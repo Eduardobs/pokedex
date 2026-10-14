@@ -14,15 +14,19 @@ describe('team item data', () => {
     ).toMatchObject({ name: 'choice-scarf', sprite: expect.stringContaining('choice-scarf.png') })
   })
 
-  it('rejects malformed or duplicate directory entries and unsafe item sprites', () => {
-    expect(() =>
+  it('deduplicates directory entries returned by the API', () => {
+    expect(
       parseItemDirectory({
         results: [
           { name: 'item', url: 'x' },
-          { name: 'item', url: 'y' },
+          { name: 'other-item', url: 'y' },
+          { name: 'item', url: 'z' },
         ],
       }),
-    ).toThrow()
+    ).toEqual(['item', 'other-item'])
+  })
+
+  it('rejects malformed directory entries and unsafe item sprites', () => {
     expect(() => parseItemDirectory({ results: [{ name: '<script>', url: 'x' }] })).toThrow()
     expect(() => parseTeamItem({ name: 'item', sprites: { default: 'javascript:alert(1)' } })).toThrow()
   })

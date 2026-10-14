@@ -17,6 +17,7 @@ const item = (name: string) => ({
 
 afterEach(() => {
   cleanup()
+  vi.restoreAllMocks()
   vi.unstubAllGlobals()
   localStorage.clear()
 })
@@ -83,4 +84,29 @@ it('searches all items and supports keyboard navigation', async () => {
   expect(match).toHaveFocus()
   fireEvent.keyDown(match, { key: 'Escape' })
   expect(screen.getByRole('button', { name: 'Item equipado' })).toHaveFocus()
+})
+
+it('recovers the item directory after retry and tolerates duplicate API entries', async () => {
+  const now = Date.now()
+  vi.spyOn(Date, 'now').mockReturnValue(now + 6 * 60 * 1000)
+  const fetch = vi.fn((url: string) => {
+    const parsed = new URL(url)
+    if (parsed.searchParams.has('limit')) {
+      const directoryAttempt = fetch.mock.calls.filter(([request]) => new URL(request).searchParams.has('limit')).length
+      return Promise.resolve(
+        directoryAttempt === 1
+          ? new Response('{}', { status: 503 })
+          : Response.json({ results: [ref('choice-scarf', 'item'), ref('choice-scarf', 'item')] }),
+      )
+    }
+    return Promise.resolve(Response.json(item(parsed.pathname.split('/').at(-1)!)))
+  })
+  vi.stubGlobal('fetch', fetch)
+  render(<Show />)
+
+  fireEvent.click(screen.getByRole('button', { name: 'Item equipado' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Tentar novamente' }))
+
+  expect(await screen.findByRole('option', { name: /Choice Scarf/ })).toBeVisible()
+  expect(screen.getAllByRole('option', { name: /Choice Scarf/ })).toHaveLength(1)
 })

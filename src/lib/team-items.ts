@@ -6,8 +6,8 @@ export function parseItemDirectory(value: unknown): string[] {
   const results = array(record(value).results, 3_000)
   if (!results.length) return []
   const names = results.map((entry) => record(entry).name)
-  if (names.some((name) => !identifier(name)) || new Set(names).size !== names.length) return invalidData()
-  return names as string[]
+  if (names.some((name) => !identifier(name))) return invalidData()
+  return [...new Set(names as string[])]
 }
 
 function optionalHttpsUrl(value: unknown): string | null {

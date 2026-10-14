@@ -32,6 +32,7 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
                   results: [
                     ref('choice-scarf', 'item'),
                     ...Array.from({ length: 8 }, (_, index) => ref(`test-item-${index + 1}`, 'item')),
+                    ref('choice-scarf', 'item'),
                   ],
                 }
               : path === 'ability/static'
