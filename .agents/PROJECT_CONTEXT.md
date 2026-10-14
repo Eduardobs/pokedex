@@ -37,6 +37,15 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Maintenance
 
+- Teams are saved locally in the browser, support multiple teams with at most six Pokémon each, and allow at most four compatible moves and one held item per member.
+- Team builds default to level 100, non-shiny, random gender where available, and the Pokémon's first type as its Tera type; EVs are limited to 252 per stat and 510 total, and IVs to 31 per stat.
+- Gender uses icon-labelled radio controls, Tera types reuse the shared type icons and colors, and training can be reset to zero EVs and maximum IVs.
+- A locally persisted team-level competitive preset documents unrestricted, singles, and doubles battle composition without enforcing seasonal ban lists.
+- Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
+- Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.
+- Team move and item selectors use progressively loaded searchable lists. Item options display the item icon, localized name, and description.
+- Team member tabs use Pokémon HOME sprites above the Pokémon name, and gender is edited through a radio selection.
+
 - Record in this section every new lasting, project-wide definition introduced by a request.
 - Write each definition briefly and unambiguously, without temporary implementation details.
 - Do not change or remove an existing definition without explicit user instruction.

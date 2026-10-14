@@ -51,57 +51,61 @@ export function Layout() {
   const { language, setLanguage, t } = useLanguage()
 
   const routeTitle =
-    location.pathname === '/compare-moves'
-      ? t('tools.compare')
-      : location.pathname.startsWith('/pokemon/')
-        ? t('pokedex.title')
-        : location.pathname === '/pokemon'
-          ? t('nav.pokedex')
-          : location.pathname === '/forms'
-            ? t('nav.forms')
-            : location.pathname === '/types-table'
-              ? t('typesTable.title')
-              : location.pathname === '/maps/kanto'
-                ? t('maps.kantoTitle')
-                : location.pathname === '/maps/paldea'
-                  ? t('maps.paldeaTitle')
-                  : location.pathname === '/maps/kitakami'
-                    ? t('maps.kitakamiTitle')
-                    : location.pathname === '/maps/terrarium'
-                      ? t('maps.terrariumTitle')
-                      : location.pathname === '/maps/hisui-region'
-                        ? t('maps.hisuiTitle')
-                        : location.pathname === '/maps/lumiose-city'
-                          ? t('maps.lumioseTitle')
-                          : location.pathname === '/maps'
-                            ? t('maps.title')
-                            : location.pathname === '/favorites'
-                              ? t('nav.favorites')
-                              : location.pathname.startsWith('/explore')
-                                ? t('nav.explore')
-                                : location.pathname === '/'
-                                  ? 'Atlas Pokémon'
-                                  : t('error.notFoundTitle')
+    location.pathname === '/teams'
+      ? t('teams.title')
+      : location.pathname === '/compare-moves'
+        ? t('tools.compare')
+        : location.pathname.startsWith('/pokemon/')
+          ? t('pokedex.title')
+          : location.pathname === '/pokemon'
+            ? t('nav.pokedex')
+            : location.pathname === '/forms'
+              ? t('nav.forms')
+              : location.pathname === '/types-table'
+                ? t('typesTable.title')
+                : location.pathname === '/maps/kanto'
+                  ? t('maps.kantoTitle')
+                  : location.pathname === '/maps/paldea'
+                    ? t('maps.paldeaTitle')
+                    : location.pathname === '/maps/kitakami'
+                      ? t('maps.kitakamiTitle')
+                      : location.pathname === '/maps/terrarium'
+                        ? t('maps.terrariumTitle')
+                        : location.pathname === '/maps/hisui-region'
+                          ? t('maps.hisuiTitle')
+                          : location.pathname === '/maps/lumiose-city'
+                            ? t('maps.lumioseTitle')
+                            : location.pathname === '/maps'
+                              ? t('maps.title')
+                              : location.pathname === '/favorites'
+                                ? t('nav.favorites')
+                                : location.pathname.startsWith('/explore')
+                                  ? t('nav.explore')
+                                  : location.pathname === '/'
+                                    ? 'Atlas Pokémon'
+                                    : t('error.notFoundTitle')
   const routeDescription =
-    location.pathname === '/compare-moves'
-      ? t('tools.compareDescription')
-      : location.pathname.startsWith('/pokemon/')
-        ? t('pokedex.description')
-        : location.pathname === '/pokemon'
+    location.pathname === '/teams'
+      ? t('teams.description')
+      : location.pathname === '/compare-moves'
+        ? t('tools.compareDescription')
+        : location.pathname.startsWith('/pokemon/')
           ? t('pokedex.description')
-          : location.pathname === '/forms'
-            ? t('forms.description')
-            : location.pathname === '/types-table'
-              ? t('typesTable.description')
-              : location.pathname.startsWith('/maps')
-                ? t('maps.description')
-                : location.pathname === '/favorites'
-                  ? t('favorites.description')
-                  : location.pathname.startsWith('/explore')
-                    ? t('explore.description')
-                    : location.pathname === '/'
-                      ? t('home.description')
-                      : t('error.notFoundDesc')
+          : location.pathname === '/pokemon'
+            ? t('pokedex.description')
+            : location.pathname === '/forms'
+              ? t('forms.description')
+              : location.pathname === '/types-table'
+                ? t('typesTable.description')
+                : location.pathname.startsWith('/maps')
+                  ? t('maps.description')
+                  : location.pathname === '/favorites'
+                    ? t('favorites.description')
+                    : location.pathname.startsWith('/explore')
+                      ? t('explore.description')
+                      : location.pathname === '/'
+                        ? t('home.description')
+                        : t('error.notFoundDesc')
 
   useEffect(() => {
     document.title = routeTitle === 'Atlas Pokémon' ? routeTitle : `${routeTitle} · Atlas Pokémon`
@@ -289,6 +293,9 @@ export function Layout() {
           </NavLink>
           <NavLink to="/maps" onClick={() => setMenuOpen(false)}>
             <MapPinned size={17} /> {t('nav.maps')}
+          </NavLink>
+          <NavLink to="/teams" onClick={() => setMenuOpen(false)}>
+            {t('teams.title')}
           </NavLink>
           <NavLink to="/favorites" onClick={() => setMenuOpen(false)}>
             <Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span>

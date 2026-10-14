@@ -14,6 +14,8 @@ export async function listResource(endpoint: string, limit = 24, offset = 0, sig
 export const idFromUrl = (url: string) => Number(url.split('/').filter(Boolean).at(-1))
 export const pokemonArtwork = (id: number, shiny = false) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shiny ? 'shiny/' : ''}${encodeURIComponent(String(id))}.png`
+export const pokemonHomeSprite = (id: number, shiny = false) =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${shiny ? 'shiny/' : ''}${encodeURIComponent(String(id))}.png`
 export const itemSprite = (name: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${encodeURIComponent(name)}.png`
 export const berrySprite = (name: string) => itemSprite(`${name}-berry`)

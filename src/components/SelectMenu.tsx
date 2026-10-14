@@ -1,7 +1,13 @@
 import { Check, ChevronDown } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 
-type SelectOption<T extends string> = { value: T; label: string }
+type SelectOption<T extends string> = {
+  value: T
+  label: string
+  icon?: ReactNode
+  description?: string
+  className?: string
+}
 
 type SelectMenuProps<T extends string> = {
   className?: string
@@ -26,6 +32,7 @@ export function SelectMenu<T extends string>({
   const selectedRef = useRef<HTMLButtonElement>(null)
   const optionsId = useId()
   const selected = options.find((option) => option.value === value) ?? options[0]
+  const hasRichOptions = options.some((option) => option.icon || option.description)
 
   useEffect(() => {
     if (!open) return
@@ -71,7 +78,7 @@ export function SelectMenu<T extends string>({
 
   return (
     <div
-      className={`catalog-select ${className}`.trim()}
+      className={`catalog-select${hasRichOptions ? ' catalog-select-rich' : ''} ${className}`.trim()}
       ref={rootRef}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
@@ -114,13 +121,22 @@ export function SelectMenu<T extends string>({
               aria-selected={option.value === value}
               tabIndex={option.value === value ? 0 : -1}
               key={option.value}
+              className={`${option.className ?? ''}${hasRichOptions && !option.icon ? ' catalog-select-option-no-icon' : ''}`.trim()}
               onClick={() => {
                 onChange(option.value)
                 setOpen(false)
                 triggerRef.current?.focus()
               }}
             >
-              <span>{option.label}</span>
+              {option.icon && (
+                <span className="catalog-select-option-icon" aria-hidden="true">
+                  {option.icon}
+                </span>
+              )}
+              <span className="catalog-select-option-copy">
+                <strong>{option.label}</strong>
+                {option.description && <small>{option.description}</small>}
+              </span>
               {option.value === value && <Check size={15} aria-hidden="true" />}
             </button>
           ))}

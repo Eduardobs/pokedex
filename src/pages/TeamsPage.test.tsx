@@ -1,0 +1,175 @@
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, expect, it, vi } from 'vitest'
+import { LanguageProvider } from '../contexts/LanguageContext'
+import { TeamsPage } from './TeamsPage'
+import { STORAGE_KEYS } from '../config/app'
+
+afterEach(() => {
+  cleanup()
+  localStorage.clear()
+  vi.restoreAllMocks()
+  vi.unstubAllGlobals()
+})
+it('creates and renames separate teams and restores saved teams', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(
+        Response.json({ results: [{ name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' }] }),
+      ),
+  )
+  const show = () =>
+    render(
+      <LanguageProvider>
+        <TeamsPage />
+      </LanguageProvider>,
+    )
+  show()
+  fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  fireEvent.change(screen.getByLabelText('Nome da equipe'), { target: { value: 'Kanto' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)).toHaveLength(2)
+  cleanup()
+  show()
+  expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Kanto')
+  fireEvent.click(screen.getByRole('button', { name: 'Excluir equipe' }))
+  expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe 2')
+})
+it('reports storage failure without discarding the current team', () => {
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValue(
+        Response.json({ results: [{ name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' }] }),
+      ),
+  )
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+    throw new Error('Quota')
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível salvar')
+  expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe 1')
+})
+
+it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', async () => {
+  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/1/` })
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation((url: string) => {
+      const path = new URL(url).pathname.replace('/api/v2/', '')
+      const payload =
+        path === 'pokemon'
+          ? { results: [ref('pikachu', 'pokemon')] }
+          : path === 'pokemon/pikachu'
+            ? {
+                name: 'pikachu',
+                id: 25,
+                species: ref('pikachu', 'pokemon-species'),
+                types: [{ type: ref('electric', 'type') }],
+                abilities: [{ ability: ref('static', 'ability') }, { ability: ref('lightning-rod', 'ability') }],
+                moves: [{ move: ref('thunderbolt', 'move') }],
+                stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name) => ({
+                  stat: ref(name, 'stat'),
+                  base_stat: 50,
+                })),
+              }
+            : path === 'pokemon-species/pikachu'
+              ? { id: 25, gender_rate: 4 }
+              : path === 'item'
+                ? { results: [ref('eviolite', 'item')] }
+                : path === 'item/eviolite'
+                  ? {
+                      name: 'eviolite',
+                      sprites: {
+                        default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eviolite.png',
+                      },
+                      names: [],
+                      effect_entries: [],
+                      flavor_text_entries: [],
+                    }
+                  : path === 'move/thunderbolt'
+                    ? {
+                        name: 'thunderbolt',
+                        type: ref('electric', 'type'),
+                        damage_class: ref('special', 'move-damage-class'),
+                        power: 90,
+                        accuracy: 100,
+                        pp: 15,
+                        priority: 0,
+                      }
+                    : { names: [], effect_entries: [] }
+      return Promise.resolve(Response.json(payload))
+    }),
+  )
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  fireEvent.change(screen.getByRole('textbox', { name: 'Nome original ou número do Pokémon' }), {
+    target: { value: 'pikachu' },
+  })
+  fireEvent.click(await screen.findByRole('button', { name: 'Pikachu' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Adicionar Pikachu' }))
+  await screen.findByRole('heading', { name: 'Pikachu' })
+  fireEvent.change(screen.getByLabelText('Nível'), { target: { value: '50' } })
+  fireEvent.click(screen.getByLabelText('Shiny'))
+  const female = await screen.findByRole('radio', { name: 'Feminino' })
+  expect(female.closest('label')?.querySelector('svg')).toBeInTheDocument()
+  fireEvent.click(female)
+  fireEvent.click(screen.getByRole('combobox', { name: 'Tipo Tera' }))
+  const fireType = screen.getByRole('option', { name: 'Fogo' })
+  expect(fireType.querySelector('use')).toHaveAttribute('href', expect.stringContaining('#type-fire'))
+  fireEvent.click(fireType)
+  fireEvent.change(screen.getByLabelText('Habilidade'), { target: { value: 'lightning-rod' } })
+  const nature = screen.getByLabelText('Natureza')
+  expect(Array.from(nature.querySelectorAll('option')).map((option) => option.textContent?.split(' ')[0])).toEqual(
+    [...Array.from(nature.querySelectorAll('option')).map((option) => option.textContent?.split(' ')[0])].sort(),
+  )
+  fireEvent.change(nature, { target: { value: 'adamant' } })
+  fireEvent.click(screen.getByLabelText(/Ativar condição da habilidade/))
+  fireEvent.click(screen.getByRole('button', { name: 'Item equipado' }))
+  fireEvent.click(await screen.findByRole('option', { name: /Eviolite/ }))
+  fireEvent.click(await screen.findByLabelText(/Este Pokémon ainda pode evoluir/))
+  fireEvent.change(screen.getAllByRole('spinbutton')[1], { target: { value: '20' } })
+  fireEvent.change(screen.getAllByRole('spinbutton')[2], { target: { value: '252' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Limpar' }))
+  expect(screen.getByLabelText('IV HP')).toHaveValue(31)
+  expect(screen.getByLabelText('EV HP')).toHaveValue(0)
+  fireEvent.change(screen.getByLabelText('IV HP'), { target: { value: '20' } })
+  fireEvent.change(screen.getByLabelText('EV HP'), { target: { value: '252' } })
+  fireEvent.click(screen.getByRole('combobox', { name: 'Regras competitivas' }))
+  fireEvent.click(screen.getByRole('option', { name: /Duplas 4×4/ }))
+  fireEvent.click(screen.getByRole('button', { name: 'Golpe 1' }))
+  fireEvent.click(await screen.findByRole('option', { name: /Thunderbolt/ }))
+  fireEvent.click(screen.getByRole('button', { name: 'Golpe 2' }))
+  expect(screen.queryByRole('option', { name: /Thunderbolt/ })).toBeNull()
+  fireEvent.keyDown(screen.getByLabelText('Buscar golpe pelo nome'), { key: 'Escape' })
+  const savedTeam = JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)[0]
+  const member = savedTeam.members[0]
+  expect(savedTeam.competitiveFormat).toBe('doubles-4v4')
+  expect(member).toMatchObject({
+    level: 50,
+    shiny: true,
+    gender: 'female',
+    tera: 'fire',
+    ability: 'lightning-rod',
+    nature: 'adamant',
+    item: 'eviolite',
+    abilityActive: true,
+    itemActive: true,
+  })
+  expect(member.moves[0]).toBe('thunderbolt')
+  expect(member.ivs[0]).toBe(20)
+  expect(member.evs[0]).toBe(252)
+  fireEvent.click(screen.getByRole('button', { name: 'Remover Pokémon' }))
+  expect(screen.queryByRole('heading', { name: 'Pikachu' })).not.toBeInTheDocument()
+})

@@ -10,6 +10,7 @@ function lazyPage<T extends Record<string, ComponentType>>(load: () => Promise<T
   return lazy(async () => ({ default: (await load())[name] }))
 }
 
+const TeamsPage = lazyPage(() => import('./pages/TeamsPage'), 'TeamsPage')
 const PokedexPage = lazyPage(() => import('./pages/PokedexPage'), 'PokedexPage')
 const PokemonDetailPage = lazyPage(() => import('./pages/PokemonDetailPage'), 'PokemonDetailPage')
 const FormsPage = lazyPage(() => import('./pages/FormsPage'), 'FormsPage')
@@ -41,6 +42,7 @@ export default function App() {
               <Route path="explore" element={<ExplorePage />} />
               <Route path="explore/:resource" element={<ResourceListPage />} />
               <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
+              <Route path="teams" element={<TeamsPage />} />
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="compare-moves" element={<MoveComparisonPage />} />
               <Route path="types-table" element={<TypesTablePage />} />

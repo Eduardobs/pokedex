@@ -18,9 +18,12 @@ export const NETWORK = {
 } as const
 
 export const STORAGE_KEYS = {
+  teams: 'atlas-pokemon-teams-v1',
   favorites: 'atlas-pokemon-favorites',
   language: 'atlas-language',
   theme: 'atlas-theme',
 } as const
 
 export const FAVORITES_LIMIT = 200
+
+export const TEAM_LIMITS = { teams: 100, members: 6 } as const

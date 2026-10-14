@@ -202,3 +202,7 @@ Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE) for the full text.
+
+### Team builder
+
+The `/teams` route supports multiple locally saved teams of up to six Pokémon. Each member has editable level, shiny appearance, icon-labelled gender, a color-coded Tera type, compatible ability, nature, held item, four compatible moves, IVs and EVs. EVs are capped at 252 per stat and 510 total, with one action to reset EVs and restore every IV to 31. Searchable move and item selectors load their detailed options progressively; item choices include their icon and localized description. A team-level competitive preset records common singles and doubles battle compositions. Calculated stats use modern formulas and direct ability/item modifiers; conditional effects can be enabled explicitly. This is a team planner, not a turn-by-turn battle simulator. Move compatibility combines the games in PokéAPI, and seasonal ban lists are not enforced. Teams are stored only in the current browser, with a visible error and retry when storage is unavailable.
