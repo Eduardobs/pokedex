@@ -40,6 +40,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 ## Maintenance
 
 - Teams are saved locally in the browser, support multiple teams with at most six Pokémon each, and allow at most four compatible moves and one held item per member.
+- A team can be exported as a versioned team file and imported without losing any editable team or member data.
 - Team builds default to level 100, non-shiny, random gender where available, and the Pokémon's first type as its Tera type; EVs are limited to 252 per stat and 510 total, and IVs to 31 per stat.
 - Team-member friendship is editable from 0 to 255 and defaults to 255; saved teams created before this field remain compatible and use the default until edited.
 - Team builds keep level, shiny, and friendship aligned in one row; the gender control must remain usable without overflow on mobile screens.

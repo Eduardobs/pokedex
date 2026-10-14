@@ -1,8 +1,9 @@
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamsPage } from './TeamsPage'
 import { STORAGE_KEYS } from '../config/app'
+import { createTeamExport } from '../lib/team-transfer'
 
 afterEach(() => {
   cleanup()
@@ -66,6 +67,41 @@ it('reports storage failure without discarding the current team', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
   expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível salvar')
   expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe 1')
+})
+
+it('imports a team JSON file and selects the imported team', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ results: [] })))
+  const team = {
+    id: 'team-1',
+    name: 'Equipe importada',
+    competitiveFormat: 'singles-3v3' as const,
+    members: [],
+  }
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+  const file = new File([JSON.stringify(createTeamExport(team))], 'equipe.json', { type: 'application/json' })
+  fireEvent.change(screen.getByLabelText('Arquivo da equipe'), { target: { files: [file] } })
+
+  await waitFor(() => expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe importada'))
+  expect(screen.getByText('Equipe importada.')).toBeInTheDocument()
+  expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)).toMatchObject([{ name: 'Equipe importada' }])
+})
+
+it('keeps current teams when the imported JSON is invalid', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ results: [] })))
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+  const file = new File(['{"team":{}}'], 'invalido.json', { type: 'application/json' })
+  fireEvent.change(screen.getByLabelText('Arquivo da equipe'), { target: { files: [file] } })
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('Não foi possível importar o arquivo')
+  expect(localStorage.getItem(STORAGE_KEYS.teams)).toBeNull()
 })
 
 it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', async () => {

@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { TEAM_LIMITS, STORAGE_KEYS } from '../config/app'
+import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS, STORAGE_KEYS } from '../config/app'
 import { readStorage, writeStorage } from '../lib/storage'
 import { newMember, parseTeamPokemon, validTeams, type Team } from '../lib/teams'
+import { createTeamExport, importTeam, parseTeamExport } from '../lib/team-transfer'
 import { prettyName } from '../lib/api'
 import { moveIdentifier } from '../lib/move-comparison'
 import { array, record, reference } from '../lib/resource-data'
@@ -19,9 +20,13 @@ export function TeamsPage() {
   const [teams, setTeams] = useState(() => readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []))
   const [selected, setSelected] = useState(teams[0]?.id ?? '')
   const [saved, setSaved] = useState<boolean | null>(null)
+  const [transferMessage, setTransferMessage] = useState<
+    'exported' | 'imported' | 'importError' | 'importTooLarge' | 'importLimit' | null
+  >(null)
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const cancelDeleteButtonRef = useRef<HTMLButtonElement>(null)
+  const importInputRef = useRef<HTMLInputElement>(null)
   const team = teams.find((v) => v.id === selected)
   useEffect(() => {
     if (deleteConfirmationOpen) cancelDeleteButtonRef.current?.focus()
@@ -52,6 +57,50 @@ export function TeamsPage() {
     setDeleteConfirmationOpen(false)
     deleteButtonRef.current?.focus()
   }
+  const exportTeam = () => {
+    if (!team) return
+    const file = new Blob([JSON.stringify(createTeamExport(team), null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    const filename = team.name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+    link.href = url
+    link.download = `atlas-team-${filename || 'team'}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+    setTransferMessage('exported')
+  }
+  const importFile = (file: File) => {
+    if (file.size > TEAM_IMPORT_MAX_BYTES) {
+      setTransferMessage('importTooLarge')
+      return
+    }
+    const reader = new FileReader()
+    reader.onerror = () => setTransferMessage('importError')
+    reader.onload = () => {
+      try {
+        const parsed = parseTeamExport(JSON.parse(String(reader.result)))
+        if (!parsed) throw new Error('Invalid team export')
+        const next = importTeam(parsed)
+        update([...teams, next])
+        setSelected(next.id)
+        setTransferMessage('imported')
+      } catch {
+        setTransferMessage('importError')
+      }
+    }
+    reader.readAsText(file)
+  }
+  const selectImportFile = () => {
+    if (teams.length >= TEAM_LIMITS.teams) {
+      setTransferMessage('importLimit')
+      return
+    }
+    importInputRef.current?.click()
+  }
   return (
     <section className="page content-width teams-page">
       <PageHeader
@@ -59,11 +108,46 @@ export function TeamsPage() {
         title={t('teams.title')}
         description={t('teams.description')}
         aside={
-          <button className="button primary" onClick={create} disabled={teams.length >= TEAM_LIMITS.teams}>
-            {t('teams.create')}
-          </button>
+          <div className="team-page-actions">
+            <button className="button secondary" onClick={exportTeam} disabled={!team}>
+              {t('teams.export')}
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept="application/json,.json"
+              aria-label={t('teams.importFile')}
+              hidden
+              onChange={(event) => {
+                const file = event.target.files?.[0]
+                event.target.value = ''
+                if (file) importFile(file)
+              }}
+            />
+            <button className="button secondary" onClick={selectImportFile}>
+              {t('teams.import')}
+            </button>
+            <button className="button primary" onClick={create} disabled={teams.length >= TEAM_LIMITS.teams}>
+              {t('teams.create')}
+            </button>
+          </div>
         }
       />
+      {transferMessage && (
+        <p role={transferMessage === 'exported' || transferMessage === 'imported' ? 'status' : 'alert'}>
+          {t(
+            (
+              {
+                exported: 'teams.exported',
+                imported: 'teams.imported',
+                importError: 'teams.importError',
+                importTooLarge: 'teams.importTooLarge',
+                importLimit: 'teams.importLimit',
+              } as const
+            )[transferMessage],
+          )}
+        </p>
+      )}
       <p role={saved === false ? 'alert' : 'status'}>
         {saved === false ? t('teams.saveError') : saved ? t('teams.saved') : t('teams.local')}
       </p>

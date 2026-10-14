@@ -15,6 +15,12 @@
 .team-toolbar {
   margin: 12px 0;
 }
+.team-page-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
 .teams-page label {
   display: flex;
   flex-direction: column;
@@ -888,6 +894,9 @@
   }
 }
 @media (max-width: 720px) {
+  .team-page-actions {
+    justify-content: flex-start;
+  }
   .team-editor-section {
     padding: 12px;
   }

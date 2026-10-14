@@ -27,3 +27,4 @@ export const STORAGE_KEYS = {
 export const FAVORITES_LIMIT = 200
 
 export const TEAM_LIMITS = { teams: 100, members: 6 } as const
+export const TEAM_IMPORT_MAX_BYTES = 100_000

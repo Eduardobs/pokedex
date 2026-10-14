@@ -160,6 +160,7 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await page.getByRole('button', { name: 'Nova equipe' }).click()
   await expect(page.getByLabel('Nome da equipe')).toHaveValue('Equipe 2')
   await page.getByRole('button', { name: 'Excluir equipe' }).click()
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Excluir equipe' }).click()
   await expect(page.getByLabel('Nome da equipe')).toHaveValue('Kanto')
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(page.getByRole('heading', { name: 'Pikachu', exact: true })).toBeVisible()
