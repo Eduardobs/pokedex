@@ -45,6 +45,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.
 - Team move and item selectors use progressively loaded searchable lists. Item options display the item icon, localized name, and description.
 - Team member tabs use Pokémon HOME sprites above the Pokémon name, and gender is edited through a radio selection.
+- Team training offers an explicitly applied Showdown-style estimated EV and Nature spread based on the member's four moves, item, ability, level, and base stats; manual training remains available.
+- The MapGenie integration is controlled by a build-time feature flag and is enabled by default.
 
 - Record in this section every new lasting, project-wide definition introduced by a request.
 - Write each definition briefly and unambiguously, without temporary implementation details.

@@ -52,6 +52,8 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
                         name: path.split('/')[1],
                         type: ref('electric', 'type'),
                         damage_class: ref('special', 'move-damage-class'),
+                        target: ref('selected-pokemon', 'move-target'),
+                        meta: { healing: 0 },
                         power: 90,
                         accuracy: 100,
                         pp: 15,
@@ -98,6 +100,21 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await expect(moveOption).toContainText('15')
   await moveOption.click()
   await expect(page.getByText('Thunderbolt', { exact: true }).last()).toBeVisible()
+  for (const [slot, move] of [
+    [2, 'Test Move 1'],
+    [3, 'Test Move 2'],
+    [4, 'Test Move 3'],
+  ] as const) {
+    await page.getByRole('button', { name: `Golpe ${slot}`, exact: true }).click()
+    await page.getByRole('option', { name: new RegExp(move) }).click()
+  }
+  const estimatedSpread = page.getByRole('button', { name: /Choice Scarf especial/ })
+  await expect(estimatedSpread).toContainText('4 HP / 252 Atq. especial / 252 Velocidade')
+  await expect(estimatedSpread).toContainText('Timid (+Velocidade, −Ataque)')
+  await estimatedSpread.click()
+  await expect(page.getByLabel('Natureza')).toHaveValue('timid')
+  await expect(page.getByRole('slider').first()).toHaveValue('4')
+  await page.getByRole('button', { name: 'Limpar' }).click()
   await page.getByRole('slider').first().fill('252')
   await page.getByLabel('IV HP').fill('12')
   await page.getByRole('button', { name: 'Limpar' }).click()

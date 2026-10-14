@@ -5,6 +5,7 @@ import { ErrorState } from './components/ErrorState'
 import { FavoritesProvider } from './contexts/FavoritesContext'
 import { LanguageProvider } from './contexts/LanguageContext'
 import { HomePage } from './pages/HomePage'
+import { FEATURE_FLAGS } from './config/feature-flags'
 
 function lazyPage<T extends Record<string, ComponentType>>(load: () => Promise<T>, name: keyof T) {
   return lazy(async () => ({ default: (await load())[name] }))
@@ -46,13 +47,17 @@ export default function App() {
               <Route path="favorites" element={<FavoritesPage />} />
               <Route path="compare-moves" element={<MoveComparisonPage />} />
               <Route path="types-table" element={<TypesTablePage />} />
-              <Route path="maps" element={<MapsPage />} />
-              <Route path="maps/kanto" element={<KantoMapPage />} />
-              <Route path="maps/paldea" element={<PaldeaMapPage />} />
-              <Route path="maps/kitakami" element={<KitakamiMapPage />} />
-              <Route path="maps/terrarium" element={<TerrariumMapPage />} />
-              <Route path="maps/hisui-region" element={<HisuiMapPage />} />
-              <Route path="maps/lumiose-city" element={<LumioseMapPage />} />
+              {FEATURE_FLAGS.mapGenieIntegration && (
+                <>
+                  <Route path="maps" element={<MapsPage />} />
+                  <Route path="maps/kanto" element={<KantoMapPage />} />
+                  <Route path="maps/paldea" element={<PaldeaMapPage />} />
+                  <Route path="maps/kitakami" element={<KitakamiMapPage />} />
+                  <Route path="maps/terrarium" element={<TerrariumMapPage />} />
+                  <Route path="maps/hisui-region" element={<HisuiMapPage />} />
+                  <Route path="maps/lumiose-city" element={<LumioseMapPage />} />
+                </>
+              )}
               <Route
                 path="*"
                 element={<ErrorState titleKey="error.notFoundTitle" messageKey="error.notFoundDesc" home />}

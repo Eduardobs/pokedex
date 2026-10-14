@@ -18,6 +18,7 @@ import { NavLink, Outlet, useLocation, useNavigate, useNavigationType } from 're
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { Language, useLanguage } from '../contexts/LanguageContext'
 import { STORAGE_KEYS } from '../config/app'
+import { FEATURE_FLAGS } from '../config/feature-flags'
 import { writeStorageString } from '../lib/storage'
 import { Logo } from './Logo'
 import { Loading } from './Loading'
@@ -291,9 +292,11 @@ export function Layout() {
           <NavLink to="/types-table" onClick={() => setMenuOpen(false)}>
             <Grid3X3 size={17} /> {t('nav.types')}
           </NavLink>
-          <NavLink to="/maps" onClick={() => setMenuOpen(false)}>
-            <MapPinned size={17} /> {t('nav.maps')}
-          </NavLink>
+          {FEATURE_FLAGS.mapGenieIntegration && (
+            <NavLink to="/maps" onClick={() => setMenuOpen(false)}>
+              <MapPinned size={17} /> {t('nav.maps')}
+            </NavLink>
+          )}
           <NavLink to="/teams" onClick={() => setMenuOpen(false)}>
             {t('teams.title')}
           </NavLink>

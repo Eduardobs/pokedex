@@ -42,6 +42,7 @@ The application is a client-side static site: it has no application server or da
 | `#/maps/hisui-region` | Interactive Pokémon Legends: Arceus map of Hisui |
 | `#/maps/lumiose-city` | Interactive Pokémon Legends: Z-A map of Lumiose City |
 | `#/favorites` | Locally stored favorites |
+| `#/teams` | Local team builder with estimated EV and Nature spreads |
 | `#/explore` | Categories from the PokéAPI encyclopedia |
 | `#/explore/:resource` | Paginated records for an API collection |
 | `#/explore/:resource/:name` | Details for an individual API record |
@@ -74,6 +75,20 @@ To serve a production build locally:
 ```bash
 npm run build
 npm run preview
+```
+
+## Feature flags
+
+The MapGenie integration is enabled by default and can be disabled at build time with a Vite environment variable:
+
+| Variable | Feature | Default |
+| --- | --- | --- |
+| `VITE_FEATURE_MAPGENIE_INTEGRATION` | MapGenie-backed navigation and game map routes | `true` |
+
+Set a variable to `false` in the build environment to disable its feature. For example:
+
+```bash
+VITE_FEATURE_MAPGENIE_INTEGRATION=false npm run build
 ```
 
 ## Available scripts
@@ -205,4 +220,4 @@ This project is released under the MIT License. See [LICENSE](LICENSE) for the f
 
 ### Team builder
 
-The `/teams` route supports multiple locally saved teams of up to six Pokémon. Each member has editable level, shiny appearance, icon-labelled gender, a color-coded Tera type, compatible ability, nature, held item, four compatible moves, IVs and EVs. EVs are capped at 252 per stat and 510 total, with one action to reset EVs and restore every IV to 31. Searchable move and item selectors load their detailed options progressively; item choices include their icon and localized description. A team-level competitive preset records common singles and doubles battle compositions. Calculated stats use modern formulas and direct ability/item modifiers; conditional effects can be enabled explicitly. This is a team planner, not a turn-by-turn battle simulator. Move compatibility combines the games in PokéAPI, and seasonal ban lists are not enforced. Teams are stored only in the current browser, with a visible error and retry when storage is unavailable.
+The `/teams` route supports multiple locally saved teams of up to six Pokémon. Each member has editable level, shiny appearance, icon-labelled gender, a color-coded Tera type, compatible ability, nature, held item, four compatible moves, IVs and EVs. EVs are capped at 252 per stat and 510 total, with one action to reset EVs and restore every IV to 31. After four moves are selected, the builder classifies the member's competitive role from its moves, item, ability, level, and base stats, then offers one Pokémon Showdown-style estimated EV and Nature spread. Applying it changes both values together; manual editing remains available. Searchable move and item selectors load their detailed options progressively; item choices include their icon and localized description. A team-level competitive preset records common singles and doubles battle compositions. Calculated stats use modern formulas and direct ability/item modifiers; conditional effects can be enabled explicitly. This is a team planner, not a turn-by-turn battle simulator. Move compatibility combines the games in PokéAPI, and seasonal ban lists are not enforced. Teams are stored only in the current browser, with a visible error and retry when storage is unavailable.

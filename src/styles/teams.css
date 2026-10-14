@@ -221,6 +221,67 @@
   overflow-x: auto;
   margin: 12px 0;
 }
+.estimated-spread {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
+}
+.estimated-spread-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.estimated-spread > p {
+  flex: 1 1 260px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.estimated-spread-button {
+  display: flex;
+  flex: 1 1 360px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 44px;
+  text-align: left;
+}
+.estimated-spread-button span {
+  color: var(--ink);
+}
+.estimated-spread-button small {
+  color: var(--muted);
+}
+.estimated-spread-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+}
+@media (max-width: 720px) {
+  .estimated-spread {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .estimated-spread-button {
+    flex: none;
+    width: 100%;
+  }
+  .estimated-spread-link {
+    margin-left: 0;
+  }
+}
 .team-training-header,
 .team-moves-header {
   display: flex;

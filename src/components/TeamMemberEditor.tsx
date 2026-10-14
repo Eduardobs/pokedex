@@ -25,6 +25,7 @@ import { SelectMenu } from './SelectMenu'
 import { TypeBadge, typeLabel } from './TypeBadge'
 import { TypeIcon } from './TypeIcon'
 import { InlineRetryError } from './FeedbackState'
+import { EstimatedSpreadSuggestion } from './EstimatedSpreadSuggestion'
 
 export function ApiFeedback({ state }: { state: { loading: boolean; error: Error | null; retry: () => void } }) {
   const { t } = useLanguage()
@@ -280,6 +281,13 @@ export function TeamMemberEditor({
             <summary>{t('teams.calculationHelp')}</summary>
             <p className="team-hint">{t('teams.statsNote')}</p>
           </details>
+          <EstimatedSpreadSuggestion
+            pokemon={p}
+            member={m}
+            competitiveFormat={competitiveFormat}
+            statLabel={statLabel}
+            onApply={patch}
+          />
           <div className="team-table" tabIndex={0} role="region" aria-label={t('teams.stats')}>
             <table>
               <caption className="sr-only">{t('teams.stats')}</caption>
