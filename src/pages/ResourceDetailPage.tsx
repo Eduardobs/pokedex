@@ -1,6 +1,7 @@
 import { FormConditions } from '../components/FormConditions'
 import { ExperiencePlanner } from '../components/ExperiencePlanner'
 import { ItemPrices } from '../components/ItemPrices'
+import { MoveSupplementalDetails } from '../components/MoveSupplementalDetails'
 import { VersionDescriptions } from '../components/VersionDescriptions'
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap } from 'lucide-react'
@@ -165,6 +166,7 @@ export function ResourceDetailPage() {
         </a>
       </header>
       <VersionDescriptions key={resourcePath} entries={data.flavor_text_entries} />
+      {resource === 'move' && typeof data.name === 'string' && <MoveSupplementalDetails moveName={data.name} />}
       {resource === 'item' && <ItemPrices key={resourcePath} value={data.prices} />}
       {resource === 'pokemon-form' && <FormConditions conditions={data.trigger_conditions} />}
       {resource === 'growth-rate' && <ExperiencePlanner key={resourcePath} data={data} />}

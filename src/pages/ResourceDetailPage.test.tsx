@@ -1,11 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ResourceDetailPage } from './ResourceDetailPage'
 
 const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
+
+afterEach(cleanup)
 
 describe('ResourceDetailPage berry presentation', () => {
   it('renders location-area fields and encounter methods in Portuguese', () => {
@@ -123,6 +125,77 @@ describe('ResourceDetailPage berry presentation', () => {
       `${import.meta.env.BASE_URL}type-icons.svg#type-dark`,
     )
     expect(container.querySelectorAll('.type-dark')).toHaveLength(2)
+    expect(screen.queryByRole('heading', { name: 'Comportamento suplementar' })).not.toBeInTheDocument()
+  })
+
+  it('shows supplemental Encore behavior on the move detail page', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 227,
+        name: 'encore',
+        names: [],
+        type: { name: 'normal', url: 'https://pokeapi.co/api/v2/type/1/' },
+        damage_class: { name: 'status', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
+        power: null,
+        accuracy: 100,
+        pp: 5,
+        priority: 0,
+        target: { name: 'selected-pokemon', url: 'https://pokeapi.co/api/v2/move-target/10/' },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explore/move/encore']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const section = screen.getByRole('heading', { name: 'Comportamento suplementar' }).closest('section')
+    expect(section).toHaveTextContent('Obriga o alvo a repetir o último golpe usado')
+    expect(section).toHaveTextContent('De 2 a 6 turnos')
+    expect(section).toHaveTextContent('PokéAPI')
+  })
+
+  it('shows field effect, duration, and requirement from supplemental move data', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        id: 694,
+        name: 'aurora-veil',
+        names: [],
+        type: { name: 'ice', url: 'https://pokeapi.co/api/v2/type/15/' },
+        damage_class: { name: 'status', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
+        power: null,
+        accuracy: null,
+        pp: 20,
+        priority: 0,
+        target: { name: 'users-field', url: 'https://pokeapi.co/api/v2/move-target/4/' },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+
+    render(
+      <MemoryRouter initialEntries={['/explore/move/aurora-veil']}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource/:name" element={<ResourceDetailPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+
+    const section = screen.getByRole('heading', { name: 'Comportamento suplementar' }).closest('section')
+    expect(section).toHaveTextContent('Aurora Veil')
+    expect(section).toHaveTextContent('5 turnos')
+    expect(section).toHaveTextContent('Requer Neve ativo')
   })
 
   it('shows the berry sprite instead of the generic resource icon', () => {
