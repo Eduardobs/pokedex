@@ -60,7 +60,13 @@ const testMove = (name: string, type: BattleMove['type'] = 'normal'): BattleMove
   descriptions: [{ language: 'pt-br', text: `${name} em detalhes.` }],
 })
 
-const battleRoster = (team: Team) =>
+const battleRoster = (
+  team: Team,
+  {
+    pokemonTypes = ['normal'],
+    moveTypes = ['normal', 'normal', 'normal', 'normal'],
+  }: { pokemonTypes?: BattleMove['type'][]; moveTypes?: BattleMove['type'][] } = {},
+) =>
   team.members.map((member, index) =>
     createBattlePokemon(
       member,
@@ -69,14 +75,19 @@ const battleRoster = (team: Team) =>
         name: member.pokemon,
         species: member.pokemon,
         stats: [100, 100, 100, 100, 100, 100],
-        types: ['normal'],
+        types: pokemonTypes,
         abilities: ['run-away'],
         moves: member.moves,
         homeSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
         showdownFrontSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${index + 1}.gif`,
         showdownBackSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index + 1}.gif`,
       },
-      [testMove('tackle'), testMove('quick-attack'), testMove('recover'), testMove('growl')],
+      [
+        testMove('tackle', moveTypes[0]),
+        testMove('quick-attack', moveTypes[1]),
+        testMove('recover', moveTypes[2]),
+        testMove('growl', moveTypes[3]),
+      ],
       {
         ability: {
           name: 'run-away',
@@ -128,6 +139,8 @@ describe('BattlePage lobby', () => {
   it('starts a battle and supports Terastallization, moves, switching, and returning to the lobby', async () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
+    player.members[0].gender = 'male'
+    opponent.members[0].gender = 'female'
     localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
     vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
     vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
@@ -138,14 +151,20 @@ describe('BattlePage lobby', () => {
     expect(await screen.findByRole('heading', { name: 'O que Pokemon 0 fará?' })).toBeVisible()
     expect(screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]).toHaveAttribute('aria-valuenow')
     expect(screen.getAllByText('Nº 1')).toHaveLength(2)
+    expect(screen.queryByText('Saudável')).not.toBeInTheDocument()
     expect(screen.queryByText('Ataque 0')).not.toBeInTheDocument()
-    const activeTooltips = screen
-      .getAllByLabelText('Detalhes de Pokemon 0')
-      .map((active) => within(active).getByRole('tooltip'))
+    const battleField = screen.getByLabelText('Campo de batalha')
+    expect(within(battleField).queryByLabelText('Equipe de Minha equipe')).not.toBeInTheDocument()
+    expect(within(battleField).queryByLabelText('Equipe de Equipe adversária')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Equipe de Minha equipe')).toBeVisible()
+    expect(screen.getByLabelText('Equipe de Equipe adversária')).toBeVisible()
+    const activePokemonTriggers = screen.getAllByLabelText('Detalhes de Pokemon 0')
+    const activeTooltips = activePokemonTriggers.map((active) => within(active).getByRole('tooltip'))
     expect(activeTooltips[0]).toHaveTextContent('Atributos possíveis')
     expect(activeTooltips[0]).toHaveTextContent('HP')
     expect(activeTooltips[0]).toHaveTextContent('310–404')
     expect(activeTooltips[0]).toHaveTextContent('Habilidades possíveis')
+    expect(within(activeTooltips[0]).getByRole('img', { name: 'Gênero: Feminino' })).toBeVisible()
     expect(activeTooltips[1]).toHaveTextContent('Atributos exatos')
     expect(activeTooltips[1]).toHaveTextContent('HP')
     expect(activeTooltips[1]).toHaveTextContent('341')
@@ -153,6 +172,9 @@ describe('BattlePage lobby', () => {
     expect(activeTooltips[1]).toHaveTextContent('Permite fugir.')
     expect(activeTooltips[1]).toHaveTextContent('Restos')
     expect(activeTooltips[1]).toHaveTextContent('Recupera HP a cada turno.')
+    expect(within(activeTooltips[1]).getByRole('img', { name: 'Gênero: Masculino' })).toBeVisible()
+    expect(screen.getAllByRole('img', { name: 'Gênero: Feminino' })).toHaveLength(2)
+    expect(screen.getAllByRole('img', { name: 'Gênero: Masculino' })).toHaveLength(2)
     expect(screen.getAllByRole('listitem')).toHaveLength(12)
     expect(screen.getAllByLabelText(/ainda não entrou em batalha/)).toHaveLength(10)
     expect(screen.getAllByLabelText(/já entrou em batalha/)).toHaveLength(2)
@@ -163,46 +185,103 @@ describe('BattlePage lobby', () => {
       'src',
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/1.gif',
     )
+    const allyTrigger = activePokemonTriggers[1]
+    const allyTooltip = activeTooltips[1]
+    fireEvent.pointerMove(allyTrigger.closest('article')!, { clientX: 200, clientY: 220 })
+    expect(allyTooltip).not.toHaveClass('is-pointer-positioned')
+    fireEvent.pointerMove(allyTrigger, { clientX: 200, clientY: 220 })
+    expect(allyTooltip).toHaveClass('is-pointer-positioned')
+    expect(allyTooltip).toHaveStyle({ left: '210px', top: '230px', right: 'auto', bottom: 'auto' })
+    fireEvent.pointerMove(allyTrigger, { clientX: 200, clientY: 120 })
+    expect(allyTooltip).toHaveStyle({ left: '210px', top: '130px', right: 'auto', bottom: 'auto' })
+    fireEvent.pointerLeave(allyTrigger)
+    expect(allyTooltip).not.toHaveClass('is-pointer-positioned')
 
     const tackle = screen.getByRole('button', { name: /Tackle/ })
     fireEvent.mouseOver(tackle)
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Poder: 80')
-    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Efetividade: 1×')
+    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Efetividade: Dano normal')
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('tackle em detalhes.')
+    const moveTooltip = within(tackle).getByRole('tooltip')
+    fireEvent.pointerMove(tackle, { clientX: 120, clientY: 140 })
+    expect(moveTooltip).toHaveClass('is-pointer-positioned')
+    expect(moveTooltip).toHaveStyle({ left: '130px', top: '150px' })
+    fireEvent.pointerLeave(tackle)
+    expect(moveTooltip).not.toHaveClass('is-pointer-positioned')
+    expect(moveTooltip).not.toHaveStyle({ left: '130px', top: '150px' })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Terastalizar (Normal)' }))
-    const teraButton = screen.getByRole('button', { name: 'Terastalizar (Normal)' })
+    fireEvent.click(screen.getByRole('button', { name: 'Terastalizar Normal' }))
+    const teraButton = screen.getByRole('button', { name: 'Terastalizar Normal' })
     expect(teraButton).toHaveAttribute('aria-pressed', 'true')
     expect(teraButton).toHaveClass('is-selected')
-    expect(teraButton.querySelector('svg')).toBeInTheDocument()
+    expect(teraButton.querySelector('.lucide-check')).toBeInTheDocument()
     fireEvent.click(teraButton)
     expect(teraButton).toHaveAttribute('aria-pressed', 'false')
     expect(teraButton).not.toHaveClass('is-selected')
-    expect(teraButton.querySelector('svg')).not.toBeInTheDocument()
+    expect(teraButton.querySelector('.lucide-check')).not.toBeInTheDocument()
     fireEvent.click(teraButton)
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
     await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0))
     expect(screen.getAllByText(/usou/).length).toBeGreaterThan(0)
-    expect(screen.queryByRole('button', { name: 'Terastalizar (Normal)' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Terastalizar Normal' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Trocar Pokémon'))
     expect(screen.queryByRole('button', { name: /Tackle/ })).not.toBeInTheDocument()
     const replacement = screen.getByRole('button', { name: /Pokemon 1/ })
+    expect(replacement.querySelector('.battle-switch-sprite img')).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png',
+    )
     fireEvent.mouseOver(replacement)
     const replacementTooltip = within(replacement).getByRole('tooltip')
     expect(replacementTooltip).toHaveTextContent('Pokemon 1')
     expect(replacementTooltip).toHaveTextContent('Nv. 100')
+    expect(within(replacementTooltip).getByRole('img', { name: 'Gênero: Aleatório' })).toBeVisible()
     expect(replacementTooltip).toHaveTextContent('Tipo Tera')
     expect(within(replacementTooltip).getAllByText('Normal')).toHaveLength(2)
     expect(replacementTooltip).toHaveTextContent('HP restante')
     expect(replacementTooltip).toHaveTextContent('Ataque')
     expect(replacementTooltip).toHaveTextContent('Tackle')
+    const tackleDetails = within(replacementTooltip).getByText('Tackle').closest('.battle-switch-move')
+    expect(tackleDetails).not.toBeNull()
+    expect(within(tackleDetails as HTMLElement).getByLabelText('Classe: Físico')).toBeVisible()
+    expect(within(tackleDetails as HTMLElement).getByLabelText('Normal')).toBeVisible()
     fireEvent.click(replacement)
     expect(await screen.findByRole('heading', { name: 'O que Pokemon 1 fará?' })).toBeVisible()
     expect(screen.getByText(/Pokemon 1 entrou em campo/)).toBeVisible()
-    expect(screen.getByRole('button', { name: 'Terastalizar (Normal)' })).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Terastalizar Normal' })).toBeVisible()
 
     fireEvent.click(screen.getByRole('button', { name: 'Nova batalha' }))
     expect(screen.getByRole('heading', { name: 'Prepare-se para batalhar' })).toBeVisible()
+  })
+
+  it('describes move effectiveness for immune, neutral, and super-effective attacks', async () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) =>
+      team.id === opponent.id
+        ? battleRoster(team, { pokemonTypes: ['grass', 'steel'] })
+        : battleRoster(team, { moveTypes: ['poison', 'flying', 'fighting', 'fire'] }),
+    )
+
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    await screen.findByRole('heading', { name: 'O que Pokemon 0 fará?' })
+
+    expect(within(screen.getByRole('button', { name: 'Tackle' })).getByRole('tooltip')).toHaveTextContent(
+      'Efetividade: Sem efeito',
+    )
+    expect(within(screen.getByRole('button', { name: 'Quick Attack' })).getByRole('tooltip')).toHaveTextContent(
+      'Efetividade: Dano normal',
+    )
+    expect(within(screen.getByRole('button', { name: 'Recover' })).getByRole('tooltip')).toHaveTextContent(
+      'Efetividade: Super efetivo (x2)',
+    )
+    expect(within(screen.getByRole('button', { name: 'Growl' })).getByRole('tooltip')).toHaveTextContent(
+      'Efetividade: Super efetivo (x4)',
+    )
   })
 })

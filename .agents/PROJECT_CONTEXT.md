@@ -52,6 +52,12 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - In Random Battle, each Pokémon may Terastallize once; the selected transformation resolves only after the turn's actions.
 - Random Battle applies entry hazards on every switch and honors pivot and forced-switch moves before the next action choice.
 - Random Battle identifies each trainer with a sprite, live/knockout count, and six roster indicators; active Pokémon expose keyboard-accessible detail tooltips with exact allied data and bounded opponent information.
+- Random Battle shows each Pokémon's configured gender beside its name in the field and detail tooltips.
+- Random Battle tooltips are compact, 50% translucent, follow the pointer while it remains over their trigger, and never scroll internally.
+- Active Pokémon detail tooltips are triggered only by their sprite, while remaining keyboard-accessible.
+- Random Battle preserves each Pokémon sprite's intrinsic proportions without enlarging it, and keeps trainer summaries outside the battlefield.
+- Random Battle move tooltips describe immunity, normal damage, reduced damage, and 2× or 4× super-effective damage in words.
+- Random Battle replacement choices display Pokémon HOME sprites, and their tooltips identify each move with icon-only type and damage-class badges.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.

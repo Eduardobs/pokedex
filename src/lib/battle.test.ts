@@ -74,6 +74,31 @@ const roster = (source: Team, firstTypes = ['normal']) =>
   )
 
 describe('Random Battle engine', () => {
+  it('uses the selected ability when calculating battle stats', () => {
+    const pokemon = { ...teamPokemon('azumarill'), abilities: ['huge-power', 'thick-fat'] }
+    const selectedMember = { ...member(0, 'azumarill'), ability: 'huge-power' }
+    const neutralMember = { ...selectedMember, ability: 'thick-fat' }
+    const moves = [move(), move(), move(), move()]
+
+    const selected = createBattlePokemon(selectedMember, pokemon, moves)
+    const neutral = createBattlePokemon(neutralMember, pokemon, moves)
+
+    expect(selected.ability.name).toBe('huge-power')
+    expect(selected.stats[1]).toBe(neutral.stats[1] * 2)
+  })
+
+  it('applies conditional ability stats only when their condition is active', () => {
+    const pokemon = { ...teamPokemon('ursaring'), abilities: ['guts'] }
+    const inactiveMember = { ...member(0, 'ursaring'), ability: 'guts' }
+    const activeMember = { ...inactiveMember, abilityActive: true }
+    const moves = [move(), move(), move(), move()]
+
+    const inactive = createBattlePokemon(inactiveMember, pokemon, moves)
+    const active = createBattlePokemon(activeMember, pokemon, moves)
+
+    expect(active.stats[1]).toBe(Math.floor(inactive.stats[1] * 1.5))
+  })
+
   it('accepts only complete teams with four selected moves per member', () => {
     const complete = team('player')
     expect(isBattleReadyTeam(complete)).toBe(true)

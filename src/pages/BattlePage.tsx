@@ -1,6 +1,6 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Dices, RotateCcw, Shield, Swords, UserRound } from 'lucide-react'
+import { Check, CircleSlash2, Dices, Mars, RotateCcw, Shield, Swords, UserRound, Venus } from 'lucide-react'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
@@ -28,6 +28,52 @@ import { validTeams, type Team } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
 
+function GenderIcon({ gender }: { gender: string }) {
+  const { t } = useLanguage()
+  const presentation =
+    gender === 'male'
+      ? { Icon: Mars, label: t('gender.maleLabel'), className: 'male' }
+      : gender === 'female'
+        ? { Icon: Venus, label: t('gender.femaleLabel'), className: 'female' }
+        : gender === 'none'
+          ? { Icon: CircleSlash2, label: t('gender.none'), className: 'none' }
+          : { Icon: Dices, label: t('teams.random'), className: 'random' }
+  return (
+    <span
+      className={`battle-gender-icon ${presentation.className}`}
+      role="img"
+      aria-label={t('battle.gender', { gender: presentation.label })}
+      title={presentation.label}
+    >
+      <presentation.Icon aria-hidden="true" />
+    </span>
+  )
+}
+
+function positionBattleTooltip(event: ReactPointerEvent<HTMLElement>, tooltipId: string) {
+  const tooltip = document.getElementById(tooltipId)
+  if (!tooltip) return
+  const gap = 10
+  const bounds = tooltip.getBoundingClientRect()
+  const left = Math.max(gap, Math.min(event.clientX + gap, window.innerWidth - bounds.width - gap))
+  const top = Math.max(gap, Math.min(event.clientY + gap, window.innerHeight - bounds.height - gap))
+  tooltip.style.left = `${left}px`
+  tooltip.style.top = `${top}px`
+  tooltip.style.right = 'auto'
+  tooltip.style.bottom = 'auto'
+  tooltip.classList.add('is-pointer-positioned')
+}
+
+function resetBattleTooltip(tooltipId: string) {
+  const tooltip = document.getElementById(tooltipId)
+  if (!tooltip) return
+  tooltip.style.removeProperty('left')
+  tooltip.style.removeProperty('top')
+  tooltip.style.removeProperty('right')
+  tooltip.style.removeProperty('bottom')
+  tooltip.classList.remove('is-pointer-positioned')
+}
+
 function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
   const { language, t } = useLanguage()
   const percent = Math.max(0, Math.round((pokemon.hp / pokemon.maxHp) * 100))
@@ -39,7 +85,10 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
       <div className="battle-health-copy">
         <div>
           <small>{t('battle.number', { number: formatNumber(pokemon.pokemon.id, language) })}</small>
-          <strong>{prettyName(pokemon.pokemon.name)}</strong>
+          <strong>
+            {prettyName(pokemon.pokemon.name)}
+            <GenderIcon gender={pokemon.member.gender} />
+          </strong>
         </div>
         <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
       </div>
@@ -54,7 +103,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
         <span style={{ width: `${percent}%` }} />
       </div>
       <div className="battle-health-meta">
-        <span>{pokemon.status ? t(`battle.status.${pokemon.status}`) : t('battle.statusHealthy')}</span>
+        {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
         <span>
           {formatNumber(pokemon.hp, language)} / {formatNumber(pokemon.maxHp, language)}
         </span>
@@ -91,43 +140,47 @@ function ActivePokemon({
       : pokemon.pokemon.showdownBackSprite
   const fallback = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
   return (
-    <article
-      className={`battle-active${opponent ? ' opponent' : ' player'}`}
-      tabIndex={0}
-      aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
-      aria-describedby={tooltipId}
-    >
+    <article className={`battle-active${opponent ? ' opponent' : ' player'}`}>
       <div className="battle-active-data">
         <HealthBar pokemon={pokemon} />
         {teraControl}
       </div>
       <div className="battle-pokemon-visual">
-        {sprite ? (
-          <img
-            src={sprite}
-            alt={prettyName(pokemon.pokemon.name)}
-            width="180"
-            height="180"
-            onError={({ currentTarget }) => {
-              if (!fallback || currentTarget.src === fallback) return
-              currentTarget.onerror = null
-              currentTarget.src = fallback
-            }}
-          />
-        ) : fallback ? (
-          <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
-        ) : (
-          <Shield aria-hidden="true" />
-        )}
+        <span
+          className="battle-sprite-trigger"
+          tabIndex={0}
+          aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+          aria-describedby={tooltipId}
+          onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerLeave={() => resetBattleTooltip(tooltipId)}
+        >
+          {sprite ? (
+            <img
+              src={sprite}
+              alt={prettyName(pokemon.pokemon.name)}
+              width="180"
+              height="180"
+              onError={({ currentTarget }) => {
+                if (!fallback || currentTarget.src === fallback) return
+                currentTarget.onerror = null
+                currentTarget.src = fallback
+              }}
+            />
+          ) : fallback ? (
+            <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
+          ) : (
+            <Shield aria-hidden="true" />
+          )}
+          <span className="battle-active-tooltip-anchor">
+            <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
+          </span>
+        </span>
         <div className="battle-active-types">
           {(pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types).map((type) => (
             <TypeBadge key={type} type={type} iconOnly />
           ))}
         </div>
       </div>
-      <span id={tooltipId} className="battle-active-tooltip-anchor">
-        <ActivePokemonTooltip pokemon={pokemon} opponent={opponent} />
-      </span>
     </article>
   )
 }
@@ -156,7 +209,16 @@ function BattleMoveButton({
   const { apiLanguage, language, t } = useLanguage()
   const description = moveDescription(move.data, apiLanguage)
   const number = (value: number | null) => (value === null ? '—' : formatNumber(value, language))
-  const effectiveness = formatDecimal(battleMoveEffectiveness(move.data, opponent), language, 2)
+  const multiplier = battleMoveEffectiveness(move.data, opponent)
+  const formattedMultiplier = formatDecimal(multiplier, language, 2)
+  const effectiveness =
+    multiplier === 0
+      ? t('battle.effectiveness.none')
+      : multiplier === 1
+        ? t('battle.effectiveness.normal')
+        : multiplier === 2 || multiplier === 4
+          ? t('battle.effectiveness.super', { multiplier: formattedMultiplier })
+          : t('battle.effectiveness.reduced', { multiplier: formattedMultiplier })
   return (
     <button
       className="battle-move-button"
@@ -164,6 +226,8 @@ function BattleMoveButton({
       aria-label={prettyName(move.data.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
+      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+      onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
       <span>{prettyName(move.data.name)}</span>
       <TypeBadge type={move.data.type} />
@@ -180,11 +244,11 @@ function BattleMoveButton({
           {t('move.accuracy')}: <b>{number(move.data.accuracy)}</b>
         </span>
         <span>
-          {t('battle.effectiveness')}: <b>{effectiveness}×</b>
+          {t('battle.effectiveness')}: <b>{effectiveness}</b>
         </span>
         <span className="battle-tooltip-description">
           <b>{t('resource.field.description')}</b>
-          {description || t('battle.moveDescriptionUnavailable')}
+          <span>{description || t('battle.moveDescriptionUnavailable')}</span>
         </span>
       </span>
     </button>
@@ -240,13 +304,19 @@ function ResourceDetails({ resource, item = false }: { resource: BattlePokemon['
   )
 }
 
-function ActivePokemonTooltip({ pokemon, opponent }: { pokemon: BattlePokemon; opponent: boolean }) {
+function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: BattlePokemon; opponent: boolean }) {
   const { language, t } = useLanguage()
   const stats = opponent ? possibleBattleStats(pokemon.pokemon, pokemon.member.level) : pokemon.stats
   const itemVisible = !opponent || pokemon.member.itemActive
   return (
-    <span className="battle-active-tooltip" role="tooltip">
-      <b className="battle-active-tooltip-title">{t(opponent ? 'battle.opponentDetails' : 'battle.allyDetails')}</b>
+    <span id={id} className="battle-active-tooltip" role="tooltip">
+      <span className="battle-active-tooltip-heading">
+        <span className="battle-active-tooltip-title">
+          <b>{prettyName(pokemon.pokemon.name)}</b>
+          <GenderIcon gender={pokemon.member.gender} />
+        </span>
+        <small>{t(opponent ? 'battle.opponentDetails' : 'battle.allyDetails')}</small>
+      </span>
       <span className="battle-tooltip-stats">
         {stats.map((stat, index) => (
           <span key={battleStatKeys[index]}>
@@ -349,20 +419,33 @@ function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onC
   const tooltipId = useId()
   const { language, t } = useLanguage()
   const hpPercentage = Math.round((pokemon.hp / pokemon.maxHp) * 100)
+  const homeSprite = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
   return (
     <button
       className="battle-switch-button"
       aria-label={prettyName(pokemon.pokemon.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
+      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+      onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
-      {prettyName(pokemon.pokemon.name)}{' '}
-      <small>
-        {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP
-      </small>
+      <span className="battle-switch-summary">
+        <span className="battle-switch-sprite" aria-hidden="true">
+          {homeSprite ? <img src={homeSprite} alt="" /> : <Shield />}
+        </span>
+        <span className="battle-switch-copy">
+          <b>{prettyName(pokemon.pokemon.name)}</b>
+          <small>
+            {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP
+          </small>
+        </span>
+      </span>
       <span id={tooltipId} className="battle-switch-tooltip" role="tooltip">
         <span className="battle-switch-tooltip-title">
-          <b>{prettyName(pokemon.pokemon.name)}</b>
+          <b>
+            {prettyName(pokemon.pokemon.name)}
+            <GenderIcon gender={pokemon.member.gender} />
+          </b>
           <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
         </span>
         <span className="battle-switch-tooltip-types">
@@ -392,8 +475,13 @@ function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onC
           <b>{t('battle.availableMoves')}</b>
           <span>
             {pokemon.moves.map((move, index) => (
-              <span key={`${move.data.name}-${index}`}>
-                {prettyName(move.data.name)} · {t('battle.pp', { current: move.pp, total: move.data.pp })}
+              <span className="battle-switch-move" key={`${move.data.name}-${index}`}>
+                <span className="battle-switch-move-name">{prettyName(move.data.name)}</span>
+                <span className="battle-switch-move-icons">
+                  <DamageClassBadge value={move.data.damageClass} compact />
+                  <TypeBadge type={move.data.type} iconOnly />
+                </span>
+                <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
               </span>
             ))}
           </span>
@@ -597,39 +685,37 @@ export function BattlePage() {
 
       {battle && player && screen === 'battle' && (
         <div className="battle-shell">
-          <div className="battle-field" aria-label={t('battle.field')}>
-            <div className="battle-side opponent">
-              <ActivePokemon side={battle.opponent} opponent />
+          <div className="battle-arena">
+            <div className="battle-trainers">
+              <TrainerPanel side={battle.player} opponent={false} sprite={trainerSprites.player} />
               <TrainerPanel side={battle.opponent} opponent sprite={trainerSprites.opponent} />
             </div>
-            <div className="battle-versus" aria-hidden="true">
-              <Swords />
-            </div>
-            <div className="battle-side player">
-              <ActivePokemon
-                side={battle.player}
-                teraControl={
-                  !player.terastallized && (
-                    <div className="battle-tera-control">
-                      <button
-                        className={`button secondary${teraSelected ? ' is-selected' : ''}`}
-                        aria-pressed={teraSelected}
-                        aria-label={t('battle.terastallize', {
-                          type: prettyName(player.member.tera),
-                        })}
-                        onClick={() => setTeraSelected((selected) => !selected)}
-                      >
-                        {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
-                        {t('battle.terastallize', {
-                          type: prettyName(player.member.tera),
-                        })}
-                      </button>
-                      <TypeBadge type={player.member.tera} />
-                    </div>
-                  )
-                }
-              />
-              <TrainerPanel side={battle.player} opponent={false} sprite={trainerSprites.player} />
+            <div className="battle-field" aria-label={t('battle.field')}>
+              <div className="battle-side opponent">
+                <ActivePokemon side={battle.opponent} opponent />
+              </div>
+              <div className="battle-versus" aria-hidden="true">
+                <Swords />
+              </div>
+              <div className="battle-side player">
+                <ActivePokemon
+                  side={battle.player}
+                  teraControl={
+                    !player.terastallized && (
+                      <div className="battle-tera-control">
+                        <button
+                          className={`button secondary${teraSelected ? ' is-selected' : ''}`}
+                          aria-pressed={teraSelected}
+                          onClick={() => setTeraSelected((selected) => !selected)}
+                        >
+                          {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
+                          {t('battle.terastallize')} <TypeBadge type={player.member.tera} />
+                        </button>
+                      </div>
+                    )
+                  }
+                />
+              </div>
             </div>
           </div>
 
