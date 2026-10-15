@@ -76,6 +76,7 @@ const pokemon = (name: keyof typeof catalog): TeamPokemon => ({
   name,
   id: Object.keys(catalog).indexOf(name) + 1,
   species: name,
+  genderRate: name === 'pikachu' ? -1 : 4,
   ...catalog[name],
 })
 
@@ -95,11 +96,13 @@ describe('random teams', () => {
       item: 'light-ball',
       evs: [85, 85, 85, 85, 85, 85],
       ivs: [31, 31, 31, 31, 31, 31],
+      gender: 'none',
     })
     for (const member of team.members) {
       expect(member.level).toBeGreaterThanOrEqual(1)
       expect(member.level).toBeLessThanOrEqual(100)
       expect(member.shiny).toBe(false)
+      expect(['male', 'female', 'none']).toContain(member.gender)
       expect(teraTypes).toContain(member.tera)
       expect(natureNames).toContain(member.nature)
       expect(member.moves).toHaveLength(4)

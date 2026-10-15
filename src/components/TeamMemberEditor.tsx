@@ -1,16 +1,4 @@
-import {
-  CircleSlash2,
-  Dices,
-  Dumbbell,
-  Info,
-  Mars,
-  RotateCcw,
-  Settings2,
-  Swords,
-  Trash2,
-  Trophy,
-  Venus,
-} from 'lucide-react'
+import { CircleSlash2, Dumbbell, Info, Mars, RotateCcw, Settings2, Swords, Trash2, Trophy, Venus } from 'lucide-react'
 import { useId, type ReactNode } from 'react'
 import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -19,6 +7,7 @@ import {
   calculatedStats,
   competitiveFormats,
   editEv,
+  gendersForRate,
   natureNames,
   natureModifiers,
   parseTeamPokemon,
@@ -138,31 +127,12 @@ export function TeamMemberEditor({
     )
   const stats = calculatedStats(p, m)
   const genderRate = species.data?.genderRate
-  const genders =
-    genderRate === -1
-      ? ['none']
-      : genderRate === 0
-        ? ['male']
-        : genderRate === 8
-          ? ['female']
-          : ['random', 'male', 'female']
+  const genders = gendersForRate(genderRate ?? 4)
   const gender = genders.includes(m.gender) ? m.gender : genders[0]
   const genderOptions = genders.map((value) => ({
     value,
-    label:
-      value === 'random'
-        ? t('teams.random')
-        : t(value === 'male' ? 'gender.maleLabel' : value === 'female' ? 'gender.femaleLabel' : 'gender.none'),
-    icon:
-      value === 'random' ? (
-        <Dices size={16} />
-      ) : value === 'male' ? (
-        <Mars size={16} />
-      ) : value === 'female' ? (
-        <Venus size={16} />
-      ) : (
-        <CircleSlash2 size={16} />
-      ),
+    label: t(value === 'male' ? 'gender.maleLabel' : value === 'female' ? 'gender.femaleLabel' : 'gender.none'),
+    icon: value === 'male' ? <Mars size={16} /> : value === 'female' ? <Venus size={16} /> : <CircleSlash2 size={16} />,
   }))
   const formatMessages = {
     unrestricted: ['teams.formatUnrestricted', 'teams.formatUnrestrictedDescription'],

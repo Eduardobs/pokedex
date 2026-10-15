@@ -4,7 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS, STORAGE_KEYS } from '../config/app'
 import { readStorage, writeStorage } from '../lib/storage'
-import { newMember, parseTeamPokemon, validTeams, type Team } from '../lib/teams'
+import { newMember, parseTeamPokemon, parseTeamSpecies, validTeams, type Team } from '../lib/teams'
 import { createTeamExport, importTeam, parseTeamExport } from '../lib/team-transfer'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { prettyName } from '../lib/api'
@@ -226,9 +226,9 @@ export function TeamsPage() {
           </div>
           {team.members.length < TEAM_LIMITS.members ? (
             <PokemonAdder
-              onAdd={(pokemon) => {
+              onAdd={(pokemon, genderRate) => {
                 if (team.members.length < TEAM_LIMITS.members)
-                  change({ ...team, members: [...team.members, newMember(pokemon)] })
+                  change({ ...team, members: [...team.members, newMember(pokemon, genderRate)] })
               }}
             />
           ) : (
@@ -265,7 +265,11 @@ export function TeamsPage() {
     </section>
   )
 }
-function PokemonAdder({ onAdd }: { onAdd: (pokemon: ReturnType<typeof parseTeamPokemon>) => void }) {
+function PokemonAdder({
+  onAdd,
+}: {
+  onAdd: (pokemon: ReturnType<typeof parseTeamPokemon>, genderRate: number) => void
+}) {
   const { t } = useLanguage()
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState('')
@@ -275,6 +279,7 @@ function PokemonAdder({ onAdd }: { onAdd: (pokemon: ReturnType<typeof parseTeamP
       .filter((v) => v !== null),
   )
   const pokemon = useApi(selected ? `pokemon/${selected}` : null, parseTeamPokemon)
+  const species = useApi(pokemon.data ? `pokemon-species/${pokemon.data.species}` : null, parseTeamSpecies)
   const candidates = query.trim()
     ? directory.data
         ?.filter(
@@ -315,11 +320,12 @@ function PokemonAdder({ onAdd }: { onAdd: (pokemon: ReturnType<typeof parseTeamP
         ))}
       </div>
       <ApiFeedback state={pokemon} />
-      {pokemon.data && (
+      <ApiFeedback state={species} />
+      {pokemon.data && species.data && (
         <button
           className="button primary"
           onClick={() => {
-            onAdd(pokemon.data!)
+            onAdd(pokemon.data!, species.data!.genderRate)
             setSelected('')
             setQuery('')
           }}

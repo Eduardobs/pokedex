@@ -169,7 +169,7 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await page.setViewportSize({ width: 390, height: 844 })
   await expect(page.getByRole('heading', { name: 'Pikachu', exact: true })).toBeVisible()
   const mobileGenderOptions = page.locator('.team-build .radio-selection label')
-  await expect(mobileGenderOptions).toHaveCount(3)
+  await expect(mobileGenderOptions).toHaveCount(2)
   const mobileViewportWidth = await page.evaluate(() => document.documentElement.clientWidth)
   const mobileGenderBoxes = await mobileGenderOptions.evaluateAll((options) =>
     options.map((option) => {

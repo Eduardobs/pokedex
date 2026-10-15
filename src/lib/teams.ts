@@ -11,6 +11,7 @@ export type TeamPokemon = {
   types: string[]
   abilities: string[]
   moves: string[]
+  genderRate?: number
   homeSprite?: string | null
   homeShinySprite?: string | null
   showdownFrontSprite?: string | null
@@ -18,6 +19,8 @@ export type TeamPokemon = {
   showdownFrontShinySprite?: string | null
   showdownBackShinySprite?: string | null
 }
+export const pokemonGenders = ['male', 'female', 'none'] as const
+export type PokemonGender = (typeof pokemonGenders)[number]
 export const natureNames = [
   'hardy',
   'lonely',
@@ -74,7 +77,7 @@ export type TeamMember = {
   level: number
   friendship?: number
   shiny: boolean
-  gender: string
+  gender: PokemonGender
   tera: string
   ability: string
   nature: string
@@ -116,7 +119,7 @@ export function validTeams(value: unknown): value is Team[] {
             integer(m.level, 1, 100) &&
             (m.friendship === undefined || integer(m.friendship, 0, 255)) &&
             typeof m.shiny === 'boolean' &&
-            ['random', 'male', 'female', 'none'].includes(String(m.gender)) &&
+            pokemonGenders.includes(m.gender as PokemonGender) &&
             teraTypes.includes(String(m.tera)) &&
             optionalIdentifier(m.ability) &&
             natureNames.includes(String(m.nature)) &&
@@ -189,14 +192,25 @@ export function parseTeamSpecies(value: unknown) {
   if (!integer(data.id, 1, 10000) || !integer(data.gender_rate, -1, 8)) return invalidData()
   return { id: data.id, genderRate: data.gender_rate }
 }
-export function newMember(p: TeamPokemon): TeamMember {
+export function gendersForRate(genderRate: number): PokemonGender[] {
+  if (genderRate === -1) return ['none']
+  if (genderRate === 0) return ['male']
+  if (genderRate === 8) return ['female']
+  return ['male', 'female']
+}
+export function genderForRate(genderRate: number, random: () => number = Math.random): PokemonGender {
+  const genders = gendersForRate(genderRate)
+  if (genders.length === 1) return genders[0]
+  return random() < genderRate / 8 ? 'female' : 'male'
+}
+export function newMember(p: TeamPokemon, genderRate = 4, random: () => number = Math.random): TeamMember {
   return {
     id: crypto.randomUUID(),
     pokemon: p.name,
     level: 100,
     friendship: 255,
     shiny: false,
-    gender: 'random',
+    gender: genderForRate(genderRate, random),
     tera: p.types[0],
     ability: p.abilities[0],
     nature: 'hardy',

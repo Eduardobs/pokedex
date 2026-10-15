@@ -85,6 +85,7 @@ export type BattleEvent =
   | { type: 'hazardDamage'; pokemon: string; hazard: BattleHazard; amount: number }
   | { type: 'hazardsCleared'; side: 'player' | 'opponent' }
   | { type: 'heal'; pokemon: string; amount: number }
+  | { type: 'itemRemoved'; pokemon: string; item: string }
   | { type: 'status'; pokemon: string; status: Exclude<BattleStatus, null> }
   | { type: 'statusDamage'; pokemon: string; status: 'burn' | 'poison'; amount: number }
   | { type: 'asleep'; pokemon: string }
@@ -141,6 +142,35 @@ const pivotMoves = new Set([
 ])
 const forceSwitchMoves = new Set(['circle-throw', 'dragon-tail', 'roar', 'whirlwind'])
 const ownHazardRemovalMoves = new Set(['rapid-spin', 'mortal-spin', 'tidy-up'])
+// PokéAPI exposes only the resulting stage changes, not which combatant receives
+// each one. These damaging moves lower the user despite targeting an opponent.
+const selfStatChangeMoves = new Set([
+  'close-combat',
+  'draco-meteor',
+  'fleur-cannon',
+  'hammer-arm',
+  'headlong-rush',
+  'ice-hammer',
+  'leaf-storm',
+  'make-it-rain',
+  'overheat',
+  'psycho-boost',
+  'scale-shot',
+  'spin-out',
+  'superpower',
+  'v-create',
+])
+// These moves raise a selected opponent's stage rather than the user's.
+const targetStatChangeMoves = new Set(['decorate', 'flatter', 'swagger'])
+const itemRemovalMoves = new Set(['corrosive-gas', 'knock-off'])
+
+function changesApplyToUser(move: BattleMove) {
+  return move.target === 'user' || selfStatChangeMoves.has(move.name)
+}
+
+function changesApplyToTarget(move: BattleMove) {
+  return targetStatChangeMoves.has(move.name)
+}
 
 export function isBattleReadyTeam(team: Team) {
   return (
@@ -422,12 +452,12 @@ function applyMove(
     }
   }
 
-  const selfTarget = move.target === 'user'
+  const selfTarget = changesApplyToUser(move)
   const appliesStatChanges =
     move.statChanges.length > 0 && (move.effectChance === null || random() * 100 < move.effectChance)
   if (appliesStatChanges) {
     for (const change of move.statChanges) {
-      const target = selfTarget || change.change > 0 ? attacker : defender
+      const target = selfTarget || (change.change > 0 && !changesApplyToTarget(move)) ? attacker : defender
       const previous = target.stages[change.stat]
       target.stages[change.stat] = Math.max(-6, Math.min(6, previous + change.change))
       const applied = target.stages[change.stat] - previous
@@ -505,6 +535,18 @@ function performChoice(
       const hazards = own.hazards
       own.hazards = foe.hazards
       foe.hazards = hazards
+      succeeded = true
+    }
+    if (itemRemovalMoves.has(move.name) && defender.item) {
+      const item = defender.item.name
+      defender.item = null
+      events.push({ type: 'itemRemoved', pokemon: defender.pokemon.name, item })
+      succeeded = true
+    }
+    if (move.name === 'incinerate' && defender.item?.name.endsWith('-berry')) {
+      const item = defender.item.name
+      defender.item = null
+      events.push({ type: 'itemRemoved', pokemon: defender.pokemon.name, item })
       succeeded = true
     }
     if (pivotMoves.has(move.name) && attacker.hp > 0 && availableSwitch(own) >= 0) {

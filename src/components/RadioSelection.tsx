@@ -1,8 +1,8 @@
 import { useId, type ReactNode } from 'react'
 
-type Option = { value: string; label: string; icon?: ReactNode }
+type Option<Value extends string> = { value: Value; label: string; icon?: ReactNode }
 
-export function RadioSelection({
+export function RadioSelection<Value extends string>({
   legend,
   value,
   options,
@@ -10,8 +10,8 @@ export function RadioSelection({
 }: {
   legend: string
   value: string
-  options: Option[]
-  onChange: (value: string) => void
+  options: Option<Value>[]
+  onChange: (value: Value) => void
 }) {
   const groupName = useId()
   return (

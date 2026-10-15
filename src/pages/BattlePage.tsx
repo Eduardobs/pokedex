@@ -27,19 +27,18 @@ import {
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { readStorage } from '../lib/storage'
 import { validTeams, type Stats, type Team } from '../lib/teams'
+import type { PokemonGender } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
 
-function GenderIcon({ gender }: { gender: string }) {
+function GenderIcon({ gender }: { gender: PokemonGender }) {
   const { t } = useLanguage()
   const presentation =
     gender === 'male'
       ? { Icon: Mars, label: t('gender.maleLabel'), className: 'male' }
       : gender === 'female'
         ? { Icon: Venus, label: t('gender.femaleLabel'), className: 'female' }
-        : gender === 'none'
-          ? { Icon: CircleSlash2, label: t('gender.none'), className: 'none' }
-          : { Icon: Dices, label: t('teams.random'), className: 'random' }
+        : { Icon: CircleSlash2, label: t('gender.none'), className: 'none' }
   return (
     <span
       className={`battle-gender-icon ${presentation.className}`}
@@ -588,6 +587,8 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.hazardsCleared', { side: t(`battle.log.side.${event.side}`) })
     case 'heal':
       return t('battle.log.heal', { name, amount: event.amount })
+    case 'itemRemoved':
+      return t('battle.log.itemRemoved', { name, item: prettyName(event.item) })
     case 'status':
       return t('battle.log.status', { name, status: t(`battle.status.${event.status}`) })
     case 'statusDamage':

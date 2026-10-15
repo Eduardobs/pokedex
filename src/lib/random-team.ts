@@ -3,7 +3,16 @@ import { POKEMON_CATALOG_LIMIT, TEAM_LIMITS } from '../config/app'
 import { apiFetch, pokemonListItems } from './api'
 import { BATTLE_TYPES, getDamageMultiplier, type BattleType } from './type-chart'
 import { array, record, reference } from './resource-data'
-import { parseTeamPokemon, teraTypes, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
+import {
+  genderForRate,
+  parseTeamPokemon,
+  parseTeamSpecies,
+  teraTypes,
+  type Stats,
+  type Team,
+  type TeamMember,
+  type TeamPokemon,
+} from './teams'
 
 type RandomSource = () => number
 type ShowdownSet = { role: string; movepool: string[]; abilities: string[]; teraTypes: string[] }
@@ -175,7 +184,7 @@ function randomMember(pokemon: TeamPokemon, set: ShowdownSet, random: RandomSour
     level: showdownSets[showdownId(pokemon.name)]!.level,
     friendship: 255,
     shiny: random() < SHOWDOWN_SHINY_CHANCE,
-    gender: 'random',
+    gender: genderForRate(pokemon.genderRate ?? 4, random),
     tera: randomChoice(set.teraTypes, random),
     ability: randomChoice(abilities, random),
     nature: natureForSet(pokemon, set),
@@ -204,7 +213,15 @@ export async function loadRandomTeamPokemon(signal?: AbortSignal, random: Random
     names.map(async (name) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${name}`, signal))),
   )
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
-  return selectRandomBattlePokemon(pokemon, random)
+  const selected = selectRandomBattlePokemon(pokemon, random)
+  const withGenderRates = await Promise.all(
+    selected.map(async (entry) => ({
+      ...entry,
+      genderRate: parseTeamSpecies(await apiFetch<unknown>(`pokemon-species/${entry.species}`, signal)).genderRate,
+    })),
+  )
+  if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
+  return withGenderRates
 }
 
 export function createRandomTeam(

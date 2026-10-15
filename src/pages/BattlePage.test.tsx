@@ -20,7 +20,7 @@ const completeTeam = (id: string, name: string): Team => ({
     level: 100,
     friendship: 255,
     shiny: false,
-    gender: 'random',
+    gender: 'male',
     tera: 'normal',
     ability: 'run-away',
     nature: 'hardy',
@@ -279,7 +279,7 @@ describe('BattlePage lobby', () => {
     const replacementTooltip = within(replacement).getByRole('tooltip')
     expect(replacementTooltip).toHaveTextContent('Pokemon 1')
     expect(replacementTooltip).toHaveTextContent('Nv. 100')
-    expect(within(replacementTooltip).getByRole('img', { name: 'Gênero: Aleatório' })).toBeVisible()
+    expect(within(replacementTooltip).getByRole('img', { name: 'Gênero: Masculino' })).toBeVisible()
     expect(replacementTooltip).toHaveTextContent('Tipo Tera')
     expect(within(replacementTooltip).getAllByText('Normal')).toHaveLength(2)
     expect(replacementTooltip).toHaveTextContent('HP restante')

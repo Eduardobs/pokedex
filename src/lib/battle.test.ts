@@ -46,7 +46,7 @@ const member = (index: number, pokemon = `pokemon-${index}`): TeamMember => ({
   level: 100,
   friendship: 255,
   shiny: false,
-  gender: 'random',
+  gender: 'male',
   tera: 'normal',
   ability: 'run-away',
   nature: 'hardy',
@@ -151,6 +151,60 @@ describe('Random Battle engine', () => {
 
     expect(missedEffect.state.opponent.roster[0].stages.attack).toBe(0)
     expect(appliedEffect.state.opponent.roster[0].stages.attack).toBe(-1)
+  })
+
+  it('applies self-lowering and target-raising stat changes to the correct Pokémon', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'close-combat',
+      type: 'fighting',
+      power: 120,
+      statChanges: [
+        { stat: 'defense', change: -1 },
+        { stat: 'specialDefense', change: -1 },
+      ],
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const lowered = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(lowered.state.player.roster[0].stages).toMatchObject({ defense: -1, specialDefense: -1 })
+    expect(lowered.state.opponent.roster[0].stages).toMatchObject({ defense: 0, specialDefense: 0 })
+
+    lowered.state.player.roster[0].moves[0].data = move({
+      name: 'swagger',
+      type: 'normal',
+      damageClass: 'status',
+      power: null,
+      statChanges: [{ stat: 'attack', change: 2 }],
+    })
+    const playerAttackBeforeSwagger = lowered.state.player.roster[0].stages.attack
+    const raised = resolveBattleTurn(lowered.state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(raised.state.opponent.roster[0].stages.attack).toBe(2)
+    expect(raised.state.player.roster[0].stages.attack).toBe(playerAttackBeforeSwagger)
+  })
+
+  it('removes a held item only when a removal move hits', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.opponent.roster[0].item = { name: 'leftovers', names: [], descriptions: [], sprite: null }
+    state.player.roster[0].moves[0].data = move({ name: 'knock-off', type: 'dark', power: 65 })
+    state.player.roster[0].stats[5] = 999
+
+    const removed = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(removed.state.opponent.roster[0].item).toBeNull()
+    expect(removed.events).toContainEqual({ type: 'itemRemoved', pokemon: 'opponent-0', item: 'leftovers' })
+
+    const missed = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    missed.opponent.roster[0].item = { name: 'leftovers', names: [], descriptions: [], sprite: null }
+    missed.player.roster[0].moves[0].data = move({ name: 'knock-off', type: 'dark', power: 65, accuracy: 50 })
+    missed.player.roster[0].stats[5] = 999
+    expect(
+      resolveBattleTurn(missed, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5).state.opponent
+        .roster[0].item,
+    ).not.toBeNull()
   })
 
   it('tracks which Pokémon have entered the battle for team indicators', () => {
@@ -331,6 +385,25 @@ describe('Random Battle engine', () => {
     const cleared = resolveBattleTurn(defog, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
     expect(cleared.state.player.hazards).toEqual({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
     expect(cleared.state.opponent.hazards).toEqual({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
+  })
+
+  it('moves both sides’ entry hazards with Court Change', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.hazards = { stealthRock: true, spikes: 2, toxicSpikes: 0, stickyWeb: false }
+    state.opponent.hazards = { stealthRock: false, spikes: 0, toxicSpikes: 1, stickyWeb: true }
+    state.player.roster[0].moves[0].data = move({
+      name: 'court-change',
+      type: 'normal',
+      damageClass: 'status',
+      power: null,
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const changed = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(changed.state.player.hazards).toEqual({ stealthRock: false, spikes: 0, toxicSpikes: 1, stickyWeb: true })
+    expect(changed.state.opponent.hazards).toEqual({ stealthRock: true, spikes: 2, toxicSpikes: 0, stickyWeb: false })
   })
 
   it('requests a replacement after a pivot move and handles forced switches and hazard removal', () => {

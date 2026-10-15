@@ -3,6 +3,8 @@ import {
   calculatedStats,
   natureModifiers,
   editEv,
+  genderForRate,
+  gendersForRate,
   newMember,
   parseTeamPokemon,
   validTeams,
@@ -18,6 +20,14 @@ const pokemon: TeamPokemon = {
   moves: ['thunderbolt'],
 }
 describe('team rules', () => {
+  it('keeps only concrete genders allowed by the species', () => {
+    expect(gendersForRate(-1)).toEqual(['none'])
+    expect(gendersForRate(0)).toEqual(['male'])
+    expect(gendersForRate(8)).toEqual(['female'])
+    expect(gendersForRate(4)).toEqual(['male', 'female'])
+    expect(genderForRate(4, () => 0)).toBe('female')
+    expect(genderForRate(4, () => 0.5)).toBe('male')
+  })
   it('uses modern level, IV, EV and nature formulas', () => {
     const member = newMember(pokemon)
     expect(calculatedStats(pokemon, member)).toEqual([211, 146, 116, 136, 136, 216])
@@ -66,6 +76,7 @@ describe('team rules', () => {
     expect(validTeams([{ ...team, members: [{ ...member, level: 101 }] }])).toBe(false)
     expect(validTeams([{ ...team, members: [{ ...member, friendship: -1 }] }])).toBe(false)
     expect(validTeams([{ ...team, members: [{ ...member, friendship: 256 }] }])).toBe(false)
+    expect(validTeams([{ ...team, members: [{ ...member, gender: 'random' }] }])).toBe(false)
     const { friendship: _legacyFriendship, ...legacyMember } = member
     expect(validTeams([{ ...team, members: [legacyMember] }])).toBe(true)
     expect(validTeams(null)).toBe(false)
