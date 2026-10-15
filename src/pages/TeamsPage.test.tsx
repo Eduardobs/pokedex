@@ -4,10 +4,13 @@ import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamsPage } from './TeamsPage'
 import { STORAGE_KEYS } from '../config/app'
 import { createTeamExport } from '../lib/team-transfer'
+import { validTeams } from '../lib/teams'
+import { clearApiCache } from '../lib/api-client'
 
 afterEach(() => {
   cleanup()
   localStorage.clear()
+  clearApiCache()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
 })
@@ -67,6 +70,102 @@ it('reports storage failure without discarding the current team', () => {
   fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
   expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível salvar')
   expect(screen.getByLabelText('Nome da equipe')).toHaveValue('Equipe 1')
+})
+
+it('creates a complete random team only after every selected Pokémon is available', async () => {
+  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/1/` })
+  const names = ['venusaur', 'charizard', 'blastoise', 'arbok', 'pikachu', 'raichu']
+  const details: Record<string, { types: string[]; ability: string; moves: string[] }> = {
+    venusaur: {
+      types: ['grass', 'poison'],
+      ability: 'overgrow',
+      moves: ['giga-drain', 'leech-seed', 'sleep-powder', 'sludge-bomb', 'substitute'],
+    },
+    charizard: {
+      types: ['fire', 'flying'],
+      ability: 'blaze',
+      moves: ['earthquake', 'flamethrower', 'focus-blast', 'hurricane', 'will-o-wisp'],
+    },
+    blastoise: { types: ['water'], ability: 'torrent', moves: ['earthquake', 'hydro-pump', 'ice-beam', 'shell-smash'] },
+    arbok: { types: ['poison'], ability: 'intimidate', moves: ['coil', 'earthquake', 'gunk-shot', 'trailblaze'] },
+    pikachu: {
+      types: ['electric'],
+      ability: 'lightning-rod',
+      moves: ['fake-out', 'knock-off', 'play-rough', 'surf', 'volt-switch', 'volt-tackle'],
+    },
+    raichu: {
+      types: ['electric'],
+      ability: 'lightning-rod',
+      moves: ['alluring-voice', 'encore', 'focus-blast', 'grass-knot', 'nuzzle', 'surf', 'thunderbolt', 'volt-switch'],
+    },
+  }
+  const pokemon = (name: string, id: number) => ({
+    name,
+    id,
+    species: ref(name, 'pokemon-species'),
+    types: details[name].types.map((type) => ({ type: ref(type, 'type') })),
+    abilities: [{ ability: ref(details[name].ability, 'ability') }],
+    moves: details[name].moves.map((move) => ({ move: ref(move, 'move') })),
+    stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((stat) => ({
+      stat: ref(stat, 'stat'),
+      base_stat: 50,
+    })),
+  })
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation((url: string) => {
+      const path = new URL(url).pathname.replace('/api/v2/', '')
+      if (path === 'pokemon')
+        return Promise.resolve(Response.json({ results: names.map((name) => ref(name, 'pokemon')) }))
+      if (path.startsWith('pokemon/')) {
+        const name = path.split('/')[1]
+        return Promise.resolve(Response.json(pokemon(name, names.indexOf(name) + 1)))
+      }
+      if (path.startsWith('pokemon-species/')) return Promise.resolve(Response.json({ id: 1, gender_rate: 4 }))
+      if (path.startsWith('item/'))
+        return Promise.resolve(
+          Response.json({
+            name: path.split('/')[1],
+            sprites: {},
+            names: [],
+            effect_entries: [],
+            flavor_text_entries: [],
+          }),
+        )
+      return Promise.resolve(Response.json({}))
+    }),
+  )
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Equipe aleatória' }))
+  expect(screen.getByText('Gerando equipe aleatória…')).toHaveAttribute('role', 'status')
+
+  await waitFor(() => expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)).toHaveLength(1))
+  const [team] = JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)
+  expect(team.name).toBe('Equipe aleatória 1')
+  expect(team.members).toHaveLength(6)
+  expect(
+    team.members.every((member: { moves: string[]; item: string }) => member.moves.length === 4 && member.item),
+  ).toBe(true)
+  expect(validTeams([team])).toBe(true)
+})
+
+it('does not save a partial team when random team data cannot be loaded', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 500 })))
+  render(
+    <LanguageProvider>
+      <TeamsPage />
+    </LanguageProvider>,
+  )
+
+  fireEvent.click(screen.getByRole('button', { name: 'Equipe aleatória' }))
+
+  expect(await screen.findByText('Não foi possível gerar a equipe. Tente novamente.')).toHaveAttribute('role', 'alert')
+  expect(localStorage.getItem(STORAGE_KEYS.teams)).toBeNull()
 })
 
 it('imports a team JSON file and selects the imported team', async () => {

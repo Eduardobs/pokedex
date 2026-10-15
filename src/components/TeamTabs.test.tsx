@@ -103,7 +103,15 @@ it('switches one visible editor with arrow keys and keeps edits when switching b
   expect(second).toHaveFocus()
   fireEvent.keyDown(second, { key: 'ArrowLeft' })
   expect(first).toHaveFocus()
+  const scrollY = 360
+  vi.spyOn(window, 'scrollY', 'get').mockReturnValue(scrollY)
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+  vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => {
+    callback(0)
+    return 1
+  })
   fireEvent.click(second)
+  expect(window.scrollTo).toHaveBeenCalledWith({ top: scrollY, behavior: 'auto' })
   await screen.findByLabelText('Nível')
   fireEvent.click(screen.getByRole('button', { name: 'Remover Pokémon' }))
   expect(screen.queryByRole('tab', { name: 'Bulbasaur' })).toBeNull()

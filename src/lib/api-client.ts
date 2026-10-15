@@ -11,6 +11,10 @@ type PendingRequest = {
 const cache = new Map<string, CacheEntry>()
 const pendingRequests = new Map<string, PendingRequest>()
 
+export function clearApiCache() {
+  cache.clear()
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,

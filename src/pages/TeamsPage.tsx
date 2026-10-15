@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
-import { Users } from 'lucide-react'
+import { Dices, Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS, STORAGE_KEYS } from '../config/app'
 import { readStorage, writeStorage } from '../lib/storage'
 import { newMember, parseTeamPokemon, validTeams, type Team } from '../lib/teams'
 import { createTeamExport, importTeam, parseTeamExport } from '../lib/team-transfer'
+import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { prettyName } from '../lib/api'
 import { moveIdentifier } from '../lib/move-comparison'
 import { array, record, reference } from '../lib/resource-data'
@@ -24,13 +25,20 @@ export function TeamsPage() {
     'exported' | 'imported' | 'importError' | 'importTooLarge' | 'importLimit' | null
   >(null)
   const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false)
+  const [randomState, setRandomState] = useState<'loading' | 'error' | null>(null)
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const cancelDeleteButtonRef = useRef<HTMLButtonElement>(null)
   const importInputRef = useRef<HTMLInputElement>(null)
+  const randomRequestRef = useRef<AbortController | null>(null)
+  const teamsRef = useRef(teams)
   const team = teams.find((v) => v.id === selected)
+  useEffect(() => {
+    teamsRef.current = teams
+  }, [teams])
   useEffect(() => {
     if (deleteConfirmationOpen) cancelDeleteButtonRef.current?.focus()
   }, [deleteConfirmationOpen])
+  useEffect(() => () => randomRequestRef.current?.abort(), [])
   const update = (next: Team[]) => {
     setTeams(next)
     setSaved(writeStorage(STORAGE_KEYS.teams, next))
@@ -45,6 +53,30 @@ export function TeamsPage() {
     }
     update([...teams, next])
     setSelected(next.id)
+  }
+  const createRandom = async () => {
+    if (teams.length >= TEAM_LIMITS.teams || randomState === 'loading') return
+    const controller = new AbortController()
+    randomRequestRef.current = controller
+    setRandomState('loading')
+    try {
+      const pokemon = await loadRandomTeamPokemon(controller.signal)
+      if (controller.signal.aborted) return
+      const currentTeams = teamsRef.current
+      if (currentTeams.length >= TEAM_LIMITS.teams) {
+        setRandomState(null)
+        return
+      }
+      const next = createRandomTeam(t('teams.randomName', { number: currentTeams.length + 1 }), pokemon)
+      update([...currentTeams, next])
+      setSelected(next.id)
+      setRandomState(null)
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') return
+      setRandomState('error')
+    } finally {
+      if (randomRequestRef.current === controller) randomRequestRef.current = null
+    }
   }
   const deleteTeam = () => {
     if (!team) return
@@ -127,6 +159,14 @@ export function TeamsPage() {
             <button className="button secondary" onClick={selectImportFile}>
               {t('teams.import')}
             </button>
+            <button
+              className="button secondary"
+              onClick={createRandom}
+              disabled={teams.length >= TEAM_LIMITS.teams || randomState === 'loading'}
+            >
+              <Dices size={18} aria-hidden="true" />
+              {t('teams.randomCreate')}
+            </button>
             <button className="button primary" onClick={create} disabled={teams.length >= TEAM_LIMITS.teams}>
               {t('teams.create')}
             </button>
@@ -148,6 +188,8 @@ export function TeamsPage() {
           )}
         </p>
       )}
+      {randomState === 'loading' && <p role="status">{t('teams.randomCreating')}</p>}
+      {randomState === 'error' && <p role="alert">{t('teams.randomError')}</p>}
       <p role={saved === false ? 'alert' : 'status'}>
         {saved === false ? t('teams.saveError') : saved ? t('teams.saved') : t('teams.local')}
       </p>

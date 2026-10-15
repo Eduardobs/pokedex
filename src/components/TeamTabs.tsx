@@ -17,6 +17,12 @@ export function TeamTabs({ team, onChange }: { team: Team; onChange: (team: Team
   const [selected, setSelected] = useState(team.members[0]?.id)
   const refs = useRef<(HTMLButtonElement | null)[]>([])
   const member = team.members.find((v) => v.id === selected) ?? team.members[0]
+  const selectFromClick = (id: string) => {
+    if (id === member?.id) return
+    const scrollY = window.scrollY
+    setSelected(id)
+    requestAnimationFrame(() => window.scrollTo({ top: scrollY, behavior: 'auto' }))
+  }
   if (!member) return null
   return (
     <div className="team-roster">
@@ -33,7 +39,7 @@ export function TeamTabs({ team, onChange }: { team: Team; onChange: (team: Team
             aria-controls={`member-panel-${entry.id}`}
             aria-selected={member.id === entry.id}
             tabIndex={member.id === entry.id ? 0 : -1}
-            onClick={() => setSelected(entry.id)}
+            onClick={() => selectFromClick(entry.id)}
             onKeyDown={(e) => {
               const next =
                 e.key === 'ArrowRight'
