@@ -130,11 +130,34 @@
   filter: drop-shadow(0 16px 12px color-mix(in srgb, var(--ink) 22%, transparent));
 }
 .battle-active-types {
-  position: absolute;
-  right: 4px;
-  bottom: 6px;
   display: flex;
-  gap: 4px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.battle-active-type-label,
+.battle-active-type-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.battle-active-type-label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+.battle-active-types.is-tera {
+  margin-inline: -5px;
+  padding: 8px 5px 0;
+  border-color: color-mix(in srgb, var(--red) 45%, var(--line));
+  border-radius: 8px;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--red) 7%, transparent));
+}
+.battle-active-types.is-tera .battle-active-type-label {
+  color: var(--red);
 }
 .battle-active-tooltip-anchor {
   position: absolute;

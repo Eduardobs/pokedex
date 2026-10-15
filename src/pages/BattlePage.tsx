@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, CircleSlash2, Dices, Mars, RotateCcw, Shield, Swords, UserRound, Venus } from 'lucide-react'
+import { Check, CircleSlash2, Dices, Mars, RotateCcw, Shield, Sparkles, Swords, UserRound, Venus } from 'lucide-react'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
@@ -109,6 +109,17 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           {formatNumber(pokemon.hp, language)} / {formatNumber(pokemon.maxHp, language)}
         </span>
       </div>
+      <div className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
+        <span className="battle-active-type-label">
+          {pokemon.terastallized && <Sparkles size={14} aria-hidden="true" />}
+          {t(pokemon.terastallized ? 'teams.tera' : 'resource.field.types')}
+        </span>
+        <span className="battle-active-type-badges">
+          {(pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types).map((type) => (
+            <TypeBadge key={type} type={type} iconOnly />
+          ))}
+        </span>
+      </div>
       <div className="battle-stat-modifiers" aria-label={t('battle.statModifiers')}>
         {stages.map(({ stat, value }) => (
           <span key={stat} className={value > 0 ? 'raised' : value < 0 ? 'lowered' : undefined}>
@@ -176,11 +187,6 @@ function ActivePokemon({
             <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
           </span>
         </span>
-        <div className="battle-active-types">
-          {(pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types).map((type) => (
-            <TypeBadge key={type} type={type} iconOnly />
-          ))}
-        </div>
       </div>
     </article>
   )

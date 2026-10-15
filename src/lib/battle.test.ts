@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   battleMoveEffectiveness,
+  battleSameTypeAttackBonus,
   chooseOpponentAction,
   createBattlePokemon,
   createBattleState,
@@ -301,6 +302,26 @@ describe('Random Battle engine', () => {
       roster(opponentTeam, ['water', 'ground']),
     )
     expect(battleMoveEffectiveness(move({ type: 'electric' }), state.opponent.roster[0])).toBe(0)
+  })
+
+  it('applies the correct same-type damage bonus while Terastallized', () => {
+    const pokemon = createBattlePokemon({ ...member(0), tera: 'fire' }, teamPokemon('tera-attacker', ['water']), [
+      move(),
+      move(),
+      move(),
+      move(),
+    ])
+
+    expect(battleSameTypeAttackBonus(pokemon, 'water')).toBe(1.5)
+    expect(battleSameTypeAttackBonus(pokemon, 'fire')).toBe(1)
+
+    pokemon.terastallized = true
+    expect(battleSameTypeAttackBonus(pokemon, 'water')).toBe(1.5)
+    expect(battleSameTypeAttackBonus(pokemon, 'fire')).toBe(1.5)
+    expect(battleSameTypeAttackBonus(pokemon, 'grass')).toBe(1)
+
+    pokemon.pokemon.types = ['fire']
+    expect(battleSameTypeAttackBonus(pokemon, 'fire')).toBe(2)
   })
 
   it('sets entry hazards and damages an opposing Pokémon that switches in', () => {

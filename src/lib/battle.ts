@@ -284,6 +284,13 @@ export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemo
   return effectiveTypes(defender).reduce((value, type) => value * getDamageMultiplier(move.type, type as BattleType), 1)
 }
 
+export function battleSameTypeAttackBonus(attacker: BattlePokemon, moveType: BattleType) {
+  const matchesOriginalType = attacker.pokemon.types.includes(moveType)
+  const matchesTeraType = attacker.terastallized && attacker.member.tera === moveType
+  if (matchesTeraType) return matchesOriginalType ? 2 : 1.5
+  return matchesOriginalType ? 1.5 : 1
+}
+
 /** Returns the current stats used by the battle after stage and status modifiers. */
 export function currentBattleStats(pokemon: BattlePokemon): Stats {
   return [
@@ -414,9 +421,7 @@ function applyMove(
     const defenderStats = currentBattleStats(defender)
     const attack = attackerStats[physical ? 1 : 3]
     const defense = defenderStats[physical ? 2 : 4]
-    const originalStab = attacker.pokemon.types.includes(move.type)
-    const teraStab = attacker.terastallized && attacker.member.tera === move.type
-    const stab = teraStab ? (originalStab ? 2 : 1.5) : originalStab ? 1.5 : 1
+    const stab = battleSameTypeAttackBonus(attacker, move.type)
     const critical = random() < 1 / 24
     const burn = physical && attacker.status === 'burn' ? 0.5 : 1
     const variance = 0.85 + random() * 0.15
