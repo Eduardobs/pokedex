@@ -30,6 +30,8 @@ export type BattlePokemon = {
   member: TeamMember
   pokemon: TeamPokemon
   stats: Stats
+  ability: BattleResource
+  item: BattleResource | null
   maxHp: number
   hp: number
   moves: { data: BattleMove; pp: number }[]
@@ -37,7 +39,22 @@ export type BattlePokemon = {
   status: BattleStatus
   sleepTurns: number
   terastallized: boolean
+  hasEnteredBattle: boolean
 }
+export type BattleResource = {
+  name: string
+  names: { name: string; language: { name: string } }[]
+  descriptions: { effect: string; language: { name: string } }[]
+  sprite: string | null
+}
+export type BattleStatRanges = [
+  [number, number],
+  [number, number],
+  [number, number],
+  [number, number],
+  [number, number],
+  [number, number],
+]
 export type BattleHazards = {
   stealthRock: boolean
   spikes: number
@@ -130,13 +147,23 @@ export function isBattleReadyTeam(team: Team) {
   )
 }
 
-export function createBattlePokemon(member: TeamMember, pokemon: TeamPokemon, moves: BattleMove[]): BattlePokemon {
+const fallbackResource = (name: string): BattleResource => ({ name, names: [], descriptions: [], sprite: null })
+
+export function createBattlePokemon(
+  member: TeamMember,
+  pokemon: TeamPokemon,
+  moves: BattleMove[],
+  details: Partial<Pick<BattlePokemon, 'ability' | 'item'>> = {},
+): BattlePokemon {
   if (moves.length !== 4 || moves.some((move) => !moveTypes.has(move.type))) throw new Error('Invalid battle moves.')
   const stats = calculatedStats(pokemon, member)
+  const ability = pokemon.abilities.includes(member.ability) ? member.ability : pokemon.abilities[0]
   return {
     member,
     pokemon,
     stats,
+    ability: details.ability ?? fallbackResource(ability),
+    item: details.item ?? (member.item ? fallbackResource(member.item) : null),
     maxHp: stats[0],
     hp: stats[0],
     moves: moves.map((data) => ({ data, pp: data.pp })),
@@ -144,7 +171,22 @@ export function createBattlePokemon(member: TeamMember, pokemon: TeamPokemon, mo
     status: null,
     sleepTurns: 0,
     terastallized: false,
+    hasEnteredBattle: false,
   }
+}
+
+/** Returns the legal in-battle stat bounds when an opponent's training is unknown. */
+export function possibleBattleStats(pokemon: TeamPokemon, level: number): BattleStatRanges {
+  const boundedLevel = Math.max(1, Math.min(100, Math.trunc(level)))
+  return pokemon.stats.map((base, index) => {
+    if (index === 0 && pokemon.name === 'shedinja') return [1, 1] as const
+    const minimum = Math.floor((2 * base * boundedLevel) / 100) + (index === 0 ? boundedLevel + 10 : 5)
+    const maximumBase =
+      Math.floor(((2 * base + 31 + Math.floor(252 / 4)) * boundedLevel) / 100) + (index === 0 ? boundedLevel + 10 : 5)
+    return index === 0
+      ? ([minimum, maximumBase] as const)
+      : ([Math.floor(minimum * 0.9), Math.floor(maximumBase * 1.1)] as const)
+  }) as BattleStatRanges
 }
 
 export function createBattleState(
@@ -162,8 +204,20 @@ export function createBattleState(
     throw new Error('Battle requires two complete teams.')
   return {
     turn: 1,
-    player: { team: playerTeam, roster: player, active: 0, hazards: emptyHazards(), switchRequested: false },
-    opponent: { team: opponentTeam, roster: opponent, active: 0, hazards: emptyHazards(), switchRequested: false },
+    player: {
+      team: playerTeam,
+      roster: player.map((pokemon, index) => ({ ...pokemon, hasEnteredBattle: index === 0 })),
+      active: 0,
+      hazards: emptyHazards(),
+      switchRequested: false,
+    },
+    opponent: {
+      team: opponentTeam,
+      roster: opponent.map((pokemon, index) => ({ ...pokemon, hasEnteredBattle: index === 0 })),
+      active: 0,
+      hazards: emptyHazards(),
+      switchRequested: false,
+    },
     phase: 'choice',
   }
 }
@@ -393,6 +447,7 @@ function performChoice(
     own.roster[own.active].stages = emptyStages()
     own.active = choice.index
     replacement.stages = emptyStages()
+    replacement.hasEnteredBattle = true
     own.switchRequested = false
     events.push({ type: 'switch', side, pokemon: replacement.pokemon.name })
     applyEntryHazards(own, replacement, events)

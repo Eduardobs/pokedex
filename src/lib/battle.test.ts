@@ -5,6 +5,7 @@ import {
   createBattlePokemon,
   createBattleState,
   isBattleReadyTeam,
+  possibleBattleStats,
   resolveBattleTurn,
   type BattleMove,
 } from './battle'
@@ -83,6 +84,42 @@ describe('Random Battle engine', () => {
         members: [{ ...complete.members[0], moves: ['tackle', '', 'recover', 'growl'] }, ...complete.members.slice(1)],
       }),
     ).toBe(false)
+  })
+
+  it('calculates the full legal stat range for an opponent with unknown training', () => {
+    const ranges = possibleBattleStats(teamPokemon('range-test'), 100)
+    expect(ranges).toEqual([
+      [310, 404],
+      [184, 328],
+      [184, 328],
+      [184, 328],
+      [184, 328],
+      [184, 328],
+    ])
+  })
+
+  it('tracks which Pokémon have entered the battle for team indicators', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    expect(state.player.roster.map((pokemon) => pokemon.hasEnteredBattle)).toEqual([
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+    ])
+
+    const switched = resolveBattleTurn(state, { kind: 'switch', index: 1 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(switched.state.player.roster.map((pokemon) => pokemon.hasEnteredBattle)).toEqual([
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+    ])
   })
 
   it('uses priority, consumes PP, applies damage, and preserves a complete immutable state', () => {

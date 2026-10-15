@@ -1,18 +1,20 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Dices, RotateCcw, Shield, Swords } from 'lucide-react'
+import { Check, Dices, RotateCcw, Shield, Swords, UserRound } from 'lucide-react'
+import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { STORAGE_KEYS } from '../config/app'
-import { formatDecimal, formatNumber, prettyName } from '../lib/api'
+import { formatDecimal, formatNumber, localizedName, localizedText, prettyName } from '../lib/api'
 import { loadBattleRoster } from '../lib/battle-data'
 import {
   chooseOpponentAction,
   battleMoveEffectiveness,
   createBattleState,
   isBattleReadyTeam,
+  possibleBattleStats,
   resolveBattleTurn,
   type BattleChoice,
   type BattleEvent,
@@ -77,6 +79,8 @@ function ActivePokemon({
   opponent?: boolean
   teraControl?: ReactNode
 }) {
+  const tooltipId = useId()
+  const { t } = useLanguage()
   const pokemon = side.roster[side.active]
   const sprite = pokemon.member.shiny
     ? opponent
@@ -87,7 +91,12 @@ function ActivePokemon({
       : pokemon.pokemon.showdownBackSprite
   const fallback = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
   return (
-    <article className={`battle-active${opponent ? ' opponent' : ' player'}`}>
+    <article
+      className={`battle-active${opponent ? ' opponent' : ' player'}`}
+      tabIndex={0}
+      aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+      aria-describedby={tooltipId}
+    >
       <div className="battle-active-data">
         <HealthBar pokemon={pokemon} />
         {teraControl}
@@ -116,6 +125,9 @@ function ActivePokemon({
           ))}
         </div>
       </div>
+      <span id={tooltipId} className="battle-active-tooltip-anchor">
+        <ActivePokemonTooltip pokemon={pokemon} opponent={opponent} />
+      </span>
     </article>
   )
 }
@@ -187,6 +199,151 @@ const battleStatKeys = [
   'stats.specialDefense',
   'stats.speed',
 ] as const
+
+const trainerSpriteNames = [
+  'acetrainer-gen1',
+  'acetrainer-gen2',
+  'acetrainer-gen3',
+  'acetrainer-gen4',
+  'acetrainer-gen6',
+] as const
+
+function randomTrainerSprites() {
+  const player = trainerSpriteNames[Math.floor(Math.random() * trainerSpriteNames.length)]
+  let opponent = trainerSpriteNames[Math.floor(Math.random() * trainerSpriteNames.length)]
+  if (trainerSpriteNames.length > 1) {
+    while (opponent === player) opponent = trainerSpriteNames[Math.floor(Math.random() * trainerSpriteNames.length)]
+  }
+  return {
+    player: `https://play.pokemonshowdown.com/sprites/trainers/${player}.png`,
+    opponent: `https://play.pokemonshowdown.com/sprites/trainers/${opponent}.png`,
+  }
+}
+
+function resourceName(resource: BattlePokemon['ability'], apiLanguage: string) {
+  return localizedName(resource.names, apiLanguage) || prettyName(resource.name)
+}
+
+function ResourceDetails({ resource, item = false }: { resource: BattlePokemon['ability']; item?: boolean }) {
+  const { apiLanguage, t } = useLanguage()
+  const description = localizedText(resource.descriptions, ['effect'], apiLanguage)
+  return (
+    <span className={`battle-resource-detail${item ? ' with-item' : ''}`}>
+      {item && <ItemImage name={resource.name} preferredSource={resource.sprite} alt="" width={28} height={28} />}
+      <span>
+        <b>{resourceName(resource, apiLanguage)}</b>
+        <small>
+          {description || t(item ? 'battle.itemDescriptionUnavailable' : 'battle.abilityDescriptionUnavailable')}
+        </small>
+      </span>
+    </span>
+  )
+}
+
+function ActivePokemonTooltip({ pokemon, opponent }: { pokemon: BattlePokemon; opponent: boolean }) {
+  const { language, t } = useLanguage()
+  const stats = opponent ? possibleBattleStats(pokemon.pokemon, pokemon.member.level) : pokemon.stats
+  const itemVisible = !opponent || pokemon.member.itemActive
+  return (
+    <span className="battle-active-tooltip" role="tooltip">
+      <b className="battle-active-tooltip-title">{t(opponent ? 'battle.opponentDetails' : 'battle.allyDetails')}</b>
+      <span className="battle-tooltip-stats">
+        {stats.map((stat, index) => (
+          <span key={battleStatKeys[index]}>
+            <small>{t(battleStatKeys[index])}</small>
+            <b>
+              {Array.isArray(stat)
+                ? t('battle.statRange', {
+                    minimum: formatNumber(stat[0], language),
+                    maximum: formatNumber(stat[1], language),
+                  })
+                : formatNumber(stat, language)}
+            </b>
+          </span>
+        ))}
+      </span>
+      {opponent ? (
+        <span className="battle-resource-section">
+          <b>{t('battle.possibleAbilities')}</b>
+          <span>{pokemon.pokemon.abilities.map(prettyName).join(' · ')}</span>
+        </span>
+      ) : (
+        <span className="battle-resource-section">
+          <b>{t('resource.field.ability')}</b>
+          <ResourceDetails resource={pokemon.ability} />
+        </span>
+      )}
+      {itemVisible && pokemon.item && (
+        <span className="battle-resource-section">
+          <b>{t('resource.field.item')}</b>
+          <ResourceDetails resource={pokemon.item} item />
+        </span>
+      )}
+      {opponent && itemVisible && pokemon.item && (
+        <span className="battle-item-revealed">{t('battle.itemActivated')}</span>
+      )}
+    </span>
+  )
+}
+
+function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: boolean; sprite: string }) {
+  const { t } = useLanguage()
+  const alive = side.roster.filter((pokemon) => pokemon.hp > 0).length
+  const fainted = side.roster.length - alive
+  return (
+    <aside
+      className={`battle-trainer${opponent ? ' opponent' : ' player'}`}
+      aria-label={t('battle.trainerTeam', { name: side.team.name })}
+    >
+      <span className="battle-trainer-sprite" aria-hidden="true">
+        <UserRound />
+        <img
+          src={sprite}
+          alt=""
+          width={76}
+          height={76}
+          onError={({ currentTarget }) => {
+            currentTarget.hidden = true
+          }}
+        />
+      </span>
+      <span className="battle-trainer-copy">
+        <b>{side.team.name}</b>
+        <small>{t('battle.teamStatus', { alive, fainted })}</small>
+      </span>
+      <ul className="battle-roster-icons" aria-label={t('battle.rosterStatus', { name: side.team.name })}>
+        {side.roster.map((pokemon) => {
+          const faintedPokemon = pokemon.hp === 0
+          const homeSprite = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
+          return (
+            <li
+              key={pokemon.member.id}
+              className={`${pokemon.hasEnteredBattle ? 'is-used' : 'is-unused'}${faintedPokemon ? ' is-fainted' : ''}`}
+              aria-label={t(
+                faintedPokemon
+                  ? 'battle.rosterFainted'
+                  : pokemon.hasEnteredBattle
+                    ? 'battle.rosterUsed'
+                    : 'battle.rosterUnused',
+                {
+                  name: prettyName(pokemon.pokemon.name),
+                },
+              )}
+            >
+              {pokemon.hasEnteredBattle && homeSprite ? (
+                <img src={homeSprite} alt="" width={30} height={30} />
+              ) : pokemon.hasEnteredBattle ? (
+                <Shield aria-hidden="true" />
+              ) : (
+                <span className="battle-pokeball" aria-hidden="true" />
+              )}
+            </li>
+          )
+        })}
+      </ul>
+    </aside>
+  )
+}
 
 function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onChoose: () => void }) {
   const tooltipId = useId()
@@ -308,6 +465,7 @@ export function BattlePage() {
   const [events, setEvents] = useState<BattleEvent[]>([])
   const [teraSelected, setTeraSelected] = useState(false)
   const [showSwitches, setShowSwitches] = useState(false)
+  const [trainerSprites, setTrainerSprites] = useState(randomTrainerSprites)
   const requestRef = useRef<AbortController | null>(null)
   useEffect(() => () => requestRef.current?.abort(), [])
 
@@ -330,6 +488,7 @@ export function BattlePage() {
       const opponentTeam = createRandomTeam(t('battle.opponentTeam'), randomPokemon)
       const opponentRoster = await loadBattleRoster(opponentTeam, controller.signal)
       if (controller.signal.aborted) return
+      setTrainerSprites(randomTrainerSprites())
       setBattle(createBattleState(team, playerRoster, opponentTeam, opponentRoster))
       setScreen('battle')
     } catch (error) {
@@ -439,33 +598,39 @@ export function BattlePage() {
       {battle && player && screen === 'battle' && (
         <div className="battle-shell">
           <div className="battle-field" aria-label={t('battle.field')}>
-            <ActivePokemon side={battle.opponent} opponent />
+            <div className="battle-side opponent">
+              <ActivePokemon side={battle.opponent} opponent />
+              <TrainerPanel side={battle.opponent} opponent sprite={trainerSprites.opponent} />
+            </div>
             <div className="battle-versus" aria-hidden="true">
               <Swords />
             </div>
-            <ActivePokemon
-              side={battle.player}
-              teraControl={
-                !player.terastallized && (
-                  <div className="battle-tera-control">
-                    <button
-                      className={`button secondary${teraSelected ? ' is-selected' : ''}`}
-                      aria-pressed={teraSelected}
-                      aria-label={t('battle.terastallize', {
-                        type: prettyName(player.member.tera),
-                      })}
-                      onClick={() => setTeraSelected((selected) => !selected)}
-                    >
-                      {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
-                      {t('battle.terastallize', {
-                        type: prettyName(player.member.tera),
-                      })}
-                    </button>
-                    <TypeBadge type={player.member.tera} />
-                  </div>
-                )
-              }
-            />
+            <div className="battle-side player">
+              <ActivePokemon
+                side={battle.player}
+                teraControl={
+                  !player.terastallized && (
+                    <div className="battle-tera-control">
+                      <button
+                        className={`button secondary${teraSelected ? ' is-selected' : ''}`}
+                        aria-pressed={teraSelected}
+                        aria-label={t('battle.terastallize', {
+                          type: prettyName(player.member.tera),
+                        })}
+                        onClick={() => setTeraSelected((selected) => !selected)}
+                      >
+                        {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
+                        {t('battle.terastallize', {
+                          type: prettyName(player.member.tera),
+                        })}
+                      </button>
+                      <TypeBadge type={player.member.tera} />
+                    </div>
+                  )
+                }
+              />
+              <TrainerPanel side={battle.player} opponent={false} sprite={trainerSprites.player} />
+            </div>
           </div>
 
           <div className="battle-console">

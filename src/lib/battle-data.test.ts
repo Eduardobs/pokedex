@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseBattleMove } from './battle-data'
+import { parseBattleAbility, parseBattleItem, parseBattleMove } from './battle-data'
 
 const ref = (name: string) => ({ name, url: `https://pokeapi.co/api/v2/${name}/1/` })
 
@@ -40,5 +40,42 @@ describe('battle move parsing', () => {
   it('rejects unsupported types and malformed move identifiers', () => {
     expect(() => parseBattleMove({ name: '../move', type: ref('fire'), damage_class: ref('physical') })).toThrow()
     expect(() => parseBattleMove({ name: 'tackle', type: ref('unknown'), damage_class: ref('physical') })).toThrow()
+  })
+})
+
+describe('battle resource parsing', () => {
+  it('keeps the localized detail and safe item sprite used by active Pokémon tooltips', () => {
+    expect(
+      parseBattleAbility({
+        name: 'run-away',
+        names: [{ name: 'Fuga', language: ref('pt-br') }],
+        effect_entries: [{ short_effect: 'Permite fugir.', language: ref('pt-br') }],
+      }),
+    ).toMatchObject({
+      name: 'run-away',
+      names: [{ name: 'Fuga', language: { name: 'pt-br' } }],
+      descriptions: [{ effect: 'Permite fugir.', language: { name: 'pt-br' } }],
+    })
+    expect(
+      parseBattleItem({
+        name: 'leftovers',
+        names: [],
+        effect_entries: [],
+        flavor_text_entries: [],
+        sprites: { default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/leftovers.png' },
+      }).sprite,
+    ).toContain('/leftovers.png')
+  })
+
+  it('rejects an unsafe item sprite URL', () => {
+    expect(() =>
+      parseBattleItem({
+        name: 'leftovers',
+        names: [],
+        effect_entries: [],
+        flavor_text_entries: [],
+        sprites: { default: 'javascript:alert(1)' },
+      }),
+    ).toThrow()
   })
 })

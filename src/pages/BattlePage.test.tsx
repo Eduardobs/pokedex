@@ -24,7 +24,7 @@ const completeTeam = (id: string, name: string): Team => ({
     tera: 'normal',
     ability: 'run-away',
     nature: 'hardy',
-    item: '',
+    item: 'leftovers',
     moves: ['tackle', 'quick-attack', 'recover', 'growl'],
     evs: [0, 0, 0, 0, 0, 0],
     ivs: [31, 31, 31, 31, 31, 31],
@@ -77,6 +77,20 @@ const battleRoster = (team: Team) =>
         showdownBackSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index + 1}.gif`,
       },
       [testMove('tackle'), testMove('quick-attack'), testMove('recover'), testMove('growl')],
+      {
+        ability: {
+          name: 'run-away',
+          names: [{ name: 'Fuga', language: { name: 'pt-br' } }],
+          descriptions: [{ effect: 'Permite fugir.', language: { name: 'pt-br' } }],
+          sprite: null,
+        },
+        item: {
+          name: 'leftovers',
+          names: [{ name: 'Restos', language: { name: 'pt-br' } }],
+          descriptions: [{ effect: 'Recupera HP a cada turno.', language: { name: 'pt-br' } }],
+          sprite: null,
+        },
+      },
     ),
   )
 
@@ -125,6 +139,23 @@ describe('BattlePage lobby', () => {
     expect(screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]).toHaveAttribute('aria-valuenow')
     expect(screen.getAllByText('Nº 1')).toHaveLength(2)
     expect(screen.queryByText('Ataque 0')).not.toBeInTheDocument()
+    const activeTooltips = screen
+      .getAllByLabelText('Detalhes de Pokemon 0')
+      .map((active) => within(active).getByRole('tooltip'))
+    expect(activeTooltips[0]).toHaveTextContent('Atributos possíveis')
+    expect(activeTooltips[0]).toHaveTextContent('HP')
+    expect(activeTooltips[0]).toHaveTextContent('310–404')
+    expect(activeTooltips[0]).toHaveTextContent('Habilidades possíveis')
+    expect(activeTooltips[1]).toHaveTextContent('Atributos exatos')
+    expect(activeTooltips[1]).toHaveTextContent('HP')
+    expect(activeTooltips[1]).toHaveTextContent('341')
+    expect(activeTooltips[1]).toHaveTextContent('Fuga')
+    expect(activeTooltips[1]).toHaveTextContent('Permite fugir.')
+    expect(activeTooltips[1]).toHaveTextContent('Restos')
+    expect(activeTooltips[1]).toHaveTextContent('Recupera HP a cada turno.')
+    expect(screen.getAllByRole('listitem')).toHaveLength(12)
+    expect(screen.getAllByLabelText(/ainda não entrou em batalha/)).toHaveLength(10)
+    expect(screen.getAllByLabelText(/já entrou em batalha/)).toHaveLength(2)
     const playerSprite = screen
       .getAllByRole('img', { name: 'Pokemon 0' })
       .find((image) => image.getAttribute('src')?.includes('/back/1.gif'))
