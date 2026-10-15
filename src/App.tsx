@@ -12,7 +12,7 @@ function lazyPage<T extends Record<string, ComponentType>>(load: () => Promise<T
 }
 
 const TeamsPage = lazyPage(() => import('./pages/TeamsPage'), 'TeamsPage')
-const BattlePage = lazyPage(() => import('./pages/BattlePage'), 'BattlePage')
+const BattlePage = lazy(() => import('./pages/BattlePage'))
 const PokedexPage = lazyPage(() => import('./pages/PokedexPage'), 'PokedexPage')
 const PokemonDetailPage = lazyPage(() => import('./pages/PokemonDetailPage'), 'PokemonDetailPage')
 const FormsPage = lazyPage(() => import('./pages/FormsPage'), 'FormsPage')

@@ -15,12 +15,15 @@ import {
   createBattleState,
   currentBattleStats,
   isBattleReadyTeam,
+  legalBattleMoveIndexes,
   possibleBattleStats,
   resolveBattleTurnSteps,
   type BattleChoice,
   type BattleEvent,
+  type BattleField,
   type BattlePokemon,
   type BattleSide,
+  type BattleSideConditions,
   type BattleStatRanges,
   type BattleState,
 } from '../lib/battle'
@@ -658,6 +661,37 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.wake', { name })
     case 'stage':
       return t('battle.log.stage', { name, stat: t(`battle.stat.${event.stat}`), change: event.change })
+    case 'encore':
+      return t('battle.log.encore', { name, move: prettyName(event.move), turns: event.turns })
+    case 'taunt':
+      return t('battle.log.taunt', { name })
+    case 'stagesReset':
+      return t('battle.log.stagesReset', { name })
+    case 'teamStatusCured':
+      return t('battle.log.teamStatusCured', { side: t(`battle.log.side.${event.side}`) })
+    case 'fieldSet':
+      return t('battle.log.fieldSet', { effect: t(`battle.fieldEffect.${event.field}`), turns: event.turns })
+    case 'fieldEnded':
+      return t('battle.log.fieldEnded', { effect: t(`battle.fieldEffect.${event.field}`) })
+    case 'sideConditionSet':
+      return t('battle.log.sideConditionSet', {
+        effect: t(`battle.fieldEffect.${event.condition}`),
+        side: t(`battle.log.side.${event.side}`),
+        turns: event.turns,
+      })
+    case 'sideConditionEnded':
+      return t('battle.log.sideConditionEnded', {
+        effect: t(`battle.fieldEffect.${event.condition}`),
+        side: t(`battle.log.side.${event.side}`),
+      })
+    case 'fieldBlocked':
+      return t('battle.log.fieldBlocked', { name, effect: t(`battle.fieldEffect.${event.field}`) })
+    case 'weatherDamage':
+      return t('battle.log.weatherDamage', {
+        name,
+        damage: event.amount,
+        effect: t(`battle.fieldEffect.${event.weather}`),
+      })
     case 'failed':
       return t('battle.log.failed', { name })
     case 'faint':
@@ -673,13 +707,28 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
   const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
   const nameIndex = event.type === 'move' && name ? text.indexOf(name) : -1
   const tone =
-    event.type === 'damage' || event.type === 'hazardDamage' || event.type === 'statusDamage'
+    event.type === 'damage' ||
+    event.type === 'hazardDamage' ||
+    event.type === 'statusDamage' ||
+    event.type === 'weatherDamage'
       ? 'damage'
       : event.type === 'heal'
         ? 'healing'
         : event.type === 'move'
           ? 'move'
-          : event.type === 'status' || event.type === 'stage'
+          : [
+                'status',
+                'stage',
+                'encore',
+                'taunt',
+                'stagesReset',
+                'teamStatusCured',
+                'fieldSet',
+                'fieldEnded',
+                'sideConditionSet',
+                'sideConditionEnded',
+                'fieldBlocked',
+              ].includes(event.type)
             ? 'effect'
             : event.type === 'faint' || event.type === 'win'
               ? 'important'
@@ -696,6 +745,43 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
         text
       )}
     </p>
+  )
+}
+
+const sideConditionKeys: (keyof BattleSideConditions)[] = ['reflect', 'lightScreen', 'auroraVeil', 'tailwind']
+
+function BattleFieldEffects({
+  field,
+  player,
+  opponent,
+}: {
+  field: BattleField
+  player: BattleSide
+  opponent: BattleSide
+}) {
+  const { t } = useLanguage()
+  const effects = [
+    ...(field.weather ? [{ id: field.weather, turns: field.weatherTurns }] : []),
+    ...(field.terrain ? [{ id: field.terrain, turns: field.terrainTurns }] : []),
+    ...(field.trickRoomTurns > 0 ? [{ id: 'trick-room' as const, turns: field.trickRoomTurns }] : []),
+    ...(['player', 'opponent'] as const).flatMap((sideName) => {
+      const side = sideName === 'player' ? player : opponent
+      return sideConditionKeys.flatMap((condition) =>
+        side.conditions[condition] > 0 ? [{ id: condition, turns: side.conditions[condition], side: sideName }] : [],
+      )
+    }),
+  ]
+  if (!effects.length) return null
+  return (
+    <div className="battle-field-effects" role="group" aria-label={t('battle.fieldEffects')}>
+      {effects.map((effect) => (
+        <span key={`${effect.id}-${'side' in effect ? effect.side : 'field'}`}>
+          {t(`battle.fieldEffect.${effect.id}`)}
+          {'side' in effect && ` · ${t(`battle.fieldSide.${effect.side}`)}`}
+          <small>{t('battle.fieldTurns', { turns: effect.turns })}</small>
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -870,6 +956,7 @@ export function BattlePage() {
               <TrainerPanel side={battle.opponent} opponent sprite={trainerSprites.opponent} />
             </div>
             <div className="battle-field" aria-label={t('battle.field')} aria-busy={resolving}>
+              <BattleFieldEffects field={battle.field} player={battle.player} opponent={battle.opponent} />
               <div className="battle-side opponent">
                 <ActivePokemon
                   side={battle.opponent}
@@ -953,7 +1040,7 @@ export function BattlePage() {
                       key={`${move.data.name}-${index}`}
                       move={move}
                       opponent={battle.opponent.roster[battle.opponent.active]}
-                      disabled={resolving}
+                      disabled={resolving || !legalBattleMoveIndexes(player).includes(index)}
                       onChoose={() => void play({ kind: 'move', index, tera: teraSelected })}
                     />
                   ))}
@@ -985,3 +1072,5 @@ export function BattlePage() {
     </section>
   )
 }
+
+export default BattlePage

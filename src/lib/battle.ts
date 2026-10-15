@@ -1,5 +1,6 @@
 import { getDamageMultiplier, type BattleType } from './type-chart'
 import { calculatedCoreStats, calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
+import { supplementalMoveEffect } from './battle-move-effects'
 
 export type BattleMove = {
   name: string
@@ -40,6 +41,10 @@ export type BattlePokemon = {
   stages: BattleStages
   status: BattleStatus
   sleepTurns: number
+  lastMoveIndex: number | null
+  encoreTurns: number
+  encoreMoveIndex: number | null
+  tauntTurns: number
   terastallized: boolean
   hasEnteredBattle: boolean
 }
@@ -63,15 +68,37 @@ export type BattleHazards = {
   toxicSpikes: number
   stickyWeb: boolean
 }
+export type BattleSideConditions = {
+  reflect: number
+  lightScreen: number
+  auroraVeil: number
+  tailwind: number
+}
+export type BattleWeather = 'rain' | 'sun' | 'sandstorm' | 'snow'
+export type BattleTerrain = 'electric' | 'grassy' | 'misty' | 'psychic'
+export type BattleField = {
+  weather: BattleWeather | null
+  weatherTurns: number
+  terrain: BattleTerrain | null
+  terrainTurns: number
+  trickRoomTurns: number
+}
 export type BattleSide = {
   team: Team
   roster: BattlePokemon[]
   active: number
   hazards: BattleHazards
+  conditions: BattleSideConditions
   switchRequested: boolean
 }
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
-export type BattleState = { turn: number; player: BattleSide; opponent: BattleSide; phase: BattlePhase }
+export type BattleState = {
+  turn: number
+  player: BattleSide
+  opponent: BattleSide
+  field: BattleField
+  phase: BattlePhase
+}
 export type BattleChoice = { kind: 'move'; index: number; tera?: boolean } | { kind: 'switch'; index: number }
 export type BattleTurnStep = {
   state: BattleState
@@ -93,9 +120,19 @@ export type BattleEvent =
   | { type: 'itemRemoved'; pokemon: string; item: string }
   | { type: 'status'; pokemon: string; status: Exclude<BattleStatus, null> }
   | { type: 'statusDamage'; pokemon: string; status: 'burn' | 'poison'; amount: number }
+  | { type: 'weatherDamage'; pokemon: string; weather: 'sandstorm'; amount: number }
   | { type: 'asleep'; pokemon: string }
   | { type: 'wake'; pokemon: string }
   | { type: 'stage'; pokemon: string; stat: keyof BattleStages; change: number }
+  | { type: 'encore'; pokemon: string; move: string; turns: number }
+  | { type: 'taunt'; pokemon: string }
+  | { type: 'stagesReset'; pokemon: string }
+  | { type: 'teamStatusCured'; side: 'player' | 'opponent' }
+  | { type: 'fieldSet'; field: BattleWeather | BattleTerrain | 'trick-room'; turns: number }
+  | { type: 'fieldEnded'; field: BattleWeather | BattleTerrain | 'trick-room' }
+  | { type: 'sideConditionSet'; side: 'player' | 'opponent'; condition: keyof BattleSideConditions; turns: number }
+  | { type: 'sideConditionEnded'; side: 'player' | 'opponent'; condition: keyof BattleSideConditions }
+  | { type: 'fieldBlocked'; pokemon: string; field: BattleTerrain }
   | { type: 'failed'; pokemon: string }
   | { type: 'faint'; pokemon: string }
   | { type: 'win'; side: 'player' | 'opponent' }
@@ -106,6 +143,14 @@ type MoveOutcome = { hit: boolean; succeeded: boolean } | null
 
 const emptyStages = (): BattleStages => ({ attack: 0, defense: 0, specialAttack: 0, specialDefense: 0, speed: 0 })
 const emptyHazards = (): BattleHazards => ({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
+const emptySideConditions = (): BattleSideConditions => ({ reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 })
+const emptyField = (): BattleField => ({
+  weather: null,
+  weatherTurns: 0,
+  terrain: null,
+  terrainTurns: 0,
+  trickRoomTurns: 0,
+})
 const stageMultiplier = (stage: number) => (stage >= 0 ? (2 + stage) / 2 : 2 / (2 - stage))
 const moveTypes = new Set<BattleType>([
   'normal',
@@ -208,6 +253,10 @@ export function createBattlePokemon(
     stages: emptyStages(),
     status: null,
     sleepTurns: 0,
+    lastMoveIndex: null,
+    encoreTurns: 0,
+    encoreMoveIndex: null,
+    tauntTurns: 0,
     terastallized: false,
     hasEnteredBattle: false,
   }
@@ -247,6 +296,7 @@ export function createBattleState(
       roster: player.map((pokemon, index) => ({ ...pokemon, hasEnteredBattle: index === 0 })),
       active: 0,
       hazards: emptyHazards(),
+      conditions: emptySideConditions(),
       switchRequested: false,
     },
     opponent: {
@@ -254,8 +304,10 @@ export function createBattleState(
       roster: opponent.map((pokemon, index) => ({ ...pokemon, hasEnteredBattle: index === 0 })),
       active: 0,
       hazards: emptyHazards(),
+      conditions: emptySideConditions(),
       switchRequested: false,
     },
+    field: emptyField(),
     phase: 'choice',
   }
 }
@@ -264,6 +316,7 @@ function cloneState(state: BattleState): BattleState {
   const cloneSide = (side: BattleSide): BattleSide => ({
     ...side,
     hazards: { ...side.hazards },
+    conditions: { ...side.conditions },
     roster: side.roster.map((pokemon) => ({
       ...pokemon,
       member: { ...pokemon.member },
@@ -274,7 +327,7 @@ function cloneState(state: BattleState): BattleState {
       stages: { ...pokemon.stages },
     })),
   })
-  return { ...state, player: cloneSide(state.player), opponent: cloneSide(state.opponent) }
+  return { ...state, field: { ...state.field }, player: cloneSide(state.player), opponent: cloneSide(state.opponent) }
 }
 
 function effectiveTypes(pokemon: BattlePokemon) {
@@ -375,8 +428,9 @@ function applyEntryHazards(side: BattleSide, pokemon: BattlePokemon, events: Bat
   }
 }
 
-function speed(pokemon: BattlePokemon) {
-  return currentBattleStats(pokemon)[5]
+function speed(side: BattleSide) {
+  const pokemon = side.roster[side.active]
+  return currentBattleStats(pokemon)[5] * (side.conditions.tailwind > 0 ? 2 : 1)
 }
 
 function canAct(pokemon: BattlePokemon, random: RandomSource, events: BattleEvent[]) {
@@ -396,9 +450,66 @@ function canAct(pokemon: BattlePokemon, random: RandomSource, events: BattleEven
   return true
 }
 
+export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
+  return pokemon.moves.flatMap((move, index) => {
+    if (move.pp <= 0) return []
+    if (pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== index) return []
+    if (pokemon.tauntTurns > 0 && move.data.damageClass === 'status') return []
+    return [index]
+  })
+}
+
+function selectedBattleMoveIndex(pokemon: BattlePokemon, requestedIndex: number) {
+  return pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== null ? pokemon.encoreMoveIndex : requestedIndex
+}
+
+function tickMoveRestrictions(pokemon: BattlePokemon) {
+  if (pokemon.encoreTurns > 0) {
+    pokemon.encoreTurns -= 1
+    const repeatedMove = pokemon.encoreMoveIndex === null ? null : pokemon.moves[pokemon.encoreMoveIndex]
+    if (pokemon.encoreTurns === 0 || !repeatedMove || repeatedMove.pp <= 0) {
+      pokemon.encoreTurns = 0
+      pokemon.encoreMoveIndex = null
+    }
+  }
+  if (pokemon.tauntTurns > 0) pokemon.tauntTurns -= 1
+}
+
+function fixedMoveDamage(
+  attacker: BattlePokemon,
+  defender: BattlePokemon,
+  amount: 'level' | 'half-current-hp' | 'hp-difference',
+) {
+  if (amount === 'level') return attacker.member.level
+  if (amount === 'half-current-hp') return Math.max(1, Math.floor(defender.hp / 2))
+  return Math.max(0, defender.hp - attacker.hp)
+}
+
+function fieldPowerModifier(move: BattleMove, attacker: BattlePokemon, defender: BattlePokemon, field: BattleField) {
+  let modifier = 1
+  if (field.weather === 'rain') modifier *= move.type === 'water' ? 1.5 : move.type === 'fire' ? 0.5 : 1
+  if (field.weather === 'sun') modifier *= move.type === 'fire' ? 1.5 : move.type === 'water' ? 0.5 : 1
+  if (isGrounded(attacker)) {
+    if (field.terrain === 'electric' && move.type === 'electric') modifier *= 1.3
+    if (field.terrain === 'grassy' && move.type === 'grass') modifier *= 1.3
+    if (field.terrain === 'psychic' && move.type === 'psychic') modifier *= 1.3
+  }
+  if (isGrounded(defender) && field.terrain === 'misty' && move.type === 'dragon') modifier *= 0.5
+  if (isGrounded(defender) && field.terrain === 'grassy' && ['earthquake', 'bulldoze', 'magnitude'].includes(move.name))
+    modifier *= 0.5
+  return modifier
+}
+
+function statusPreventedByTerrain(status: BattleStatus, target: BattlePokemon, field: BattleField) {
+  if (!status || !isGrounded(target)) return false
+  return field.terrain === 'misty' || (field.terrain === 'electric' && status === 'sleep')
+}
+
 function applyMove(
   attacker: BattlePokemon,
   defender: BattlePokemon,
+  defendingSide: BattleSide,
+  field: BattleField,
   moveSlot: number,
   random: RandomSource,
   events: BattleEvent[],
@@ -407,14 +518,35 @@ function applyMove(
   if (!slot || slot.pp <= 0 || attacker.hp <= 0 || defender.hp <= 0) return null
   slot.pp -= 1
   const move = slot.data
+  attacker.lastMoveIndex = moveSlot
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!canAct(attacker, random, events)) return { hit: false, succeeded: false }
+  if (move.name === 'steel-roller' && !field.terrain) return { hit: true, succeeded: false }
   if (move.accuracy !== null && random() * 100 >= move.accuracy) {
     events.push({ type: 'miss', pokemon: defender.pokemon.name })
     return { hit: false, succeeded: false }
   }
 
+  if (field.terrain === 'psychic' && isGrounded(defender) && move.priority > 0 && move.target !== 'user') {
+    events.push({ type: 'fieldBlocked', pokemon: defender.pokemon.name, field: 'psychic' })
+    return { hit: false, succeeded: false }
+  }
+
   let succeeded = false
+  const supplemental = supplementalMoveEffect(move.name)
+  if (supplemental?.kind === 'fixed-damage') {
+    const effectiveness = battleMoveEffectiveness(move, defender)
+    if (effectiveness === 0) {
+      events.push({ type: 'immune', pokemon: defender.pokemon.name })
+      return { hit: false, succeeded: false }
+    }
+    const damage = Math.min(defender.hp, fixedMoveDamage(attacker, defender, supplemental.amount))
+    if (damage > 0) {
+      defender.hp -= damage
+      events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness: 1, critical: false })
+      succeeded = true
+    }
+  }
   if (move.damageClass !== 'status' && move.power) {
     const effectiveness = battleMoveEffectiveness(move, defender)
     if (effectiveness === 0) {
@@ -425,7 +557,9 @@ function applyMove(
     const attackerStats = currentBattleStats(attacker)
     const defenderStats = currentBattleStats(defender)
     const attack = attackerStats[physical ? 1 : 3]
-    const defense = defenderStats[physical ? 2 : 4]
+    let defense = defenderStats[physical ? 2 : 4]
+    if (physical && field.weather === 'snow' && effectiveTypes(defender).includes('ice')) defense *= 1.5
+    if (!physical && field.weather === 'sandstorm' && effectiveTypes(defender).includes('rock')) defense *= 1.5
     const stab = battleSameTypeAttackBonus(attacker, move.type)
     const critical = random() < 1 / 24
     const burn = physical && attacker.status === 'burn' ? 0.5 : 1
@@ -433,7 +567,25 @@ function applyMove(
     const base = Math.floor(
       (((2 * attacker.member.level) / 5 + 2) * move.power * (attack / Math.max(1, defense))) / 50 + 2,
     )
-    const damage = Math.max(1, Math.floor(base * stab * effectiveness * (critical ? 1.5 : 1) * burn * variance))
+    const screen =
+      !critical &&
+      (defendingSide.conditions.auroraVeil > 0 ||
+        (physical ? defendingSide.conditions.reflect > 0 : defendingSide.conditions.lightScreen > 0))
+        ? 0.5
+        : 1
+    const damage = Math.max(
+      1,
+      Math.floor(
+        base *
+          stab *
+          effectiveness *
+          (critical ? 1.5 : 1) *
+          burn *
+          variance *
+          fieldPowerModifier(move, attacker, defender, field) *
+          screen,
+      ),
+    )
     defender.hp = Math.max(0, defender.hp - damage)
     events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness, critical })
     if (move.drain) {
@@ -481,7 +633,7 @@ function applyMove(
   const statusTarget = selfTarget ? attacker : defender
   if (move.ailment && !statusTarget.status && statusTarget.hp > 0 && random() * 100 < move.ailmentChance) {
     const status = ({ burn: 'burn', paralysis: 'paralysis', poison: 'poison', sleep: 'sleep' } as const)[move.ailment]
-    if (status) {
+    if (status && !statusPreventedByTerrain(status, statusTarget, field)) {
       statusTarget.status = status
       if (status === 'sleep') statusTarget.sleepTurns = 1 + Math.floor(random() * 3)
       events.push({ type: 'status', pokemon: statusTarget.pokemon.name, status })
@@ -494,6 +646,7 @@ function applyMove(
 function performChoice(
   own: BattleSide,
   foe: BattleSide,
+  field: BattleField,
   choice: BattleChoice,
   side: 'player' | 'opponent',
   random: RandomSource,
@@ -503,6 +656,10 @@ function performChoice(
     const replacement = own.roster[choice.index]
     if (!replacement || choice.index === own.active || replacement.hp <= 0) return
     own.roster[own.active].stages = emptyStages()
+    own.roster[own.active].encoreTurns = 0
+    own.roster[own.active].encoreMoveIndex = null
+    own.roster[own.active].tauntTurns = 0
+    own.roster[own.active].lastMoveIndex = null
     own.active = choice.index
     replacement.stages = emptyStages()
     replacement.hasEnteredBattle = true
@@ -515,16 +672,117 @@ function performChoice(
   const attacker = own.roster[own.active]
   const defender = foe.roster[foe.active]
   if (!attacker || !defender || attacker.hp <= 0) return
+  const legalMoves = legalBattleMoveIndexes(attacker)
+  const selectedMoveIndex = selectedBattleMoveIndex(attacker, choice.index)
   const start = events.length
-  const outcome = applyMove(attacker, defender, choice.index, random, events)
+  if (!legalMoves.includes(selectedMoveIndex)) {
+    events.push({ type: 'failed', pokemon: attacker.pokemon.name })
+    tickMoveRestrictions(attacker)
+    return
+  }
+  const outcome = applyMove(attacker, defender, foe, field, selectedMoveIndex, random, events)
   for (let index = start; index < events.length; index += 1) {
     const event = events[index]
     if (event.type === 'move') event.side = side
   }
   if (!outcome) return
   let succeeded = outcome.succeeded
-  const move = attacker.moves[choice.index]?.data
+  const move = attacker.moves[selectedMoveIndex]?.data
   if (outcome.hit && move) {
+    const supplemental = supplementalMoveEffect(move.name)
+    if (supplemental?.kind === 'encore') {
+      const repeated = defender.lastMoveIndex
+      const repeatedMove = repeated === null ? null : defender.moves[repeated]
+      if (repeatedMove && repeatedMove.pp > 0 && repeatedMove.data.name !== 'encore') {
+        defender.encoreTurns =
+          supplemental.minimumTurns + Math.floor(random() * (supplemental.maximumTurns - supplemental.minimumTurns + 1))
+        defender.encoreMoveIndex = repeated
+        events.push({
+          type: 'encore',
+          pokemon: defender.pokemon.name,
+          move: repeatedMove.data.name,
+          turns: defender.encoreTurns,
+        })
+        succeeded = true
+      }
+    }
+    if (supplemental?.kind === 'taunt' && defender.tauntTurns <= 0) {
+      defender.tauntTurns = supplemental.turns
+      events.push({ type: 'taunt', pokemon: defender.pokemon.name })
+      succeeded = true
+    }
+    if (supplemental?.kind === 'reset-stages') {
+      const targets = supplemental.target === 'all' ? [attacker, defender] : [defender]
+      for (const target of targets) {
+        if (Object.values(target.stages).some(Boolean)) {
+          target.stages = emptyStages()
+          events.push({ type: 'stagesReset', pokemon: target.pokemon.name })
+          succeeded = true
+        }
+      }
+    }
+    if (supplemental?.kind === 'cure-team-status') {
+      const cured = own.roster.some((pokemon) => pokemon.status !== null)
+      own.roster.forEach((pokemon) => {
+        pokemon.status = null
+        pokemon.sleepTurns = 0
+      })
+      if (cured) {
+        events.push({ type: 'teamStatusCured', side })
+        succeeded = true
+      }
+    }
+    if (supplemental?.kind === 'set-weather') {
+      field.weather = supplemental.weather
+      field.weatherTurns = supplemental.turns
+      events.push({ type: 'fieldSet', field: supplemental.weather, turns: supplemental.turns })
+      succeeded = true
+    }
+    if (supplemental?.kind === 'set-terrain') {
+      field.terrain = supplemental.terrain
+      field.terrainTurns = supplemental.turns
+      events.push({ type: 'fieldSet', field: supplemental.terrain, turns: supplemental.turns })
+      succeeded = true
+    }
+    if (supplemental?.kind === 'clear-terrain' && field.terrain) {
+      const terrain = field.terrain
+      field.terrain = null
+      field.terrainTurns = 0
+      events.push({ type: 'fieldEnded', field: terrain })
+      succeeded = true
+    }
+    if (supplemental?.kind === 'set-trick-room') {
+      if (field.trickRoomTurns > 0) {
+        field.trickRoomTurns = 0
+        events.push({ type: 'fieldEnded', field: 'trick-room' })
+      } else {
+        field.trickRoomTurns = supplemental.turns
+        events.push({ type: 'fieldSet', field: 'trick-room', turns: supplemental.turns })
+      }
+      succeeded = true
+    }
+    if (supplemental?.kind === 'set-side-condition') {
+      const condition = {
+        reflect: 'reflect',
+        'light-screen': 'lightScreen',
+        'aurora-veil': 'auroraVeil',
+        tailwind: 'tailwind',
+      }[supplemental.condition] as keyof BattleSideConditions
+      if (!supplemental.requiresWeather || field.weather === supplemental.requiresWeather) {
+        own.conditions[condition] = supplemental.turns
+        events.push({ type: 'sideConditionSet', side, condition, turns: supplemental.turns })
+        succeeded = true
+      }
+    }
+    if (supplemental?.kind === 'clear-target-screens') {
+      for (const condition of ['reflect', 'lightScreen', 'auroraVeil'] as const) {
+        if (foe.conditions[condition] > 0) {
+          foe.conditions[condition] = 0
+          events.push({ type: 'sideConditionEnded', side: side === 'player' ? 'opponent' : 'player', condition })
+          succeeded = true
+        }
+      }
+    }
     const hazard = hazardMoves[move.name]
     if (hazard && (!afterHitHazardMoves.has(move.name) || outcome.succeeded) && addHazard(foe, hazard)) {
       events.push({ type: 'hazardSet', side: side === 'player' ? 'opponent' : 'player', hazard })
@@ -540,11 +798,28 @@ function performChoice(
       if (clearedOwn) events.push({ type: 'hazardsCleared', side })
       if (clearedFoe) events.push({ type: 'hazardsCleared', side: side === 'player' ? 'opponent' : 'player' })
       succeeded ||= clearedOwn || clearedFoe
+      if (field.terrain) {
+        const terrain = field.terrain
+        field.terrain = null
+        field.terrainTurns = 0
+        events.push({ type: 'fieldEnded', field: terrain })
+        succeeded = true
+      }
+      for (const condition of ['reflect', 'lightScreen', 'auroraVeil'] as const) {
+        if (foe.conditions[condition] > 0) {
+          foe.conditions[condition] = 0
+          events.push({ type: 'sideConditionEnded', side: side === 'player' ? 'opponent' : 'player', condition })
+          succeeded = true
+        }
+      }
     }
     if (move.name === 'court-change') {
       const hazards = own.hazards
       own.hazards = foe.hazards
       foe.hazards = hazards
+      const conditions = own.conditions
+      own.conditions = foe.conditions
+      foe.conditions = conditions
       succeeded = true
     }
     if (itemRemovalMoves.has(move.name) && defender.item) {
@@ -568,6 +843,7 @@ function performChoice(
       succeeded = true
     }
   }
+  tickMoveRestrictions(attacker)
   if (!succeeded && outcome.hit) events.push({ type: 'failed', pokemon: attacker.pokemon.name })
   if (defender.hp === 0 && !events.some((event, index) => index >= start && event.type === 'faint'))
     events.push({ type: 'faint', pokemon: defender.pokemon.name })
@@ -575,16 +851,55 @@ function performChoice(
 
 function choicePriority(side: BattleSide, choice: BattleChoice) {
   if (choice.kind === 'switch') return 6
-  return side.roster[side.active].moves[choice.index]?.data.priority ?? 0
+  const pokemon = side.roster[side.active]
+  return pokemon.moves[selectedBattleMoveIndex(pokemon, choice.index)]?.data.priority ?? 0
 }
 
-function residual(side: BattleSide, events: BattleEvent[]) {
+function residual(side: BattleSide, field: BattleField, events: BattleEvent[]) {
   const pokemon = side.roster[side.active]
-  if (pokemon.hp <= 0 || (pokemon.status !== 'burn' && pokemon.status !== 'poison')) return
-  const amount = Math.max(1, Math.floor(pokemon.maxHp / (pokemon.status === 'burn' ? 16 : 8)))
-  pokemon.hp = Math.max(0, pokemon.hp - amount)
-  events.push({ type: 'statusDamage', pokemon: pokemon.pokemon.name, status: pokemon.status, amount })
+  if (pokemon.hp <= 0) return
+  if (field.terrain === 'grassy' && isGrounded(pokemon) && pokemon.hp < pokemon.maxHp) {
+    const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
+    pokemon.hp += amount
+    events.push({ type: 'heal', pokemon: pokemon.pokemon.name, amount })
+  }
+  if (
+    field.weather === 'sandstorm' &&
+    !effectiveTypes(pokemon).some((type) => ['rock', 'ground', 'steel'].includes(type))
+  ) {
+    const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
+    pokemon.hp -= amount
+    events.push({ type: 'weatherDamage', pokemon: pokemon.pokemon.name, weather: 'sandstorm', amount })
+  }
+  if (pokemon.hp > 0 && (pokemon.status === 'burn' || pokemon.status === 'poison')) {
+    const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / (pokemon.status === 'burn' ? 16 : 8))))
+    pokemon.hp -= amount
+    events.push({ type: 'statusDamage', pokemon: pokemon.pokemon.name, status: pokemon.status, amount })
+  }
   if (pokemon.hp === 0) events.push({ type: 'faint', pokemon: pokemon.pokemon.name })
+}
+
+function tickField(state: BattleState, events: BattleEvent[]) {
+  if (state.field.weather && --state.field.weatherTurns <= 0) {
+    events.push({ type: 'fieldEnded', field: state.field.weather })
+    state.field.weather = null
+    state.field.weatherTurns = 0
+  }
+  if (state.field.terrain && --state.field.terrainTurns <= 0) {
+    events.push({ type: 'fieldEnded', field: state.field.terrain })
+    state.field.terrain = null
+    state.field.terrainTurns = 0
+  }
+  if (state.field.trickRoomTurns > 0 && --state.field.trickRoomTurns === 0)
+    events.push({ type: 'fieldEnded', field: 'trick-room' })
+  const tickSide = (side: BattleSide, sideName: 'player' | 'opponent') => {
+    for (const condition of Object.keys(side.conditions) as (keyof BattleSideConditions)[]) {
+      if (side.conditions[condition] > 0 && --side.conditions[condition] === 0)
+        events.push({ type: 'sideConditionEnded', side: sideName, condition })
+    }
+  }
+  tickSide(state.player, 'player')
+  tickSide(state.opponent, 'opponent')
 }
 
 function availableSwitch(side: BattleSide) {
@@ -628,7 +943,7 @@ export function chooseOpponentAction(state: BattleState, random: RandomSource = 
     const choices = side.roster.flatMap((pokemon, index) => (index !== side.active && pokemon.hp > 0 ? [index] : []))
     return { kind: 'switch', index: choices[Math.floor(random() * choices.length)] }
   }
-  const moves = side.roster[side.active].moves.flatMap((move, index) => (move.pp > 0 ? [index] : []))
+  const moves = legalBattleMoveIndexes(side.roster[side.active])
   return {
     kind: 'move',
     index: moves[Math.floor(random() * moves.length)] ?? 0,
@@ -649,9 +964,10 @@ export function resolveBattleTurnSteps(
     const eventStart = events.length
     const move =
       choice.kind === 'move' && own.roster[own.active]?.hp > 0 && foe.roster[foe.active]?.hp > 0
-        ? (own.roster[own.active].moves[choice.index]?.data.name ?? null)
+        ? (own.roster[own.active].moves[selectedBattleMoveIndex(own.roster[own.active], choice.index)]?.data.name ??
+          null)
         : null
-    performChoice(own, foe, choice, side, random, events)
+    performChoice(own, foe, state.field, choice, side, random, events)
     if (events.length > eventStart || move) {
       steps.push({ state: cloneState(state), events: events.slice(eventStart), action: { side, move } })
     }
@@ -695,12 +1011,12 @@ export function resolveBattleTurnSteps(
 
   const playerPriority = choicePriority(state.player, playerChoice)
   const opponentPriority = choicePriority(state.opponent, opponentChoice)
-  const playerSpeed = speed(state.player.roster[state.player.active])
-  const opponentSpeed = speed(state.opponent.roster[state.opponent.active])
+  const playerSpeed = speed(state.player)
+  const opponentSpeed = speed(state.opponent)
+  const playerWinsSpeed = state.field.trickRoomTurns > 0 ? playerSpeed < opponentSpeed : playerSpeed > opponentSpeed
   const playerFirst =
     playerPriority > opponentPriority ||
-    (playerPriority === opponentPriority &&
-      (playerSpeed > opponentSpeed || (playerSpeed === opponentSpeed && random() < 0.5)))
+    (playerPriority === opponentPriority && (playerWinsSpeed || (playerSpeed === opponentSpeed && random() < 0.5)))
   const actions = playerFirst
     ? [
         () => performStep(state.player, state.opponent, playerChoice, 'player'),
@@ -712,8 +1028,9 @@ export function resolveBattleTurnSteps(
       ]
   actions.forEach((action) => action())
   const finalEventStart = events.length
-  residual(state.player, events)
-  residual(state.opponent, events)
+  residual(state.player, state.field, events)
+  residual(state.opponent, state.field, events)
+  tickField(state, events)
   applyTurnTerastallization(state.player, playerChoice, 'player', events)
   applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)
   settlePhase(state, events)

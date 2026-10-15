@@ -78,6 +78,36 @@
   height: 2px;
   background: color-mix(in srgb, var(--line) 75%, transparent);
 }
+.battle-field-effects {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: min(92%, 520px);
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.battle-field-effects > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--battle-blue) 38%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--ink) 12%, transparent);
+  font-size: 11px;
+  font-weight: 800;
+  backdrop-filter: blur(6px);
+}
+.battle-field-effects small {
+  color: var(--muted);
+  font-size: 10px;
+}
 .battle-side {
   position: relative;
   min-height: 0;

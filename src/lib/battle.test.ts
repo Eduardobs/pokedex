@@ -7,6 +7,7 @@ import {
   createBattleState,
   currentBattleStats,
   isBattleReadyTeam,
+  legalBattleMoveIndexes,
   possibleBattleStats,
   resolveBattleTurn,
   type BattleMove,
@@ -152,6 +153,232 @@ describe('Random Battle engine', () => {
 
     expect(missedEffect.state.opponent.roster[0].stages.attack).toBe(0)
     expect(appliedEffect.state.opponent.roster[0].stages.attack).toBe(-1)
+  })
+
+  it('locks an Encored Pokémon into its last move for a random two to six actions and clears it on switch', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'encore', damageClass: 'status', power: null })
+    state.player.roster[0].stats[5] = 999
+    state.opponent.roster[0].lastMoveIndex = 1
+
+    const encored = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(encored.events).toContainEqual({
+      type: 'encore',
+      pokemon: 'opponent-0',
+      move: 'quick-attack',
+      turns: 4,
+    })
+    expect(encored.events).toContainEqual(
+      expect.objectContaining({ type: 'move', side: 'opponent', move: 'quick-attack' }),
+    )
+    expect(encored.state.opponent.roster[0]).toMatchObject({ encoreMoveIndex: 1, encoreTurns: 3 })
+    expect(legalBattleMoveIndexes(encored.state.opponent.roster[0])).toEqual([1])
+
+    encored.state.phase = 'opponent-switch'
+    const switched = resolveBattleTurn(
+      encored.state,
+      { kind: 'move', index: 0 },
+      { kind: 'switch', index: 1 },
+      () => 0.5,
+    )
+    expect(switched.state.opponent.roster[0]).toMatchObject({
+      lastMoveIndex: null,
+      encoreMoveIndex: null,
+      encoreTurns: 0,
+    })
+  })
+
+  it('selects both inclusive Encore duration boundaries', () => {
+    const makeState = () => {
+      const playerTeam = team('player')
+      const opponentTeam = team('opponent')
+      const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+      state.player.roster[0].moves[0].data = move({ name: 'encore', damageClass: 'status', power: null })
+      state.player.roster[0].stats[5] = 999
+      state.opponent.roster[0].lastMoveIndex = 1
+      return state
+    }
+
+    const minimum = resolveBattleTurn(makeState(), { kind: 'move', index: 0 }, { kind: 'move', index: 1 }, () => 0)
+    const maximum = resolveBattleTurn(makeState(), { kind: 'move', index: 0 }, { kind: 'move', index: 1 }, () => 0.999)
+
+    expect(minimum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 2 }))
+    expect(maximum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 6 }))
+  })
+
+  it('sets weather and terrain with timed field state', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'rain-dance',
+      type: 'water',
+      damageClass: 'status',
+      power: null,
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const rain = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(rain.state.field).toMatchObject({ weather: 'rain', weatherTurns: 4 })
+    expect(rain.events).toContainEqual({ type: 'fieldSet', field: 'rain', turns: 5 })
+
+    rain.state.player.roster[0].moves[0].data = move({
+      name: 'grassy-terrain',
+      type: 'grass',
+      damageClass: 'status',
+      power: null,
+    })
+    rain.state.player.roster[0].hp -= 100
+    const terrain = resolveBattleTurn(rain.state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(terrain.state.field).toMatchObject({ terrain: 'grassy', terrainTurns: 4 })
+    expect(terrain.state.player.roster[0].hp).toBeGreaterThan(rain.state.player.roster[0].hp)
+  })
+
+  it('applies field damage modifiers and terrain protections', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const makeState = () => createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const normal = makeState()
+    const rain = makeState()
+    normal.player.roster[0].moves[0].data = move({ type: 'water', power: 80 })
+    rain.player.roster[0].moves[0].data = move({ type: 'water', power: 80 })
+    normal.player.roster[0].stats[5] = 999
+    rain.player.roster[0].stats[5] = 999
+    rain.field.weather = 'rain'
+    rain.field.weatherTurns = 5
+
+    const normalHit = resolveBattleTurn(normal, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    const rainHit = resolveBattleTurn(rain, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    const normalDamage = normalHit.events.find((event) => event.type === 'damage' && event.pokemon === 'opponent-0')
+    const rainDamage = rainHit.events.find((event) => event.type === 'damage' && event.pokemon === 'opponent-0')
+    expect(rainDamage?.type === 'damage' && normalDamage?.type === 'damage' && rainDamage.amount).toBeGreaterThan(
+      normalDamage?.type === 'damage' ? normalDamage.amount : 0,
+    )
+
+    const psychic = makeState()
+    psychic.field.terrain = 'psychic'
+    psychic.field.terrainTurns = 5
+    const blocked = resolveBattleTurn(psychic, { kind: 'move', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(blocked.events).toContainEqual({ type: 'fieldBlocked', pokemon: 'opponent-0', field: 'psychic' })
+
+    const electric = makeState()
+    electric.field.terrain = 'electric'
+    electric.field.terrainTurns = 5
+    electric.player.roster[0].stats[5] = 999
+    electric.player.roster[0].moves[0].data = move({
+      name: 'spore',
+      type: 'grass',
+      damageClass: 'status',
+      power: null,
+      ailment: 'sleep',
+      ailmentChance: 100,
+    })
+    const awake = resolveBattleTurn(electric, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(awake.state.opponent.roster[0].status).toBeNull()
+  })
+
+  it('applies Trick Room, Tailwind, and screen side conditions', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'trick-room',
+      type: 'psychic',
+      damageClass: 'status',
+      power: null,
+    })
+    state.player.roster[0].moves[0].data.priority = -7
+    const room = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(room.state.field.trickRoomTurns).toBe(4)
+
+    room.state.player.roster[0].moves[0].data = move()
+    room.state.player.roster[0].stats[5] = 999
+    room.state.opponent.roster[0].stats[5] = 1
+    const reversed = resolveBattleTurn(room.state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(reversed.events.filter((event) => event.type === 'move')[0]).toMatchObject({ side: 'opponent' })
+
+    reversed.state.player.roster[0].moves[0].data = move({
+      name: 'reflect',
+      type: 'psychic',
+      damageClass: 'status',
+      power: null,
+    })
+    const reflected = resolveBattleTurn(
+      reversed.state,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    expect(reflected.state.player.conditions.reflect).toBe(4)
+    expect(reflected.events).toContainEqual({
+      type: 'sideConditionSet',
+      side: 'player',
+      condition: 'reflect',
+      turns: 5,
+    })
+  })
+
+  it('prevents status moves while Taunt is active', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'taunt', type: 'dark', damageClass: 'status', power: null })
+    state.player.roster[0].stats[5] = 999
+
+    const taunted = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(taunted.events).toContainEqual({ type: 'taunt', pokemon: 'opponent-0' })
+    expect(taunted.events).not.toContainEqual(expect.objectContaining({ type: 'stage', pokemon: 'player-0' }))
+    expect(legalBattleMoveIndexes(taunted.state.opponent.roster[0])).toEqual([0, 1])
+    expect(chooseOpponentAction(taunted.state, () => 0).index).toBe(0)
+  })
+
+  it('supports fixed-damage moves whose damage is not structured by PokéAPI', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'seismic-toss', type: 'fighting', power: null })
+    state.player.roster[0].stats[5] = 999
+    const initialHp = state.opponent.roster[0].hp
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(result.state.opponent.roster[0].hp).toBe(initialHp - 100)
+    expect(result.events).toContainEqual({
+      type: 'damage',
+      pokemon: 'opponent-0',
+      amount: 100,
+      effectiveness: 1,
+      critical: false,
+    })
+  })
+
+  it('resets stat stages and cures the allied roster with supplemental effects', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'haze', type: 'ice', damageClass: 'status', power: null })
+    state.player.roster[0].stages.attack = 2
+    state.opponent.roster[0].stages.defense = -2
+    state.player.roster[0].stats[5] = 999
+
+    const reset = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(reset.state.player.roster[0].stages.attack).toBe(0)
+    expect(reset.state.opponent.roster[0].stages.defense).toBe(0)
+
+    reset.state.player.roster[0].moves[0].data = move({
+      name: 'heal-bell',
+      damageClass: 'status',
+      power: null,
+    })
+    reset.state.player.roster[0].status = 'burn'
+    reset.state.player.roster[1].status = 'poison'
+    const cured = resolveBattleTurn(reset.state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(cured.state.player.roster.every((pokemon) => pokemon.status === null)).toBe(true)
+    expect(cured.events).toContainEqual({ type: 'teamStatusCured', side: 'player' })
   })
 
   it('applies self-lowering and target-raising stat changes to the correct Pokémon', () => {
