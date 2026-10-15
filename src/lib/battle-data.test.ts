@@ -18,6 +18,10 @@ describe('battle move parsing', () => {
         effect_chance: 10,
         stat_changes: [],
         meta: { healing: 0, drain: 0, ailment: ref('burn'), ailment_chance: 10 },
+        flavor_text_entries: [
+          { flavor_text: 'Has a chance to burn.\n', language: ref('en') },
+          { flavor_text: 'Pode queimar.\f', language: ref('pt-br') },
+        ],
       }),
     ).toMatchObject({
       name: 'flamethrower',
@@ -26,6 +30,10 @@ describe('battle move parsing', () => {
       power: 90,
       ailment: 'burn',
       ailmentChance: 10,
+      descriptions: [
+        { language: 'en', text: 'Has a chance to burn.' },
+        { language: 'pt-br', text: 'Pode queimar.' },
+      ],
     })
   })
 

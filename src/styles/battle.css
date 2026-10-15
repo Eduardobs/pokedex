@@ -76,13 +76,18 @@
   gap: 12px;
   padding: 22px;
 }
-.battle-active.opponent .battle-health {
-  order: 2;
+.battle-active-data {
+  display: grid;
+  gap: 10px;
+  align-self: center;
 }
 .battle-active.opponent .battle-pokemon-visual {
-  order: 1;
+  order: 2;
 }
 .battle-active.player .battle-pokemon-visual {
+  order: 1;
+}
+.battle-active.player .battle-active-data {
   order: 2;
 }
 .battle-pokemon-visual {
@@ -96,9 +101,6 @@
   height: 210px;
   object-fit: contain;
   filter: drop-shadow(0 16px 12px color-mix(in srgb, var(--ink) 22%, transparent));
-}
-.battle-active.player .battle-pokemon-visual img {
-  transform: scaleX(-1);
 }
 .battle-active-types {
   position: absolute;
@@ -120,6 +122,15 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
+}
+.battle-health-copy > div {
+  display: grid;
+  gap: 1px;
+}
+.battle-health-copy small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 .battle-health-copy strong {
   font:
@@ -145,6 +156,42 @@
   background: linear-gradient(90deg, #2d9b5f, #65c66e);
   transition: width 240ms ease;
 }
+.battle-stat-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.2;
+}
+.battle-stat-modifiers span {
+  white-space: nowrap;
+}
+.battle-stat-modifiers .raised {
+  color: #187b45;
+  font-weight: 800;
+}
+.battle-stat-modifiers .lowered {
+  color: #c43d35;
+  font-weight: 800;
+}
+.battle-tera-control {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+}
+.battle-tera-control .button {
+  width: 100%;
+}
+.battle-tera-control .button.is-selected {
+  border-color: var(--red);
+  background: var(--red);
+  color: white;
+}
+.battle-tera-control .type-badge {
+  margin-left: 4px;
+}
 .battle-versus {
   position: absolute;
   z-index: 2;
@@ -163,17 +210,20 @@
   display: flex;
   flex-direction: column;
   min-height: 610px;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--line);
   border-radius: 18px;
   background: var(--surface);
 }
 .battle-log {
+  position: relative;
+  z-index: 1;
   flex: 1;
   min-height: 260px;
   padding: 18px;
   overflow-y: auto;
   border-bottom: 1px solid var(--line);
+  border-radius: 17px 17px 0 0;
   background: var(--surface-soft);
 }
 .battle-log > strong {
@@ -190,6 +240,8 @@
 }
 .battle-actions,
 .battle-result {
+  position: relative;
+  z-index: 2;
   padding: 18px;
 }
 .battle-actions h2,
@@ -215,7 +267,8 @@
   cursor: pointer;
   text-align: left;
 }
-.battle-moves > button {
+.battle-move-button {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
@@ -230,6 +283,63 @@
 .battle-moves .type-badge {
   padding: 3px 5px;
   font-size: 9px;
+}
+.battle-move-tooltip,
+.battle-switch-tooltip {
+  position: absolute;
+  z-index: 5;
+  right: 0;
+  bottom: calc(100% + 8px);
+  display: none;
+  width: min(300px, calc(100vw - 48px));
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--ink) 20%, transparent);
+  color: var(--ink);
+  cursor: default;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+}
+.battle-move-button:hover .battle-move-tooltip,
+.battle-move-button:focus-visible .battle-move-tooltip {
+  display: grid;
+  gap: 7px;
+}
+.battle-switch-button {
+  position: relative;
+}
+.battle-switch-button:hover .battle-switch-tooltip,
+.battle-switch-button:focus-visible .battle-switch-tooltip {
+  display: grid;
+  gap: 8px;
+}
+.battle-move-button:nth-child(odd) .battle-move-tooltip {
+  right: auto;
+  left: 0;
+}
+.battle-switch-button:nth-child(odd) .battle-switch-tooltip {
+  right: auto;
+  left: 0;
+}
+.battle-tooltip-damage {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.battle-tooltip-description {
+  display: grid;
+  gap: 2px;
+  color: var(--muted);
+}
+.battle-tooltip-description b {
+  color: var(--ink);
+}
+.battle-move-tooltip .damage-badge {
+  flex: none;
 }
 .battle-moves small {
   grid-column: 1 / -1;
@@ -251,17 +361,8 @@
   margin-top: 10px;
   flex-wrap: wrap;
 }
-.battle-secondary-actions details {
-  flex: 1;
-  min-width: 130px;
-}
-.battle-secondary-actions summary {
-  min-height: 44px;
-  padding: 11px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  cursor: pointer;
-  font-weight: 700;
+.battle-cancel-switch {
+  margin-top: 10px;
 }
 .battle-switches {
   display: grid;
@@ -278,10 +379,92 @@
   margin-top: 3px;
   color: var(--muted);
 }
+.battle-switch-tooltip {
+  width: min(370px, calc(100vw - 48px));
+}
+.battle-switch-tooltip-title,
+.battle-switch-tooltip-types,
+.battle-switch-type-list,
+.battle-switch-tooltip-tera {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.battle-switch-tooltip-title {
+  justify-content: space-between;
+}
+.battle-switch-tooltip-types {
+  flex-wrap: wrap;
+}
+.battle-switch-type-list,
+.battle-switch-tooltip-tera {
+  gap: 4px;
+}
+.battle-switch-tooltip-title b {
+  font:
+    700 15px Outfit,
+    sans-serif;
+}
+.battle-switch-tooltip-title span,
+.battle-switch-tooltip-types > span:first-child {
+  color: var(--muted);
+  font-size: 11px;
+}
+.battle-switch-type-list .type-badge,
+.battle-switch-tooltip-tera .type-badge {
+  flex: none;
+}
+.battle-switch-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin: 0;
+}
+.battle-switch-stats > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 4px 5px;
+  border-radius: 5px;
+  background: var(--surface-soft);
+}
+.battle-switch-stat-name {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-switch-stats b {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 800;
+}
+.battle-switch-tooltip-moves,
+.battle-switch-tooltip-moves > span {
+  display: grid;
+  gap: 3px;
+}
+.battle-switch-tooltip-moves > span {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.battle-switch-tooltip-moves > span > span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 @media (prefers-reduced-motion: reduce) {
   .battle-health-track span {
     transition: none;
   }
+}
+:root[data-theme='dark'] .battle-stat-modifiers .raised {
+  color: #6ed593;
+}
+:root[data-theme='dark'] .battle-stat-modifiers .lowered {
+  color: #ff928b;
 }
 @media (max-width: 900px) {
   .battle-shell {

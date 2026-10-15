@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  battleMoveEffectiveness,
   chooseOpponentAction,
   createBattlePokemon,
   createBattleState,
@@ -112,6 +113,48 @@ describe('Random Battle engine', () => {
     expect(switched.state.player.active).toBe(1)
     expect(switched.events).toContainEqual({ type: 'switch', side: 'player', pokemon: 'player-1' })
     expect(switched.state.player.roster[1].hp).toBeLessThan(switched.state.player.roster[1].maxHp)
+  })
+
+  it('resolves each Pokémon’s Terastallization after both actions and only once', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].member.tera = 'ghost'
+    state.player.roster[1].member.tera = 'fire'
+
+    const first = resolveBattleTurn(
+      state,
+      { kind: 'move', index: 0, tera: true },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    const teraEvent = first.events.findIndex((event) => event.type === 'tera')
+    expect(teraEvent).toBeGreaterThan(
+      Math.max(...first.events.map((event, index) => (event.type === 'move' ? index : -1))),
+    )
+    expect(first.state.player.roster[0].terastallized).toBe(true)
+
+    const switched = resolveBattleTurn(first.state, { kind: 'switch', index: 1 }, { kind: 'move', index: 0 }, () => 0.5)
+    const second = resolveBattleTurn(
+      switched.state,
+      { kind: 'move', index: 0, tera: true },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    expect(second.state.player.roster[0].terastallized).toBe(true)
+    expect(second.state.player.roster[1].terastallized).toBe(true)
+  })
+
+  it('calculates move effectiveness against the active Pokémon’s current types', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(
+      playerTeam,
+      roster(playerTeam),
+      opponentTeam,
+      roster(opponentTeam, ['water', 'ground']),
+    )
+    expect(battleMoveEffectiveness(move({ type: 'electric' }), state.opponent.roster[0])).toBe(0)
   })
 
   it('requires a replacement after the active Pokémon faints', () => {

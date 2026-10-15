@@ -13,6 +13,10 @@ export type TeamPokemon = {
   moves: string[]
   homeSprite?: string | null
   homeShinySprite?: string | null
+  showdownFrontSprite?: string | null
+  showdownBackSprite?: string | null
+  showdownFrontShinySprite?: string | null
+  showdownBackShinySprite?: string | null
 }
 export const natureNames = [
   'hardy',
@@ -154,6 +158,7 @@ export function parseTeamPokemon(value: unknown): TeamPokemon {
     .filter((v): v is string => !!v && identifier(v))
   if (!types.length || !abilities.length) return invalidData()
   const home = record(record(record(data.sprites).other).home)
+  const showdown = record(record(record(data.sprites).other).showdown)
   const safeHomeSprite = (value: unknown) => {
     if (typeof value !== 'string') return null
     try {
@@ -173,6 +178,10 @@ export function parseTeamPokemon(value: unknown): TeamPokemon {
     moves,
     homeSprite: safeHomeSprite(home.front_default),
     homeShinySprite: safeHomeSprite(home.front_shiny),
+    showdownFrontSprite: safeHomeSprite(showdown.front_default),
+    showdownBackSprite: safeHomeSprite(showdown.back_default),
+    showdownFrontShinySprite: safeHomeSprite(showdown.front_shiny),
+    showdownBackShinySprite: safeHomeSprite(showdown.back_shiny),
   }
 }
 export function parseTeamSpecies(value: unknown) {

@@ -15,6 +15,7 @@ export type BattleMove = {
   ailment: string | null
   ailmentChance: number
   statChanges: { stat: keyof BattleStages; change: number }[]
+  descriptions?: { language: string; text: string }[]
 }
 
 export type BattleStages = {
@@ -37,7 +38,7 @@ export type BattlePokemon = {
   sleepTurns: number
   terastallized: boolean
 }
-export type BattleSide = { team: Team; roster: BattlePokemon[]; active: number; teraUsed: boolean }
+export type BattleSide = { team: Team; roster: BattlePokemon[]; active: number }
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
 export type BattleState = { turn: number; player: BattleSide; opponent: BattleSide; phase: BattlePhase }
 export type BattleChoice = { kind: 'move'; index: number; tera?: boolean } | { kind: 'switch'; index: number }
@@ -122,8 +123,8 @@ export function createBattleState(
     throw new Error('Battle requires two complete teams.')
   return {
     turn: 1,
-    player: { team: playerTeam, roster: player, active: 0, teraUsed: false },
-    opponent: { team: opponentTeam, roster: opponent, active: 0, teraUsed: false },
+    player: { team: playerTeam, roster: player, active: 0 },
+    opponent: { team: opponentTeam, roster: opponent, active: 0 },
     phase: 'choice',
   }
 }
@@ -146,6 +147,10 @@ function cloneState(state: BattleState): BattleState {
 
 function effectiveTypes(pokemon: BattlePokemon) {
   return pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types
+}
+
+export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemon) {
+  return effectiveTypes(defender).reduce((value, type) => value * getDamageMultiplier(move.type, type as BattleType), 1)
 }
 
 function speed(pokemon: BattlePokemon) {
@@ -190,10 +195,7 @@ function applyMove(
 
   let succeeded = false
   if (move.damageClass !== 'status' && move.power) {
-    const effectiveness = effectiveTypes(defender).reduce(
-      (value, type) => value * getDamageMultiplier(move.type, type as BattleType),
-      1,
-    )
+    const effectiveness = battleMoveEffectiveness(move, defender)
     if (effectiveness === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return
@@ -285,11 +287,6 @@ function performChoice(
   const attacker = own.roster[own.active]
   const defender = foe.roster[foe.active]
   if (!attacker || !defender || attacker.hp <= 0) return
-  if (choice.tera && !own.teraUsed) {
-    own.teraUsed = true
-    attacker.terastallized = true
-    events.push({ type: 'tera', side, pokemon: attacker.pokemon.name, tera: attacker.member.tera })
-  }
   const start = events.length
   applyMove(attacker, defender, choice.index, random, events)
   for (let index = start; index < events.length; index += 1) {
@@ -318,6 +315,19 @@ function availableSwitch(side: BattleSide) {
   return side.roster.findIndex((pokemon, index) => index !== side.active && pokemon.hp > 0)
 }
 
+function applyTurnTerastallization(
+  side: BattleSide,
+  choice: BattleChoice,
+  sideName: 'player' | 'opponent',
+  events: BattleEvent[],
+) {
+  if (choice.kind !== 'move' || !choice.tera) return
+  const pokemon = side.roster[side.active]
+  if (!pokemon || pokemon.hp <= 0 || pokemon.terastallized) return
+  pokemon.terastallized = true
+  events.push({ type: 'tera', side: sideName, pokemon: pokemon.pokemon.name, tera: pokemon.member.tera })
+}
+
 function settlePhase(state: BattleState, events: BattleEvent[]) {
   const playerSwitch = availableSwitch(state.player)
   const opponentSwitch = availableSwitch(state.opponent)
@@ -344,7 +354,7 @@ export function chooseOpponentAction(state: BattleState, random: RandomSource = 
   return {
     kind: 'move',
     index: moves[Math.floor(random() * moves.length)] ?? 0,
-    tera: !side.teraUsed && random() < 0.12,
+    tera: !side.roster[side.active].terastallized && random() < 0.12,
   }
 }
 
@@ -389,6 +399,8 @@ export function resolveBattleTurn(
   actions.forEach((action) => action())
   residual(state.player, events)
   residual(state.opponent, events)
+  applyTurnTerastallization(state.player, playerChoice, 'player', events)
+  applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)
   settlePhase(state, events)
   state.turn += 1
   return { state, events }

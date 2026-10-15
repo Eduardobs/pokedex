@@ -33,6 +33,13 @@ export function parseBattleMove(value: unknown): BattleMove {
   const ailment = typeof ailmentName === 'string' && ailmentName !== 'none' ? ailmentName : null
   const metaChance = boundedInteger(meta.ailment_chance, 0, 100) ?? 0
   const effectChance = boundedInteger(data.effect_chance, 0, 100) ?? 0
+  const descriptions = array(data.flavor_text_entries, 200).flatMap((entry) => {
+    const flavor = record(entry)
+    const language = reference(flavor.language)?.name
+    const text = flavor.flavor_text
+    const normalizedText = typeof text === 'string' ? text.replace(/[\n\f]/g, ' ').trim() : ''
+    return language && normalizedText && normalizedText.length <= 1000 ? [{ language, text: normalizedText }] : []
+  })
   return {
     name,
     type: type as BattleType,
@@ -52,6 +59,7 @@ export function parseBattleMove(value: unknown): BattleMove {
       const amount = boundedInteger(change.change, -6, 6)
       return stat && amount ? [{ stat, change: amount }] : []
     }),
+    descriptions,
   }
 }
 

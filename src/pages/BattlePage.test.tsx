@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { STORAGE_KEYS } from '../config/app'
@@ -57,6 +57,7 @@ const testMove = (name: string, type: BattleMove['type'] = 'normal'): BattleMove
   ailment: null,
   ailmentChance: 0,
   statChanges: name === 'growl' ? [{ stat: 'attack', change: -1 }] : [],
+  descriptions: [{ language: 'pt-br', text: `${name} em detalhes.` }],
 })
 
 const battleRoster = (team: Team) =>
@@ -72,6 +73,8 @@ const battleRoster = (team: Team) =>
         abilities: ['run-away'],
         moves: member.moves,
         homeSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
+        showdownFrontSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${index + 1}.gif`,
+        showdownBackSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${index + 1}.gif`,
       },
       [testMove('tackle'), testMove('quick-attack'), testMove('recover'), testMove('growl')],
     ),
@@ -120,17 +123,53 @@ describe('BattlePage lobby', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
     expect(await screen.findByRole('heading', { name: 'O que Pokemon 0 fará?' })).toBeVisible()
     expect(screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]).toHaveAttribute('aria-valuenow')
+    expect(screen.getAllByText('Nº 1')).toHaveLength(2)
+    expect(screen.queryByText('Ataque 0')).not.toBeInTheDocument()
+    const playerSprite = screen
+      .getAllByRole('img', { name: 'Pokemon 0' })
+      .find((image) => image.getAttribute('src')?.includes('/back/1.gif'))
+    expect(playerSprite).toHaveAttribute(
+      'src',
+      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/1.gif',
+    )
+
+    const tackle = screen.getByRole('button', { name: /Tackle/ })
+    fireEvent.mouseOver(tackle)
+    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Poder: 80')
+    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Efetividade: 1×')
+    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('tackle em detalhes.')
 
     fireEvent.click(screen.getByRole('button', { name: 'Terastalizar (Normal)' }))
-    expect(screen.getByRole('button', { name: 'Terastalizar (Normal)' })).toHaveAttribute('aria-pressed', 'true')
+    const teraButton = screen.getByRole('button', { name: 'Terastalizar (Normal)' })
+    expect(teraButton).toHaveAttribute('aria-pressed', 'true')
+    expect(teraButton).toHaveClass('is-selected')
+    expect(teraButton.querySelector('svg')).toBeInTheDocument()
+    fireEvent.click(teraButton)
+    expect(teraButton).toHaveAttribute('aria-pressed', 'false')
+    expect(teraButton).not.toHaveClass('is-selected')
+    expect(teraButton.querySelector('svg')).not.toBeInTheDocument()
+    fireEvent.click(teraButton)
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
-    expect(await screen.findByText(/Terastalizou para o tipo Normal/)).toBeVisible()
+    await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0))
     expect(screen.getAllByText(/usou/).length).toBeGreaterThan(0)
+    expect(screen.queryByRole('button', { name: 'Terastalizar (Normal)' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Trocar Pokémon'))
-    fireEvent.click(screen.getByRole('button', { name: /Pokemon 1/ }))
+    expect(screen.queryByRole('button', { name: /Tackle/ })).not.toBeInTheDocument()
+    const replacement = screen.getByRole('button', { name: /Pokemon 1/ })
+    fireEvent.mouseOver(replacement)
+    const replacementTooltip = within(replacement).getByRole('tooltip')
+    expect(replacementTooltip).toHaveTextContent('Pokemon 1')
+    expect(replacementTooltip).toHaveTextContent('Nv. 100')
+    expect(replacementTooltip).toHaveTextContent('Tipo Tera')
+    expect(within(replacementTooltip).getAllByText('Normal')).toHaveLength(2)
+    expect(replacementTooltip).toHaveTextContent('HP restante')
+    expect(replacementTooltip).toHaveTextContent('Ataque')
+    expect(replacementTooltip).toHaveTextContent('Tackle')
+    fireEvent.click(replacement)
     expect(await screen.findByRole('heading', { name: 'O que Pokemon 1 fará?' })).toBeVisible()
     expect(screen.getByText(/Pokemon 1 entrou em campo/)).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Terastalizar (Normal)' })).toBeVisible()
 
     fireEvent.click(screen.getByRole('button', { name: 'Nova batalha' }))
     expect(screen.getByRole('heading', { name: 'Prepare-se para batalhar' })).toBeVisible()
