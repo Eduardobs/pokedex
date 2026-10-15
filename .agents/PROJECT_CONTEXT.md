@@ -63,6 +63,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Allied and replacement Random Battle tooltips keep all six stats on one row and distinguish increases and decreases from their original values with accessible green and red indicators.
 - Opponent Random Battle tooltips reveal only the level-adjusted possible Speed range.
 - Random Battle uses a move's PokéAPI Effect chance when resolving probabilistic secondary effects.
+- Random Battle resolves combatants' actions sequentially after a configurable presentation delay, announcing each move over its user and completing that combatant's HP and effect presentation before announcing the next action or accepting another choice.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.

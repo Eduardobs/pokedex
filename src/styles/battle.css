@@ -115,6 +115,41 @@
   place-items: center;
   min-height: 180px;
 }
+.battle-move-announcement {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  left: 50%;
+  max-width: calc(100% - 16px);
+  padding: 6px 11px;
+  transform: translate(-50%, 8px);
+  border: 1px solid color-mix(in srgb, var(--battle-blue) 55%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 18%, transparent);
+  color: color-mix(in srgb, var(--battle-blue) 78%, var(--ink));
+  font:
+    800 14px Outfit,
+    sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  animation: battle-move-rise both ease-out;
+  pointer-events: none;
+}
+@keyframes battle-move-rise {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px) scale(0.96);
+  }
+  18%,
+  72% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(1);
+  }
+}
 .battle-sprite-trigger {
   position: relative;
   display: inline-grid;
@@ -553,6 +588,29 @@
   color: var(--muted);
   font-size: 13px;
 }
+.battle-log-event strong {
+  color: inherit;
+  font-weight: 800;
+}
+.battle-log-event.is-damage {
+  color: #b72f2a;
+}
+.battle-log-event.is-healing {
+  color: #187844;
+}
+.battle-log-event.is-move {
+  color: color-mix(in srgb, var(--battle-blue) 78%, var(--ink));
+}
+.battle-log-event.is-effect {
+  color: #8a5a00;
+}
+.battle-log-event.is-important {
+  color: var(--ink);
+  font-weight: 750;
+}
+.battle-resolving {
+  font-style: italic;
+}
 .battle-actions,
 .battle-result {
   position: relative;
@@ -895,12 +953,25 @@
   .battle-health-track span {
     transition: none;
   }
+  .battle-move-announcement {
+    transform: translate(-50%, 0);
+    animation: none;
+  }
 }
 :root[data-theme='dark'] .battle-stat-modifiers .raised {
   color: #6ed593;
 }
 :root[data-theme='dark'] .battle-stat-modifiers .lowered {
   color: #ff928b;
+}
+:root[data-theme='dark'] .battle-log-event.is-damage {
+  color: #ff928b;
+}
+:root[data-theme='dark'] .battle-log-event.is-healing {
+  color: #6ed593;
+}
+:root[data-theme='dark'] .battle-log-event.is-effect {
+  color: #f0bd68;
 }
 :root[data-theme='dark'] .battle-tooltip-stats > span.is-increased,
 :root[data-theme='dark'] .battle-switch-stats > span.is-increased {

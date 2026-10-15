@@ -6,7 +6,7 @@ import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
-import { STORAGE_KEYS } from '../config/app'
+import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
 import { formatDecimal, formatNumber, localizedName, localizedText, prettyName } from '../lib/api'
 import { loadBattleRoster } from '../lib/battle-data'
 import {
@@ -16,7 +16,7 @@ import {
   currentBattleStats,
   isBattleReadyTeam,
   possibleBattleStats,
-  resolveBattleTurn,
+  resolveBattleTurnSteps,
   type BattleChoice,
   type BattleEvent,
   type BattlePokemon,
@@ -30,6 +30,36 @@ import { validTeams, type Stats, type Team } from '../lib/teams'
 import type { PokemonGender } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
+type ActiveMove = { side: 'player' | 'opponent'; name: string }
+
+function waitForBattleDelay(duration: number) {
+  return new Promise<void>((resolve) => window.setTimeout(resolve, duration))
+}
+
+function useAnimatedHealth(target: number) {
+  const [displayed, setDisplayed] = useState(target)
+  const displayedRef = useRef(target)
+  useEffect(() => {
+    const start = displayedRef.current
+    if (start === target || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      displayedRef.current = target
+      setDisplayed(target)
+      return
+    }
+    const startedAt = performance.now()
+    let frame = 0
+    const animate = (now: number) => {
+      const progress = Math.min(1, (now - startedAt) / BATTLE_TIMING.hpTransitionMs)
+      const next = Math.round(start + (target - start) * progress)
+      displayedRef.current = next
+      setDisplayed(next)
+      if (progress < 1) frame = window.requestAnimationFrame(animate)
+    }
+    frame = window.requestAnimationFrame(animate)
+    return () => window.cancelAnimationFrame(frame)
+  }, [target])
+  return displayed
+}
 
 function GenderIcon({ gender }: { gender: PokemonGender }) {
   const { t } = useLanguage()
@@ -77,6 +107,7 @@ function resetBattleTooltip(tooltipId: string) {
 
 function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
   const { language, t } = useLanguage()
+  const displayedHp = useAnimatedHealth(pokemon.hp)
   const percent = Math.max(0, Math.round((pokemon.hp / pokemon.maxHp) * 100))
   const stages = Object.entries(pokemon.stages)
     .filter(([, value]) => value !== 0)
@@ -101,12 +132,12 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
         aria-valuemax={pokemon.maxHp}
         aria-valuenow={pokemon.hp}
       >
-        <span style={{ width: `${percent}%` }} />
+        <span style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }} />
       </div>
       <div className="battle-health-meta">
         {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
         <span>
-          {formatNumber(pokemon.hp, language)} / {formatNumber(pokemon.maxHp, language)}
+          {formatNumber(displayedHp, language)} / {formatNumber(pokemon.maxHp, language)}
         </span>
       </div>
       <div className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
@@ -135,10 +166,12 @@ function ActivePokemon({
   side,
   opponent = false,
   teraControl,
+  activeMove,
 }: {
   side: BattleSide
   opponent?: boolean
   teraControl?: ReactNode
+  activeMove?: string
 }) {
   const tooltipId = useId()
   const { t } = useLanguage()
@@ -154,10 +187,19 @@ function ActivePokemon({
   return (
     <article className={`battle-active${opponent ? ' opponent' : ' player'}`}>
       <div className="battle-active-data">
-        <HealthBar pokemon={pokemon} />
+        <HealthBar key={pokemon.member.id} pokemon={pokemon} />
         {teraControl}
       </div>
       <div className="battle-pokemon-visual">
+        {activeMove && (
+          <span
+            className="battle-move-announcement"
+            style={{ animationDuration: `${BATTLE_TIMING.actionDelayMs}ms` }}
+            role="status"
+          >
+            {prettyName(activeMove)}
+          </span>
+        )}
         <span
           className="battle-sprite-trigger"
           tabIndex={0}
@@ -207,10 +249,12 @@ function BattleMoveButton({
   move,
   opponent,
   onChoose,
+  disabled = false,
 }: {
   move: BattlePokemon['moves'][number]
   opponent: BattlePokemon
   onChoose: () => void
+  disabled?: boolean
 }) {
   const tooltipId = useId()
   const { apiLanguage, language, t } = useLanguage()
@@ -229,7 +273,7 @@ function BattleMoveButton({
   return (
     <button
       className="battle-move-button"
-      disabled={move.pp <= 0}
+      disabled={disabled || move.pp <= 0}
       aria-label={prettyName(move.data.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
@@ -472,7 +516,15 @@ function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: 
   )
 }
 
-function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onChoose: () => void }) {
+function BattleSwitchButton({
+  pokemon,
+  onChoose,
+  disabled = false,
+}: {
+  pokemon: BattlePokemon
+  onChoose: () => void
+  disabled?: boolean
+}) {
   const tooltipId = useId()
   const { language, t } = useLanguage()
   const hpPercentage = Math.round((pokemon.hp / pokemon.maxHp) * 100)
@@ -480,6 +532,7 @@ function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onC
   return (
     <button
       className="battle-switch-button"
+      disabled={disabled}
       aria-label={prettyName(pokemon.pokemon.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
@@ -614,6 +667,38 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
   }
 }
 
+function BattleLogEvent({ event }: { event: BattleEvent }) {
+  const { t } = useLanguage()
+  const text = eventText(event, t)
+  const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
+  const nameIndex = event.type === 'move' && name ? text.indexOf(name) : -1
+  const tone =
+    event.type === 'damage' || event.type === 'hazardDamage' || event.type === 'statusDamage'
+      ? 'damage'
+      : event.type === 'heal'
+        ? 'healing'
+        : event.type === 'move'
+          ? 'move'
+          : event.type === 'status' || event.type === 'stage'
+            ? 'effect'
+            : event.type === 'faint' || event.type === 'win'
+              ? 'important'
+              : 'neutral'
+  return (
+    <p className={`battle-log-event is-${tone}`}>
+      {nameIndex >= 0 ? (
+        <>
+          {text.slice(0, nameIndex)}
+          <strong>{name}</strong>
+          {text.slice(nameIndex + name.length)}
+        </>
+      ) : (
+        text
+      )}
+    </p>
+  )
+}
+
 export function BattlePage() {
   const { t } = useLanguage()
   const teams = readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []).filter(isBattleReadyTeam)
@@ -623,9 +708,18 @@ export function BattlePage() {
   const [events, setEvents] = useState<BattleEvent[]>([])
   const [teraSelected, setTeraSelected] = useState(false)
   const [showSwitches, setShowSwitches] = useState(false)
+  const [resolving, setResolving] = useState(false)
+  const [activeMove, setActiveMove] = useState<ActiveMove | null>(null)
   const [trainerSprites, setTrainerSprites] = useState(randomTrainerSprites)
   const requestRef = useRef<AbortController | null>(null)
-  useEffect(() => () => requestRef.current?.abort(), [])
+  const sequenceRef = useRef(0)
+  useEffect(
+    () => () => {
+      requestRef.current?.abort()
+      sequenceRef.current += 1
+    },
+    [],
+  )
 
   const startBattle = async () => {
     const team = teams.find((entry) => entry.id === selectedTeam)
@@ -656,20 +750,32 @@ export function BattlePage() {
     }
   }
 
-  const play = (choice: BattleChoice) => {
-    if (!battle || battle.phase === 'won' || battle.phase === 'lost') return
+  const play = async (choice: BattleChoice) => {
+    if (!battle || resolving || battle.phase === 'won' || battle.phase === 'lost') return
     if (choice.kind === 'switch') setShowSwitches(false)
-    let result = resolveBattleTurn(battle, choice, chooseOpponentAction(battle))
-    if (result.state.phase === 'opponent-switch') {
-      const automatic = resolveBattleTurn(result.state, choice, chooseOpponentAction(result.state))
-      result = {
-        state: automatic.state,
-        events: [...result.events, ...automatic.events.filter((event) => event.type !== 'turn')],
+    const sequence = ++sequenceRef.current
+    setResolving(true)
+    let steps = resolveBattleTurnSteps(battle, choice, chooseOpponentAction(battle))
+    const lastState = steps.at(-1)?.state
+    if (lastState?.phase === 'opponent-switch') {
+      const automatic = resolveBattleTurnSteps(lastState, choice, chooseOpponentAction(lastState))
+      if (automatic.length) {
+        automatic[0] = { ...automatic[0], events: automatic[0].events.filter((event) => event.type !== 'turn') }
       }
+      steps = [...steps, ...automatic]
     }
-    setBattle(result.state)
-    setEvents((current) => [...current, ...result.events])
+    for (const step of steps) {
+      setActiveMove(step.action?.move ? { side: step.action.side, name: step.action.move } : null)
+      if (step.action) await waitForBattleDelay(BATTLE_TIMING.actionDelayMs)
+      if (sequenceRef.current !== sequence) return
+      setActiveMove(null)
+      setBattle(step.state)
+      setEvents((current) => [...current, ...step.events])
+      await waitForBattleDelay(BATTLE_TIMING.resultDisplayMs)
+      if (sequenceRef.current !== sequence) return
+    }
     setTeraSelected(false)
+    setResolving(false)
   }
 
   const player = battle?.player.roster[battle.player.active]
@@ -690,11 +796,14 @@ export function BattlePage() {
             <button
               className="button secondary"
               onClick={() => {
+                sequenceRef.current += 1
                 setScreen('idle')
                 setBattle(null)
                 setEvents([])
                 setTeraSelected(false)
                 setShowSwitches(false)
+                setResolving(false)
+                setActiveMove(null)
               }}
             >
               <RotateCcw size={18} aria-hidden="true" /> {t('battle.newBattle')}
@@ -760,9 +869,13 @@ export function BattlePage() {
               <TrainerPanel side={battle.player} opponent={false} sprite={trainerSprites.player} />
               <TrainerPanel side={battle.opponent} opponent sprite={trainerSprites.opponent} />
             </div>
-            <div className="battle-field" aria-label={t('battle.field')}>
+            <div className="battle-field" aria-label={t('battle.field')} aria-busy={resolving}>
               <div className="battle-side opponent">
-                <ActivePokemon side={battle.opponent} opponent />
+                <ActivePokemon
+                  side={battle.opponent}
+                  opponent
+                  activeMove={activeMove?.side === 'opponent' ? activeMove.name : undefined}
+                />
               </div>
               <div className="battle-versus" aria-hidden="true">
                 <Swords />
@@ -770,12 +883,14 @@ export function BattlePage() {
               <div className="battle-side player">
                 <ActivePokemon
                   side={battle.player}
+                  activeMove={activeMove?.side === 'player' ? activeMove.name : undefined}
                   teraControl={
                     !player.terastallized && (
                       <div className="battle-tera-control">
                         <button
                           className={`button secondary${teraSelected ? ' is-selected' : ''}`}
                           aria-pressed={teraSelected}
+                          disabled={resolving}
                           onClick={() => setTeraSelected((selected) => !selected)}
                         >
                           {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
@@ -814,12 +929,17 @@ export function BattlePage() {
                     <BattleSwitchButton
                       key={pokemon.member.id}
                       pokemon={pokemon}
-                      onChoose={() => play({ kind: 'switch', index })}
+                      disabled={resolving}
+                      onChoose={() => void play({ kind: 'switch', index })}
                     />
                   ))}
                 </div>
                 {battle.phase !== 'player-switch' && (
-                  <button className="button secondary battle-cancel-switch" onClick={() => setShowSwitches(false)}>
+                  <button
+                    className="button secondary battle-cancel-switch"
+                    disabled={resolving}
+                    onClick={() => setShowSwitches(false)}
+                  >
                     {t('battle.cancelSwitch')}
                   </button>
                 )}
@@ -833,12 +953,13 @@ export function BattlePage() {
                       key={`${move.data.name}-${index}`}
                       move={move}
                       opponent={battle.opponent.roster[battle.opponent.active]}
-                      onChoose={() => play({ kind: 'move', index, tera: teraSelected })}
+                      disabled={resolving}
+                      onChoose={() => void play({ kind: 'move', index, tera: teraSelected })}
                     />
                   ))}
                 </div>
                 <div className="battle-secondary-actions">
-                  <button className="button secondary" onClick={() => setShowSwitches(true)}>
+                  <button className="button secondary" disabled={resolving} onClick={() => setShowSwitches(true)}>
                     {t('battle.switch')}
                   </button>
                 </div>
@@ -847,13 +968,14 @@ export function BattlePage() {
 
             <div className="battle-log" aria-label={t('battle.log')} aria-live="polite" aria-atomic="false">
               <strong>{t('battle.turn', { turn: battle.turn })}</strong>
-              {events.length === 0 ? (
+              {resolving && <p className="battle-resolving">{t('battle.resolving')}</p>}
+              {events.length === 0 && !resolving ? (
                 <p>{t('battle.ready')}</p>
               ) : (
                 events
                   .slice(-8)
                   .map((event, index) => (
-                    <p key={`${events.length - 8 + index}-${event.type}`}>{eventText(event, t)}</p>
+                    <BattleLogEvent key={`${events.length - 8 + index}-${event.type}`} event={event} />
                   ))
               )}
             </div>

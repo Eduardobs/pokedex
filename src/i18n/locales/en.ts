@@ -19,6 +19,7 @@ export const en = {
   'battle.log': 'Battle log',
   'battle.turn': 'Turn {turn}',
   'battle.ready': 'Choose a move, switch Pokémon, or Terastallize.',
+  'battle.resolving': 'Resolving turn actions…',
   'battle.level': 'Lv. {level}',
   'battle.health': '{name} health',
   'battle.status.burn': 'Burn',

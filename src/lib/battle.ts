@@ -73,6 +73,11 @@ export type BattleSide = {
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
 export type BattleState = { turn: number; player: BattleSide; opponent: BattleSide; phase: BattlePhase }
 export type BattleChoice = { kind: 'move'; index: number; tera?: boolean } | { kind: 'switch'; index: number }
+export type BattleTurnStep = {
+  state: BattleState
+  events: BattleEvent[]
+  action: { side: 'player' | 'opponent'; move: string | null } | null
+}
 export type BattleEvent =
   | { type: 'turn'; turn: number }
   | { type: 'move'; side: 'player' | 'opponent'; pokemon: string; move: string }
@@ -631,25 +636,61 @@ export function chooseOpponentAction(state: BattleState, random: RandomSource = 
   }
 }
 
-export function resolveBattleTurn(
+export function resolveBattleTurnSteps(
   current: BattleState,
   playerChoice: BattleChoice,
   opponentChoice: BattleChoice,
   random: RandomSource = Math.random,
-) {
+): BattleTurnStep[] {
   const state = cloneState(current)
   const events: BattleEvent[] = [{ type: 'turn', turn: state.turn }]
+  const steps: BattleTurnStep[] = []
+  const performStep = (own: BattleSide, foe: BattleSide, choice: BattleChoice, side: 'player' | 'opponent') => {
+    const eventStart = events.length
+    const move =
+      choice.kind === 'move' && own.roster[own.active]?.hp > 0 && foe.roster[foe.active]?.hp > 0
+        ? (own.roster[own.active].moves[choice.index]?.data.name ?? null)
+        : null
+    performChoice(own, foe, choice, side, random, events)
+    if (events.length > eventStart || move) {
+      steps.push({ state: cloneState(state), events: events.slice(eventStart), action: { side, move } })
+    }
+  }
   if (state.phase === 'player-switch') {
-    performChoice(state.player, state.opponent, playerChoice, 'player', random, events)
+    performStep(state.player, state.opponent, playerChoice, 'player')
     if (state.opponent.roster[state.opponent.active].hp === 0)
-      performChoice(state.opponent, state.player, opponentChoice, 'opponent', random, events)
+      performStep(state.opponent, state.player, opponentChoice, 'opponent')
+    const finalEventStart = events.length
     settlePhase(state, events)
-    return { state, events }
+    const finalEvents = events.slice(finalEventStart)
+    if (steps.length) {
+      steps[steps.length - 1] = {
+        ...steps[steps.length - 1],
+        state: cloneState(state),
+        events: [...steps[steps.length - 1].events, ...finalEvents],
+      }
+    } else {
+      steps.push({ state: cloneState(state), events: events.slice(1), action: null })
+    }
+    if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
+    return steps
   }
   if (state.phase === 'opponent-switch') {
-    performChoice(state.opponent, state.player, opponentChoice, 'opponent', random, events)
+    performStep(state.opponent, state.player, opponentChoice, 'opponent')
+    const finalEventStart = events.length
     settlePhase(state, events)
-    return { state, events }
+    const finalEvents = events.slice(finalEventStart)
+    if (steps.length) {
+      steps[steps.length - 1] = {
+        ...steps[steps.length - 1],
+        state: cloneState(state),
+        events: [...steps[steps.length - 1].events, ...finalEvents],
+      }
+    } else {
+      steps.push({ state: cloneState(state), events: events.slice(1), action: null })
+    }
+    if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
+    return steps
   }
 
   const playerPriority = choicePriority(state.player, playerChoice)
@@ -662,19 +703,45 @@ export function resolveBattleTurn(
       (playerSpeed > opponentSpeed || (playerSpeed === opponentSpeed && random() < 0.5)))
   const actions = playerFirst
     ? [
-        () => performChoice(state.player, state.opponent, playerChoice, 'player', random, events),
-        () => performChoice(state.opponent, state.player, opponentChoice, 'opponent', random, events),
+        () => performStep(state.player, state.opponent, playerChoice, 'player'),
+        () => performStep(state.opponent, state.player, opponentChoice, 'opponent'),
       ]
     : [
-        () => performChoice(state.opponent, state.player, opponentChoice, 'opponent', random, events),
-        () => performChoice(state.player, state.opponent, playerChoice, 'player', random, events),
+        () => performStep(state.opponent, state.player, opponentChoice, 'opponent'),
+        () => performStep(state.player, state.opponent, playerChoice, 'player'),
       ]
   actions.forEach((action) => action())
+  const finalEventStart = events.length
   residual(state.player, events)
   residual(state.opponent, events)
   applyTurnTerastallization(state.player, playerChoice, 'player', events)
   applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)
   settlePhase(state, events)
   state.turn += 1
-  return { state, events }
+  const finalEvents = events.slice(finalEventStart)
+  if (steps.length) {
+    steps[steps.length - 1] = {
+      ...steps[steps.length - 1],
+      state: cloneState(state),
+      events: [...steps[steps.length - 1].events, ...finalEvents],
+    }
+  } else {
+    steps.push({ state: cloneState(state), events: events.slice(1), action: null })
+  }
+  if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
+  return steps
+}
+
+export function resolveBattleTurn(
+  current: BattleState,
+  playerChoice: BattleChoice,
+  opponentChoice: BattleChoice,
+  random: RandomSource = Math.random,
+) {
+  const steps = resolveBattleTurnSteps(current, playerChoice, opponentChoice, random)
+  const final = steps.at(-1)
+  return {
+    state: final?.state ?? cloneState(current),
+    events: steps.flatMap((step) => step.events),
+  }
 }

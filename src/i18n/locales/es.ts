@@ -18,6 +18,7 @@ export const es = {
   'battle.log': 'Registro del combate',
   'battle.turn': 'Turno {turn}',
   'battle.ready': 'Elige un movimiento, cambia de Pokémon o Teracristaliza.',
+  'battle.resolving': 'Ejecutando las acciones del turno…',
   'battle.level': 'Nv. {level}',
   'battle.health': 'Puntos de salud de {name}',
   'battle.status.burn': 'Quemadura',

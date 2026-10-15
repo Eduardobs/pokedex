@@ -270,14 +270,37 @@ describe('BattlePage lobby', () => {
     expect(teraButton).not.toHaveClass('is-selected')
     expect(teraButton.querySelector('.lucide-check')).not.toBeInTheDocument()
     fireEvent.click(teraButton)
+    const opponentHealth = screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]
+    const opponentHealthBefore = Number(opponentHealth.getAttribute('aria-valuenow'))
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
-    await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0))
+    expect(screen.getByText('Tackle', { selector: '.battle-move-announcement' })).toBeVisible()
+    expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'true')
+    expect(screen.getByRole('button', { name: /Tackle/ })).toBeDisabled()
+    expect(screen.queryByText(/usou/)).not.toBeInTheDocument()
+    await waitFor(
+      () => expect(Number(opponentHealth.getAttribute('aria-valuenow'))).toBeLessThan(opponentHealthBefore),
+      { timeout: 1_200 },
+    )
+    expect(screen.queryByText('Growl', { selector: '.battle-move-announcement' })).not.toBeInTheDocument()
+    const damageLog = screen.getByText(/perdeu \d+ HP/)
+    expect(damageLog).toHaveClass('is-damage')
+    expect(damageLog).toHaveTextContent(/Pokemon 0 perdeu \d+ HP/)
+    expect(await screen.findByText('Growl', { selector: '.battle-move-announcement' }, { timeout: 800 })).toBeVisible()
+    await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0), {
+      timeout: 2_500,
+    })
+    await waitFor(() => expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'false'), {
+      timeout: 800,
+    })
     const activeTeraType = playerInformationCard!.querySelector<HTMLElement>('.battle-active-types.is-tera')
     expect(activeTeraType).not.toBeNull()
     expect(within(activeTeraType!).getByText('Tipo Tera')).toBeVisible()
     expect(within(activeTeraType!).getByLabelText('Normal')).toBeVisible()
     expect(activeTeraType!.querySelector('.lucide-sparkles')).toBeInTheDocument()
     expect(screen.getAllByText(/usou/).length).toBeGreaterThan(0)
+    const moveLog = screen.getAllByText(/usou/)[0].closest('.battle-log-event')
+    expect(moveLog).toHaveClass('is-move')
+    expect(moveLog?.querySelector('strong')).toHaveTextContent('Pokemon 0')
     const modifiedAttack = within(activeTooltips[1]).getByText('Atk').parentElement
     expect(modifiedAttack).toHaveTextContent('157')
     expect(modifiedAttack).toHaveClass('is-decreased')

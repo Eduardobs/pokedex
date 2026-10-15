@@ -28,3 +28,9 @@ export const FAVORITES_LIMIT = 200
 
 export const TEAM_LIMITS = { teams: 100, members: 6 } as const
 export const TEAM_IMPORT_MAX_BYTES = 100_000
+
+export const BATTLE_TIMING = {
+  actionDelayMs: 800,
+  hpTransitionMs: 420,
+  resultDisplayMs: 420,
+} as const

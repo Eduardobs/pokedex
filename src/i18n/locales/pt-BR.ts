@@ -19,6 +19,7 @@ export const ptBR = {
   'battle.log': 'Registro da batalha',
   'battle.turn': 'Turno {turn}',
   'battle.ready': 'Escolha um golpe, troque de Pokémon ou Terastalize.',
+  'battle.resolving': 'Executando as ações do turno…',
   'battle.level': 'Nv. {level}',
   'battle.health': 'Pontos de vida de {name}',
   'battle.status.burn': 'Queimadura',
