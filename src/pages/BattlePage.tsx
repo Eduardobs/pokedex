@@ -269,6 +269,15 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
           : event.effectiveness < 1
             ? t('battle.log.notEffective', { name, damage: event.amount })
             : t('battle.log.damage', { name, damage: event.amount })
+    case 'hazardSet':
+      return t('battle.log.hazardSet', {
+        hazard: prettyName(event.hazard),
+        side: t(`battle.log.side.${event.side}`),
+      })
+    case 'hazardDamage':
+      return t('battle.log.hazardDamage', { name, hazard: prettyName(event.hazard), damage: event.amount })
+    case 'hazardsCleared':
+      return t('battle.log.hazardsCleared', { side: t(`battle.log.side.${event.side}`) })
     case 'heal':
       return t('battle.log.heal', { name, amount: event.amount })
     case 'status':

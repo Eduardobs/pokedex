@@ -38,7 +38,19 @@ export type BattlePokemon = {
   sleepTurns: number
   terastallized: boolean
 }
-export type BattleSide = { team: Team; roster: BattlePokemon[]; active: number }
+export type BattleHazards = {
+  stealthRock: boolean
+  spikes: number
+  toxicSpikes: number
+  stickyWeb: boolean
+}
+export type BattleSide = {
+  team: Team
+  roster: BattlePokemon[]
+  active: number
+  hazards: BattleHazards
+  switchRequested: boolean
+}
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
 export type BattleState = { turn: number; player: BattleSide; opponent: BattleSide; phase: BattlePhase }
 export type BattleChoice = { kind: 'move'; index: number; tera?: boolean } | { kind: 'switch'; index: number }
@@ -50,6 +62,9 @@ export type BattleEvent =
   | { type: 'miss'; pokemon: string }
   | { type: 'immune'; pokemon: string }
   | { type: 'damage'; pokemon: string; amount: number; effectiveness: number; critical: boolean }
+  | { type: 'hazardSet'; side: 'player' | 'opponent'; hazard: BattleHazard }
+  | { type: 'hazardDamage'; pokemon: string; hazard: BattleHazard; amount: number }
+  | { type: 'hazardsCleared'; side: 'player' | 'opponent' }
   | { type: 'heal'; pokemon: string; amount: number }
   | { type: 'status'; pokemon: string; status: Exclude<BattleStatus, null> }
   | { type: 'statusDamage'; pokemon: string; status: 'burn' | 'poison'; amount: number }
@@ -61,7 +76,11 @@ export type BattleEvent =
   | { type: 'win'; side: 'player' | 'opponent' }
 
 type RandomSource = () => number
+type BattleHazard = 'stealth-rock' | 'spikes' | 'toxic-spikes' | 'sticky-web'
+type MoveOutcome = { hit: boolean; succeeded: boolean } | null
+
 const emptyStages = (): BattleStages => ({ attack: 0, defense: 0, specialAttack: 0, specialDefense: 0, speed: 0 })
+const emptyHazards = (): BattleHazards => ({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
 const stageMultiplier = (stage: number) => (stage >= 0 ? (2 + stage) / 2 : 2 / (2 - stage))
 const moveTypes = new Set<BattleType>([
   'normal',
@@ -83,6 +102,26 @@ const moveTypes = new Set<BattleType>([
   'steel',
   'fairy',
 ])
+const hazardMoves: Partial<Record<string, BattleHazard>> = {
+  'stealth-rock': 'stealth-rock',
+  spikes: 'spikes',
+  'toxic-spikes': 'toxic-spikes',
+  'sticky-web': 'sticky-web',
+  'stone-axe': 'stealth-rock',
+  'ceaseless-edge': 'spikes',
+}
+const afterHitHazardMoves = new Set(['stone-axe', 'ceaseless-edge'])
+const pivotMoves = new Set([
+  'u-turn',
+  'volt-switch',
+  'flip-turn',
+  'parting-shot',
+  'teleport',
+  'chilly-reception',
+  'baton-pass',
+])
+const forceSwitchMoves = new Set(['circle-throw', 'dragon-tail', 'roar', 'whirlwind'])
+const ownHazardRemovalMoves = new Set(['rapid-spin', 'mortal-spin', 'tidy-up'])
 
 export function isBattleReadyTeam(team: Team) {
   return (
@@ -123,8 +162,8 @@ export function createBattleState(
     throw new Error('Battle requires two complete teams.')
   return {
     turn: 1,
-    player: { team: playerTeam, roster: player, active: 0 },
-    opponent: { team: opponentTeam, roster: opponent, active: 0 },
+    player: { team: playerTeam, roster: player, active: 0, hazards: emptyHazards(), switchRequested: false },
+    opponent: { team: opponentTeam, roster: opponent, active: 0, hazards: emptyHazards(), switchRequested: false },
     phase: 'choice',
   }
 }
@@ -132,6 +171,7 @@ export function createBattleState(
 function cloneState(state: BattleState): BattleState {
   const cloneSide = (side: BattleSide): BattleSide => ({
     ...side,
+    hazards: { ...side.hazards },
     roster: side.roster.map((pokemon) => ({
       ...pokemon,
       member: { ...pokemon.member },
@@ -149,8 +189,79 @@ function effectiveTypes(pokemon: BattlePokemon) {
   return pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types
 }
 
+function isGrounded(pokemon: BattlePokemon) {
+  return !effectiveTypes(pokemon).includes('flying')
+}
+
 export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemon) {
   return effectiveTypes(defender).reduce((value, type) => value * getDamageMultiplier(move.type, type as BattleType), 1)
+}
+
+function addHazard(side: BattleSide, hazard: BattleHazard) {
+  switch (hazard) {
+    case 'stealth-rock':
+      if (side.hazards.stealthRock) return false
+      side.hazards.stealthRock = true
+      return true
+    case 'spikes':
+      if (side.hazards.spikes >= 3) return false
+      side.hazards.spikes += 1
+      return true
+    case 'toxic-spikes':
+      if (side.hazards.toxicSpikes >= 2) return false
+      side.hazards.toxicSpikes += 1
+      return true
+    case 'sticky-web':
+      if (side.hazards.stickyWeb) return false
+      side.hazards.stickyWeb = true
+      return true
+  }
+}
+
+function clearHazards(side: BattleSide) {
+  const cleared =
+    side.hazards.stealthRock || side.hazards.spikes > 0 || side.hazards.toxicSpikes > 0 || side.hazards.stickyWeb
+  side.hazards = emptyHazards()
+  return cleared
+}
+
+function applyEntryHazards(side: BattleSide, pokemon: BattlePokemon, events: BattleEvent[]) {
+  const damage = (hazard: BattleHazard, amount: number) => {
+    if (amount <= 0 || pokemon.hp <= 0) return
+    const applied = Math.min(pokemon.hp, amount)
+    pokemon.hp -= applied
+    events.push({ type: 'hazardDamage', pokemon: pokemon.pokemon.name, hazard, amount: applied })
+  }
+  if (side.hazards.stealthRock) {
+    const effectiveness = effectiveTypes(pokemon).reduce(
+      (value, type) => value * getDamageMultiplier('rock', type as BattleType),
+      1,
+    )
+    damage('stealth-rock', Math.max(1, Math.floor((pokemon.maxHp * effectiveness) / 8)))
+  }
+  if (side.hazards.spikes > 0 && isGrounded(pokemon)) {
+    const fractions = [0, 8, 6, 4]
+    damage('spikes', Math.max(1, Math.floor(pokemon.maxHp / fractions[side.hazards.spikes])))
+  }
+  if (pokemon.hp <= 0) return
+  if (side.hazards.toxicSpikes > 0 && isGrounded(pokemon)) {
+    if (effectiveTypes(pokemon).includes('poison')) side.hazards.toxicSpikes = 0
+    else if (!effectiveTypes(pokemon).includes('steel') && !pokemon.status) {
+      pokemon.status = 'poison'
+      events.push({ type: 'status', pokemon: pokemon.pokemon.name, status: 'poison' })
+    }
+  }
+  if (side.hazards.stickyWeb && isGrounded(pokemon)) {
+    const previous = pokemon.stages.speed
+    pokemon.stages.speed = Math.max(-6, previous - 1)
+    if (pokemon.stages.speed !== previous)
+      events.push({
+        type: 'stage',
+        pokemon: pokemon.pokemon.name,
+        stat: 'speed',
+        change: pokemon.stages.speed - previous,
+      })
+  }
 }
 
 function speed(pokemon: BattlePokemon) {
@@ -181,16 +292,16 @@ function applyMove(
   moveSlot: number,
   random: RandomSource,
   events: BattleEvent[],
-) {
+): MoveOutcome {
   const slot = attacker.moves[moveSlot]
-  if (!slot || slot.pp <= 0 || attacker.hp <= 0 || defender.hp <= 0) return
+  if (!slot || slot.pp <= 0 || attacker.hp <= 0 || defender.hp <= 0) return null
   slot.pp -= 1
   const move = slot.data
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
-  if (!canAct(attacker, random, events)) return
+  if (!canAct(attacker, random, events)) return { hit: false, succeeded: false }
   if (move.accuracy !== null && random() * 100 >= move.accuracy) {
     events.push({ type: 'miss', pokemon: defender.pokemon.name })
-    return
+    return { hit: false, succeeded: false }
   }
 
   let succeeded = false
@@ -198,7 +309,7 @@ function applyMove(
     const effectiveness = battleMoveEffectiveness(move, defender)
     if (effectiveness === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
-      return
+      return { hit: false, succeeded: false }
     }
     const physical = move.damageClass === 'physical'
     const attack =
@@ -255,16 +366,17 @@ function applyMove(
     }
   }
 
-  if (move.ailment && !defender.status && defender.hp > 0 && random() * 100 < move.ailmentChance) {
+  const statusTarget = selfTarget ? attacker : defender
+  if (move.ailment && !statusTarget.status && statusTarget.hp > 0 && random() * 100 < move.ailmentChance) {
     const status = ({ burn: 'burn', paralysis: 'paralysis', poison: 'poison', sleep: 'sleep' } as const)[move.ailment]
     if (status) {
-      defender.status = status
-      if (status === 'sleep') defender.sleepTurns = 1 + Math.floor(random() * 3)
-      events.push({ type: 'status', pokemon: defender.pokemon.name, status })
+      statusTarget.status = status
+      if (status === 'sleep') statusTarget.sleepTurns = 1 + Math.floor(random() * 3)
+      events.push({ type: 'status', pokemon: statusTarget.pokemon.name, status })
       succeeded = true
     }
   }
-  if (!succeeded) events.push({ type: 'failed', pokemon: attacker.pokemon.name })
+  return { hit: true, succeeded }
 }
 
 function performChoice(
@@ -281,18 +393,57 @@ function performChoice(
     own.roster[own.active].stages = emptyStages()
     own.active = choice.index
     replacement.stages = emptyStages()
+    own.switchRequested = false
     events.push({ type: 'switch', side, pokemon: replacement.pokemon.name })
+    applyEntryHazards(own, replacement, events)
+    if (replacement.hp === 0) events.push({ type: 'faint', pokemon: replacement.pokemon.name })
     return
   }
   const attacker = own.roster[own.active]
   const defender = foe.roster[foe.active]
   if (!attacker || !defender || attacker.hp <= 0) return
   const start = events.length
-  applyMove(attacker, defender, choice.index, random, events)
+  const outcome = applyMove(attacker, defender, choice.index, random, events)
   for (let index = start; index < events.length; index += 1) {
     const event = events[index]
     if (event.type === 'move') event.side = side
   }
+  if (!outcome) return
+  let succeeded = outcome.succeeded
+  const move = attacker.moves[choice.index]?.data
+  if (outcome.hit && move) {
+    const hazard = hazardMoves[move.name]
+    if (hazard && (!afterHitHazardMoves.has(move.name) || outcome.succeeded) && addHazard(foe, hazard)) {
+      events.push({ type: 'hazardSet', side: side === 'player' ? 'opponent' : 'player', hazard })
+      succeeded = true
+    }
+    if (ownHazardRemovalMoves.has(move.name) && clearHazards(own)) {
+      events.push({ type: 'hazardsCleared', side })
+      succeeded = true
+    }
+    if (move.name === 'defog') {
+      const clearedOwn = clearHazards(own)
+      const clearedFoe = clearHazards(foe)
+      if (clearedOwn) events.push({ type: 'hazardsCleared', side })
+      if (clearedFoe) events.push({ type: 'hazardsCleared', side: side === 'player' ? 'opponent' : 'player' })
+      succeeded ||= clearedOwn || clearedFoe
+    }
+    if (move.name === 'court-change') {
+      const hazards = own.hazards
+      own.hazards = foe.hazards
+      foe.hazards = hazards
+      succeeded = true
+    }
+    if (pivotMoves.has(move.name) && attacker.hp > 0 && availableSwitch(own) >= 0) {
+      own.switchRequested = true
+      succeeded = true
+    }
+    if (forceSwitchMoves.has(move.name) && defender.hp > 0 && availableSwitch(foe) >= 0) {
+      foe.switchRequested = true
+      succeeded = true
+    }
+  }
+  if (!succeeded && outcome.hit) events.push({ type: 'failed', pokemon: attacker.pokemon.name })
   if (defender.hp === 0 && !events.some((event, index) => index >= start && event.type === 'faint'))
     events.push({ type: 'faint', pokemon: defender.pokemon.name })
 }
@@ -333,14 +484,16 @@ function settlePhase(state: BattleState, events: BattleEvent[]) {
   const opponentSwitch = availableSwitch(state.opponent)
   const playerFainted = state.player.roster[state.player.active].hp === 0
   const opponentFainted = state.opponent.roster[state.opponent.active].hp === 0
+  if (!playerFainted && playerSwitch < 0) state.player.switchRequested = false
+  if (!opponentFainted && opponentSwitch < 0) state.opponent.switchRequested = false
   if (playerFainted && playerSwitch < 0) {
     state.phase = 'lost'
     events.push({ type: 'win', side: 'opponent' })
   } else if (opponentFainted && opponentSwitch < 0) {
     state.phase = 'won'
     events.push({ type: 'win', side: 'player' })
-  } else if (playerFainted) state.phase = 'player-switch'
-  else if (opponentFainted) state.phase = 'opponent-switch'
+  } else if (playerFainted || state.player.switchRequested) state.phase = 'player-switch'
+  else if (opponentFainted || state.opponent.switchRequested) state.phase = 'opponent-switch'
   else state.phase = 'choice'
 }
 

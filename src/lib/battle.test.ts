@@ -157,6 +157,122 @@ describe('Random Battle engine', () => {
     expect(battleMoveEffectiveness(move({ type: 'electric' }), state.opponent.roster[0])).toBe(0)
   })
 
+  it('sets entry hazards and damages an opposing Pokémon that switches in', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'stealth-rock',
+      type: 'rock',
+      damageClass: 'status',
+      power: null,
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const rocks = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(rocks.state.opponent.hazards.stealthRock).toBe(true)
+    expect(rocks.events).toContainEqual({ type: 'hazardSet', side: 'opponent', hazard: 'stealth-rock' })
+
+    const switched = resolveBattleTurn(rocks.state, { kind: 'move', index: 3 }, { kind: 'switch', index: 1 }, () => 0.5)
+    const damage = switched.events.find((event) => event.type === 'hazardDamage' && event.hazard === 'stealth-rock')
+    expect(damage).toMatchObject({
+      pokemon: 'opponent-1',
+      amount: Math.floor(rocks.state.opponent.roster[1].maxHp / 8),
+    })
+  })
+
+  it('stacks Spikes and applies the layer damage when the opposing Pokémon switches in', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'spikes', type: 'ground', damageClass: 'status', power: null })
+    state.player.roster[0].stats[5] = 999
+
+    let layered = state
+    for (let layer = 0; layer < 3; layer += 1)
+      layered = resolveBattleTurn(layered, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5).state
+    expect(layered.opponent.hazards.spikes).toBe(3)
+
+    const switched = resolveBattleTurn(layered, { kind: 'move', index: 3 }, { kind: 'switch', index: 1 }, () => 0.5)
+    expect(switched.events).toContainEqual({
+      type: 'hazardDamage',
+      pokemon: 'opponent-1',
+      hazard: 'spikes',
+      amount: Math.floor(layered.opponent.roster[1].maxHp / 4),
+    })
+  })
+
+  it('applies grounded entry effects and lets Defog clear hazards from both sides', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.opponent.hazards = { stealthRock: false, spikes: 1, toxicSpikes: 1, stickyWeb: true }
+
+    const grounded = resolveBattleTurn(state, { kind: 'move', index: 3 }, { kind: 'switch', index: 1 }, () => 0.5)
+    const replacement = grounded.state.opponent.roster[1]
+    expect(replacement.status).toBe('poison')
+    expect(replacement.stages.speed).toBe(-1)
+    expect(grounded.events).toContainEqual({
+      type: 'hazardDamage',
+      pokemon: 'opponent-1',
+      hazard: 'spikes',
+      amount: Math.floor(state.opponent.roster[1].maxHp / 8),
+    })
+
+    const airborne = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    airborne.opponent.roster[1].pokemon.types = ['flying']
+    airborne.opponent.hazards = { stealthRock: false, spikes: 3, toxicSpikes: 2, stickyWeb: true }
+    const switchedAirborne = resolveBattleTurn(
+      airborne,
+      { kind: 'move', index: 3 },
+      { kind: 'switch', index: 1 },
+      () => 0.5,
+    )
+    expect(switchedAirborne.events.some((event) => event.type === 'hazardDamage')).toBe(false)
+    expect(switchedAirborne.state.opponent.roster[1].status).toBeNull()
+    expect(switchedAirborne.state.opponent.roster[1].stages.speed).toBe(0)
+
+    const defog = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    defog.player.hazards.stealthRock = true
+    defog.opponent.hazards.spikes = 2
+    defog.player.roster[0].moves[0].data = move({ name: 'defog', type: 'flying', damageClass: 'status', power: null })
+    const cleared = resolveBattleTurn(defog, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(cleared.state.player.hazards).toEqual({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
+    expect(cleared.state.opponent.hazards).toEqual({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
+  })
+
+  it('requests a replacement after a pivot move and handles forced switches and hazard removal', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'u-turn', type: 'bug', power: 70 })
+    state.player.roster[0].stats[5] = 999
+
+    const pivoted = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(pivoted.state.phase).toBe('player-switch')
+    const replaced = resolveBattleTurn(
+      pivoted.state,
+      { kind: 'switch', index: 1 },
+      { kind: 'move', index: 3 },
+      () => 0.5,
+    )
+    expect(replaced.state.player.active).toBe(1)
+
+    const forced = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    forced.player.roster[0].moves[0].data = move({ name: 'dragon-tail', type: 'dragon', power: 60 })
+    forced.player.roster[0].stats[5] = 999
+    expect(
+      resolveBattleTurn(forced, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5).state.phase,
+    ).toBe('opponent-switch')
+
+    const cleared = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    cleared.player.hazards.spikes = 2
+    cleared.player.roster[0].moves[0].data = move({ name: 'rapid-spin', type: 'normal', power: 50 })
+    const spun = resolveBattleTurn(cleared, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(spun.state.player.hazards.spikes).toBe(0)
+    expect(spun.events).toContainEqual({ type: 'hazardsCleared', side: 'player' })
+  })
+
   it('requires a replacement after the active Pokémon faints', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
