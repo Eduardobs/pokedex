@@ -47,3 +47,20 @@ it('organizes stats in the order defined for the radar', () => {
 
   expect(labels).toEqual(['HP', 'Ataque', 'Defesa', 'Velocidade', 'Def. Especial', 'Atq. Especial'])
 })
+
+it('supports a calculated-stat scale and a contextual class', () => {
+  const calculatedStats = stats.map((stat) => ({ ...stat, base_stat: 357 }))
+  const { container } = render(
+    <BaseStatsRadar
+      className="team-calculated-radar"
+      stats={calculatedStats}
+      statNames={{ hp: 'HP' }}
+      label="Atributos calculados"
+      baseLabel="Calculado"
+      maxStat={714}
+    />,
+  )
+
+  expect(container.querySelector('.team-calculated-radar')).toBeInTheDocument()
+  expect(container.querySelector('.radar-area')).toHaveAttribute('points', expect.stringContaining('190.0,108.0'))
+})

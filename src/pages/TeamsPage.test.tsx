@@ -174,8 +174,12 @@ it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', 
   fireEvent.click(female)
   fireEvent.click(screen.getByRole('combobox', { name: 'Tipo Tera' }))
   const fireType = screen.getByRole('option', { name: 'Fogo' })
+  expect(fireType.querySelector('.type-badge')).toHaveClass('type-fire')
   expect(fireType.querySelector('use')).toHaveAttribute('href', expect.stringContaining('#type-fire'))
   fireEvent.click(fireType)
+  const teraSelect = screen.getByRole('combobox', { name: 'Tipo Tera' })
+  expect(teraSelect).toHaveTextContent('Tipo Tera')
+  expect(teraSelect.querySelector('.type-badge')).toHaveClass('type-fire')
   expect(
     Array.from(screen.getByLabelText('Habilidade').querySelectorAll('option')).map((option) => option.textContent),
   ).toEqual(['Lightning Rod', 'Static'])

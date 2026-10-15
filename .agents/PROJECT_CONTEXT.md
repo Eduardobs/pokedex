@@ -43,6 +43,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - A team can be exported as a versioned team file and imported without losing any editable team or member data.
 - Team builds default to level 100, non-shiny, random gender where available, and the Pokémon's first type as its Tera type; EVs are limited to 252 per stat and 510 total, and IVs to 31 per stat.
 - Team-member friendship is editable from 0 to 255 and defaults to 255; saved teams created before this field remain compatible and use the default until edited.
+- Team-member friendship uses a slider with small and large heart endpoints, while keeping the current numeric value visible.
 - Team builds keep level, shiny, and friendship aligned in one row; the gender control must remain usable without overflow on mobile screens.
 - Gender uses icon-labelled radio controls, Tera types reuse the shared type icons and colors, and training can be reset to zero EVs and maximum IVs.
 - A locally persisted team-level competitive preset documents unrestricted, singles, and doubles battle composition without enforcing seasonal ban lists.

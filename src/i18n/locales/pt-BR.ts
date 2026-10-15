@@ -75,6 +75,7 @@ export const ptBR = {
   'teams.stats': 'Atributos e treinamento',
   'teams.base': 'Base',
   'teams.calculated': 'Calculado',
+  'teams.calculatedStats': 'Atributos calculados',
   'teams.iv': 'IV',
   'teams.ev': 'EV',
   'teams.total': 'Total',

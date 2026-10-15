@@ -226,6 +226,12 @@
 .catalog-select-trigger > svg.open {
   transform: rotate(180deg);
 }
+.catalog-select-custom-selected {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  grid-column: 1 / 3;
+}
 .catalog-select-options {
   position: absolute;
   z-index: 30;
@@ -265,6 +271,11 @@
 }
 .catalog-select-options button > svg {
   justify-self: end;
+}
+.catalog-select-custom-option {
+  min-width: 0;
+  display: flex;
+  align-items: center;
 }
 .catalog-select-rich .catalog-select-options button {
   grid-template-columns: 32px minmax(0, 1fr) 18px;

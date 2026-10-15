@@ -74,6 +74,7 @@ export const es = {
   'teams.stats': 'Atributos y entrenamiento',
   'teams.base': 'Base',
   'teams.calculated': 'Calculado',
+  'teams.calculatedStats': 'Atributos calculados',
   'teams.iv': 'IV',
   'teams.ev': 'EV',
   'teams.total': 'Total',

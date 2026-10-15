@@ -20,6 +20,8 @@ type SelectMenuProps<T extends string> = {
   value: T
   onChange: (value: T) => void
   sortOptions?: boolean
+  renderSelected?: (option: SelectOption<T>) => ReactNode
+  renderOption?: (option: SelectOption<T>) => ReactNode
 }
 
 export function SelectMenu<T extends string>({
@@ -30,6 +32,8 @@ export function SelectMenu<T extends string>({
   value,
   onChange,
   sortOptions = true,
+  renderSelected,
+  renderOption,
 }: SelectMenuProps<T>) {
   const { language } = useLanguage()
   const [open, setOpen] = useState(false)
@@ -38,7 +42,7 @@ export function SelectMenu<T extends string>({
   const selectedRef = useRef<HTMLButtonElement>(null)
   const optionsId = useId()
   const selected = options.find((option) => option.value === value) ?? options[0]
-  const hasRichOptions = options.some((option) => option.icon || option.description)
+  const hasRichOptions = !renderOption && options.some((option) => option.icon || option.description)
   const orderedOptions = sortOptions
     ? [
         ...options.filter((option) => option.pinned),
@@ -112,13 +116,19 @@ export function SelectMenu<T extends string>({
         onClick={() => (open ? setOpen(false) : openAndFocusSelected())}
         onKeyDown={handleTriggerKeyDown}
       >
-        <span className="catalog-select-icon" aria-hidden="true">
-          {icon}
-        </span>
-        <span className="catalog-select-copy">
-          <small>{label}</small>
-          <strong>{selected.label}</strong>
-        </span>
+        {renderSelected ? (
+          <span className="catalog-select-custom-selected">{renderSelected(selected)}</span>
+        ) : (
+          <>
+            <span className="catalog-select-icon" aria-hidden="true">
+              {icon}
+            </span>
+            <span className="catalog-select-copy">
+              <small>{label}</small>
+              <strong>{selected.label}</strong>
+            </span>
+          </>
+        )}
         <ChevronDown className={open ? 'open' : ''} size={16} aria-hidden="true" />
       </button>
       {open && (
@@ -144,15 +154,21 @@ export function SelectMenu<T extends string>({
                 triggerRef.current?.focus()
               }}
             >
-              {option.icon && (
-                <span className="catalog-select-option-icon" aria-hidden="true">
-                  {option.icon}
-                </span>
+              {renderOption ? (
+                <span className="catalog-select-custom-option">{renderOption(option)}</span>
+              ) : (
+                <>
+                  {option.icon && (
+                    <span className="catalog-select-option-icon" aria-hidden="true">
+                      {option.icon}
+                    </span>
+                  )}
+                  <span className="catalog-select-option-copy">
+                    <strong>{option.label}</strong>
+                    {option.description && <small>{option.description}</small>}
+                  </span>
+                </>
               )}
-              <span className="catalog-select-option-copy">
-                <strong>{option.label}</strong>
-                {option.description && <small>{option.description}</small>}
-              </span>
               {option.value === value && <Check size={15} aria-hidden="true" />}
             </button>
           ))}

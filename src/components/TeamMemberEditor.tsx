@@ -32,15 +32,16 @@ import {
 import { record } from '../lib/resource-data'
 import { MoveSelect } from './MoveSelect'
 import { EvSlider } from './EvSlider'
+import { FriendshipSlider } from './FriendshipSlider'
 import { ItemSelect } from './ItemSelect'
 import { RadioSelection } from './RadioSelection'
 import { SelectMenu } from './SelectMenu'
 import { ShinyToggle } from './ShinyToggle'
 import { TypeBadge, typeLabel } from './TypeBadge'
-import { TypeIcon } from './TypeIcon'
 import { InlineRetryError } from './FeedbackState'
 import { EstimatedSpreadSuggestion } from './EstimatedSpreadSuggestion'
 import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
+import { BaseStatsRadar } from './pokemon-detail/BaseStatsRadar'
 
 export function ApiFeedback({ state }: { state: { loading: boolean; error: Error | null; retry: () => void } }) {
   const { t } = useLanguage()
@@ -244,18 +245,11 @@ export function TeamMemberEditor({
                 label={t('teams.shiny')}
                 onChange={(shiny) => patch({ shiny })}
               />
-              <label className="team-friendship-field">
-                {t('teams.friendship')}
-                <input
-                  type="number"
-                  min={0}
-                  max={255}
-                  value={m.friendship ?? 255}
-                  onChange={(e) =>
-                    patch({ friendship: Math.max(0, Math.min(255, Math.trunc(Number(e.target.value)) || 0)) })
-                  }
-                />
-              </label>
+              <FriendshipSlider
+                label={t('teams.friendship')}
+                value={m.friendship ?? 255}
+                onChange={(friendship) => patch({ friendship })}
+              />
             </div>
             {species.data && (
               <RadioSelection
@@ -267,16 +261,21 @@ export function TeamMemberEditor({
             )}
             <SelectMenu
               className={`tera-type-select type-${m.tera}`}
-              icon={<TypeIcon type={m.tera} />}
+              icon={null}
               label={t('teams.tera')}
               value={m.tera}
               options={teraTypes.map((type) => ({
                 value: type,
                 label: typeLabel(type, language),
-                icon: <TypeIcon type={type} />,
-                className: `type-${type}`,
               }))}
               onChange={(tera) => patch({ tera })}
+              renderSelected={(option) => (
+                <>
+                  <small className="tera-type-select-label">{t('teams.tera')}</small>
+                  <TypeBadge type={option.value} />
+                </>
+              )}
+              renderOption={(option) => <TypeBadge type={option.value} />}
             />
             {select(
               t('teams.ability'),
@@ -386,61 +385,71 @@ export function TeamMemberEditor({
             statLabel={statLabel}
             onApply={patch}
           />
-          <div className="team-table" tabIndex={0} role="region" aria-label={t('teams.stats')}>
-            <table>
-              <caption className="sr-only">{t('teams.stats')}</caption>
-              <thead>
-                <tr>
-                  <th>{t('ui.attribute')}</th>
-                  <th>{t('teams.base')}</th>
-                  <th>{t('teams.ivMaximum')}</th>
-                  <th>{t('teams.ev')}</th>
-                  <th>{t('teams.calculated')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {statNames.map((stat, i) => (
-                  <tr key={stat}>
-                    <th scope="row">{statLabel(stat)}</th>
-                    <td>{p.stats[i]}</td>
-                    <td>
-                      <input
-                        aria-label={`${t('teams.iv')} ${statLabel(stat)}`}
-                        type="number"
-                        min={0}
-                        max={31}
-                        value={m.ivs[i]}
-                        onChange={(e) =>
-                          patch({
-                            ivs: m.ivs.map((v, j) =>
-                              i === j ? Math.max(0, Math.min(31, Math.trunc(Number(e.target.value)) || 0)) : v,
-                            ) as Stats,
-                          })
-                        }
-                      />
-                    </td>
-                    <td>
-                      <EvSlider
-                        label={statLabel(stat)}
-                        value={m.evs[i]}
-                        max={Math.min(252, 510 - m.evs.reduce((a, b, j) => a + (j === i ? 0 : b), 0))}
-                        onChange={(value) => patch({ evs: editEv(m.evs, i, value) })}
-                      />
-                    </td>
-                    <td>
-                      <strong>{stats[i]}</strong>
-                    </td>
+          <div className="team-training-content">
+            <div className="team-table" tabIndex={0} role="region" aria-label={t('teams.stats')}>
+              <table>
+                <caption className="sr-only">{t('teams.stats')}</caption>
+                <thead>
+                  <tr>
+                    <th>{t('ui.attribute')}</th>
+                    <th>{t('teams.base')}</th>
+                    <th>{t('teams.ivMaximum')}</th>
+                    <th>{t('teams.ev')}</th>
+                    <th>{t('teams.calculated')}</th>
                   </tr>
-                ))}
-                <tr>
-                  <th>{t('teams.total')}</th>
-                  <td>{p.stats.reduce((a, b) => a + b, 0)}</td>
-                  <td>—</td>
-                  <td>{m.evs.reduce((a, b) => a + b, 0)} / 510</td>
-                  <td>{stats.reduce((a, b) => a + b, 0)}</td>
-                </tr>
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {statNames.map((stat, i) => (
+                    <tr key={stat}>
+                      <th scope="row">{statLabel(stat)}</th>
+                      <td>{p.stats[i]}</td>
+                      <td>
+                        <input
+                          aria-label={`${t('teams.iv')} ${statLabel(stat)}`}
+                          type="number"
+                          min={0}
+                          max={31}
+                          value={m.ivs[i]}
+                          onChange={(e) =>
+                            patch({
+                              ivs: m.ivs.map((v, j) =>
+                                i === j ? Math.max(0, Math.min(31, Math.trunc(Number(e.target.value)) || 0)) : v,
+                              ) as Stats,
+                            })
+                          }
+                        />
+                      </td>
+                      <td>
+                        <EvSlider
+                          label={statLabel(stat)}
+                          value={m.evs[i]}
+                          max={Math.min(252, 510 - m.evs.reduce((a, b, j) => a + (j === i ? 0 : b), 0))}
+                          onChange={(value) => patch({ evs: editEv(m.evs, i, value) })}
+                        />
+                      </td>
+                      <td>
+                        <strong>{stats[i]}</strong>
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <th>{t('teams.total')}</th>
+                    <td>{p.stats.reduce((a, b) => a + b, 0)}</td>
+                    <td>—</td>
+                    <td>{m.evs.reduce((a, b) => a + b, 0)} / 510</td>
+                    <td>{stats.reduce((a, b) => a + b, 0)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <BaseStatsRadar
+              className="team-calculated-radar"
+              stats={statNames.map((stat, index) => ({ base_stat: stats[index], stat: { name: stat } }))}
+              statNames={Object.fromEntries(statNames.map((stat) => [stat, statLabel(stat)]))}
+              label={t('teams.calculatedStats')}
+              baseLabel={t('teams.calculated')}
+              maxStat={714}
+            />
           </div>
         </section>
       </div>

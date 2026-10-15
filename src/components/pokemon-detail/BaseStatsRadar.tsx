@@ -10,6 +10,8 @@ type BaseStatsRadarProps = {
   statNames: Record<string, string>
   label: string
   baseLabel: string
+  maxStat?: number
+  className?: string
 }
 
 const CENTER_X = 190
@@ -34,7 +36,14 @@ function pointsFor(count: number, radiusAt: (index: number) => number) {
   }).join(' ')
 }
 
-export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStatsRadarProps) {
+export function BaseStatsRadar({
+  stats,
+  statNames,
+  label,
+  baseLabel,
+  maxStat = MAX_STAT,
+  className,
+}: BaseStatsRadarProps) {
   const titleId = useId()
   const descriptionId = useId()
   const orderedStats = [...stats].sort((first, second) => {
@@ -54,11 +63,11 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
   const gridPoints = [0.25, 0.5, 0.75, 1].map((level) => pointsFor(orderedStats.length, () => CHART_RADIUS * level))
   const valuePoints = pointsFor(
     orderedStats.length,
-    (index) => CHART_RADIUS * Math.min(orderedStats[index].base_stat / MAX_STAT, 1),
+    (index) => CHART_RADIUS * Math.min(orderedStats[index].base_stat / maxStat, 1),
   )
 
   return (
-    <figure className="stats-radar">
+    <figure className={`stats-radar${className ? ` ${className}` : ''}`}>
       <svg viewBox="0 0 380 325" role="img" aria-labelledby={`${titleId} ${descriptionId}`}>
         <title id={titleId}>{label}</title>
         <desc id={descriptionId}>{statSummary}</desc>
@@ -76,7 +85,7 @@ export function BaseStatsRadar({ stats, statNames, label, baseLabel }: BaseStats
         <polygon className="radar-area" points={valuePoints} />
         <g className="radar-points">
           {orderedStats.map(({ base_stat, stat }, index) => {
-            const point = pointAt(index, orderedStats.length, CHART_RADIUS * Math.min(base_stat / MAX_STAT, 1))
+            const point = pointAt(index, orderedStats.length, CHART_RADIUS * Math.min(base_stat / maxStat, 1))
             return <circle key={stat.name} cx={point.x} cy={point.y} r="3.5" />
           })}
         </g>
