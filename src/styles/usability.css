@@ -134,6 +134,9 @@
     gap: clamp(8px, 1.1vw, 16px);
     font-size: 13px;
   }
+  .nav a > svg {
+    display: none;
+  }
 }
 @media (max-width: 900px) {
   :root {

@@ -16,6 +16,7 @@ The application is a client-side static site: it has no application server or da
 - **Item and training tools** with versioned item descriptions, purchase/sale prices by game and currency, and an experience planner with a growth chart and accessible level table.
 - **Interactive game maps** for FireRed/LeafGreen's Kanto, Scarlet/Violet's Paldea, Kitakami, and Terarium, and Legends: Arceus's Hisui, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
+- **Local Random Battle** with a generated Gen 9 opponent, turn order, damage, PP, switching, status conditions, stat stages, Terastallization, forced replacements, and win/loss states.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, evolution variables, currencies, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
 - **Shared pagination** with numbered pages, first/last shortcuts, and responsive keyboard-accessible controls across Explore collections and related-data lists.
@@ -43,6 +44,7 @@ The application is a client-side static site: it has no application server or da
 | `#/maps/lumiose-city` | Interactive Pokémon Legends: Z-A map of Lumiose City |
 | `#/favorites` | Locally stored favorites |
 | `#/teams` | Local team builder, including Gen 9 Random Battle-inspired teams, with estimated EV and Nature spreads |
+| `#/battle` | Local singles Random Battle using a complete saved team against a generated opponent |
 | `#/explore` | Categories from the PokéAPI encyclopedia |
 | `#/explore/:resource` | Paginated records for an API collection |
 | `#/explore/:resource/:name` | Details for an individual API record |
@@ -84,6 +86,7 @@ The MapGenie integration is enabled by default and can be disabled at build time
 | Variable | Feature | Default |
 | --- | --- | --- |
 | `VITE_FEATURE_MAPGENIE_INTEGRATION` | MapGenie-backed navigation and game map routes | `true` |
+| `VITE_FEATURE_BATTLE` | Local Random Battle route and navigation | `true` |
 
 Set a variable to `false` in the build environment to disable its feature. For example:
 
@@ -222,4 +225,6 @@ This project is released under the MIT License. See [LICENSE](LICENSE) for the f
 
 ### Team builder
 
-The `/teams` route supports multiple locally saved teams of up to six Pokémon. Each member has editable level, friendship, shiny appearance, icon-labelled gender, a color-coded Tera type, compatible ability, nature, held item, four compatible moves, IVs and EVs. The random-team action uses the bundled Gen 9 Pokémon Showdown Random Battle catalog for its eligible species, curated move pools, ability and Tera choices, balanced levels, and composition limits; it translates the result into the planner's existing editable fields. Friendship ranges from 0 to 255 and defaults to 255. EVs are capped at 252 per stat and 510 total, with one action to reset EVs and restore every IV to 31. After four moves are selected, the builder classifies the member's competitive role from its moves, item, ability, level, and base stats, then offers one Pokémon Showdown-style estimated EV and Nature spread. Applying it changes both values together; manual editing remains available. Searchable move and item selectors load their detailed options progressively; item choices include their icon and localized description. A team-level competitive preset records common singles and doubles battle compositions. Calculated stats use modern formulas and direct ability/item modifiers; conditional effects can be enabled explicitly. This is a team planner, not a turn-by-turn battle simulator. Move compatibility combines the games in PokéAPI, and seasonal ban lists are not enforced. Teams are stored only in the current browser, with a visible error and retry when storage is unavailable.
+The `/teams` route supports multiple locally saved teams of up to six Pokémon. Each member has editable level, friendship, shiny appearance, icon-labelled gender, a color-coded Tera type, compatible ability, nature, held item, four compatible moves, IVs and EVs. The random-team action uses the bundled Gen 9 Pokémon Showdown Random Battle catalog for its eligible species, curated move pools, ability and Tera choices, balanced levels, and composition limits; it translates the result into the planner's existing editable fields. Friendship ranges from 0 to 255 and defaults to 255. EVs are capped at 252 per stat and 510 total, with one action to reset EVs and restore every IV to 31. After four moves are selected, the builder classifies the member's competitive role from its moves, item, ability, level, and base stats, then offers one Pokémon Showdown-style estimated EV and Nature spread. Applying it changes both values together; manual editing remains available. Searchable move and item selectors load their detailed options progressively; item choices include their icon and localized description. A team-level competitive preset records common singles and doubles battle compositions. Calculated stats use modern formulas and direct ability/item modifiers; conditional effects can be enabled explicitly. Move compatibility combines the games in PokéAPI, and seasonal ban lists are not enforced. Teams are stored only in the current browser, with a visible error and retry when storage is unavailable.
+
+The `/battle` route consumes that same validated team model. A complete saved team faces a generated six-Pokémon Random Battle opponent in a local singles simulation. The engine covers the core turn loop, priority and Speed order, accuracy, damage variation, STAB and type effectiveness, critical hits, PP, common non-volatile status conditions, stat stages, recovery and drain, voluntary and forced switching, Terastallization, and battle completion. Highly move-specific scripts and the full interaction matrix for every ability and item remain outside this lightweight client-side simulator.

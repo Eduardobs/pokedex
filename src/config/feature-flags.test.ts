@@ -5,6 +5,7 @@ describe('feature flags', () => {
   it('enables the MapGenie integration by default', () => {
     expect(FEATURE_FLAGS).toEqual({
       mapGenieIntegration: true,
+      battle: true,
     })
   })
 

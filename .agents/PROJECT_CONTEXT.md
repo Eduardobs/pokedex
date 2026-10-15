@@ -48,6 +48,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Gender uses icon-labelled radio controls, Tera types reuse the shared type icons and colors, and training can be reset to zero EVs and maximum IVs.
 - A locally persisted team-level competitive preset documents unrestricted, singles, and doubles battle composition without enforcing seasonal ban lists.
 - Random team creation saves a complete six-member team only after every selected Pokémon has loaded successfully, using the bundled Gen 9 Pokémon Showdown Random Battle set catalog and its species, type, weakness, level, Tera, and set-selection rules.
+- Random Battle is a local singles battle at `/battle` between a complete saved team and a generated six-Pokémon opponent, reusing the team-builder data model.
+- Random Battle is controlled by a build-time feature flag and is enabled by default.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.
 - Team move and item selectors use progressively loaded searchable lists. Item options display the item icon, localized name, and description.

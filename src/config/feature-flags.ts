@@ -5,4 +5,5 @@ export function featureFlag(defaultEnabled: boolean, value: string | undefined) 
 
 export const FEATURE_FLAGS = {
   mapGenieIntegration: featureFlag(true, import.meta.env.VITE_FEATURE_MAPGENIE_INTEGRATION),
+  battle: featureFlag(true, import.meta.env.VITE_FEATURE_BATTLE),
 } as const

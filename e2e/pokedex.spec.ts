@@ -116,6 +116,18 @@ test('persists language and theme preferences across a reload', async ({ page })
   await expect(page.getByRole('button', { name: 'Enable light theme' })).toBeVisible()
 })
 
+test('opens the Random Battle route and guides players without a complete team', async ({ page }) => {
+  await page.goto('/#/battle')
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Batalha' })).toBeVisible()
+  await expect(page.getByText('Random Battle · Singles 6×6')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Criar uma equipe' })).toHaveAttribute('href', '#/teams')
+  await expect(page).toHaveTitle('Batalha · Atlas Pokémon')
+
+  await page.setViewportSize({ width: 320, height: 844 })
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
+})
+
 test('keeps the mobile Pokémon detail and its statistics inside the page', async ({ page }) => {
   await mockPokeApi(page)
   await page.setViewportSize({ width: 320, height: 844 })
