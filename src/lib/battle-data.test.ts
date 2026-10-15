@@ -30,11 +30,35 @@ describe('battle move parsing', () => {
       power: 90,
       ailment: 'burn',
       ailmentChance: 10,
+      effectChance: 10,
       descriptions: [
         { language: 'en', text: 'Has a chance to burn.' },
         { language: 'pt-br', text: 'Pode queimar.' },
       ],
     })
+  })
+
+  it('uses Effect chance when the move metadata omits an ailment chance', () => {
+    const payload = {
+      name: 'secondary-effect',
+      type: ref('normal'),
+      damage_class: ref('physical'),
+      power: 50,
+      accuracy: 100,
+      priority: 0,
+      pp: 10,
+      target: ref('selected-pokemon'),
+      effect_chance: 30,
+      stat_changes: [{ change: -1, stat: ref('defense') }],
+      meta: { healing: 0, drain: 0, ailment: ref('paralysis'), ailment_chance: 0 },
+      flavor_text_entries: [],
+    }
+    expect(parseBattleMove(payload)).toMatchObject({
+      ailmentChance: 30,
+      effectChance: 30,
+      statChanges: [{ stat: 'defense', change: -1 }],
+    })
+    expect(parseBattleMove({ ...payload, effect_chance: 0 }).ailmentChance).toBe(0)
   })
 
   it('rejects unsupported types and malformed move identifiers', () => {

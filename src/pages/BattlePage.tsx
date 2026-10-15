@@ -13,6 +13,7 @@ import {
   chooseOpponentAction,
   battleMoveEffectiveness,
   createBattleState,
+  currentBattleStats,
   isBattleReadyTeam,
   possibleBattleStats,
   resolveBattleTurn,
@@ -20,11 +21,12 @@ import {
   type BattleEvent,
   type BattlePokemon,
   type BattleSide,
+  type BattleStatRanges,
   type BattleState,
 } from '../lib/battle'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { readStorage } from '../lib/storage'
-import { validTeams, type Team } from '../lib/teams'
+import { validTeams, type Stats, type Team } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
 
@@ -255,14 +257,73 @@ function BattleMoveButton({
   )
 }
 
-const battleStatKeys = [
+const battleTooltipStatKeys = [
   'pokedex.sort.hp',
-  'stats.attack',
-  'stats.defense',
-  'stats.specialAttack',
-  'stats.specialDefense',
-  'stats.speed',
+  'battle.statShort.attack',
+  'battle.statShort.defense',
+  'battle.statShort.specialAttack',
+  'battle.statShort.specialDefense',
+  'battle.statShort.speed',
 ] as const
+const allBattleStatIndexes = [0, 1, 2, 3, 4, 5] as const
+const opponentBattleStatIndexes = [5] as const
+
+function BattleTooltipStats({
+  className,
+  stats,
+  originalStats,
+  indexes = allBattleStatIndexes,
+}: {
+  className: string
+  stats: Stats | BattleStatRanges
+  originalStats?: Stats
+  indexes?: readonly number[]
+}) {
+  const { language, t } = useLanguage()
+  return (
+    <span className={className}>
+      {indexes.map((index) => {
+        const stat = stats[index]
+        const key = battleTooltipStatKeys[index]
+        const label = t(key)
+        if (Array.isArray(stat)) {
+          return (
+            <span key={key}>
+              <small>{label}</small>
+              <b>
+                {t('battle.statRange', {
+                  minimum: formatNumber(stat[0], language),
+                  maximum: formatNumber(stat[1], language),
+                })}
+              </b>
+            </span>
+          )
+        }
+        const original = originalStats?.[index]
+        const direction =
+          original === undefined || stat === original ? null : stat > original ? 'increased' : 'decreased'
+        const current = formatNumber(stat, language)
+        const accessibleLabel =
+          direction && original !== undefined
+            ? t(`battle.statValue.${direction}`, {
+                stat: label,
+                current,
+                original: formatNumber(original, language),
+              })
+            : undefined
+        return (
+          <span key={key} className={direction ? `is-${direction}` : undefined} aria-label={accessibleLabel}>
+            <small aria-hidden={Boolean(direction)}>{label}</small>
+            <b aria-hidden={Boolean(direction)}>
+              {direction && <span className="battle-stat-direction">{direction === 'increased' ? '↑' : '↓'}</span>}
+              {current}
+            </b>
+          </span>
+        )
+      })}
+    </span>
+  )
+}
 
 const trainerSpriteNames = [
   'acetrainer-gen1',
@@ -305,8 +366,8 @@ function ResourceDetails({ resource, item = false }: { resource: BattlePokemon['
 }
 
 function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: BattlePokemon; opponent: boolean }) {
-  const { language, t } = useLanguage()
-  const stats = opponent ? possibleBattleStats(pokemon.pokemon, pokemon.member.level) : pokemon.stats
+  const { t } = useLanguage()
+  const stats = opponent ? possibleBattleStats(pokemon.pokemon, pokemon.member.level) : currentBattleStats(pokemon)
   const itemVisible = !opponent || pokemon.member.itemActive
   return (
     <span id={id} className="battle-active-tooltip" role="tooltip">
@@ -317,21 +378,12 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
         </span>
         <small>{t(opponent ? 'battle.opponentDetails' : 'battle.allyDetails')}</small>
       </span>
-      <span className="battle-tooltip-stats">
-        {stats.map((stat, index) => (
-          <span key={battleStatKeys[index]}>
-            <small>{t(battleStatKeys[index])}</small>
-            <b>
-              {Array.isArray(stat)
-                ? t('battle.statRange', {
-                    minimum: formatNumber(stat[0], language),
-                    maximum: formatNumber(stat[1], language),
-                  })
-                : formatNumber(stat, language)}
-            </b>
-          </span>
-        ))}
-      </span>
+      <BattleTooltipStats
+        className={`battle-tooltip-stats${opponent ? ' is-opponent-speed' : ''}`}
+        stats={stats}
+        originalStats={opponent ? undefined : pokemon.originalStats}
+        indexes={opponent ? opponentBattleStatIndexes : allBattleStatIndexes}
+      />
       {opponent ? (
         <span className="battle-resource-section">
           <b>{t('battle.possibleAbilities')}</b>
@@ -463,13 +515,24 @@ function BattleSwitchButton({ pokemon, onChoose }: { pokemon: BattlePokemon; onC
           {t('battle.hpRemaining')}: <b>{formatNumber(hpPercentage, language)}%</b> (
           {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP)
         </span>
-        <span className="battle-switch-stats">
-          {pokemon.stats.map((value, index) => (
-            <span key={battleStatKeys[index]}>
-              <span className="battle-switch-stat-name">{t(battleStatKeys[index])}</span>
-              <b>{formatNumber(value, language)}</b>
-            </span>
-          ))}
+        <BattleTooltipStats
+          className="battle-switch-stats"
+          stats={currentBattleStats(pokemon)}
+          originalStats={pokemon.originalStats}
+        />
+        <span className="battle-switch-resources">
+          <span className="battle-resource-section">
+            <b>{t('resource.field.ability')}</b>
+            <ResourceDetails resource={pokemon.ability} />
+          </span>
+          <span className="battle-resource-section">
+            <b>{t('resource.field.item')}</b>
+            {pokemon.item ? (
+              <ResourceDetails resource={pokemon.item} item />
+            ) : (
+              <span className="battle-resource-empty">{t('battle.noItem')}</span>
+            )}
+          </span>
         </span>
         <span className="battle-switch-tooltip-moves">
           <b>{t('battle.availableMoves')}</b>

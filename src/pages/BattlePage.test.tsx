@@ -56,6 +56,7 @@ const testMove = (name: string, type: BattleMove['type'] = 'normal'): BattleMove
   drain: 0,
   ailment: null,
   ailmentChance: 0,
+  effectChance: null,
   statChanges: name === 'growl' ? [{ stat: 'attack', change: -1 }] : [],
   descriptions: [{ language: 'pt-br', text: `${name} em detalhes.` }],
 })
@@ -65,7 +66,12 @@ const battleRoster = (
   {
     pokemonTypes = ['normal'],
     moveTypes = ['normal', 'normal', 'normal', 'normal'],
-  }: { pokemonTypes?: BattleMove['type'][]; moveTypes?: BattleMove['type'][] } = {},
+    pokemonStats = [100, 100, 100, 100, 100, 100],
+  }: {
+    pokemonTypes?: BattleMove['type'][]
+    moveTypes?: BattleMove['type'][]
+    pokemonStats?: [number, number, number, number, number, number]
+  } = {},
 ) =>
   team.members.map((member, index) =>
     createBattlePokemon(
@@ -74,9 +80,9 @@ const battleRoster = (
         id: index + 1,
         name: member.pokemon,
         species: member.pokemon,
-        stats: [100, 100, 100, 100, 100, 100],
+        stats: pokemonStats,
         types: pokemonTypes,
-        abilities: ['run-away'],
+        abilities: [member.ability],
         moves: member.moves,
         homeSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${index + 1}.png`,
         showdownFrontSprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${index + 1}.gif`,
@@ -90,9 +96,19 @@ const battleRoster = (
       ],
       {
         ability: {
-          name: 'run-away',
-          names: [{ name: 'Fuga', language: { name: 'pt-br' } }],
-          descriptions: [{ effect: 'Permite fugir.', language: { name: 'pt-br' } }],
+          name: member.ability,
+          names: [
+            {
+              name: member.ability === 'huge-power' ? 'Potência Enorme' : 'Fuga',
+              language: { name: 'pt-br' },
+            },
+          ],
+          descriptions: [
+            {
+              effect: member.ability === 'huge-power' ? 'Duplica o Ataque.' : 'Permite fugir.',
+              language: { name: 'pt-br' },
+            },
+          ],
           sprite: null,
         },
         item: {
@@ -140,11 +156,26 @@ describe('BattlePage lobby', () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
     player.members[0].gender = 'male'
+    player.members[1].ability = 'huge-power'
     opponent.members[0].gender = 'female'
+    opponent.members[0].level = 50
     localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
     vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
     vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
-    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => battleRoster(team))
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
+      const loaded = battleRoster(
+        team,
+        team.id === opponent.id ? { pokemonStats: [200, 100, 200, 100, 100, 100] } : undefined,
+      )
+      if (team.id === opponent.id) {
+        loaded.forEach((pokemon) => {
+          pokemon.moves.forEach((move) => {
+            move.data = testMove('growl')
+          })
+        })
+      }
+      return loaded
+    })
 
     show()
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
@@ -160,14 +191,22 @@ describe('BattlePage lobby', () => {
     expect(screen.getByLabelText('Equipe de Equipe adversária')).toBeVisible()
     const activePokemonTriggers = screen.getAllByLabelText('Detalhes de Pokemon 0')
     const activeTooltips = activePokemonTriggers.map((active) => within(active).getByRole('tooltip'))
-    expect(activeTooltips[0]).toHaveTextContent('Atributos possíveis')
-    expect(activeTooltips[0]).toHaveTextContent('HP')
-    expect(activeTooltips[0]).toHaveTextContent('310–404')
+    expect(activeTooltips[0]).toHaveTextContent('Velocidade possível')
+    expect(activeTooltips[0]).toHaveTextContent('Spe')
+    expect(activeTooltips[0]).toHaveTextContent('94–167')
+    expect(activeTooltips[0]).not.toHaveTextContent('HP')
+    expect(activeTooltips[0]).not.toHaveTextContent('Atk')
     expect(activeTooltips[0]).toHaveTextContent('Habilidades possíveis')
     expect(within(activeTooltips[0]).getByRole('img', { name: 'Gênero: Feminino' })).toBeVisible()
-    expect(activeTooltips[1]).toHaveTextContent('Atributos exatos')
+    expect(activeTooltips[1]).toHaveTextContent('Atributos atuais')
     expect(activeTooltips[1]).toHaveTextContent('HP')
     expect(activeTooltips[1]).toHaveTextContent('341')
+    expect(activeTooltips[1]).toHaveTextContent('Atk')
+    expect(activeTooltips[1]).toHaveTextContent('Def')
+    expect(activeTooltips[1]).toHaveTextContent('SpA')
+    expect(activeTooltips[1]).toHaveTextContent('SpD')
+    expect(activeTooltips[1]).toHaveTextContent('Spe')
+    expect(activeTooltips[1]).not.toHaveTextContent('Ataque')
     expect(activeTooltips[1]).toHaveTextContent('Fuga')
     expect(activeTooltips[1]).toHaveTextContent('Permite fugir.')
     expect(activeTooltips[1]).toHaveTextContent('Restos')
@@ -223,6 +262,10 @@ describe('BattlePage lobby', () => {
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
     await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0))
     expect(screen.getAllByText(/usou/).length).toBeGreaterThan(0)
+    const modifiedAttack = within(activeTooltips[1]).getByText('Atk').parentElement
+    expect(modifiedAttack).toHaveTextContent('157')
+    expect(modifiedAttack).toHaveClass('is-decreased')
+    expect(modifiedAttack).toHaveAccessibleName('Atk: 157, reduzido do valor original 236')
     expect(screen.queryByRole('button', { name: 'Terastalizar Normal' })).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Trocar Pokémon'))
@@ -240,7 +283,22 @@ describe('BattlePage lobby', () => {
     expect(replacementTooltip).toHaveTextContent('Tipo Tera')
     expect(within(replacementTooltip).getAllByText('Normal')).toHaveLength(2)
     expect(replacementTooltip).toHaveTextContent('HP restante')
-    expect(replacementTooltip).toHaveTextContent('Ataque')
+    expect(replacementTooltip).toHaveTextContent('Atk')
+    expect(replacementTooltip).toHaveTextContent('Def')
+    expect(replacementTooltip).toHaveTextContent('SpA')
+    expect(replacementTooltip).toHaveTextContent('SpD')
+    expect(replacementTooltip).toHaveTextContent('Spe')
+    expect(replacementTooltip.querySelector('.battle-switch-stats')).not.toHaveTextContent('Ataque')
+    expect(replacementTooltip).toHaveTextContent('Habilidade')
+    expect(replacementTooltip).toHaveTextContent('Potência Enorme')
+    expect(replacementTooltip).toHaveTextContent('Duplica o Ataque.')
+    expect(replacementTooltip).toHaveTextContent('Item')
+    expect(replacementTooltip).toHaveTextContent('Restos')
+    expect(replacementTooltip).toHaveTextContent('Recupera HP a cada turno.')
+    const increasedAttack = within(replacementTooltip).getByText('Atk').parentElement
+    expect(increasedAttack).toHaveTextContent('472')
+    expect(increasedAttack).toHaveClass('is-increased')
+    expect(increasedAttack).toHaveAccessibleName('Atk: 472, aumentado do valor original 236')
     expect(replacementTooltip).toHaveTextContent('Tackle')
     const tackleDetails = within(replacementTooltip).getByText('Tackle').closest('.battle-switch-move')
     expect(tackleDetails).not.toBeNull()

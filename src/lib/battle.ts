@@ -1,5 +1,5 @@
 import { getDamageMultiplier, type BattleType } from './type-chart'
-import { calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
+import { calculatedCoreStats, calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
 
 export type BattleMove = {
   name: string
@@ -14,6 +14,7 @@ export type BattleMove = {
   drain: number
   ailment: string | null
   ailmentChance: number
+  effectChance: number | null
   statChanges: { stat: keyof BattleStages; change: number }[]
   descriptions?: { language: string; text: string }[]
 }
@@ -29,6 +30,7 @@ export type BattleStatus = 'burn' | 'paralysis' | 'poison' | 'sleep' | null
 export type BattlePokemon = {
   member: TeamMember
   pokemon: TeamPokemon
+  originalStats: Stats
   stats: Stats
   ability: BattleResource
   item: BattleResource | null
@@ -161,6 +163,7 @@ export function createBattlePokemon(
   return {
     member,
     pokemon,
+    originalStats: calculatedCoreStats(pokemon, member),
     stats,
     ability: details.ability ?? fallbackResource(ability),
     item: details.item ?? (member.item ? fallbackResource(member.item) : null),
@@ -251,6 +254,18 @@ export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemo
   return effectiveTypes(defender).reduce((value, type) => value * getDamageMultiplier(move.type, type as BattleType), 1)
 }
 
+/** Returns the current stats used by the battle after stage and status modifiers. */
+export function currentBattleStats(pokemon: BattlePokemon): Stats {
+  return [
+    pokemon.stats[0],
+    Math.floor(pokemon.stats[1] * stageMultiplier(pokemon.stages.attack)),
+    Math.floor(pokemon.stats[2] * stageMultiplier(pokemon.stages.defense)),
+    Math.floor(pokemon.stats[3] * stageMultiplier(pokemon.stages.specialAttack)),
+    Math.floor(pokemon.stats[4] * stageMultiplier(pokemon.stages.specialDefense)),
+    Math.floor(pokemon.stats[5] * stageMultiplier(pokemon.stages.speed) * (pokemon.status === 'paralysis' ? 0.5 : 1)),
+  ]
+}
+
 function addHazard(side: BattleSide, hazard: BattleHazard) {
   switch (hazard) {
     case 'stealth-rock':
@@ -319,8 +334,7 @@ function applyEntryHazards(side: BattleSide, pokemon: BattlePokemon, events: Bat
 }
 
 function speed(pokemon: BattlePokemon) {
-  const paralysis = pokemon.status === 'paralysis' ? 0.5 : 1
-  return pokemon.stats[5] * stageMultiplier(pokemon.stages.speed) * paralysis
+  return currentBattleStats(pokemon)[5]
 }
 
 function canAct(pokemon: BattlePokemon, random: RandomSource, events: BattleEvent[]) {
@@ -366,10 +380,10 @@ function applyMove(
       return { hit: false, succeeded: false }
     }
     const physical = move.damageClass === 'physical'
-    const attack =
-      attacker.stats[physical ? 1 : 3] * stageMultiplier(attacker.stages[physical ? 'attack' : 'specialAttack'])
-    const defense =
-      defender.stats[physical ? 2 : 4] * stageMultiplier(defender.stages[physical ? 'defense' : 'specialDefense'])
+    const attackerStats = currentBattleStats(attacker)
+    const defenderStats = currentBattleStats(defender)
+    const attack = attackerStats[physical ? 1 : 3]
+    const defense = defenderStats[physical ? 2 : 4]
     const originalStab = attacker.pokemon.types.includes(move.type)
     const teraStab = attacker.terastallized && attacker.member.tera === move.type
     const stab = teraStab ? (originalStab ? 2 : 1.5) : originalStab ? 1.5 : 1
@@ -409,14 +423,18 @@ function applyMove(
   }
 
   const selfTarget = move.target === 'user'
-  for (const change of move.statChanges) {
-    const target = selfTarget || change.change > 0 ? attacker : defender
-    const previous = target.stages[change.stat]
-    target.stages[change.stat] = Math.max(-6, Math.min(6, previous + change.change))
-    const applied = target.stages[change.stat] - previous
-    if (applied) {
-      events.push({ type: 'stage', pokemon: target.pokemon.name, stat: change.stat, change: applied })
-      succeeded = true
+  const appliesStatChanges =
+    move.statChanges.length > 0 && (move.effectChance === null || random() * 100 < move.effectChance)
+  if (appliesStatChanges) {
+    for (const change of move.statChanges) {
+      const target = selfTarget || change.change > 0 ? attacker : defender
+      const previous = target.stages[change.stat]
+      target.stages[change.stat] = Math.max(-6, Math.min(6, previous + change.change))
+      const applied = target.stages[change.stat] - previous
+      if (applied) {
+        events.push({ type: 'stage', pokemon: target.pokemon.name, stat: change.stat, change: applied })
+        succeeded = true
+      }
     }
   }
 

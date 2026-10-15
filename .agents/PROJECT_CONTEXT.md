@@ -58,6 +58,10 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle preserves each Pokémon sprite's intrinsic proportions without enlarging it, and keeps trainer summaries outside the battlefield.
 - Random Battle move tooltips describe immunity, normal damage, reduced damage, and 2× or 4× super-effective damage in words.
 - Random Battle replacement choices display Pokémon HOME sprites, and their tooltips identify each move with icon-only type and damage-class badges.
+- Allied Random Battle tooltips display current calculated stats with compact labels; replacement tooltips also identify the selected ability and held item.
+- Allied and replacement Random Battle tooltips keep all six stats on one row and distinguish increases and decreases from their original values with accessible green and red indicators.
+- Opponent Random Battle tooltips reveal only the level-adjusted possible Speed range.
+- Random Battle uses a move's PokéAPI Effect chance when resolving probabilistic secondary effects.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.

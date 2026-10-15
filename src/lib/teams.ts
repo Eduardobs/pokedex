@@ -221,11 +221,11 @@ export function natureModifiers(name: string) {
   if (index < 0 || Math.floor(index / 5) === index % 5) return null
   return { increased: statNames[natureOrder[Math.floor(index / 5)]], decreased: statNames[natureOrder[index % 5]] }
 }
-export function calculatedStats(p: TeamPokemon, m: TeamMember): Stats {
+export function calculatedCoreStats(p: TeamPokemon, m: TeamMember): Stats {
   const nature = natureNames.indexOf(m.nature)
   const up = natureOrder[Math.floor(nature / 5)],
     down = natureOrder[nature % 5]
-  const values = p.stats.map((base, i) => {
+  return p.stats.map((base, i) => {
     const value = Math.floor(((2 * base + m.ivs[i] + Math.floor(m.evs[i] / 4)) * m.level) / 100)
     return i === 0
       ? p.name === 'shedinja'
@@ -233,6 +233,9 @@ export function calculatedStats(p: TeamPokemon, m: TeamMember): Stats {
         : value + m.level + 10
       : Math.floor((value + 5) * (up === down ? 1 : i === up ? 1.1 : i === down ? 0.9 : 1))
   }) as Stats
+}
+export function calculatedStats(p: TeamPokemon, m: TeamMember): Stats {
+  const values = calculatedCoreStats(p, m)
   const multiply = (index: number, factor: number) => {
     values[index] = Math.floor(values[index] * factor)
   }

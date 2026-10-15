@@ -4,6 +4,7 @@ import {
   chooseOpponentAction,
   createBattlePokemon,
   createBattleState,
+  currentBattleStats,
   isBattleReadyTeam,
   possibleBattleStats,
   resolveBattleTurn,
@@ -24,6 +25,7 @@ const move = (overrides: Partial<BattleMove> = {}): BattleMove => ({
   drain: 0,
   ailment: null,
   ailmentChance: 0,
+  effectChance: null,
   statChanges: [],
   ...overrides,
 })
@@ -84,6 +86,7 @@ describe('Random Battle engine', () => {
     const neutral = createBattlePokemon(neutralMember, pokemon, moves)
 
     expect(selected.ability.name).toBe('huge-power')
+    expect(selected.originalStats[1]).toBe(neutral.originalStats[1])
     expect(selected.stats[1]).toBe(neutral.stats[1] * 2)
   })
 
@@ -97,6 +100,14 @@ describe('Random Battle engine', () => {
     const active = createBattlePokemon(activeMember, pokemon, moves)
 
     expect(active.stats[1]).toBe(Math.floor(inactive.stats[1] * 1.5))
+  })
+
+  it('calculates the current stats after battle stage and paralysis modifiers', () => {
+    const pokemon = createBattlePokemon(member(0), teamPokemon('modified'), [move(), move(), move(), move()])
+    pokemon.stages = { attack: 2, defense: -1, specialAttack: 1, specialDefense: -2, speed: 1 }
+    pokemon.status = 'paralysis'
+
+    expect(currentBattleStats(pokemon)).toEqual([341, 472, 157, 354, 118, 177])
   })
 
   it('accepts only complete teams with four selected moves per member', () => {
@@ -121,6 +132,25 @@ describe('Random Battle engine', () => {
       [184, 328],
       [184, 328],
     ])
+    expect(possibleBattleStats(teamPokemon('range-test'), 50)[5]).toEqual([94, 167])
+  })
+
+  it('uses Effect chance for secondary stat changes', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      damageClass: 'status',
+      power: null,
+      effectChance: 25,
+      statChanges: [{ stat: 'attack', change: -1 }],
+    })
+
+    const missedEffect = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    const appliedEffect = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.1)
+
+    expect(missedEffect.state.opponent.roster[0].stages.attack).toBe(0)
+    expect(appliedEffect.state.opponent.roster[0].stages.attack).toBe(-1)
   })
 
   it('tracks which Pokémon have entered the battle for team indicators', () => {

@@ -72,8 +72,9 @@ export function parseBattleMove(value: unknown): BattleMove {
   const drain = boundedInteger(meta.drain, -100, 100) ?? 0
   const ailmentName = reference(meta.ailment)?.name
   const ailment = typeof ailmentName === 'string' && ailmentName !== 'none' ? ailmentName : null
-  const metaChance = boundedInteger(meta.ailment_chance, 0, 100) ?? 0
-  const effectChance = boundedInteger(data.effect_chance, 0, 100) ?? 0
+  const metaChance = boundedInteger(meta.ailment_chance, 0, 100)
+  const effectChance = data.effect_chance === null ? null : boundedInteger(data.effect_chance, 0, 100)
+  const ailmentChance = !ailment ? 0 : metaChance !== null && metaChance > 0 ? metaChance : (effectChance ?? 100)
   const descriptions = array(data.flavor_text_entries, 200).flatMap((entry) => {
     const flavor = record(entry)
     const language = reference(flavor.language)?.name
@@ -93,7 +94,8 @@ export function parseBattleMove(value: unknown): BattleMove {
     healing: Math.max(0, healing),
     drain,
     ailment,
-    ailmentChance: metaChance || effectChance || (ailment ? 100 : 0),
+    ailmentChance,
+    effectChance,
     statChanges: array(data.stat_changes, 10).flatMap((entry) => {
       const change = record(entry)
       const stat = battleStats[reference(change.stat)?.name ?? '']
