@@ -64,6 +64,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Opponent Random Battle tooltips reveal only the level-adjusted possible Speed range.
 - Random Battle uses a move's PokéAPI Effect chance when resolving probabilistic secondary effects.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
+- On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.
 - Team move and item selectors use progressively loaded searchable lists. Item options display the item icon, localized name, and description.

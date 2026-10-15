@@ -61,7 +61,7 @@
   position: relative;
   display: grid;
   grid-template-rows: 1fr 1fr;
-  min-height: 610px;
+  min-height: 480px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -88,7 +88,7 @@
   grid-template-columns: minmax(210px, 0.8fr) minmax(180px, 1fr);
   align-items: center;
   gap: 12px;
-  padding: 22px;
+  padding: 16px;
 }
 .battle-sprite-trigger:focus-visible {
   outline: 3px solid var(--red);
@@ -113,7 +113,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 210px;
+  min-height: 180px;
 }
 .battle-sprite-trigger {
   position: relative;
@@ -523,7 +523,7 @@
 .battle-console {
   display: flex;
   flex-direction: column;
-  min-height: 610px;
+  min-height: 540px;
   overflow: visible;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -539,6 +539,7 @@
   border-bottom: 1px solid var(--line);
   border-radius: 17px 17px 0 0;
   background: var(--surface-soft);
+  order: 1;
 }
 .battle-log > strong {
   display: block;
@@ -557,6 +558,7 @@
   position: relative;
   z-index: 2;
   padding: 18px;
+  order: 2;
 }
 .battle-actions h2,
 .battle-result h2 {
@@ -915,6 +917,17 @@
   .battle-console {
     min-height: 0;
   }
+  .battle-actions,
+  .battle-result {
+    order: 1;
+  }
+  .battle-log {
+    flex: none;
+    order: 2;
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+    border-radius: 0 0 17px 17px;
+  }
 }
 @media (max-width: 720px) {
   .battle-lobby {
@@ -922,7 +935,7 @@
     padding: 16px;
   }
   .battle-field {
-    min-height: 520px;
+    min-height: 380px;
   }
   .battle-active {
     grid-template-columns: minmax(130px, 0.9fr) minmax(120px, 1fr);

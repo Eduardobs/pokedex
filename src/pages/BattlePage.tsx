@@ -790,19 +790,6 @@ export function BattlePage() {
           </div>
 
           <div className="battle-console">
-            <div className="battle-log" aria-label={t('battle.log')} aria-live="polite" aria-atomic="false">
-              <strong>{t('battle.turn', { turn: battle.turn })}</strong>
-              {events.length === 0 ? (
-                <p>{t('battle.ready')}</p>
-              ) : (
-                events
-                  .slice(-8)
-                  .map((event, index) => (
-                    <p key={`${events.length - 8 + index}-${event.type}`}>{eventText(event, t)}</p>
-                  ))
-              )}
-            </div>
-
             {battle.phase === 'won' || battle.phase === 'lost' ? (
               <div className="battle-result" role="status">
                 <h2>{t(battle.phase === 'won' ? 'battle.victory' : 'battle.defeat')}</h2>
@@ -857,6 +844,19 @@ export function BattlePage() {
                 </div>
               </div>
             )}
+
+            <div className="battle-log" aria-label={t('battle.log')} aria-live="polite" aria-atomic="false">
+              <strong>{t('battle.turn', { turn: battle.turn })}</strong>
+              {events.length === 0 ? (
+                <p>{t('battle.ready')}</p>
+              ) : (
+                events
+                  .slice(-8)
+                  .map((event, index) => (
+                    <p key={`${events.length - 8 + index}-${event.type}`}>{eventText(event, t)}</p>
+                  ))
+              )}
+            </div>
           </div>
         </div>
       )}
