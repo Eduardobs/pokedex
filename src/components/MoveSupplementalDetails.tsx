@@ -37,6 +37,12 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
           value: t(`moveSupplemental.fixedDamage.${effect.amount}`),
         },
       ]
+    case 'equalize-hp':
+      return [mechanic(t('moveSupplemental.kind.equalizeHp'))]
+    case 'substitute':
+      return [mechanic(t('moveSupplemental.kind.substitute'))]
+    case 'curse':
+      return [mechanic(t('moveSupplemental.kind.curse'))]
     case 'reset-stages':
       return [
         mechanic(t('moveSupplemental.kind.resetStages')),
@@ -75,6 +81,7 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
         'aurora-veil': 'auroraVeil',
         tailwind: 'tailwind',
         safeguard: 'safeguard',
+        'crafty-shield': 'craftyShield',
       } as const
       return [
         mechanic(t('moveSupplemental.kind.setSideCondition')),

@@ -64,6 +64,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Opponent Random Battle tooltips reveal only the level-adjusted possible Speed range.
 - Random Battle uses a move's PokéAPI Effect chance when resolving probabilistic secondary effects.
 - Random Battle supplements PokéAPI move data with declarative local behavior when an effect is not available as structured API data.
+- Random Battle makes Pain Split equalize the combatants' current HP and makes Substitute spend one quarter of maximum HP on a damage-absorbing decoy that disappears on switching.
+- Random Battle resolves Curse from the user's current type: Ghost users sacrifice half their maximum HP to curse the target, while other users lower Speed and raise Attack and Defense.
 - Random Battle models the major and temporary status conditions documented by Serebii, including their compatible combinations, turn effects, type and ability immunities, and switch behavior.
 - Random Battle tracks timed weather, terrain, Trick Room, screens, and Tailwind effects and applies their combat modifiers.
 - Random Battle visibly identifies active field, side, and Pokémon conditions; weather effects display their remaining turns, while other remaining durations stay hidden.

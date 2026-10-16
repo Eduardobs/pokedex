@@ -235,6 +235,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           {pokemon.confusionTurns > 0 && <span>{t('battle.status.confusion')}</span>}
           {pokemon.attracted && <span>{t('battle.status.attraction')}</span>}
           {pokemon.cursed && <span>{t('battle.status.curse')}</span>}
+          {pokemon.substituteHp > 0 && <span>{t('battle.status.substitute')}</span>}
           {(Object.keys(pokemon.volatile) as BattleVolatileCondition[]).map((condition) => (
             <span key={condition}>{t(`battle.status.${condition}`)}</span>
           ))}
@@ -771,6 +772,13 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.hazardsCleared', { side: t(`battle.log.side.${event.side}`) })
     case 'heal':
       return t('battle.log.heal', { name, amount: event.amount })
+    case 'substituteSet':
+      return t('battle.log.substituteSet', { name, hp: event.hp })
+    case 'substituteDamage':
+      return t(event.broken ? 'battle.log.substituteBroken' : 'battle.log.substituteDamage', {
+        name,
+        damage: event.amount,
+      })
     case 'itemRemoved':
       return t('battle.log.itemRemoved', { name, item: prettyName(event.item) })
     case 'status':
@@ -873,6 +881,7 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
   const moveIndex = event.type === 'move' && moveName ? text.indexOf(moveName, nameIndex + name.length) : -1
   const tone =
     event.type === 'damage' ||
+    event.type === 'substituteDamage' ||
     event.type === 'hazardDamage' ||
     event.type === 'statusDamage' ||
     event.type === 'weatherDamage'
@@ -894,6 +903,7 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
                 'sideConditionSet',
                 'sideConditionEnded',
                 'fieldBlocked',
+                'substituteSet',
               ].includes(event.type)
             ? 'effect'
             : event.type === 'faint' || event.type === 'win'
@@ -928,6 +938,7 @@ const sideConditionKeys: (keyof BattleSideConditions)[] = [
   'auroraVeil',
   'tailwind',
   'safeguard',
+  'craftyShield',
 ]
 
 export function BattleFieldEffects({

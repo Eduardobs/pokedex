@@ -18,6 +18,9 @@ describe('MoveSupplementalDetails', () => {
   it.each([
     ['taunt', 'Impede o alvo de usar golpes de estado', '3 turnos'],
     ['seismic-toss', 'Causa dano calculado por uma regra fixa', 'Dano igual ao nível do usuário'],
+    ['pain-split', 'Divide igualmente o HP atual combinado entre o usuário e o alvo', null],
+    ['substitute', 'Gasta um quarto do HP máximo para criar um substituto que absorve dano', null],
+    ['curse', 'Usa o tipo atual para escolher entre amaldiçoar o alvo ou alterar os atributos do usuário', null],
     ['haze', 'Remove alterações de atributos', 'Todos os Pokémon ativos'],
     ['heal-bell', 'Cura os problemas de estado da equipe', null],
     ['rain-dance', 'Altera o clima', 'Chuva'],

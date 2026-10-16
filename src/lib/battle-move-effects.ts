@@ -2,6 +2,9 @@ export type SupplementalMoveEffect =
   | { kind: 'encore'; minimumTurns: number; maximumTurns: number }
   | { kind: 'taunt'; turns: number }
   | { kind: 'fixed-damage'; amount: 'level' | 'half-current-hp' | 'hp-difference' }
+  | { kind: 'equalize-hp' }
+  | { kind: 'substitute' }
+  | { kind: 'curse' }
   | { kind: 'reset-stages'; target: 'target' | 'all' }
   | { kind: 'cure-team-status' }
   | { kind: 'set-weather'; weather: 'rain' | 'sun' | 'sandstorm' | 'snow'; turns: number }
@@ -33,7 +36,7 @@ export type SupplementalMoveEffect =
     }
   | {
       kind: 'set-side-condition'
-      condition: 'reflect' | 'light-screen' | 'aurora-veil' | 'tailwind' | 'safeguard'
+      condition: 'reflect' | 'light-screen' | 'aurora-veil' | 'tailwind' | 'safeguard' | 'crafty-shield'
       turns: number
       requiresWeather?: 'snow'
     }
@@ -47,6 +50,9 @@ const supplementalMoveEffects: Readonly<Record<string, SupplementalMoveEffect>> 
   'super-fang': { kind: 'fixed-damage', amount: 'half-current-hp' },
   ruination: { kind: 'fixed-damage', amount: 'half-current-hp' },
   endeavor: { kind: 'fixed-damage', amount: 'hp-difference' },
+  'pain-split': { kind: 'equalize-hp' },
+  substitute: { kind: 'substitute' },
+  curse: { kind: 'curse' },
   haze: { kind: 'reset-stages', target: 'all' },
   'clear-smog': { kind: 'reset-stages', target: 'target' },
   'heal-bell': { kind: 'cure-team-status' },
@@ -73,6 +79,7 @@ const supplementalMoveEffects: Readonly<Record<string, SupplementalMoveEffect>> 
   },
   tailwind: { kind: 'set-side-condition', condition: 'tailwind', turns: 4 },
   safeguard: { kind: 'set-side-condition', condition: 'safeguard', turns: 5 },
+  'crafty-shield': { kind: 'set-side-condition', condition: 'crafty-shield', turns: 1 },
   'brick-break': { kind: 'clear-target-screens' },
   'psychic-fangs': { kind: 'clear-target-screens' },
   'raging-bull': { kind: 'clear-target-screens' },

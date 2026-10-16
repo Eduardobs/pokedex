@@ -411,6 +411,95 @@ describe('Random Battle engine', () => {
     })
   })
 
+  it('splits the combatants current HP with Pain Split', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'pain-split',
+      type: 'normal',
+      damageClass: 'status',
+      power: null,
+    })
+    state.player.roster[0].hp = 101
+    state.opponent.roster[0].hp = 300
+    state.player.roster[0].stats[5] = 999
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(result.state.player.roster[0].hp).toBe(200)
+    expect(result.state.opponent.roster[0].hp).toBe(200)
+    expect(result.events).toContainEqual({ type: 'heal', pokemon: 'player-0', amount: 99 })
+    expect(result.events).toContainEqual({
+      type: 'damage',
+      pokemon: 'opponent-0',
+      amount: 100,
+      effectiveness: 1,
+      critical: false,
+    })
+  })
+
+  it('creates a Substitute that costs HP and absorbs incoming damage', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'substitute',
+      type: 'normal',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+    })
+    state.player.roster[0].stats[5] = 999
+    const initialHp = state.player.roster[0].hp
+    const substituteCost = Math.floor(state.player.roster[0].maxHp / 4)
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(result.state.player.roster[0].hp).toBe(initialHp - substituteCost)
+    expect(result.state.player.roster[0].substituteHp).toBeGreaterThan(0)
+    expect(result.state.player.roster[0].substituteHp).toBeLessThan(substituteCost)
+    expect(result.events).toContainEqual({ type: 'substituteSet', pokemon: 'player-0', hp: substituteCost })
+    expect(result.events).toContainEqual(
+      expect.objectContaining({ type: 'substituteDamage', pokemon: 'player-0', broken: false }),
+    )
+    expect(result.events).not.toContainEqual(expect.objectContaining({ type: 'damage', pokemon: 'player-0' }))
+  })
+
+  it('breaks a Substitute without carrying excess damage to its user and rejects an unaffordable replacement', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'substitute',
+      type: 'normal',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+    })
+    state.opponent.roster[0].moves[0].data = move({ power: 1_000 })
+    state.player.roster[0].stats[5] = 999
+    const substituteCost = Math.floor(state.player.roster[0].maxHp / 4)
+
+    const broken = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(broken.state.player.roster[0].hp).toBe(state.player.roster[0].hp - substituteCost)
+    expect(broken.state.player.roster[0].substituteHp).toBe(0)
+    expect(broken.events).toContainEqual({
+      type: 'substituteDamage',
+      pokemon: 'player-0',
+      amount: substituteCost,
+      broken: true,
+    })
+
+    broken.state.player.roster[0].hp = substituteCost
+    broken.state.opponent.roster[0].moves[0].data = move({ name: 'growl', damageClass: 'status', power: null })
+    const failed = resolveBattleTurn(broken.state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(failed.state.player.roster[0].hp).toBe(substituteCost)
+    expect(failed.state.player.roster[0].substituteHp).toBe(0)
+    expect(failed.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+  })
+
   it('resets stat stages and cures the allied roster with supplemental effects', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
@@ -934,6 +1023,168 @@ describe('Random Battle engine', () => {
     expect(cursedResult.events).toContainEqual(
       expect.objectContaining({ type: 'statusDamage', pokemon: 'opponent-0', status: 'curse' }),
     )
+  })
+
+  it('fully executes Ghost Curse through Protect and lets its HP cost knock out the user', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam, ['ghost']), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'curse',
+      type: 'ghost',
+      damageClass: 'status',
+      power: null,
+    })
+    state.opponent.roster[0].moves[0].data = move({
+      name: 'protect',
+      damageClass: 'status',
+      power: null,
+      priority: 4,
+      target: 'user',
+    })
+    const hpCost = Math.floor(state.player.roster[0].maxHp / 2)
+    state.player.roster[0].hp = hpCost
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(result.state.player.roster[0].hp).toBe(0)
+    expect(result.state.opponent.roster[0].cursed).toBe(true)
+    expect(result.events).toContainEqual({
+      type: 'damage',
+      pokemon: 'player-0',
+      amount: hpCost,
+      effectiveness: 1,
+      critical: false,
+    })
+    expect(result.events).toContainEqual({ type: 'status', pokemon: 'opponent-0', status: 'curse' })
+    expect(result.events).toContainEqual({ type: 'faint', pokemon: 'player-0' })
+  })
+
+  it('does not charge Ghost Curse when the target is already cursed or protected by Crafty Shield', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const curseMove = move({ name: 'curse', type: 'ghost', damageClass: 'status', power: null })
+    const alreadyCursed = createBattleState(
+      playerTeam,
+      roster(playerTeam, ['ghost']),
+      opponentTeam,
+      roster(opponentTeam),
+    )
+    alreadyCursed.player.roster[0].moves[0].data = curseMove
+    alreadyCursed.player.roster[0].stats[5] = 999
+    alreadyCursed.opponent.roster[0].cursed = true
+    const initialHp = alreadyCursed.player.roster[0].hp
+
+    const failed = resolveBattleTurn(alreadyCursed, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(failed.state.player.roster[0].hp).toBe(initialHp)
+    expect(failed.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+
+    const shielded = createBattleState(playerTeam, roster(playerTeam, ['ghost']), opponentTeam, roster(opponentTeam))
+    shielded.player.roster[0].moves[0].data = curseMove
+    shielded.opponent.roster[0].moves[0].data = move({
+      name: 'crafty-shield',
+      type: 'fairy',
+      damageClass: 'status',
+      power: null,
+      priority: 3,
+      target: 'user-side',
+    })
+    const blocked = resolveBattleTurn(shielded, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(blocked.state.player.roster[0].hp).toBe(shielded.player.roster[0].hp)
+    expect(blocked.state.opponent.roster[0].cursed).toBe(false)
+    expect(blocked.events).toContainEqual({ type: 'protected', pokemon: 'player-0' })
+  })
+
+  it('uses the current type for both Curse variants and applies the non-Ghost stage changes', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const curseMove = move({
+      name: 'curse',
+      type: 'ghost',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      statChanges: [
+        { stat: 'speed', change: -1 },
+        { stat: 'attack', change: 1 },
+        { stat: 'defense', change: 1 },
+      ],
+    })
+    const lostGhostType = createBattleState(
+      playerTeam,
+      roster(playerTeam, ['ghost']),
+      opponentTeam,
+      roster(opponentTeam),
+    )
+    lostGhostType.player.roster[0].moves[0].data = curseMove
+    lostGhostType.player.roster[0].terastallized = true
+    lostGhostType.player.roster[0].member.tera = 'water'
+    lostGhostType.player.roster[0].stats[5] = 999
+
+    const boosted = resolveBattleTurn(lostGhostType, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(boosted.state.player.roster[0].stages).toMatchObject({ attack: 1, defense: 1, speed: -1 })
+    expect(boosted.state.opponent.roster[0].cursed).toBe(false)
+
+    const gainedGhostType = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    gainedGhostType.player.roster[0].moves[0].data = curseMove
+    gainedGhostType.player.roster[0].terastallized = true
+    gainedGhostType.player.roster[0].member.tera = 'ghost'
+    gainedGhostType.player.roster[0].stats[5] = 999
+    const initialGhostHp = gainedGhostType.player.roster[0].hp
+
+    const cursed = resolveBattleTurn(gainedGhostType, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(cursed.state.player.roster[0].hp).toBe(
+      initialGhostHp - Math.floor(gainedGhostType.player.roster[0].maxHp / 2),
+    )
+    expect(cursed.state.player.roster[0].stages).toMatchObject({ attack: 0, defense: 0, speed: 0 })
+    expect(cursed.state.opponent.roster[0].cursed).toBe(true)
+  })
+
+  it('fails non-Ghost Curse when no opponent remains on the field', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'curse',
+      type: 'ghost',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+    })
+    state.player.roster[0].stats[5] = 999
+    state.opponent.roster.forEach((pokemon) => {
+      pokemon.hp = 0
+    })
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(result.state.player.roster[0].stages).toMatchObject({ attack: 0, defense: 0, speed: 0 })
+  })
+
+  it('transfers Ghost Curse when the afflicted Pokémon switches with Baton Pass', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].cursed = true
+    state.player.roster[0].moves[0].data = move({
+      name: 'baton-pass',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const passing = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(passing.state.phase).toBe('player-switch')
+    const switched = resolveBattleTurn(
+      passing.state,
+      { kind: 'switch', index: 1 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+
+    expect(switched.state.player.roster[0].cursed).toBe(false)
+    expect(switched.state.player.roster[1].cursed).toBe(true)
   })
 
   it('handles Rest, thawing moves, status cures on switch, and two layers of Toxic Spikes', () => {

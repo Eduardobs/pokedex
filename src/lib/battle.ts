@@ -58,6 +58,7 @@ export type BattlePokemon = {
   item: BattleResource | null
   maxHp: number
   hp: number
+  substituteHp: number
   moves: { data: BattleMove; pp: number }[]
   revealedMoves: string[]
   stages: BattleStages
@@ -103,6 +104,7 @@ export type BattleSideConditions = {
   auroraVeil: number
   tailwind: number
   safeguard: number
+  craftyShield: number
 }
 export type BattleWeather = 'rain' | 'sun' | 'sandstorm' | 'snow'
 export type BattleTerrain = 'electric' | 'grassy' | 'misty' | 'psychic'
@@ -147,6 +149,8 @@ export type BattleEvent =
   | { type: 'hazardDamage'; pokemon: string; hazard: BattleHazard; amount: number }
   | { type: 'hazardsCleared'; side: 'player' | 'opponent' }
   | { type: 'heal'; pokemon: string; amount: number }
+  | { type: 'substituteSet'; pokemon: string; hp: number }
+  | { type: 'substituteDamage'; pokemon: string; amount: number; broken: boolean }
   | { type: 'itemRemoved'; pokemon: string; item: string }
   | {
       type: 'status'
@@ -181,7 +185,7 @@ export type BattleEvent =
 
 type RandomSource = () => number
 type BattleHazard = 'stealth-rock' | 'spikes' | 'toxic-spikes' | 'sticky-web'
-type MoveOutcome = { hit: boolean; succeeded: boolean } | null
+type MoveOutcome = { hit: boolean; succeeded: boolean; hitSubstitute?: boolean } | null
 
 const emptyStages = (): BattleStages => ({ attack: 0, defense: 0, specialAttack: 0, specialDefense: 0, speed: 0 })
 const emptyHazards = (): BattleHazards => ({ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false })
@@ -191,6 +195,7 @@ const emptySideConditions = (): BattleSideConditions => ({
   auroraVeil: 0,
   tailwind: 0,
   safeguard: 0,
+  craftyShield: 0,
 })
 const emptyField = (): BattleField => ({
   weather: null,
@@ -358,6 +363,7 @@ export function createBattlePokemon(
     item: details.item ?? (member.item ? fallbackResource(member.item) : null),
     maxHp: stats[0],
     hp: stats[0],
+    substituteHp: 0,
     moves: moves.map((data) => ({ data, pp: data.pp })),
     revealedMoves: [],
     stages: emptyStages(),
@@ -731,6 +737,29 @@ function fixedMoveDamage(
   return Math.max(0, defender.hp - attacker.hp)
 }
 
+function applyDirectMoveDamage(
+  defender: BattlePokemon,
+  damage: number,
+  effectiveness: number,
+  critical: boolean,
+  events: BattleEvent[],
+) {
+  if (defender.substituteHp > 0) {
+    const amount = Math.min(defender.substituteHp, damage)
+    defender.substituteHp -= amount
+    events.push({
+      type: 'substituteDamage',
+      pokemon: defender.pokemon.name,
+      amount,
+      broken: defender.substituteHp === 0,
+    })
+    return { amount, hitSubstitute: true }
+  }
+  defender.hp = Math.max(0, defender.hp - damage)
+  events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness, critical })
+  return { amount: damage, hitSubstitute: false }
+}
+
 function fieldPowerModifier(move: BattleMove, attacker: BattlePokemon, defender: BattlePokemon, field: BattleField) {
   let modifier = 1
   if (field.weather === 'rain') modifier *= move.type === 'water' ? 1.5 : move.type === 'fire' ? 0.5 : 1
@@ -822,6 +851,8 @@ function applyMove(
   if (!slot || slot.pp <= 0 || attacker.hp <= 0 || defender.hp <= 0) return null
   slot.pp -= 1
   const move = slot.data
+  const curse = supplementalMoveEffect(move.name)?.kind === 'curse'
+  const ghostCurse = curse && effectiveTypes(attacker).includes('ghost')
   attacker.lastMoveIndex = moveSlot
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
@@ -861,14 +892,63 @@ function applyMove(
     return { hit: false, succeeded: false }
   }
 
-  if (defender.volatile.protect && move.target !== 'user' && move.name !== 'protect') {
+  if (defender.volatile.protect && move.target !== 'user' && move.name !== 'protect' && !curse) {
     events.push({ type: 'protected', pokemon: defender.pokemon.name })
+    return { hit: false, succeeded: false }
+  }
+
+  if (
+    defendingSide.conditions.craftyShield > 0 &&
+    (ghostCurse || (move.damageClass === 'status' && move.target !== 'user'))
+  ) {
+    events.push({ type: 'protected', pokemon: attacker.pokemon.name })
     return { hit: false, succeeded: false }
   }
 
   if (defender.status === 'freeze' && (move.type === 'fire' || freezeThawingMoves.has(move.name))) {
     defender.status = null
     events.push({ type: 'thaw', pokemon: defender.pokemon.name })
+  }
+
+  const supplemental = supplementalMoveEffect(move.name)
+  if (move.damageClass === 'status' && move.target === 'selected-pokemon' && defender.substituteHp > 0)
+    return { hit: true, succeeded: false, hitSubstitute: true }
+
+  if (supplemental?.kind === 'substitute') {
+    const hp = Math.floor(attacker.maxHp / 4)
+    if (attacker.substituteHp > 0 || attacker.hp <= hp) return { hit: true, succeeded: false }
+    attacker.hp -= hp
+    attacker.substituteHp = hp
+    events.push({ type: 'substituteSet', pokemon: attacker.pokemon.name, hp })
+    return { hit: true, succeeded: true }
+  }
+
+  if (supplemental?.kind === 'equalize-hp') {
+    const sharedHp = Math.floor((attacker.hp + defender.hp) / 2)
+    const attackerHp = Math.min(attacker.maxHp, sharedHp)
+    const defenderHp = Math.min(defender.maxHp, sharedHp)
+    const changes = [
+      { pokemon: attacker, hp: attackerHp },
+      { pokemon: defender, hp: defenderHp },
+    ]
+    let succeeded = false
+    for (const change of changes) {
+      const amount = Math.abs(change.hp - change.pokemon.hp)
+      if (amount === 0) continue
+      const type = change.hp > change.pokemon.hp ? 'heal' : 'damage'
+      change.pokemon.hp = change.hp
+      succeeded = true
+      if (type === 'heal') events.push({ type, pokemon: change.pokemon.pokemon.name, amount })
+      else
+        events.push({
+          type,
+          pokemon: change.pokemon.pokemon.name,
+          amount,
+          effectiveness: 1,
+          critical: false,
+        })
+    }
+    return { hit: true, succeeded }
   }
 
   if (move.name === 'rest') {
@@ -886,30 +966,48 @@ function applyMove(
     return { hit: true, succeeded: true }
   }
 
-  if (move.name === 'curse' && effectiveTypes(attacker).includes('ghost')) {
+  if (ghostCurse) {
     if (defender.cursed) return { hit: true, succeeded: false }
-    const amount = Math.min(Math.max(0, attacker.hp - 1), Math.floor(attacker.maxHp / 2))
+    const amount = Math.min(attacker.hp, Math.floor(attacker.maxHp / 2))
     if (amount > 0) {
       attacker.hp -= amount
       events.push({ type: 'damage', pokemon: attacker.pokemon.name, amount, effectiveness: 1, critical: false })
     }
     defender.cursed = true
     events.push({ type: 'status', pokemon: defender.pokemon.name, status: 'curse' })
+    if (attacker.hp === 0) events.push({ type: 'faint', pokemon: attacker.pokemon.name })
     return { hit: true, succeeded: true }
   }
 
+  if (curse) {
+    let succeeded = false
+    for (const [stat, change] of [
+      ['speed', -1],
+      ['attack', 1],
+      ['defense', 1],
+    ] as const) {
+      const previous = attacker.stages[stat]
+      attacker.stages[stat] = Math.max(-6, Math.min(6, previous + change))
+      const applied = attacker.stages[stat] - previous
+      if (!applied) continue
+      events.push({ type: 'stage', pokemon: attacker.pokemon.name, stat, change: applied })
+      succeeded = true
+    }
+    return { hit: true, succeeded }
+  }
+
   let succeeded = false
-  const supplemental = supplementalMoveEffect(move.name)
+  let hitSubstitute = false
   if (supplemental?.kind === 'fixed-damage') {
     const effectiveness = battleMoveEffectiveness(move, defender)
     if (effectiveness === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return { hit: false, succeeded: false }
     }
-    const damage = Math.min(defender.hp, fixedMoveDamage(attacker, defender, supplemental.amount))
+    const damage = fixedMoveDamage(attacker, defender, supplemental.amount)
     if (damage > 0) {
-      defender.hp -= damage
-      events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness: 1, critical: false })
+      const applied = applyDirectMoveDamage(defender, damage, 1, false, events)
+      hitSubstitute = applied.hitSubstitute
       succeeded = true
     }
   }
@@ -955,12 +1053,12 @@ function applyMove(
           screen,
       ),
     )
-    defender.hp = Math.max(0, defender.hp - damage)
-    events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness, critical })
+    const applied = applyDirectMoveDamage(defender, damage, effectiveness, critical, events)
+    hitSubstitute = applied.hitSubstitute
     if (move.drain && !attacker.volatile['heal-block']) {
       const amount = Math.min(
         attacker.maxHp - attacker.hp,
-        Math.max(1, Math.floor((damage * Math.abs(move.drain)) / 100)),
+        Math.max(1, Math.floor((applied.amount * Math.abs(move.drain)) / 100)),
       )
       if (move.drain > 0 && amount > 0) {
         attacker.hp += amount
@@ -971,13 +1069,13 @@ function applyMove(
     succeeded = true
   }
 
-  if (move.name === 'wake-up-slap' && defender.status === 'sleep') {
+  if (!hitSubstitute && move.name === 'wake-up-slap' && defender.status === 'sleep') {
     defender.status = null
     defender.sleepTurns = 0
     events.push({ type: 'wake', pokemon: defender.pokemon.name })
     succeeded = true
   }
-  if (move.name === 'smelling-salts' && defender.status === 'paralysis') {
+  if (!hitSubstitute && move.name === 'smelling-salts' && defender.status === 'paralysis') {
     defender.status = null
     events.push({ type: 'statusCured', pokemon: defender.pokemon.name, status: 'paralysis' })
     succeeded = true
@@ -1001,6 +1099,7 @@ function applyMove(
   if (appliesStatChanges) {
     for (const change of move.statChanges) {
       const target = selfTarget || (change.change > 0 && !changesApplyToTarget(move)) ? attacker : defender
+      if (target === defender && hitSubstitute) continue
       const previous = target.stages[change.stat]
       target.stages[change.stat] = Math.max(-6, Math.min(6, previous + change.change))
       const applied = target.stages[change.stat] - previous
@@ -1012,7 +1111,12 @@ function applyMove(
   }
 
   const statusTarget = selfTarget ? attacker : defender
-  if (move.ailment && statusTarget.hp > 0 && random() * 100 < move.ailmentChance) {
+  if (
+    move.ailment &&
+    statusTarget.hp > 0 &&
+    (!hitSubstitute || statusTarget === attacker) &&
+    random() * 100 < move.ailmentChance
+  ) {
     if (move.ailment === 'flinch' && statusTarget === defender && !defender.volatile.flinch) {
       defender.volatile.flinch = 1
       events.push({ type: 'status', pokemon: defender.pokemon.name, status: 'flinch' })
@@ -1051,7 +1155,7 @@ function applyMove(
       succeeded = true
     }
   }
-  return { hit: true, succeeded }
+  return { hit: true, succeeded, hitSubstitute }
 }
 
 function performChoice(
@@ -1071,6 +1175,12 @@ function performChoice(
       events.push({ type: 'failed', pokemon: leaving.pokemon.name })
       return
     }
+    const batonPassesCurse =
+      own.switchRequested &&
+      leaving.hp > 0 &&
+      leaving.cursed &&
+      leaving.lastMoveIndex !== null &&
+      leaving.moves[leaving.lastMoveIndex]?.data.name === 'baton-pass'
     leaving.stages = emptyStages()
     leaving.encoreTurns = 0
     leaving.encoreMoveIndex = null
@@ -1080,6 +1190,7 @@ function performChoice(
     leaving.confusionTurns = 0
     leaving.attracted = false
     leaving.cursed = false
+    leaving.substituteHp = 0
     leaving.volatile = {}
     leaving.disabledMoveIndex = null
     // Toxic remains toxic after switching in modern main-series games; only its
@@ -1094,6 +1205,7 @@ function performChoice(
     }
     own.active = choice.index
     replacement.stages = emptyStages()
+    if (batonPassesCurse) replacement.cursed = true
     replacement.hasEnteredBattle = true
     own.switchRequested = false
     events.push({ type: 'switch', side, pokemon: replacement.pokemon.name })
@@ -1127,7 +1239,7 @@ function performChoice(
   const move = attacker.moves[selectedMoveIndex]?.data
   if (outcome.hit && move) {
     const supplemental = supplementalMoveEffect(move.name)
-    if (supplemental?.kind === 'encore') {
+    if (supplemental?.kind === 'encore' && !outcome.hitSubstitute) {
       const repeated = defender.lastMoveIndex
       const repeatedMove = repeated === null ? null : defender.moves[repeated]
       if (repeatedMove && repeatedMove.pp > 0 && repeatedMove.data.name !== 'encore') {
@@ -1143,7 +1255,7 @@ function performChoice(
         succeeded = true
       }
     }
-    if (supplemental?.kind === 'taunt' && defender.tauntTurns <= 0) {
+    if (supplemental?.kind === 'taunt' && !outcome.hitSubstitute && defender.tauntTurns <= 0) {
       defender.tauntTurns = supplemental.turns
       events.push({ type: 'taunt', pokemon: defender.pokemon.name })
       succeeded = true
@@ -1160,7 +1272,8 @@ function performChoice(
         !blockedByMisty &&
         !requiresSleepingTarget &&
         !grassImmuneToSeed &&
-        !target.volatile[supplemental.condition]
+        !target.volatile[supplemental.condition] &&
+        (target === attacker || !outcome.hitSubstitute)
       ) {
         if (supplemental.condition === 'disable') {
           if (target.lastMoveIndex === null) {
@@ -1181,6 +1294,7 @@ function performChoice(
     if (supplemental?.kind === 'reset-stages') {
       const targets = supplemental.target === 'all' ? [attacker, defender] : [defender]
       for (const target of targets) {
+        if (target === defender && outcome.hitSubstitute) continue
         if (Object.values(target.stages).some(Boolean)) {
           target.stages = emptyStages()
           events.push({ type: 'stagesReset', pokemon: target.pokemon.name })
@@ -1237,6 +1351,7 @@ function performChoice(
         'aurora-veil': 'auroraVeil',
         tailwind: 'tailwind',
         safeguard: 'safeguard',
+        'crafty-shield': 'craftyShield',
       }[supplemental.condition] as keyof BattleSideConditions
       if (!supplemental.requiresWeather || field.weather === supplemental.requiresWeather) {
         own.conditions[condition] = supplemental.turns
@@ -1292,13 +1407,13 @@ function performChoice(
       foe.conditions = conditions
       succeeded = true
     }
-    if (itemRemovalMoves.has(move.name) && defender.item) {
+    if (!outcome.hitSubstitute && itemRemovalMoves.has(move.name) && defender.item) {
       const item = defender.item.name
       defender.item = null
       events.push({ type: 'itemRemoved', pokemon: defender.pokemon.name, item })
       succeeded = true
     }
-    if (move.name === 'incinerate' && defender.item?.name.endsWith('-berry')) {
+    if (!outcome.hitSubstitute && move.name === 'incinerate' && defender.item?.name.endsWith('-berry')) {
       const item = defender.item.name
       defender.item = null
       events.push({ type: 'itemRemoved', pokemon: defender.pokemon.name, item })
@@ -1308,7 +1423,7 @@ function performChoice(
       own.switchRequested = true
       succeeded = true
     }
-    if (forceSwitchMoves.has(move.name) && defender.hp > 0 && availableSwitch(foe) >= 0) {
+    if (!outcome.hitSubstitute && forceSwitchMoves.has(move.name) && defender.hp > 0 && availableSwitch(foe) >= 0) {
       foe.switchRequested = true
       succeeded = true
     }
