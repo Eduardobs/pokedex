@@ -1,6 +1,10 @@
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  ArrowDown,
+  ArrowRightLeft,
+  HeartPulse,
+  Trophy,
   Bubbles,
   Check,
   CircleDotDashed,
@@ -20,6 +24,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
+import { BattleSprite } from '../components/BattleSprite'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
@@ -216,7 +221,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
       </div>
       <div className="battle-health-bar">
         <div
-          className="battle-health-track"
+          className={`battle-health-track${percent <= 20 ? ' is-critical' : percent <= 50 ? ' is-low' : ''}`}
           role="meter"
           aria-label={t('battle.health', { name: prettyName(pokemon.pokemon.name) })}
           aria-valuemin={0}
@@ -247,10 +252,12 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
         </span>
       </div>
       <div className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
-        <span className="battle-active-type-label">
-          {pokemon.terastallized && <Sparkles size={14} aria-hidden="true" />}
-          {t(pokemon.terastallized ? 'teams.tera' : 'resource.field.types')}
-        </span>
+        {pokemon.terastallized && (
+          <span className="battle-active-type-label">
+            <Sparkles size={14} aria-hidden="true" />
+            {t('teams.tera')}
+          </span>
+        )}
         <span className="battle-active-type-badges">
           {(pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types).map((type) => (
             <TypeBadge key={type} type={type} iconOnly />
@@ -273,11 +280,13 @@ function ActivePokemon({
   opponent = false,
   teraControl,
   activeMove,
+  hit = false,
 }: {
   side: BattleSide
   opponent?: boolean
   teraControl?: ReactNode
   activeMove?: string
+  hit?: boolean
 }) {
   const tooltipId = useId()
   const { t } = useLanguage()
@@ -311,26 +320,30 @@ function ActivePokemon({
           tabIndex={0}
           aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
           aria-describedby={tooltipId}
+          onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+          onBlur={() => resetBattleTooltip(tooltipId)}
           onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
           onPointerLeave={() => resetBattleTooltip(tooltipId)}
         >
-          {sprite ? (
-            <img
-              src={sprite}
-              alt={prettyName(pokemon.pokemon.name)}
-              width="180"
-              height="180"
-              onError={({ currentTarget }) => {
-                if (!fallback || currentTarget.src === fallback) return
-                currentTarget.onerror = null
-                currentTarget.src = fallback
-              }}
-            />
-          ) : fallback ? (
-            <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
-          ) : (
-            <Shield aria-hidden="true" />
-          )}
+          <BattleSprite key={pokemon.member.id} attacking={Boolean(activeMove)} hit={hit} fainted={pokemon.hp === 0}>
+            {sprite ? (
+              <img
+                src={sprite}
+                alt={prettyName(pokemon.pokemon.name)}
+                width="180"
+                height="180"
+                onError={({ currentTarget }) => {
+                  if (!fallback || currentTarget.src === fallback) return
+                  currentTarget.onerror = null
+                  currentTarget.src = fallback
+                }}
+              />
+            ) : fallback ? (
+              <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
+            ) : (
+              <Shield aria-hidden="true" />
+            )}
+          </BattleSprite>
           <span className="battle-active-tooltip-anchor">
             <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
           </span>
@@ -387,7 +400,7 @@ function BattleMoveButton({
       onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
       <span>{prettyName(move.data.name)}</span>
-      <TypeBadge type={move.data.type} />
+      <TypeBadge type={move.data.type} iconOnly />
       <span className="battle-move-meta">
         <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
         <small>
@@ -876,7 +889,7 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
   const { t } = useLanguage()
   const text = eventText(event, t)
   const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
-  const nameIndex = event.type === 'move' && name ? text.indexOf(name) : -1
+  const nameIndex = name ? text.indexOf(name) : -1
   const moveName = event.type === 'move' ? prettyName(event.move) : ''
   const moveIndex = event.type === 'move' && moveName ? text.indexOf(moveName, nameIndex + name.length) : -1
   const tone =
@@ -906,28 +919,48 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
                 'substituteSet',
               ].includes(event.type)
             ? 'effect'
-            : event.type === 'faint' || event.type === 'win'
+            : event.type === 'faint' || event.type === 'win' || event.type === 'tera'
               ? 'important'
               : 'neutral'
+  const Icon =
+    event.type === 'faint'
+      ? ArrowDown
+      : event.type === 'win'
+        ? Trophy
+        : event.type === 'switch'
+          ? ArrowRightLeft
+          : tone === 'damage'
+            ? Zap
+            : tone === 'healing'
+              ? HeartPulse
+              : tone === 'move'
+                ? Swords
+                : tone === 'effect' || event.type === 'tera'
+                  ? Sparkles
+                  : CircleDotDashed
+  if (event.type === 'turn') return <p className="battle-log-turn">{text}</p>
   return (
     <p className={`battle-log-event is-${tone}`}>
-      {nameIndex >= 0 ? (
-        <>
-          {text.slice(0, nameIndex)}
-          <strong>{name}</strong>
-          {moveIndex >= 0 ? (
-            <>
-              {text.slice(nameIndex + name.length, moveIndex)}
-              <BattleLogMove move={moveName} data={move} />
-              {text.slice(moveIndex + moveName.length)}
-            </>
-          ) : (
-            text.slice(nameIndex + name.length)
-          )}
-        </>
-      ) : (
-        text
-      )}
+      <Icon className="battle-log-icon" size={15} aria-hidden="true" />
+      <span>
+        {nameIndex >= 0 ? (
+          <>
+            {text.slice(0, nameIndex)}
+            <strong>{name}</strong>
+            {moveIndex >= 0 ? (
+              <>
+                {text.slice(nameIndex + name.length, moveIndex)}
+                <BattleLogMove move={moveName} data={move} />
+                {text.slice(moveIndex + moveName.length)}
+              </>
+            ) : (
+              text.slice(nameIndex + name.length)
+            )}
+          </>
+        ) : (
+          text
+        )}
+      </span>
     </p>
   )
 }
@@ -1025,6 +1058,7 @@ export function BattlePage() {
   const [showSwitches, setShowSwitches] = useState(false)
   const [resolving, setResolving] = useState(false)
   const [activeMove, setActiveMove] = useState<ActiveMove | null>(null)
+  const [hitSide, setHitSide] = useState<'player' | 'opponent' | null>(null)
   const [trainerSprites, setTrainerSprites] = useState(randomTrainerSprites)
   const requestRef = useRef<AbortController | null>(null)
   const sequenceRef = useRef(0)
@@ -1049,6 +1083,7 @@ export function BattlePage() {
     requestRef.current = controller
     setScreen('loading')
     setBattle(null)
+    setHitSide(null)
     setEvents([])
     setTeraSelected(false)
     setShowSwitches(false)
@@ -1084,15 +1119,32 @@ export function BattlePage() {
       }
       steps = [...steps, ...automatic]
     }
+    let presentedState = battle
     for (const step of steps) {
       setActiveMove(step.action?.move ? { side: step.action.side, name: step.action.move } : null)
       if (step.action) await waitForBattleDelay(BATTLE_TIMING.actionDelayMs)
       if (sequenceRef.current !== sequence) return
       setActiveMove(null)
+      const defender = step.action?.side === 'player' ? 'opponent' : 'player'
+      const previousDefender = presentedState[defender].roster[presentedState[defender].active]
+      const nextDefender = step.state[defender].roster[step.state[defender].active]
+      const receivedHit =
+        step.action?.move &&
+        previousDefender.member.id === nextDefender.member.id &&
+        (nextDefender.hp < previousDefender.hp || nextDefender.substituteHp < previousDefender.substituteHp) &&
+        step.events.some(
+          (event) =>
+            (event.type === 'damage' || event.type === 'substituteDamage') &&
+            event.pokemon === nextDefender.pokemon.name &&
+            event.amount > 0,
+        )
+      setHitSide(receivedHit ? defender : null)
+      presentedState = step.state
       setBattle(step.state)
       setEvents((current) => [...current, ...step.events])
       await waitForBattleDelay(BATTLE_TIMING.resultDisplayMs)
       if (sequenceRef.current !== sequence) return
+      setHitSide(null)
     }
     setTeraSelected(false)
     setResolving(false)
@@ -1194,6 +1246,7 @@ export function BattlePage() {
               <div className="battle-side opponent">
                 <BattleSideHazards hazards={battle.opponent.hazards} side="opponent" />
                 <ActivePokemon
+                  hit={hitSide === 'opponent'}
                   side={battle.opponent}
                   opponent
                   activeMove={activeMove?.side === 'opponent' ? activeMove.name : undefined}
@@ -1202,6 +1255,7 @@ export function BattlePage() {
               <div className="battle-side player">
                 <BattleSideHazards hazards={battle.player.hazards} side="player" />
                 <ActivePokemon
+                  hit={hitSide === 'player'}
                   side={battle.player}
                   activeMove={activeMove?.side === 'player' ? activeMove.name : undefined}
                   teraControl={
@@ -1210,7 +1264,7 @@ export function BattlePage() {
                         <button
                           className={`button secondary${teraSelected ? ' is-selected' : ''}`}
                           aria-pressed={teraSelected}
-                          disabled={resolving}
+                          disabled={resolving || battle.phase !== 'choice' || player.hp === 0}
                           onClick={() => setTeraSelected((selected) => !selected)}
                         >
                           {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
@@ -1280,13 +1334,14 @@ export function BattlePage() {
                 </div>
                 <div className="battle-secondary-actions">
                   <button className="button secondary" disabled={resolving} onClick={() => setShowSwitches(true)}>
-                    {t('battle.switch')}
+                    <ArrowRightLeft size={16} aria-hidden="true" /> {t('battle.switch')}
                   </button>
                 </div>
               </div>
             )}
 
             <div
+              role="log"
               className="battle-log"
               ref={logRef}
               tabIndex={0}

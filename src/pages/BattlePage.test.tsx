@@ -1,7 +1,7 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
-import { STORAGE_KEYS } from '../config/app'
+import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { clearApiCache } from '../lib/api-client'
 import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/battle'
@@ -123,6 +123,7 @@ const battleRoster = (
 
 afterEach(() => {
   cleanup()
+  vi.useRealTimers()
   localStorage.clear()
   clearApiCache()
   vi.restoreAllMocks()
@@ -287,7 +288,8 @@ describe('BattlePage lobby', () => {
       ?.querySelector<HTMLElement>('.battle-health')
     expect(playerInformationCard).not.toBeNull()
     expect(within(playerInformationCard!).getByText('100% HP')).toBeVisible()
-    expect(within(playerInformationCard!).getByText('Tipos')).toBeVisible()
+    expect(within(playerInformationCard!).queryByText('Tipos')).not.toBeInTheDocument()
+    expect(screen.getByRole('log', { name: /./ })).toHaveAttribute('tabindex', '0')
     expect(within(playerInformationCard!).getByLabelText('Normal')).toBeVisible()
     expect(activePokemonTriggers[1].closest('.battle-pokemon-visual')?.querySelector('.battle-active-types')).toBeNull()
     const activeTooltips = activePokemonTriggers.map((active) => within(active).getByRole('tooltip'))
@@ -327,6 +329,10 @@ describe('BattlePage lobby', () => {
     )
     const allyTrigger = activePokemonTriggers[1]
     const allyTooltip = activeTooltips[1]
+    fireEvent.focus(allyTrigger)
+    expect(allyTooltip).toHaveClass('is-pointer-positioned')
+    fireEvent.blur(allyTrigger)
+    expect(allyTooltip).not.toHaveClass('is-pointer-positioned')
     fireEvent.pointerMove(allyTrigger.closest('article')!, { clientX: 200, clientY: 220 })
     expect(allyTooltip).not.toHaveClass('is-pointer-positioned')
     fireEvent.pointerMove(allyTrigger, { clientX: 200, clientY: 220 })
@@ -371,27 +377,27 @@ describe('BattlePage lobby', () => {
     const opponentHealth = screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]
     const opponentHealthBefore = Number(opponentHealth.getAttribute('aria-valuenow'))
     battleLog.scrollTop = 0
+    vi.useFakeTimers()
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
     expect(screen.getByText('Tackle', { selector: '.battle-move-announcement' })).toBeVisible()
+    expect(allyTrigger.querySelector('.battle-sprite-motion')).toHaveClass('is-attacking')
     expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'true')
     expect(screen.getByRole('button', { name: /Tackle/ })).toBeDisabled()
     expect(screen.queryByText(/usou/)).not.toBeInTheDocument()
-    await waitFor(
-      () => expect(Number(opponentHealth.getAttribute('aria-valuenow'))).toBeLessThan(opponentHealthBefore),
-      { timeout: 1_200 },
-    )
-    await waitFor(() => expect(battleLog.scrollTop).toBe(560))
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs))
+    expect(Number(opponentHealth.getAttribute('aria-valuenow'))).toBeLessThan(opponentHealthBefore)
+    expect(battleLog.scrollTop).toBe(560)
     expect(screen.queryByText('Growl', { selector: '.battle-move-announcement' })).not.toBeInTheDocument()
-    const damageLog = screen.getByText(/perdeu \d+ HP/)
+    const damageLog = screen.getByText(/perdeu \d+ HP/).closest('.battle-log-event')
     expect(damageLog).toHaveClass('is-damage')
+    expect(activePokemonTriggers[0].querySelector('.battle-sprite-motion')).toHaveClass('is-hit')
+    expect(allyTrigger.querySelector('.battle-sprite-motion')).not.toHaveClass('is-attacking')
     expect(damageLog).toHaveTextContent(/Pokemon 0 perdeu \d+ HP/)
-    expect(await screen.findByText('Growl', { selector: '.battle-move-announcement' }, { timeout: 800 })).toBeVisible()
-    await waitFor(() => expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0), {
-      timeout: 2_500,
-    })
-    await waitFor(() => expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'false'), {
-      timeout: 800,
-    })
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.resultDisplayMs))
+    expect(screen.getByText('Growl', { selector: '.battle-move-announcement' })).toBeVisible()
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs + BATTLE_TIMING.resultDisplayMs))
+    expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0)
+    expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'false')
     expect(activeTooltips[0]).toHaveTextContent('Golpes utilizados')
     expect(activeTooltips[0]).toHaveTextContent('Growl')
     expect(activeTooltips[0].textContent?.match(/Growl/g)).toHaveLength(1)
@@ -461,8 +467,9 @@ describe('BattlePage lobby', () => {
     expect(within(tackleDetails as HTMLElement).getByLabelText('Classe: Físico')).toBeVisible()
     expect(within(tackleDetails as HTMLElement).getByLabelText('Normal')).toBeVisible()
     fireEvent.click(replacement)
-    expect(await screen.findByRole('heading', { name: 'O que Pokemon 1 fará?' })).toBeVisible()
-    expect(screen.getByText(/Pokemon 1 entrou em campo/)).toBeVisible()
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs))
+    expect(screen.getByRole('heading', { name: 'O que Pokemon 1 fará?' })).toBeVisible()
+    expect(screen.getByRole('log')).toHaveTextContent('Pokemon 1 entrou em campo')
     expect(screen.getByRole('button', { name: 'Terastalizar Normal' })).toBeVisible()
 
     fireEvent.click(screen.getByRole('button', { name: 'Nova batalha' }))
