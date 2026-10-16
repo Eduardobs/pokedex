@@ -1,4 +1,10 @@
 export const en = {
+  'battle.log.charging': '{name} is preparing its attack.',
+  'battle.log.recharging': '{name} must rest to recharge.',
+  'battle.log.futureSight': 'A future attack was set on {name}’s side.',
+  'battle.rechargeTurn': 'Spend recharge turn',
+  'battle.releaseMove': 'Release charged move',
+  'battle.fieldEffect.future-sight': 'Future Sight',
   'battle.title': 'Battle',
   'battle.description': 'Face a random team in a 6v6 singles battle inspired by Random Battle.',
   'battle.format': 'Random Battle · Singles 6v6',

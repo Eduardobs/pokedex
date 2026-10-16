@@ -50,6 +50,8 @@ export type BattleVolatileCondition =
   | 'protect'
   | 'flinch'
 export type BattlePokemon = {
+  chargingMoveIndex?: number
+  recharging?: boolean
   member: TeamMember
   pokemon: TeamPokemon
   originalStats: Stats
@@ -121,6 +123,7 @@ export type BattleSide = {
   active: number
   hazards: BattleHazards
   conditions: BattleSideConditions
+  futureSight?: { turns: number; attacker: BattlePokemon; move: BattleMove }
   switchRequested: boolean
 }
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
@@ -138,6 +141,7 @@ export type BattleTurnStep = {
   action: { side: 'player' | 'opponent'; move: string | null } | null
 }
 export type BattleEvent =
+  | { type: 'charging' | 'recharging' | 'futureSight'; pokemon: string }
   | { type: 'turn'; turn: number }
   | { type: 'move'; side: 'player' | 'opponent'; pokemon: string; move: string }
   | { type: 'switch'; side: 'player' | 'opponent'; pokemon: string }
@@ -441,6 +445,7 @@ export function createBattleState(
 function cloneState(state: BattleState): BattleState {
   const cloneSide = (side: BattleSide): BattleSide => ({
     ...side,
+    futureSight: side.futureSight ? { ...side.futureSight } : undefined,
     hazards: { ...side.hazards },
     conditions: { ...side.conditions },
     roster: side.roster.map((pokemon) => ({
@@ -699,7 +704,56 @@ function applyEntryAbility(own: BattleSide, foe: BattleSide, field: BattleField,
   }
 }
 
+const chargingMoves = new Set([
+  'fly',
+  'dig',
+  'dive',
+  'bounce',
+  'phantom-force',
+  'shadow-force',
+  'solar-beam',
+  'solar-blade',
+  'meteor-beam',
+  'electro-shot',
+  'geomancy',
+  'skull-bash',
+  'razor-wind',
+  'sky-attack',
+  'freeze-shock',
+  'ice-burn',
+])
+const rechargeMoves = new Set([
+  'hyper-beam',
+  'giga-impact',
+  'blast-burn',
+  'hydro-cannon',
+  'frenzy-plant',
+  'rock-wrecker',
+  'roar-of-time',
+  'meteor-assault',
+])
+const chargeBoost = (name: string): keyof BattleStages | null =>
+  name === 'skull-bash' ? 'defense' : ['meteor-beam', 'electro-shot'].includes(name) ? 'specialAttack' : null
+function semiInvulnerableMove(pokemon: BattlePokemon) {
+  return pokemon.chargingMoveIndex === undefined ? undefined : pokemon.moves[pokemon.chargingMoveIndex]?.data.name
+}
+function semiInvulnerableMultiplier(defender: BattlePokemon, move: BattleMove) {
+  const charging = semiInvulnerableMove(defender)
+  if (charging === 'fly' || charging === 'bounce')
+    return ['thunder', 'hurricane', 'twister', 'gust', 'smack-down'].includes(move.name)
+      ? ['twister', 'gust'].includes(move.name)
+        ? 2
+        : 1
+      : 0
+  if (charging === 'dig') return ['earthquake', 'magnitude'].includes(move.name) ? 2 : 0
+  if (charging === 'dive') return ['surf', 'whirlpool'].includes(move.name) ? 2 : 0
+  if (charging === 'phantom-force' || charging === 'shadow-force') return 0
+  return 1
+}
+
 export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
+  if (pokemon.recharging) return []
+  if (pokemon.chargingMoveIndex !== undefined) return [pokemon.chargingMoveIndex]
   return pokemon.moves.flatMap((move, index) => {
     if (move.pp <= 0) return []
     if (pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== index) return []
@@ -712,6 +766,7 @@ export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
 }
 
 function selectedBattleMoveIndex(pokemon: BattlePokemon, requestedIndex: number) {
+  if (pokemon.chargingMoveIndex !== undefined) return pokemon.chargingMoveIndex
   return pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== null ? pokemon.encoreMoveIndex : requestedIndex
 }
 
@@ -760,8 +815,16 @@ function applyDirectMoveDamage(
   return { amount: damage, hitSubstitute: false }
 }
 
+function solarMoveHasSun(attacker: BattlePokemon, defender: BattlePokemon, field: BattleField) {
+  return (
+    field.weather === 'sun' || attacker.ability.name === 'desolate-land' || defender.ability.name === 'desolate-land'
+  )
+}
+
 function fieldPowerModifier(move: BattleMove, attacker: BattlePokemon, defender: BattlePokemon, field: BattleField) {
-  let modifier = 1
+  let modifier = semiInvulnerableMultiplier(defender, move)
+  if (['solar-beam', 'solar-blade'].includes(move.name) && field.weather && !solarMoveHasSun(attacker, defender, field))
+    modifier *= 0.5
   if (field.weather === 'rain') modifier *= move.type === 'water' ? 1.5 : move.type === 'fire' ? 0.5 : 1
   if (field.weather === 'sun') modifier *= move.type === 'fire' ? 1.5 : move.type === 'water' ? 0.5 : 1
   if (isGrounded(attacker)) {
@@ -846,16 +909,57 @@ function applyMove(
   random: RandomSource,
   events: BattleEvent[],
   skipActionCheck = false,
+  delayed = false,
 ): MoveOutcome {
   const slot = attacker.moves[moveSlot]
-  if (!slot || slot.pp <= 0 || attacker.hp <= 0 || defender.hp <= 0) return null
-  slot.pp -= 1
-  const move = slot.data
+  const releasing = attacker.chargingMoveIndex === moveSlot
+  if (!slot || (!releasing && slot.pp <= 0) || attacker.hp <= 0 || defender.hp <= 0) return null
+  if (!releasing) slot.pp -= 1
+  const boost = chargeBoost(slot.data.name)
+  const move = { ...slot.data, statChanges: boost ? [] : slot.data.statChanges }
+  if (move.name === 'geomancy')
+    move.statChanges = (['specialAttack', 'specialDefense', 'speed'] as const).map((stat) => ({
+      stat,
+      change: 2,
+    }))
+  const secondary = (
+    { bounce: 'paralysis', 'freeze-shock': 'paralysis', 'ice-burn': 'burn', 'sky-attack': 'flinch' } as const
+  )[move.name]
+  if (secondary) {
+    move.ailment = secondary
+    move.ailmentChance = move.effectChance ?? 30
+  }
+  delete attacker.chargingMoveIndex
   const curse = supplementalMoveEffect(move.name)?.kind === 'curse'
   const ghostCurse = curse && effectiveTypes(attacker).includes('ghost')
   attacker.lastMoveIndex = moveSlot
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
+  if (!delayed && move.name === 'future-sight') {
+    if (defendingSide.futureSight) return { hit: true, succeeded: false }
+    defendingSide.futureSight = {
+      turns: 3,
+      attacker: { ...attacker, stages: { ...attacker.stages }, moves: attacker.moves.map((slot) => ({ ...slot })) },
+      move,
+    }
+    events.push({ type: 'futureSight', pokemon: defender.pokemon.name })
+    return { hit: false, succeeded: true }
+  }
+  if (!releasing && chargingMoves.has(move.name)) {
+    if (boost) {
+      const change = Math.min(1, 6 - attacker.stages[boost])
+      attacker.stages[boost] += change
+      if (change) events.push({ type: 'stage', pokemon: attacker.pokemon.name, stat: boost, change })
+    }
+    const instant =
+      (['solar-beam', 'solar-blade'].includes(move.name) && solarMoveHasSun(attacker, defender, field)) ||
+      (move.name === 'electro-shot' && field.weather === 'rain')
+    if (!instant) {
+      attacker.chargingMoveIndex = moveSlot
+      events.push({ type: 'charging', pokemon: attacker.pokemon.name })
+      return { hit: false, succeeded: true }
+    }
+  }
   if (sleepUsableMoves.has(move.name) && attacker.status !== 'sleep') return { hit: true, succeeded: false }
   if (move.name === 'sleep-talk') {
     const choices = attacker.moves.flatMap((candidate, index) =>
@@ -866,8 +970,8 @@ function applyMove(
       ? { hit: true, succeeded: false }
       : applyMove(attacker, defender, defendingSide, field, selected, random, events, true)
   }
-  if (move.name !== 'protect') attacker.protectStreak = 0
-  if (move.name === 'protect') {
+  if (!['protect', 'detect'].includes(move.name)) attacker.protectStreak = 0
+  if (move.name === 'protect' || move.name === 'detect') {
     const succeeds = random() < 1 / 3 ** attacker.protectStreak
     if (!succeeds) {
       attacker.protectStreak = 0
@@ -882,6 +986,14 @@ function applyMove(
     return { hit: true, succeeded: false }
   }
   if (move.name === 'steel-roller' && !field.terrain) return { hit: true, succeeded: false }
+  if (
+    !delayed &&
+    ['selected-pokemon', 'all-opponents', 'all-other-pokemon', 'random-opponent'].includes(move.target) &&
+    semiInvulnerableMultiplier(defender, move) === 0
+  ) {
+    events.push({ type: 'miss', pokemon: defender.pokemon.name })
+    return { hit: false, succeeded: false }
+  }
   if (move.accuracy !== null && !defender.volatile.telekinesis && random() * 100 >= move.accuracy) {
     events.push({ type: 'miss', pokemon: defender.pokemon.name })
     return { hit: false, succeeded: false }
@@ -892,7 +1004,8 @@ function applyMove(
     return { hit: false, succeeded: false }
   }
 
-  if (defender.volatile.protect && move.target !== 'user' && move.name !== 'protect' && !curse) {
+  if (['phantom-force', 'shadow-force'].includes(move.name)) delete defender.volatile.protect
+  if (!delayed && defender.volatile.protect && move.target !== 'user' && move.name !== 'protect' && !curse) {
     events.push({ type: 'protected', pokemon: defender.pokemon.name })
     return { hit: false, succeeded: false }
   }
@@ -1025,7 +1138,7 @@ function applyMove(
     if (physical && field.weather === 'snow' && effectiveTypes(defender).includes('ice')) defense *= 1.5
     if (!physical && field.weather === 'sandstorm' && effectiveTypes(defender).includes('rock')) defense *= 1.5
     const stab = battleSameTypeAttackBonus(attacker, move.type)
-    const critical = random() < 1 / 24
+    const critical = random() < (['razor-wind', 'sky-attack'].includes(move.name) ? 1 / 8 : 1 / 24)
     const variance = 0.85 + random() * 0.15
     const conditionalPower =
       move.power *
@@ -1049,7 +1162,9 @@ function applyMove(
           effectiveness *
           (critical ? 1.5 : 1) *
           variance *
-          fieldPowerModifier(move, attacker, defender, field) *
+          (delayed
+            ? fieldPowerModifier(move, attacker, { ...defender, chargingMoveIndex: undefined }, field)
+            : fieldPowerModifier(move, attacker, defender, field)) *
           screen,
       ),
     )
@@ -1167,6 +1282,9 @@ function performChoice(
   random: RandomSource,
   events: BattleEvent[],
 ) {
+  const active = own.roster[own.active]
+  if (active.hp > 0 && !own.switchRequested && (active.recharging || active.chargingMoveIndex !== undefined))
+    choice = { kind: 'move', index: active.chargingMoveIndex ?? 0 }
   if (choice.kind === 'switch') {
     const replacement = own.roster[choice.index]
     if (!replacement || choice.index === own.active || replacement.hp <= 0) return
@@ -1181,6 +1299,8 @@ function performChoice(
       leaving.cursed &&
       leaving.lastMoveIndex !== null &&
       leaving.moves[leaving.lastMoveIndex]?.data.name === 'baton-pass'
+    delete leaving.chargingMoveIndex
+    delete leaving.recharging
     leaving.stages = emptyStages()
     leaving.encoreTurns = 0
     leaving.encoreMoveIndex = null
@@ -1217,6 +1337,12 @@ function performChoice(
   const attacker = own.roster[own.active]
   const defender = foe.roster[foe.active]
   if (!attacker || !defender || attacker.hp <= 0) return
+  if (attacker.recharging) {
+    delete attacker.recharging
+    events.push({ type: 'recharging', pokemon: attacker.pokemon.name })
+    tickMoveRestrictions(attacker)
+    return
+  }
   const legalMoves = legalBattleMoveIndexes(attacker)
   const selectedMoveIndex = selectedBattleMoveIndex(attacker, choice.index)
   const start = events.length
@@ -1238,6 +1364,9 @@ function performChoice(
   let succeeded = outcome.succeeded
   const move = attacker.moves[selectedMoveIndex]?.data
   if (outcome.hit && move) {
+    if (outcome.succeeded && rechargeMoves.has(move.name)) attacker.recharging = true
+    if (move.name === 'smack-down' && ['fly', 'bounce'].includes(semiInvulnerableMove(defender) ?? ''))
+      delete defender.chargingMoveIndex
     const supplemental = supplementalMoveEffect(move.name)
     if (supplemental?.kind === 'encore' && !outcome.hitSubstitute) {
       const repeated = defender.lastMoveIndex
@@ -1435,8 +1564,9 @@ function performChoice(
 }
 
 function choicePriority(side: BattleSide, choice: BattleChoice) {
-  if (choice.kind === 'switch') return 6
   const pokemon = side.roster[side.active]
+  if (pokemon.recharging) return 0
+  if (choice.kind === 'switch' && pokemon.chargingMoveIndex === undefined) return 6
   return pokemon.moves[selectedBattleMoveIndex(pokemon, choice.index)]?.data.priority ?? 0
 }
 
@@ -1660,7 +1790,10 @@ export function resolveBattleTurnSteps(
   const performStep = (own: BattleSide, foe: BattleSide, choice: BattleChoice, side: 'player' | 'opponent') => {
     const eventStart = events.length
     const move =
-      choice.kind === 'move' && own.roster[own.active]?.hp > 0 && foe.roster[foe.active]?.hp > 0
+      choice.kind === 'move' &&
+      !own.roster[own.active]?.recharging &&
+      own.roster[own.active]?.hp > 0 &&
+      foe.roster[foe.active]?.hp > 0
         ? (own.roster[own.active].moves[selectedBattleMoveIndex(own.roster[own.active], choice.index)]?.data.name ??
           null)
         : null
@@ -1706,6 +1839,14 @@ export function resolveBattleTurnSteps(
     return steps
   }
 
+  const lockedChoice = (side: BattleSide, choice: BattleChoice): BattleChoice => {
+    const pokemon = side.roster[side.active]
+    return pokemon.hp > 0 && (pokemon.recharging || pokemon.chargingMoveIndex !== undefined)
+      ? { kind: 'move', index: pokemon.chargingMoveIndex ?? 0 }
+      : choice
+  }
+  playerChoice = lockedChoice(state.player, playerChoice)
+  opponentChoice = lockedChoice(state.opponent, opponentChoice)
   const playerPriority = choicePriority(state.player, playerChoice)
   const opponentPriority = choicePriority(state.opponent, opponentChoice)
   const playerSpeed = speed(state.player)
@@ -1727,6 +1868,20 @@ export function resolveBattleTurnSteps(
   const finalEventStart = events.length
   residual(state.player, state.opponent, state.field, random, events)
   residual(state.opponent, state.player, state.field, random, events)
+  for (const side of [state.player, state.opponent]) {
+    const pending = side.futureSight
+    if (!pending || --pending.turns > 0) continue
+    delete side.futureSight
+    const target = side.roster[side.active]
+    if (target.hp <= 0) continue
+    const source = { ...pending.attacker, hp: Math.max(1, pending.attacker.hp), moves: [{ data: pending.move, pp: 1 }] }
+    const start = events.length
+    applyMove(source, target, side, state.field, 0, random, events, true, true)
+    for (const event of events.slice(start)) {
+      if (event.type === 'move') event.side = side === state.player ? 'opponent' : 'player'
+    }
+    if (target.hp === 0) events.push({ type: 'faint', pokemon: target.pokemon.name })
+  }
   tickField(state, events)
   applyTurnTerastallization(state.player, playerChoice, 'player', events)
   applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)

@@ -194,6 +194,11 @@ describe('BattlePage lobby', () => {
     state.field.terrain = 'grassy'
     state.field.terrainTurns = 2
     state.field.trickRoomTurns = 1
+    state.opponent.futureSight = {
+      turns: 2,
+      attacker: state.player.roster[0],
+      move: state.player.roster[0].moves[0].data,
+    }
     state.player.conditions.reflect = 4
     state.opponent.conditions.tailwind = 2
 
@@ -204,6 +209,7 @@ describe('BattlePage lobby', () => {
     )
 
     const effects = screen.getByRole('group', { name: 'Efeitos ativos no campo de batalha' })
+    expect(within(effects).getByText('Future Sight · 2 turnos restantes · lado adversário')).toBeVisible()
     expect(within(effects).getByText('Chuva · 3 turnos restantes')).toBeVisible()
     expect(within(effects).getByText('Campo de Grama')).toBeVisible()
     expect(within(effects).getByText('Trick Room')).toBeVisible()

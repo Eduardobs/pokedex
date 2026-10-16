@@ -1661,3 +1661,227 @@ describe('Random Battle engine', () => {
     expect(victory.events).toContainEqual({ type: 'win', side: 'player' })
   })
 })
+
+describe('multi-turn moves', () => {
+  function setup(name: string) {
+    const a = team('player')
+    const b = team('opponent')
+    const state = createBattleState(a, roster(a), b, roster(b))
+    state.player.roster[0].moves[0] = { data: move({ name, power: 40 }), pp: 1 }
+    state.player.roster[0].stats[5] = 500
+    return state
+  }
+  const act = (state: ReturnType<typeof setup>, index = 0, opponentIndex = 3) =>
+    resolveBattleTurn(state, { kind: 'move', index }, { kind: 'move', index: opponentIndex }, () => 0.5)
+
+  it('resolves Future Sight two turns later against the replacement, even after its user leaves', () => {
+    const initial = setup('future-sight')
+    const first = act(initial).state
+    expect(first.opponent.roster[0].hp).toBe(first.opponent.roster[0].maxHp)
+    expect(first.opponent.futureSight?.turns).toBe(2)
+    expect(first.player.roster[0].chargingMoveIndex).toBeUndefined()
+    const second = resolveBattleTurn(first, { kind: 'switch', index: 1 }, { kind: 'switch', index: 1 }, () => 0.5).state
+    expect(second.opponent.futureSight?.turns).toBe(1)
+    const third = act(second, 2).state
+    expect(third.opponent.futureSight).toBeUndefined()
+    expect(third.opponent.roster[1].hp).toBeLessThan(third.opponent.roster[1].maxHp)
+    expect(initial.opponent.futureSight).toBeUndefined()
+    expect(first.opponent.futureSight?.turns).toBe(2)
+  })
+
+  it.each([
+    'fly',
+    'dig',
+    'dive',
+    'bounce',
+    'phantom-force',
+    'shadow-force',
+    'solar-beam',
+    'solar-blade',
+    'meteor-beam',
+    'electro-shot',
+    'skull-bash',
+    'razor-wind',
+    'sky-attack',
+    'freeze-shock',
+    'ice-burn',
+  ])('%s charges, locks the action, then hits without spending another PP', (name) => {
+    const first = act(setup(name)).state
+    expect(first.player.roster[0].chargingMoveIndex).toBe(0)
+    expect(first.opponent.roster[0].hp).toBe(first.opponent.roster[0].maxHp)
+    expect(legalBattleMoveIndexes(first.player.roster[0])).toEqual([0])
+    const second = resolveBattleTurn(first, { kind: 'switch', index: 1 }, { kind: 'move', index: 3 }, () => 0.5).state
+    expect(second.player.active).toBe(0)
+    expect(second.player.roster[0].chargingMoveIndex).toBeUndefined()
+    expect(second.player.roster[0].moves[0].pp).toBe(0)
+    expect(second.opponent.roster[0].hp).toBeLessThan(second.opponent.roster[0].maxHp)
+  })
+
+  it.each([
+    'hyper-beam',
+    'giga-impact',
+    'blast-burn',
+    'hydro-cannon',
+    'frenzy-plant',
+    'rock-wrecker',
+    'roar-of-time',
+    'meteor-assault',
+  ])('%s spends its next turn recharging and cannot switch', (name) => {
+    const first = act(setup(name)).state
+    expect(first.player.roster[0].recharging).toBe(true)
+    const second = resolveBattleTurn(first, { kind: 'switch', index: 1 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(second.state.player.active).toBe(0)
+    expect(second.state.player.roster[0].recharging).toBeUndefined()
+    expect(second.events).toContainEqual({ type: 'recharging', pokemon: 'player-0' })
+    expect(second.state.player.roster[0].hp).toBeLessThan(first.player.roster[0].hp)
+  })
+
+  it('cancels a charge on sleep and applies Geomancy boosts only on release', () => {
+    const state = setup('geomancy')
+    state.player.roster[0].moves[0].data = move({
+      name: 'geomancy',
+      damageClass: 'status',
+      target: 'user',
+      power: null,
+    })
+    const first = act(state).state
+    expect(first.player.roster[0].stages.specialAttack).toBe(0)
+    const second = act(first).state
+    expect(second.player.roster[0].stages).toMatchObject({ specialAttack: 2, specialDefense: 2, speed: 2 })
+    first.player.roster[0].status = 'sleep'
+    first.player.roster[0].sleepTurns = 2
+    const cancelled = act(first).state
+    expect(cancelled.player.roster[0].chargingMoveIndex).toBeUndefined()
+    expect(cancelled.player.roster[0].stages.specialAttack).toBe(0)
+  })
+
+  it.each([
+    ['solar-beam', 'sun'],
+    ['solar-blade', 'sun'],
+    ['electro-shot', 'rain'],
+  ] as const)('%s attacks immediately in %s', (name, weather) => {
+    const state = setup(name)
+    state.field.weather = weather
+    state.field.weatherTurns = 5
+    const first = act(state).state
+    expect(first.player.roster[0].chargingMoveIndex).toBeUndefined()
+    expect(first.opponent.roster[0].hp).toBeLessThan(first.opponent.roster[0].maxHp)
+    if (name === 'electro-shot') expect(first.player.roster[0].stages.specialAttack).toBe(1)
+  })
+
+  it.each(['fly', 'dig', 'dive', 'bounce', 'phantom-force', 'shadow-force'])(
+    '%s avoids ordinary attacks during charging',
+    (name) => {
+      const state = act(setup(name), 0, 0).state
+      expect(state.player.roster[0].hp).toBe(state.player.roster[0].maxHp)
+    },
+  )
+
+  it.each([
+    ['fly', 'thunder'],
+    ['fly', 'hurricane'],
+    ['fly', 'twister'],
+    ['bounce', 'smack-down'],
+    ['dig', 'earthquake'],
+    ['dig', 'magnitude'],
+    ['dive', 'surf'],
+    ['dive', 'whirlpool'],
+  ])('%s can be hit by %s', (name, counter) => {
+    const state = setup(name)
+    state.opponent.roster[0].moves[0].data.name = counter
+    const first = act(state, 0, 0).state
+    expect(first.player.roster[0].hp).toBeLessThan(first.player.roster[0].maxHp)
+    if (counter === 'smack-down') expect(first.player.roster[0].chargingMoveIndex).toBeUndefined()
+  })
+  it.each(['meteor-beam', 'electro-shot', 'skull-bash'])('%s boosts only during preparation', (name) => {
+    const first = act(setup(name)).state
+    const stat = name === 'skull-bash' ? 'defense' : 'specialAttack'
+    expect(first.player.roster[0].stages[stat]).toBe(1)
+    expect(act(first).state.player.roster[0].stages[stat]).toBe(1)
+  })
+
+  it.each(['phantom-force', 'shadow-force'])('%s breaks Protect on release', (name) => {
+    const first = act(setup(name)).state
+    first.opponent.roster[0].moves[0].data = move({
+      name: 'protect',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      priority: 4,
+    })
+    const second = act(first, 0, 0)
+    expect(second.state.opponent.roster[0].hp).toBeLessThan(first.opponent.roster[0].hp)
+    expect(second.events.some((event) => event.type === 'protected')).toBe(false)
+  })
+
+  it.each([
+    ['dig', 'earthquake'],
+    ['dig', 'magnitude'],
+    ['dive', 'surf'],
+    ['dive', 'whirlpool'],
+  ])('%s takes double damage from %s', (name, counter) => {
+    const state = setup(name)
+    state.opponent.roster[0].moves[0].data.name = counter
+    state.player.roster[0].moves[3].data.statChanges = []
+    const damage = (result: ReturnType<typeof act>) => {
+      const hit = result.events.find((event) => event.type === 'damage' && event.pokemon === 'player-0')
+      return hit?.type === 'damage' ? hit.amount : 0
+    }
+    const control = damage(act(state, 3, 0))
+    expect(control).toBeGreaterThan(0)
+    expect(damage(act(state, 0, 0))).toBeGreaterThanOrEqual(control * 2)
+  })
+
+  it('does not replace a pending Future Sight or block it with Protect', () => {
+    const initial = setup('future-sight')
+    initial.player.roster[0].moves[0].pp = 3
+    const first = act(initial).state
+    const second = act(first)
+    expect(second.state.opponent.futureSight?.turns).toBe(1)
+    expect(second.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+    second.state.opponent.roster[0].moves[0].data = move({
+      name: 'protect',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      priority: 4,
+    })
+    const third = act(second.state, 3, 0).state
+    expect(third.opponent.roster[0].hp).toBeLessThan(third.opponent.roster[0].maxHp)
+  })
+  it('releases Solar Beam immediately under Desolate Land', () => {
+    const state = setup('solar-beam')
+    state.player.roster[0].ability.name = 'desolate-land'
+    const result = act(state).state
+    expect(result.player.roster[0].chargingMoveIndex).toBeUndefined()
+    expect(result.opponent.roster[0].hp).toBeLessThan(result.opponent.roster[0].maxHp)
+  })
+
+  it.each(['rain', 'snow', 'sandstorm'] as const)('halves Solar Beam damage in %s', (weather) => {
+    const charged = act(setup('solar-beam')).state
+    const damage = (result: ReturnType<typeof act>) => result.events.find((event) => event.type === 'damage')
+    const normal = damage(act(charged))
+    charged.field.weather = weather
+    charged.field.weatherTurns = 5
+    const reduced = damage(act(charged))
+    expect(
+      normal?.type === 'damage' && reduced?.type === 'damage' && Math.abs(normal.amount / 2 - reduced.amount) < 1,
+    ).toBe(true)
+  })
+
+  it.each([
+    'solar-beam',
+    'solar-blade',
+    'meteor-beam',
+    'electro-shot',
+    'geomancy',
+    'skull-bash',
+    'razor-wind',
+    'sky-attack',
+    'freeze-shock',
+    'ice-burn',
+  ])('%s remains vulnerable while charging', (name) => {
+    const result = act(setup(name), 0, 0).state
+    expect(result.player.roster[0].hp).toBeLessThan(result.player.roster[0].maxHp)
+  })
+})

@@ -1,4 +1,10 @@
 export const es = {
+  'battle.log.charging': '{name} está preparando su ataque.',
+  'battle.log.recharging': '{name} necesita descansar para recargar.',
+  'battle.log.futureSight': 'Se preparó un ataque futuro en el lado de {name}.',
+  'battle.rechargeTurn': 'Pasar turno de recarga',
+  'battle.releaseMove': 'Completar movimiento cargado',
+  'battle.fieldEffect.future-sight': 'Future Sight',
   'battle.title': 'Combate',
   'battle.description': 'Enfréntate a un equipo aleatorio en un combate individual 6×6 inspirado en Random Battle.',
   'battle.format': 'Random Battle · Individual 6×6',

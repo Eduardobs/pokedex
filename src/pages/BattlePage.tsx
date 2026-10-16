@@ -754,6 +754,10 @@ function BattleSwitchButton({
 function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
   const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
   switch (event.type) {
+    case 'charging':
+    case 'recharging':
+    case 'futureSight':
+      return t(`battle.log.${event.type}`, { name: prettyName(event.pokemon) })
     case 'turn':
       return t('battle.log.turn', { turn: event.turn })
     case 'move':
@@ -990,14 +994,19 @@ export function BattleFieldEffects({
     ...(field.trickRoomTurns > 0 ? [{ id: 'trick-room' as const }] : []),
     ...(['player', 'opponent'] as const).flatMap((sideName) => {
       const side = sideName === 'player' ? player : opponent
-      return sideConditionKeys.flatMap((condition) =>
-        side.conditions[condition] > 0 ? [{ id: condition, side: sideName }] : [],
-      )
+      return [
+        ...(side.futureSight
+          ? [{ id: 'future-sight' as const, side: sideName, turns: Math.min(2, side.futureSight.turns) }]
+          : []),
+        ...sideConditionKeys.flatMap((condition) =>
+          side.conditions[condition] > 0 ? [{ id: condition, side: sideName }] : [],
+        ),
+      ]
     }),
   ]
   if (!effects.length) return null
   return (
-    <div className="battle-field-effects" role="group" aria-label={t('battle.fieldEffects')}>
+    <div className="battle-field-effects" aria-live="polite" role="group" aria-label={t('battle.fieldEffects')}>
       {effects.map((effect) => (
         <span key={`${effect.id}-${'side' in effect ? effect.side : 'field'}`}>
           {t(`battle.fieldEffect.${effect.id}`)}
@@ -1264,7 +1273,13 @@ export function BattlePage() {
                         <button
                           className={`button secondary${teraSelected ? ' is-selected' : ''}`}
                           aria-pressed={teraSelected}
-                          disabled={resolving || battle.phase !== 'choice' || player.hp === 0}
+                          disabled={
+                            resolving ||
+                            battle.phase !== 'choice' ||
+                            player.hp === 0 ||
+                            player.recharging ||
+                            player.chargingMoveIndex !== undefined
+                          }
                           onClick={() => setTeraSelected((selected) => !selected)}
                         >
                           {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
@@ -1321,19 +1336,36 @@ export function BattlePage() {
             ) : (
               <div className="battle-actions">
                 <h2>{t('battle.chooseAction', { name: prettyName(player.pokemon.name) })}</h2>
+                {(player.recharging || player.chargingMoveIndex !== undefined) && (
+                  <button
+                    className="button primary"
+                    disabled={resolving}
+                    onClick={() => void play({ kind: 'move', index: player.chargingMoveIndex ?? 0 })}
+                  >
+                    {t(player.recharging ? 'battle.rechargeTurn' : 'battle.releaseMove')}
+                  </button>
+                )}
                 <div className="battle-moves">
                   {player.moves.map((move, index) => (
                     <BattleMoveButton
                       key={`${move.data.name}-${index}`}
                       move={move}
                       opponent={battle.opponent.roster[battle.opponent.active]}
-                      disabled={resolving || !legalBattleMoveIndexes(player).includes(index)}
+                      disabled={
+                        resolving ||
+                        player.chargingMoveIndex !== undefined ||
+                        !legalBattleMoveIndexes(player).includes(index)
+                      }
                       onChoose={() => void play({ kind: 'move', index, tera: teraSelected })}
                     />
                   ))}
                 </div>
                 <div className="battle-secondary-actions">
-                  <button className="button secondary" disabled={resolving} onClick={() => setShowSwitches(true)}>
+                  <button
+                    className="button secondary"
+                    disabled={resolving || player.recharging || player.chargingMoveIndex !== undefined}
+                    onClick={() => setShowSwitches(true)}
+                  >
                     <ArrowRightLeft size={16} aria-hidden="true" /> {t('battle.switch')}
                   </button>
                 </div>

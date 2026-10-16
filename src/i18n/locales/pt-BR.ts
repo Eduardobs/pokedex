@@ -1,4 +1,10 @@
 export const ptBR = {
+  'battle.log.charging': '{name} está preparando o ataque.',
+  'battle.log.recharging': '{name} precisa descansar para recarregar.',
+  'battle.log.futureSight': 'Um ataque futuro foi preparado no lado de {name}.',
+  'battle.rechargeTurn': 'Passar turno de recarga',
+  'battle.releaseMove': 'Concluir golpe carregado',
+  'battle.fieldEffect.future-sight': 'Future Sight',
   'battle.title': 'Batalha',
   'battle.description': 'Enfrente uma equipe aleatória em uma batalha individual 6×6 inspirada no Random Battle.',
   'battle.format': 'Random Battle · Singles 6×6',
