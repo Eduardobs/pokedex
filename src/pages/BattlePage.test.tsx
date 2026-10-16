@@ -183,7 +183,7 @@ describe('BattlePage lobby', () => {
     expect(screen.queryByRole('group', { name: 'Armadilhas no seu lado' })).not.toBeInTheDocument()
   })
 
-  it('shows active field and side conditions without their remaining turns', () => {
+  it('shows weather turns while keeping other active-condition durations hidden', () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
     const state = createBattleState(player, battleRoster(player), opponent, battleRoster(opponent))
@@ -202,12 +202,14 @@ describe('BattlePage lobby', () => {
     )
 
     const effects = screen.getByRole('group', { name: 'Efeitos ativos no campo de batalha' })
-    expect(within(effects).getByText('Chuva')).toBeVisible()
+    expect(within(effects).getByText('Chuva · 3 turnos restantes')).toBeVisible()
     expect(within(effects).getByText('Campo de Grama')).toBeVisible()
     expect(within(effects).getByText('Trick Room')).toBeVisible()
     expect(within(effects).getByText('Reflect · seu lado')).toBeVisible()
     expect(within(effects).getByText('Tailwind · lado adversário')).toBeVisible()
-    expect(within(effects).queryByText(/turno/)).not.toBeInTheDocument()
+    expect(within(effects).queryByText('Campo de Grama · 2 turnos restantes')).not.toBeInTheDocument()
+    expect(within(effects).queryByText('Trick Room · 1 turnos restantes')).not.toBeInTheDocument()
+    expect(within(effects).queryByText('Reflect · seu lado · 4 turnos restantes')).not.toBeInTheDocument()
   })
 
   it('guides the user to the team builder when no complete team is available', () => {
@@ -264,6 +266,8 @@ describe('BattlePage lobby', () => {
     const battleLog = screen.getByLabelText('Registro da batalha')
     expect(actionPanel).not.toBeNull()
     expect(actionPanel!.compareDocumentPosition(battleLog) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(battleLog).toHaveAttribute('tabindex', '0')
+    Object.defineProperty(battleLog, 'scrollHeight', { configurable: true, value: 560 })
     expect(screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]).toHaveAttribute('aria-valuenow')
     expect(screen.getAllByText('Nº 1')).toHaveLength(2)
     expect(screen.queryByText('Saudável')).not.toBeInTheDocument()
@@ -278,6 +282,7 @@ describe('BattlePage lobby', () => {
       .closest('article')
       ?.querySelector<HTMLElement>('.battle-health')
     expect(playerInformationCard).not.toBeNull()
+    expect(within(playerInformationCard!).getByText('100% HP')).toBeVisible()
     expect(within(playerInformationCard!).getByText('Tipos')).toBeVisible()
     expect(within(playerInformationCard!).getByLabelText('Normal')).toBeVisible()
     expect(activePokemonTriggers[1].closest('.battle-pokemon-visual')?.querySelector('.battle-active-types')).toBeNull()
@@ -352,6 +357,7 @@ describe('BattlePage lobby', () => {
     fireEvent.click(teraButton)
     const opponentHealth = screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]
     const opponentHealthBefore = Number(opponentHealth.getAttribute('aria-valuenow'))
+    battleLog.scrollTop = 0
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
     expect(screen.getByText('Tackle', { selector: '.battle-move-announcement' })).toBeVisible()
     expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'true')
@@ -361,6 +367,7 @@ describe('BattlePage lobby', () => {
       () => expect(Number(opponentHealth.getAttribute('aria-valuenow'))).toBeLessThan(opponentHealthBefore),
       { timeout: 1_200 },
     )
+    await waitFor(() => expect(battleLog.scrollTop).toBe(560))
     expect(screen.queryByText('Growl', { selector: '.battle-move-announcement' })).not.toBeInTheDocument()
     const damageLog = screen.getByText(/perdeu \d+ HP/)
     expect(damageLog).toHaveClass('is-damage')
@@ -394,6 +401,7 @@ describe('BattlePage lobby', () => {
       'src',
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png',
     )
+    expect(within(replacement).getByText(/HP · 100%/)).toBeVisible()
     fireEvent.mouseOver(replacement)
     const replacementTooltip = within(replacement).getByRole('tooltip')
     expect(replacementTooltip).toHaveTextContent('Pokemon 1')

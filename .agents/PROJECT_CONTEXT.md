@@ -66,11 +66,12 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle supplements PokéAPI move data with declarative local behavior when an effect is not available as structured API data.
 - Random Battle models the major and temporary status conditions documented by Serebii, including their compatible combinations, turn effects, type and ability immunities, and switch behavior.
 - Random Battle tracks timed weather, terrain, Trick Room, screens, and Tailwind effects and applies their combat modifiers.
-- Random Battle visibly identifies active field, side, and Pokémon conditions without revealing their remaining duration.
+- Random Battle visibly identifies active field, side, and Pokémon conditions; weather effects display their remaining turns, while other remaining durations stay hidden.
 - Random Battle uses the supplied color and icon treatment for its six major status conditions and identifies entry hazards on the affected side of the field.
 - Random Battle Encore lasts a randomly selected two to six actions and ends when the affected Pokémon switches or the repeated move runs out of PP.
 - Move detail pages display the local supplemental battle behavior when the selected move has one.
 - Random Battle resolves combatants' actions sequentially after a configurable presentation delay, announcing each move over its user and completing that combatant's HP and effect presentation before announcing the next action or accepting another choice.
+- Random Battle keeps the full action history in a fixed-height, scrollable battle log that follows newly added actions.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.

@@ -127,9 +127,12 @@
 }
 .battle-hazard {
   position: relative;
-  display: grid;
-  width: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 28px;
   height: 28px;
+  padding: 0 7px;
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   border-radius: 50%;
@@ -168,6 +171,14 @@
   color: var(--surface);
   font-size: 8px;
   line-height: 1;
+}
+.battle-hazard-label {
+  overflow: hidden;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .battle-active {
   position: relative;
@@ -662,12 +673,24 @@
 .battle-gender-icon.female {
   color: #d55386;
 }
+.battle-health-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin: 9px 0 6px;
+}
 .battle-health-track {
   height: 12px;
-  margin: 9px 0 6px;
   overflow: hidden;
   border-radius: 999px;
   background: color-mix(in srgb, var(--line) 80%, var(--surface));
+}
+.battle-health-percentage {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 .battle-health-track span {
   display: block;
@@ -733,7 +756,7 @@
 .battle-console {
   display: flex;
   flex-direction: column;
-  min-height: 540px;
+  min-height: 0;
   overflow: visible;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -742,10 +765,13 @@
 .battle-log {
   position: relative;
   z-index: 1;
-  flex: 1;
-  min-height: 260px;
+  flex: 0 0 320px;
+  height: 320px;
   padding: 18px;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   border-bottom: 1px solid var(--line);
   border-radius: 17px 17px 0 0;
   background: var(--surface-soft);
@@ -1168,7 +1194,7 @@
     order: 1;
   }
   .battle-log {
-    flex: none;
+    flex: 0 0 320px;
     order: 2;
     border-top: 1px solid var(--line);
     border-bottom: 0;

@@ -177,6 +177,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
   const { language, t } = useLanguage()
   const displayedHp = useAnimatedHealth(pokemon.hp)
   const percent = Math.max(0, Math.round((pokemon.hp / pokemon.maxHp) * 100))
+  const formattedPercent = formatNumber(percent, language)
   const stages = Object.entries(pokemon.stages)
     .filter(([, value]) => value !== 0)
     .map(([stat, value]) => ({ stat: stat as keyof typeof pokemon.stages, value }))
@@ -192,15 +193,20 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
         </div>
         <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
       </div>
-      <div
-        className="battle-health-track"
-        role="meter"
-        aria-label={t('battle.health', { name: prettyName(pokemon.pokemon.name) })}
-        aria-valuemin={0}
-        aria-valuemax={pokemon.maxHp}
-        aria-valuenow={pokemon.hp}
-      >
-        <span style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }} />
+      <div className="battle-health-bar">
+        <div
+          className="battle-health-track"
+          role="meter"
+          aria-label={t('battle.health', { name: prettyName(pokemon.pokemon.name) })}
+          aria-valuemin={0}
+          aria-valuemax={pokemon.maxHp}
+          aria-valuenow={pokemon.hp}
+        >
+          <span style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }} />
+        </div>
+        <span className="battle-health-percentage">
+          {t('battle.healthPercentage', { percentage: formattedPercent })}
+        </span>
       </div>
       <div className="battle-health-meta">
         <span className="battle-pokemon-conditions">
@@ -624,7 +630,11 @@ function BattleSwitchButton({
         <span className="battle-switch-copy">
           <b>{prettyName(pokemon.pokemon.name)}</b>
           <small>
-            {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP
+            {t('battle.healthSummary', {
+              current: formatNumber(pokemon.hp, language),
+              total: formatNumber(pokemon.maxHp, language),
+              percentage: formatNumber(hpPercentage, language),
+            })}
           </small>
         </span>
       </span>
@@ -849,7 +859,7 @@ export function BattleFieldEffects({
 }) {
   const { t } = useLanguage()
   const effects = [
-    ...(field.weather ? [{ id: field.weather }] : []),
+    ...(field.weather ? [{ id: field.weather, turns: field.weatherTurns }] : []),
     ...(field.terrain ? [{ id: field.terrain }] : []),
     ...(field.trickRoomTurns > 0 ? [{ id: 'trick-room' as const }] : []),
     ...(['player', 'opponent'] as const).flatMap((sideName) => {
@@ -865,6 +875,7 @@ export function BattleFieldEffects({
       {effects.map((effect) => (
         <span key={`${effect.id}-${'side' in effect ? effect.side : 'field'}`}>
           {t(`battle.fieldEffect.${effect.id}`)}
+          {'turns' in effect && ` · ${t('battle.turnsRemaining', { turns: effect.turns ?? 0 })}`}
           {'side' in effect && ` · ${t(`battle.fieldSide.${effect.side}`)}`}
         </span>
       ))}
@@ -895,11 +906,14 @@ export function BattleSideHazards({ hazards, side }: { hazards: BattleHazards; s
           <span
             key={key}
             className={`battle-hazard battle-hazard--${translationKey}`}
+            role="img"
             aria-label={layeredLabel}
-            title={layeredLabel}
           >
             <Icon aria-hidden="true" />
             {typeof layers === 'number' && layers > 1 && <b aria-hidden="true">{layers}</b>}
+            <span className="battle-hazard-label" aria-hidden="true">
+              {layeredLabel}
+            </span>
           </span>
         )
       })}
@@ -921,6 +935,7 @@ export function BattlePage() {
   const [trainerSprites, setTrainerSprites] = useState(randomTrainerSprites)
   const requestRef = useRef<AbortController | null>(null)
   const sequenceRef = useRef(0)
+  const logRef = useRef<HTMLDivElement | null>(null)
   useEffect(
     () => () => {
       requestRef.current?.abort()
@@ -928,6 +943,10 @@ export function BattlePage() {
     },
     [],
   )
+  useEffect(() => {
+    const log = logRef.current
+    if (log) log.scrollTop = log.scrollHeight
+  }, [events.length])
 
   const startBattle = async () => {
     const team = teams.find((entry) => entry.id === selectedTeam)
@@ -1177,17 +1196,20 @@ export function BattlePage() {
               </div>
             )}
 
-            <div className="battle-log" aria-label={t('battle.log')} aria-live="polite" aria-atomic="false">
+            <div
+              className="battle-log"
+              ref={logRef}
+              tabIndex={0}
+              aria-label={t('battle.log')}
+              aria-live="polite"
+              aria-atomic="false"
+            >
               <strong>{t('battle.turn', { turn: battle.turn })}</strong>
               {resolving && <p className="battle-resolving">{t('battle.resolving')}</p>}
               {events.length === 0 && !resolving ? (
                 <p>{t('battle.ready')}</p>
               ) : (
-                events
-                  .slice(-8)
-                  .map((event, index) => (
-                    <BattleLogEvent key={`${events.length - 8 + index}-${event.type}`} event={event} />
-                  ))
+                events.map((event, index) => <BattleLogEvent key={`${index}-${event.type}`} event={event} />)
               )}
             </div>
           </div>
