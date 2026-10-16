@@ -26,6 +26,7 @@ import {
   type BattleSideConditions,
   type BattleStatRanges,
   type BattleState,
+  type BattleVolatileCondition,
 } from '../lib/battle'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { readStorage } from '../lib/storage'
@@ -140,6 +141,12 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
       <div className="battle-health-meta">
         <span className="battle-pokemon-conditions">
           {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
+          {pokemon.confusionTurns > 0 && <span>{t('battle.status.confusion')}</span>}
+          {pokemon.attracted && <span>{t('battle.status.attraction')}</span>}
+          {pokemon.cursed && <span>{t('battle.status.curse')}</span>}
+          {(Object.keys(pokemon.volatile) as BattleVolatileCondition[]).map((condition) => (
+            <span key={condition}>{t(`battle.status.${condition}`)}</span>
+          ))}
           {pokemon.encoreTurns > 0 && <span>{t('battle.pokemonCondition.encore')}</span>}
           {pokemon.tauntTurns > 0 && <span>{t('battle.pokemonCondition.taunt')}</span>}
         </span>
@@ -657,6 +664,8 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.itemRemoved', { name, item: prettyName(event.item) })
     case 'status':
       return t('battle.log.status', { name, status: t(`battle.status.${event.status}`) })
+    case 'statusCured':
+      return t('battle.log.statusCured', { name, status: t(`battle.status.${event.status}`) })
     case 'statusDamage':
       return t('battle.log.statusDamage', { name, damage: event.amount })
     case 'asleep':
@@ -726,6 +735,7 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
           ? 'move'
           : [
                 'status',
+                'statusCured',
                 'stage',
                 'encore',
                 'taunt',
@@ -756,7 +766,13 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
   )
 }
 
-const sideConditionKeys: (keyof BattleSideConditions)[] = ['reflect', 'lightScreen', 'auroraVeil', 'tailwind']
+const sideConditionKeys: (keyof BattleSideConditions)[] = [
+  'reflect',
+  'lightScreen',
+  'auroraVeil',
+  'tailwind',
+  'safeguard',
+]
 
 export function BattleFieldEffects({
   field,

@@ -64,6 +64,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Opponent Random Battle tooltips reveal only the level-adjusted possible Speed range.
 - Random Battle uses a move's PokéAPI Effect chance when resolving probabilistic secondary effects.
 - Random Battle supplements PokéAPI move data with declarative local behavior when an effect is not available as structured API data.
+- Random Battle models the major and temporary status conditions documented by Serebii, including their compatible combinations, turn effects, type and ability immunities, and switch behavior.
 - Random Battle tracks timed weather, terrain, Trick Room, screens, and Tailwind effects and applies their combat modifiers.
 - Random Battle visibly identifies active field, side, and Pokémon conditions without revealing their remaining duration.
 - Random Battle Encore lasts a randomly selected two to six actions and ends when the affected Pokémon switches or the repeated move runs out of PP.

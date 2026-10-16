@@ -62,12 +62,19 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
       return [mechanic(t('moveSupplemental.kind.setTrickRoom')), duration(effect.turns)]
     case 'clear-target-screens':
       return [mechanic(t('moveSupplemental.kind.clearTargetScreens'))]
+    case 'set-volatile':
+      return [
+        mechanic(t('moveSupplemental.kind.setVolatile')),
+        { label: t('moveSupplemental.target'), value: t(`battle.status.${effect.condition}`) },
+        ...(effect.turns ? [duration(effect.turns)] : []),
+      ]
     case 'set-side-condition': {
       const conditionKey = {
         reflect: 'reflect',
         'light-screen': 'lightScreen',
         'aurora-veil': 'auroraVeil',
         tailwind: 'tailwind',
+        safeguard: 'safeguard',
       } as const
       return [
         mechanic(t('moveSupplemental.kind.setSideCondition')),

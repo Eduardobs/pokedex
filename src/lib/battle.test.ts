@@ -112,6 +112,49 @@ describe('Random Battle engine', () => {
     expect(currentBattleStats(pokemon)).toEqual([341, 472, 157, 354, 118, 177])
   })
 
+  it('applies status-linked ability modifiers and status-healing abilities', () => {
+    const abilityPokemon = (ability: string) =>
+      createBattlePokemon({ ...member(0), ability }, { ...teamPokemon(ability), abilities: [ability] }, [
+        move(),
+        move(),
+        move(),
+        move(),
+      ])
+
+    const guts = abilityPokemon('guts')
+    guts.status = 'burn'
+    expect(currentBattleStats(guts)[1]).toBe(Math.floor(guts.stats[1] * 1.5))
+
+    const quickFeet = abilityPokemon('quick-feet')
+    quickFeet.status = 'paralysis'
+    expect(currentBattleStats(quickFeet)[5]).toBe(Math.floor(quickFeet.stats[5] * 1.5))
+
+    const marvelScale = abilityPokemon('marvel-scale')
+    marvelScale.status = 'sleep'
+    expect(currentBattleStats(marvelScale)[2]).toBe(Math.floor(marvelScale.stats[2] * 1.5))
+
+    const flareBoost = abilityPokemon('flare-boost')
+    flareBoost.status = 'burn'
+    expect(currentBattleStats(flareBoost)[3]).toBe(flareBoost.stats[3] * 2)
+
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const hydrated = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    hydrated.player.roster[0].ability.name = 'hydration'
+    hydrated.player.roster[0].status = 'burn'
+    hydrated.field.weather = 'rain'
+    hydrated.field.weatherTurns = 5
+    const cured = resolveBattleTurn(hydrated, { kind: 'move', index: 2 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(cured.state.player.roster[0].status).toBeNull()
+
+    const poisonHeal = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    poisonHeal.player.roster[0].ability.name = 'poison-heal'
+    poisonHeal.player.roster[0].status = 'poison'
+    poisonHeal.player.roster[0].hp -= 50
+    const healed = resolveBattleTurn(poisonHeal, { kind: 'move', index: 2 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(healed.state.player.roster[0].hp).toBeGreaterThan(poisonHeal.player.roster[0].hp)
+  })
+
   it('accepts only complete teams with four selected moves per member', () => {
     const complete = team('player')
     expect(isBattleReadyTeam(complete)).toBe(true)
@@ -597,6 +640,354 @@ describe('Random Battle engine', () => {
     const thawed = resolveBattleTurn(thawedState, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0)
     expect(thawed.state.player.roster[0].status).toBeNull()
     expect(thawed.events).toContainEqual({ type: 'thaw', pokemon: 'player-0' })
+  })
+
+  it('enforces major-status immunities and applies burn through the calculated attack stat', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const immune = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    immune.player.roster[0].moves[0].data = move({
+      name: 'will-o-wisp',
+      type: 'fire',
+      damageClass: 'status',
+      power: null,
+      ailment: 'burn',
+      ailmentChance: 100,
+    })
+    immune.player.roster[0].stats[5] = 999
+    immune.opponent.roster[0].pokemon.types = ['fire']
+
+    const result = resolveBattleTurn(immune, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(result.state.opponent.roster[0].status).toBeNull()
+
+    const burned = createBattlePokemon(member(0), teamPokemon('burned'), [move(), move(), move(), move()])
+    burned.status = 'burn'
+    expect(currentBattleStats(burned)[1]).toBe(Math.floor(burned.stats[1] / 2))
+  })
+
+  it('applies escalating toxic damage and keeps Toxic after switching while resetting its counter', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'toxic',
+      type: 'poison',
+      damageClass: 'status',
+      power: null,
+      ailment: 'poison',
+      ailmentChance: 100,
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const poisoned = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    const firstDamage = poisoned.events.find((event) => event.type === 'statusDamage' && event.pokemon === 'opponent-0')
+    expect(poisoned.state.opponent.roster[0]).toMatchObject({ status: 'badly-poisoned', toxicTurns: 1 })
+    expect(firstDamage).toMatchObject({
+      status: 'badly-poisoned',
+      amount: Math.floor(poisoned.state.opponent.roster[0].maxHp / 16),
+    })
+
+    const switched = resolveBattleTurn(
+      poisoned.state,
+      { kind: 'move', index: 2 },
+      { kind: 'switch', index: 1 },
+      () => 0.5,
+    )
+    expect(switched.state.opponent.roster[0]).toMatchObject({ status: 'badly-poisoned', toxicTurns: 0 })
+  })
+
+  it('allows volatile statuses beside a major status and clears them when switching out', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'confuse-ray',
+      type: 'ghost',
+      damageClass: 'status',
+      power: null,
+      ailment: 'confusion',
+      ailmentChance: 100,
+    })
+    state.player.roster[0].stats[5] = 999
+    state.opponent.roster[0].status = 'burn'
+
+    const confused = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(confused.state.opponent.roster[0].status).toBe('burn')
+    expect(confused.state.opponent.roster[0].confusionTurns).toBeGreaterThan(0)
+
+    const switched = resolveBattleTurn(
+      confused.state,
+      { kind: 'move', index: 2 },
+      { kind: 'switch', index: 1 },
+      () => 0.5,
+    )
+    expect(switched.state.opponent.roster[0].confusionTurns).toBe(0)
+    expect(switched.state.opponent.roster[0].status).toBe('burn')
+  })
+
+  it('uses current-generation sleep, confusion, Toxic, and residual ability rules', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const confused = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    confused.player.roster[0].confusionTurns = 1
+    confused.player.roster[0].stats[5] = 999
+    const hp = confused.player.roster[0].hp
+    const hurt = resolveBattleTurn(confused, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0)
+    expect(hurt.state.player.roster[0].hp).toBeLessThan(hp)
+    expect(hurt.events).toContainEqual(expect.objectContaining({ type: 'damage', pokemon: 'player-0' }))
+    expect(hurt.state.player.roster[0].confusionTurns).toBe(0)
+
+    const protectedState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    protectedState.player.roster[0].moves[0].data = move({ name: 'safeguard', damageClass: 'status', power: null })
+    protectedState.player.roster[0].stats[5] = 999
+    const safeguarded = resolveBattleTurn(
+      protectedState,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(safeguarded.state.player.conditions.safeguard).toBeGreaterThan(0)
+
+    const poisoned = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    poisoned.player.roster[0].ability.name = 'poison-heal'
+    poisoned.player.roster[0].status = 'poison'
+    poisoned.player.roster[0].hp -= 100
+    const poisonHealed = resolveBattleTurn(poisoned, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(poisonHealed.events).toContainEqual(
+      expect.objectContaining({
+        type: 'heal',
+        pokemon: 'player-0',
+        amount: Math.floor(poisoned.player.roster[0].maxHp / 8),
+      }),
+    )
+
+    const heatproof = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    heatproof.player.roster[0].ability.name = 'heatproof'
+    heatproof.player.roster[0].status = 'burn'
+    const burned = resolveBattleTurn(heatproof, { kind: 'move', index: 2 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(burned.events).toContainEqual(
+      expect.objectContaining({
+        type: 'statusDamage',
+        pokemon: 'player-0',
+        amount: Math.floor(heatproof.player.roster[0].maxHp / 32),
+      }),
+    )
+  })
+
+  it('applies volatile move effects, their restrictions, and their residual damage', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const seeded = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    seeded.player.roster[0].moves[0].data = move({
+      name: 'leech-seed',
+      type: 'grass',
+      damageClass: 'status',
+      power: null,
+    })
+    seeded.player.roster[0].stats[5] = 999
+    seeded.player.roster[0].hp -= 80
+    const drained = resolveBattleTurn(seeded, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(drained.state.opponent.roster[0].volatile['leech-seed']).toBeLessThan(0)
+    expect(drained.state.opponent.roster[0].hp).toBeLessThan(seeded.opponent.roster[0].hp)
+    expect(drained.state.player.roster[0].hp).toBeGreaterThan(seeded.player.roster[0].hp)
+
+    const healingBlocked = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    healingBlocked.player.roster[0].moves[0].data = move({
+      name: 'heal-block',
+      type: 'psychic',
+      damageClass: 'status',
+      power: null,
+    })
+    healingBlocked.player.roster[0].stats[5] = 999
+    const blocked = resolveBattleTurn(healingBlocked, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(blocked.state.opponent.roster[0].volatile['heal-block']).toBeGreaterThan(0)
+    const before = blocked.state.opponent.roster[0].hp
+    blocked.state.opponent.roster[0].hp -= 50
+    blocked.state.opponent.roster[0].moves[2].data = move({
+      name: 'recover',
+      damageClass: 'status',
+      power: null,
+      healing: 50,
+    })
+    const cannotHeal = resolveBattleTurn(
+      blocked.state,
+      { kind: 'move', index: 2 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(cannotHeal.state.opponent.roster[0].hp).toBeLessThanOrEqual(before - 50)
+  })
+
+  it('enforces the remaining modern volatile effects and their immunities', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+
+    const aquaRing = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    aquaRing.player.roster[0].moves[0].data = move({
+      name: 'aqua-ring',
+      type: 'water',
+      damageClass: 'status',
+      power: null,
+    })
+    aquaRing.player.roster[0].hp -= 80
+    aquaRing.player.roster[0].stats[5] = 999
+    const ringed = resolveBattleTurn(aquaRing, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(ringed.state.player.roster[0].volatile['aqua-ring']).toBeLessThan(0)
+    expect(ringed.state.player.roster[0].hp).toBeGreaterThan(aquaRing.player.roster[0].hp)
+
+    const yawned = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    yawned.player.roster[0].moves[0].data = move({ name: 'yawn', damageClass: 'status', power: null })
+    yawned.player.roster[0].stats[5] = 999
+    const drowsy = resolveBattleTurn(yawned, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    const asleep = resolveBattleTurn(drowsy.state, { kind: 'move', index: 2 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(asleep.state.opponent.roster[0].status).toBe('sleep')
+
+    const disabled = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    disabled.player.roster[0].moves[0].data = move({ name: 'disable', damageClass: 'status', power: null })
+    disabled.opponent.roster[0].lastMoveIndex = 1
+    disabled.player.roster[0].stats[5] = 999
+    const cannotUse = resolveBattleTurn(disabled, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(legalBattleMoveIndexes(cannotUse.state.opponent.roster[0])).not.toContain(1)
+
+    const nightmare = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    nightmare.player.roster[0].moves[0].data = move({ name: 'nightmare', damageClass: 'status', power: null })
+    nightmare.player.roster[0].stats[5] = 999
+    nightmare.opponent.roster[0].status = 'sleep'
+    nightmare.opponent.roster[0].sleepTurns = 3
+    const haunted = resolveBattleTurn(nightmare, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(haunted.state.opponent.roster[0].volatile.nightmare).toBeLessThan(0)
+
+    const salt = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    salt.player.roster[0].moves[0].data = move({ name: 'salt-cure', type: 'rock', power: 40 })
+    salt.player.roster[0].stats[5] = 999
+    salt.opponent.roster[0].pokemon.types = ['water']
+    const salted = resolveBattleTurn(salt, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(salted.state.opponent.roster[0].volatile['salt-cure']).toBeLessThan(0)
+    expect(salted.events).toContainEqual(expect.objectContaining({ type: 'damage', pokemon: 'opponent-0' }))
+
+    const tarred = createBattlePokemon(member(0), teamPokemon('tarred'), [move(), move(), move(), move()])
+    tarred.volatile['tar-shot'] = -1
+    expect(battleMoveEffectiveness(move({ type: 'fire' }), tarred)).toBe(2)
+
+    const guarded = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    guarded.player.conditions.safeguard = 5
+    guarded.opponent.roster[0].moves[0].data = move({
+      name: 'will-o-wisp',
+      type: 'fire',
+      damageClass: 'status',
+      power: null,
+      ailment: 'burn',
+      ailmentChance: 100,
+    })
+    guarded.opponent.roster[0].stats[5] = 999
+    const protectedResult = resolveBattleTurn(
+      guarded,
+      { kind: 'move', index: 2 },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    expect(protectedResult.state.player.roster[0].status).toBeNull()
+  })
+
+  it('applies attraction only to compatible genders and makes Ghost Curse deal residual damage', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const attracted = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    attracted.player.roster[0].moves[0].data = move({
+      name: 'attract',
+      damageClass: 'status',
+      power: null,
+      ailment: 'infatuation',
+      ailmentChance: 100,
+    })
+    attracted.player.roster[0].stats[5] = 999
+    attracted.opponent.roster[0].member.gender = 'female'
+    const attractedResult = resolveBattleTurn(
+      attracted,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.9,
+    )
+    expect(attractedResult.state.opponent.roster[0].attracted).toBe(true)
+
+    const cursed = createBattleState(playerTeam, roster(playerTeam, ['ghost']), opponentTeam, roster(opponentTeam))
+    cursed.player.roster[0].moves[0].data = move({ name: 'curse', type: 'ghost', damageClass: 'status', power: null })
+    cursed.player.roster[0].stats[5] = 999
+    const cursedResult = resolveBattleTurn(cursed, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(cursedResult.state.opponent.roster[0].cursed).toBe(true)
+    expect(cursedResult.events).toContainEqual(
+      expect.objectContaining({ type: 'statusDamage', pokemon: 'opponent-0', status: 'curse' }),
+    )
+  })
+
+  it('handles Rest, thawing moves, status cures on switch, and two layers of Toxic Spikes', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+
+    const resting = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    resting.player.roster[0].moves[0].data = move({ name: 'rest', type: 'psychic', damageClass: 'status', power: null })
+    resting.player.roster[0].hp -= 100
+    resting.player.roster[0].status = 'burn'
+    resting.player.roster[0].stats[5] = 999
+    const rested = resolveBattleTurn(resting, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(rested.state.player.roster[0]).toMatchObject({
+      hp: rested.state.player.roster[0].maxHp,
+      status: 'sleep',
+      sleepTurns: 3,
+    })
+
+    const frozen = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    frozen.player.roster[0].moves[0].data = move({ name: 'flame-wheel', type: 'fire', power: 60 })
+    frozen.player.roster[0].status = 'freeze'
+    frozen.player.roster[0].stats[5] = 999
+    const thawed = resolveBattleTurn(frozen, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(thawed.state.player.roster[0].status).toBeNull()
+    expect(thawed.events).toContainEqual({ type: 'thaw', pokemon: 'player-0' })
+
+    const naturalCure = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    naturalCure.player.roster[0].ability.name = 'natural-cure'
+    naturalCure.player.roster[0].status = 'paralysis'
+    const switched = resolveBattleTurn(naturalCure, { kind: 'switch', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(switched.state.player.roster[0].status).toBeNull()
+
+    const spikes = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    spikes.opponent.hazards.toxicSpikes = 2
+    spikes.phase = 'opponent-switch'
+    const spiked = resolveBattleTurn(spikes, { kind: 'move', index: 2 }, { kind: 'switch', index: 1 }, () => 0.5)
+    expect(spiked.state.opponent.roster[1].status).toBe('badly-poisoned')
+  })
+
+  it('allows sleep moves and cures their documented target statuses', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+
+    const sleepTalk = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    sleepTalk.player.roster[0].moves[0].data = move({ name: 'sleep-talk', damageClass: 'status', power: null })
+    sleepTalk.player.roster[0].status = 'sleep'
+    sleepTalk.player.roster[0].sleepTurns = 1
+    sleepTalk.player.roster[0].stats[5] = 999
+    const talked = resolveBattleTurn(sleepTalk, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0)
+    expect(talked.events).toContainEqual(
+      expect.objectContaining({ type: 'move', pokemon: 'player-0', move: 'sleep-talk' }),
+    )
+    expect(talked.events).toContainEqual(
+      expect.objectContaining({ type: 'move', pokemon: 'player-0', move: 'quick-attack' }),
+    )
+
+    const wakeUpSlap = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    wakeUpSlap.player.roster[0].moves[0].data = move({ name: 'wake-up-slap', type: 'fighting', power: 70 })
+    wakeUpSlap.player.roster[0].stats[5] = 999
+    wakeUpSlap.opponent.roster[0].status = 'sleep'
+    wakeUpSlap.opponent.roster[0].sleepTurns = 2
+    const awakened = resolveBattleTurn(wakeUpSlap, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(awakened.state.opponent.roster[0].status).toBeNull()
+
+    const salts = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    salts.player.roster[0].moves[0].data = move({ name: 'smelling-salts', type: 'normal', power: 70 })
+    salts.player.roster[0].stats[5] = 999
+    salts.opponent.roster[0].status = 'paralysis'
+    const cured = resolveBattleTurn(salts, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(cured.state.opponent.roster[0].status).toBeNull()
   })
 
   it('uses priority, consumes PP, applies damage, and preserves a complete immutable state', () => {
