@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "serve:e2e": "vite --host 127.0.0.1 --port 4173 --strictPort",
     "test:e2e": "playwright test",
     "release:patch": "npm version patch",
     "release:minor": "npm version minor",
