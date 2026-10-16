@@ -8,7 +8,7 @@ import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/
 import * as battleData from '../lib/battle-data'
 import * as randomTeam from '../lib/random-team'
 import type { Team } from '../lib/teams'
-import { BattleFieldEffects, BattlePage } from './BattlePage'
+import { BattleFieldEffects, BattlePage, BattleSideHazards, MajorStatusBadge } from './BattlePage'
 
 const completeTeam = (id: string, name: string): Team => ({
   id,
@@ -130,6 +130,59 @@ afterEach(() => {
 })
 
 describe('BattlePage lobby', () => {
+  it('uses the supplied icon and color treatment for each major status', () => {
+    render(
+      <LanguageProvider>
+        <>
+          <MajorStatusBadge status="paralysis" />
+          <MajorStatusBadge status="sleep" />
+          <MajorStatusBadge status="freeze" />
+          <MajorStatusBadge status="burn" />
+          <MajorStatusBadge status="poison" />
+          <MajorStatusBadge status="badly-poisoned" />
+        </>
+      </LanguageProvider>,
+    )
+
+    expect(screen.getByLabelText('Paralisia')).toHaveClass('battle-major-status--paralysis')
+    expect(screen.getByLabelText('Sono')).toHaveClass('battle-major-status--sleep')
+    expect(screen.getByLabelText('Congelamento')).toHaveClass('battle-major-status--freeze')
+    expect(screen.getByLabelText('Queimadura')).toHaveClass('battle-major-status--burn')
+    expect(screen.getByLabelText('Envenenamento')).toHaveClass('battle-major-status--poison')
+    expect(screen.getByLabelText('Envenenamento grave')).toHaveClass('battle-major-status--badly-poisoned')
+    expect(screen.getByLabelText('Sono').querySelector('.battle-major-status-sleep-icon')).toBeInTheDocument()
+  })
+
+  it('shows hazards only on the side where they remain active', () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    const state = createBattleState(player, battleRoster(player), opponent, battleRoster(opponent))
+    state.player.hazards = { stealthRock: true, spikes: 2, toxicSpikes: 1, stickyWeb: true }
+
+    const { rerender } = render(
+      <LanguageProvider>
+        <BattleSideHazards hazards={state.player.hazards} side="player" />
+      </LanguageProvider>,
+    )
+
+    const hazards = screen.getByRole('group', { name: 'Armadilhas no seu lado' })
+    expect(within(hazards).getByLabelText('Pedras Pontiagudas')).toBeVisible()
+    expect(within(hazards).getByLabelText('Espinhos ×2')).toBeVisible()
+    expect(within(hazards).getByLabelText('Espinhos Tóxicos')).toBeVisible()
+    expect(within(hazards).getByLabelText('Teia Pegajosa')).toBeVisible()
+
+    rerender(
+      <LanguageProvider>
+        <BattleSideHazards
+          hazards={{ stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false }}
+          side="player"
+        />
+      </LanguageProvider>,
+    )
+
+    expect(screen.queryByRole('group', { name: 'Armadilhas no seu lado' })).not.toBeInTheDocument()
+  })
+
   it('shows active field and side conditions without their remaining turns', () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')

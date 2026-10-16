@@ -1,6 +1,25 @@
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, CircleSlash2, Dices, Mars, RotateCcw, Shield, Sparkles, Swords, UserRound, Venus } from 'lucide-react'
+import {
+  Bubbles,
+  Check,
+  CircleDotDashed,
+  CircleSlash2,
+  Dices,
+  Flame,
+  Mars,
+  Mountain,
+  Network,
+  RotateCcw,
+  Shield,
+  Snowflake,
+  Sparkles,
+  Swords,
+  UserRound,
+  Venus,
+  Zap,
+  type LucideIcon,
+} from 'lucide-react'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
@@ -21,6 +40,7 @@ import {
   type BattleChoice,
   type BattleEvent,
   type BattleField,
+  type BattleHazards,
   type BattlePokemon,
   type BattleSide,
   type BattleSideConditions,
@@ -35,6 +55,27 @@ import type { PokemonGender } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
 type ActiveMove = { side: 'player' | 'opponent'; name: string }
+type MajorBattleStatus = Exclude<BattlePokemon['status'], null>
+
+const majorStatusPresentation: Record<MajorBattleStatus, { className: string; Icon?: LucideIcon }> = {
+  paralysis: { className: 'paralysis', Icon: Zap },
+  sleep: { className: 'sleep' },
+  freeze: { className: 'freeze', Icon: Snowflake },
+  burn: { className: 'burn', Icon: Flame },
+  poison: { className: 'poison', Icon: Bubbles },
+  'badly-poisoned': { className: 'badly-poisoned', Icon: Bubbles },
+}
+
+const hazardPresentation: {
+  key: keyof BattleHazards
+  translationKey: 'stealthRock' | 'spikes' | 'toxicSpikes' | 'stickyWeb'
+  Icon: LucideIcon
+}[] = [
+  { key: 'stealthRock', translationKey: 'stealthRock', Icon: Mountain },
+  { key: 'spikes', translationKey: 'spikes', Icon: CircleDotDashed },
+  { key: 'toxicSpikes', translationKey: 'toxicSpikes', Icon: Bubbles },
+  { key: 'stickyWeb', translationKey: 'stickyWeb', Icon: Network },
+]
 
 function waitForBattleDelay(duration: number) {
   return new Promise<void>((resolve) => window.setTimeout(resolve, duration))
@@ -81,6 +122,29 @@ function GenderIcon({ gender }: { gender: PokemonGender }) {
       title={presentation.label}
     >
       <presentation.Icon aria-hidden="true" />
+    </span>
+  )
+}
+
+export function MajorStatusBadge({ status }: { status: MajorBattleStatus }) {
+  const { t } = useLanguage()
+  const presentation = majorStatusPresentation[status]
+  const label = t(`battle.status.${status}`)
+  const Icon = presentation.Icon
+  return (
+    <span
+      className={`battle-major-status battle-major-status--${presentation.className}`}
+      aria-label={label}
+      title={label}
+    >
+      {Icon ? (
+        <Icon aria-hidden="true" />
+      ) : (
+        <span className="battle-major-status-sleep-icon" aria-hidden="true">
+          Z<small>z</small>
+        </span>
+      )}
+      <span>{label}</span>
     </span>
   )
 }
@@ -140,7 +204,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
       </div>
       <div className="battle-health-meta">
         <span className="battle-pokemon-conditions">
-          {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
+          {pokemon.status && <MajorStatusBadge status={pokemon.status} />}
           {pokemon.confusionTurns > 0 && <span>{t('battle.status.confusion')}</span>}
           {pokemon.attracted && <span>{t('battle.status.attraction')}</span>}
           {pokemon.cursed && <span>{t('battle.status.curse')}</span>}
@@ -808,6 +872,41 @@ export function BattleFieldEffects({
   )
 }
 
+export function BattleSideHazards({ hazards, side }: { hazards: BattleHazards; side: 'player' | 'opponent' }) {
+  const { t } = useLanguage()
+  const activeHazards = hazardPresentation.filter(({ key }) => {
+    const value = hazards[key]
+    return typeof value === 'number' ? value > 0 : value
+  })
+  if (!activeHazards.length) return null
+
+  return (
+    <div
+      className={`battle-side-hazards ${side}`}
+      role="group"
+      aria-label={t('battle.hazardsOnSide', { side: t(`battle.fieldSide.${side}`) })}
+    >
+      {activeHazards.map(({ key, translationKey, Icon }) => {
+        const layers = hazards[key]
+        const label = t(`battle.hazard.${translationKey}`)
+        const layeredLabel =
+          typeof layers === 'number' && layers > 1 ? t('battle.hazardLayers', { hazard: label, layers }) : label
+        return (
+          <span
+            key={key}
+            className={`battle-hazard battle-hazard--${translationKey}`}
+            aria-label={layeredLabel}
+            title={layeredLabel}
+          >
+            <Icon aria-hidden="true" />
+            {typeof layers === 'number' && layers > 1 && <b aria-hidden="true">{layers}</b>}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 export function BattlePage() {
   const { t } = useLanguage()
   const teams = readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []).filter(isBattleReadyTeam)
@@ -981,6 +1080,7 @@ export function BattlePage() {
             <div className="battle-field" aria-label={t('battle.field')} aria-busy={resolving}>
               <BattleFieldEffects field={battle.field} player={battle.player} opponent={battle.opponent} />
               <div className="battle-side opponent">
+                <BattleSideHazards hazards={battle.opponent.hazards} side="opponent" />
                 <ActivePokemon
                   side={battle.opponent}
                   opponent
@@ -991,6 +1091,7 @@ export function BattlePage() {
                 <Swords />
               </div>
               <div className="battle-side player">
+                <BattleSideHazards hazards={battle.player.hazards} side="player" />
                 <ActivePokemon
                   side={battle.player}
                   activeMove={activeMove?.side === 'player' ? activeMove.name : undefined}
