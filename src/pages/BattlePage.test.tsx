@@ -255,6 +255,9 @@ describe('BattlePage lobby', () => {
             move.data = testMove('growl')
           })
         })
+      } else {
+        loaded[0].moves[1].data.priority = 1
+        loaded[0].moves[2].data.priority = -1
       }
       return loaded
     })
@@ -334,8 +337,16 @@ describe('BattlePage lobby', () => {
     expect(allyTooltip).not.toHaveClass('is-pointer-positioned')
 
     const tackle = screen.getByRole('button', { name: /Tackle/ })
+    expect(tackle.querySelector('.battle-move-meta')).toHaveTextContent('PP 20/20Prioridade: 0')
+    expect(screen.getByRole('button', { name: /Quick Attack/ }).querySelector('.battle-move-meta')).toHaveTextContent(
+      'Prioridade: 1',
+    )
+    expect(screen.getByRole('button', { name: /Recover/ }).querySelector('.battle-move-meta')).toHaveTextContent(
+      'Prioridade: -1',
+    )
     fireEvent.mouseOver(tackle)
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Poder: 80')
+    expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Prioridade: 0')
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Efetividade: Dano normal')
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('tackle em detalhes.')
     const moveTooltip = within(tackle).getByRole('tooltip')
@@ -392,6 +403,19 @@ describe('BattlePage lobby', () => {
     const moveLog = screen.getAllByText(/usou/)[0].closest('.battle-log-event')
     expect(moveLog).toHaveClass('is-move')
     expect(moveLog?.querySelector('strong')).toHaveTextContent('Pokemon 0')
+    const logMove = moveLog?.querySelector<HTMLElement>('.battle-log-move-trigger')
+    expect(logMove).toHaveTextContent('Tackle')
+    expect(logMove).toHaveAttribute('tabindex', '0')
+    expect(logMove).toHaveAttribute('aria-describedby')
+    const logMoveTooltip = within(logMove!).getByRole('tooltip')
+    expect(within(logMoveTooltip).getByLabelText('Normal')).toBeVisible()
+    expect(within(logMoveTooltip).getByLabelText('Classe: Físico')).toBeVisible()
+    expect(logMoveTooltip).toHaveTextContent('Prioridade: 0')
+    expect(logMoveTooltip).toHaveTextContent('tackle em detalhes.')
+    fireEvent.focus(logMove!)
+    expect(logMoveTooltip).toHaveClass('is-pointer-positioned')
+    fireEvent.blur(logMove!)
+    expect(logMoveTooltip).not.toHaveClass('is-pointer-positioned')
     const modifiedAttack = within(activeTooltips[1]).getByText('Atk').parentElement
     expect(modifiedAttack).toHaveTextContent('157')
     expect(modifiedAttack).toHaveClass('is-decreased')

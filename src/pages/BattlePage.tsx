@@ -173,6 +173,27 @@ function resetBattleTooltip(tooltipId: string) {
   tooltip.classList.remove('is-pointer-positioned')
 }
 
+function positionBattleTooltipAtTrigger(trigger: HTMLElement, tooltipId: string) {
+  const tooltip = document.getElementById(tooltipId)
+  if (!tooltip) return
+  const gap = 10
+  const triggerBounds = trigger.getBoundingClientRect()
+  const tooltipBounds = tooltip.getBoundingClientRect()
+  const left = Math.max(gap, Math.min(triggerBounds.left, window.innerWidth - tooltipBounds.width - gap))
+  const preferredTop = triggerBounds.bottom + gap
+  const top = Math.max(
+    gap,
+    preferredTop + tooltipBounds.height <= window.innerHeight
+      ? preferredTop
+      : triggerBounds.top - tooltipBounds.height - gap,
+  )
+  tooltip.style.left = `${left}px`
+  tooltip.style.top = `${top}px`
+  tooltip.style.right = 'auto'
+  tooltip.style.bottom = 'auto'
+  tooltip.classList.add('is-pointer-positioned')
+}
+
 function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
   const { language, t } = useLanguage()
   const displayedHp = useAnimatedHealth(pokemon.hp)
@@ -366,7 +387,12 @@ function BattleMoveButton({
     >
       <span>{prettyName(move.data.name)}</span>
       <TypeBadge type={move.data.type} />
-      <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
+      <span className="battle-move-meta">
+        <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
+        <small>
+          {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
+        </small>
+      </span>
       <span id={tooltipId} className="battle-move-tooltip" role="tooltip">
         <span className="battle-tooltip-damage">
           <span>{t('move.damageClass')}</span>
@@ -377,6 +403,9 @@ function BattleMoveButton({
         </span>
         <span>
           {t('move.accuracy')}: <b>{number(move.data.accuracy)}</b>
+        </span>
+        <span>
+          {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
         </span>
         <span>
           {t('battle.effectiveness')}: <b>{effectiveness}</b>
@@ -802,11 +831,46 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
   }
 }
 
-function BattleLogEvent({ event }: { event: BattleEvent }) {
+function BattleLogMove({ move, data }: { move: string; data?: BattlePokemon['moves'][number]['data'] }) {
+  const tooltipId = useId()
+  const { apiLanguage, language, t } = useLanguage()
+  const description = data ? moveDescription(data, apiLanguage) : ''
+  return (
+    <span
+      className="battle-log-move-trigger"
+      tabIndex={0}
+      aria-describedby={tooltipId}
+      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+      onBlur={() => resetBattleTooltip(tooltipId)}
+      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+      onPointerLeave={() => resetBattleTooltip(tooltipId)}
+    >
+      {move}
+      <span id={tooltipId} className="battle-log-move-tooltip" role="tooltip">
+        <span className="battle-log-move-meta">
+          {data && (
+            <span className="battle-log-move-icons">
+              <TypeBadge type={data.type} iconOnly />
+              <DamageClassBadge value={data.damageClass} compact />
+            </span>
+          )}
+          <span className="battle-log-move-priority">
+            {t('move.priority')}: <b>{data ? formatNumber(data.priority, language) : '—'}</b>
+          </span>
+        </span>
+        <span>{description || t('battle.moveDescriptionUnavailable')}</span>
+      </span>
+    </span>
+  )
+}
+
+function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePokemon['moves'][number]['data'] }) {
   const { t } = useLanguage()
   const text = eventText(event, t)
   const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
   const nameIndex = event.type === 'move' && name ? text.indexOf(name) : -1
+  const moveName = event.type === 'move' ? prettyName(event.move) : ''
+  const moveIndex = event.type === 'move' && moveName ? text.indexOf(moveName, nameIndex + name.length) : -1
   const tone =
     event.type === 'damage' ||
     event.type === 'hazardDamage' ||
@@ -841,7 +905,15 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
         <>
           {text.slice(0, nameIndex)}
           <strong>{name}</strong>
-          {text.slice(nameIndex + name.length)}
+          {moveIndex >= 0 ? (
+            <>
+              {text.slice(nameIndex + name.length, moveIndex)}
+              <BattleLogMove move={moveName} data={move} />
+              {text.slice(moveIndex + moveName.length)}
+            </>
+          ) : (
+            text.slice(nameIndex + name.length)
+          )}
         </>
       ) : (
         text
@@ -1216,7 +1288,15 @@ export function BattlePage() {
               {events.length === 0 && !resolving ? (
                 <p>{t('battle.ready')}</p>
               ) : (
-                events.map((event, index) => <BattleLogEvent key={`${index}-${event.type}`} event={event} />)
+                events.map((event, index) => {
+                  const move =
+                    event.type === 'move'
+                      ? battle[event.side].roster
+                          .flatMap((pokemon) => pokemon.moves)
+                          .find((entry) => entry.data.name === event.move)?.data
+                      : undefined
+                  return <BattleLogEvent key={`${index}-${event.type}`} event={event} move={move} />
+                })
               )}
             </div>
           </div>

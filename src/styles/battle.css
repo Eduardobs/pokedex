@@ -772,6 +772,72 @@
   color: inherit;
   font-weight: 800;
 }
+.battle-log-move-trigger {
+  position: relative;
+  border-bottom: 1px dotted currentColor;
+  color: inherit;
+  cursor: help;
+  font-weight: 800;
+}
+.battle-log-move-trigger:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.battle-log-move-tooltip {
+  position: fixed;
+  z-index: 50;
+  display: none;
+  width: min(250px, calc(100vw - 32px));
+  overflow: visible;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 20%, transparent);
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: left;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+.battle-log-move-trigger:hover .battle-log-move-tooltip,
+.battle-log-move-trigger:focus-visible .battle-log-move-tooltip {
+  display: grid;
+  gap: 5px;
+}
+.battle-log-move-meta,
+.battle-log-move-icons {
+  display: flex;
+  align-items: center;
+}
+.battle-log-move-meta {
+  justify-content: space-between;
+  gap: 8px;
+}
+.battle-log-move-icons {
+  gap: 4px;
+}
+.battle-log-move-icons .type-badge,
+.battle-log-move-icons .damage-badge {
+  min-height: 18px;
+  padding: 2px 3px;
+  border-width: 1px;
+}
+.battle-log-move-icons .type-badge svg {
+  width: 12px;
+  height: 12px;
+}
+.battle-log-move-icons .damage-badge img {
+  width: 14px !important;
+  height: 10px !important;
+}
+.battle-log-move-priority {
+  color: var(--ink);
+  white-space: nowrap;
+}
 .battle-log-event.is-damage {
   color: #b72f2a;
 }
@@ -941,9 +1007,22 @@
 .battle-move-tooltip .damage-badge {
   flex: none;
 }
-.battle-moves small {
+.battle-move-meta {
   grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   color: var(--muted);
+}
+.battle-move-meta small {
+  min-width: 0;
+}
+.battle-move-meta small:last-child {
+  white-space: nowrap;
+}
+.battle-move-meta b {
+  color: var(--ink);
 }
 .battle-moves button:hover:not(:disabled),
 .battle-switches button:hover {
@@ -1123,7 +1202,8 @@
 }
 .battle-active-tooltip.is-pointer-positioned,
 .battle-move-tooltip.is-pointer-positioned,
-.battle-switch-tooltip.is-pointer-positioned {
+.battle-switch-tooltip.is-pointer-positioned,
+.battle-log-move-tooltip.is-pointer-positioned {
   position: fixed;
   z-index: 50;
   right: auto;

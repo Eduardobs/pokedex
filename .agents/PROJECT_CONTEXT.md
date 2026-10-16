@@ -72,6 +72,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Move detail pages display the local supplemental battle behavior when the selected move has one.
 - Random Battle resolves combatants' actions sequentially after a configurable presentation delay, announcing each move over its user and completing that combatant's HP and effect presentation before announcing the next action or accepting another choice.
 - Random Battle keeps the full action history in a fixed-height, scrollable battle log that follows newly added actions.
+- Random Battle move choices display each move's priority alongside its remaining PP.
+- Move names in the Random Battle log expose the move's type, damage class, priority, and localized description in a keyboard-accessible tooltip.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
 - On narrow screens, Random Battle keeps move and replacement-choice lists in two columns.
