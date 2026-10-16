@@ -777,6 +777,8 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       })
     case 'fieldBlocked':
       return t('battle.log.fieldBlocked', { name, effect: t(`battle.fieldEffect.${event.field}`) })
+    case 'protected':
+      return t('battle.log.protected', { name })
     case 'weatherDamage':
       return t('battle.log.weatherDamage', {
         name,

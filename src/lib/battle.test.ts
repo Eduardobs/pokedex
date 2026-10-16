@@ -419,8 +419,12 @@ describe('Random Battle engine', () => {
     })
     reset.state.player.roster[0].status = 'burn'
     reset.state.player.roster[1].status = 'poison'
+    reset.state.player.roster[2].confusionTurns = 2
+    reset.state.player.roster[3].attracted = true
     const cured = resolveBattleTurn(reset.state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
     expect(cured.state.player.roster.every((pokemon) => pokemon.status === null)).toBe(true)
+    expect(cured.state.player.roster[2].confusionTurns).toBe(2)
+    expect(cured.state.player.roster[3].attracted).toBe(true)
     expect(cured.events).toContainEqual({ type: 'teamStatusCured', side: 'player' })
   })
 
@@ -933,8 +937,52 @@ describe('Random Battle engine', () => {
     expect(rested.state.player.roster[0]).toMatchObject({
       hp: rested.state.player.roster[0].maxHp,
       status: 'sleep',
-      sleepTurns: 3,
+      sleepTurns: 2,
     })
+
+    const firstSleepingTurn = resolveBattleTurn(
+      rested.state,
+      { kind: 'move', index: 2 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(firstSleepingTurn.state.player.roster[0]).toMatchObject({ status: 'sleep', sleepTurns: 1 })
+    const secondSleepingTurn = resolveBattleTurn(
+      firstSleepingTurn.state,
+      { kind: 'move', index: 2 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(secondSleepingTurn.state.player.roster[0]).toMatchObject({ status: 'sleep', sleepTurns: 0 })
+    const restedAwake = resolveBattleTurn(
+      secondSleepingTurn.state,
+      { kind: 'move', index: 2 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(restedAwake.state.player.roster[0].status).toBeNull()
+
+    const restBlocked = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    restBlocked.player.roster[0].moves[0].data = move({
+      name: 'rest',
+      type: 'psychic',
+      damageClass: 'status',
+      power: null,
+    })
+    restBlocked.player.roster[0].hp -= 100
+    restBlocked.player.roster[0].status = 'burn'
+    restBlocked.player.roster[0].volatile['heal-block'] = 5
+    restBlocked.player.roster[0].stats[5] = 999
+    const restBlockedHp = restBlocked.player.roster[0].hp
+    const blockedRest = resolveBattleTurn(
+      restBlocked,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(blockedRest.state.player.roster[0].hp).toBeLessThan(restBlockedHp)
+    expect(blockedRest.state.player.roster[0].status).toBe('burn')
+    expect(blockedRest.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
 
     const frozen = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     frozen.player.roster[0].moves[0].data = move({ name: 'flame-wheel', type: 'fire', power: 60 })
@@ -957,6 +1005,44 @@ describe('Random Battle engine', () => {
     expect(spiked.state.opponent.roster[1].status).toBe('badly-poisoned')
   })
 
+  it('blocks attacks with Protect, reduces its successive success chance, and resets it after failure', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'protect', damageClass: 'status', power: null, priority: 4 })
+    const protectedTurn = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+
+    expect(protectedTurn.state.player.roster[0].hp).toBe(state.player.roster[0].hp)
+    expect(protectedTurn.state.player.roster[0].protectStreak).toBe(1)
+    expect(protectedTurn.events).toContainEqual({ type: 'protected', pokemon: 'player-0' })
+
+    const failedSuccessiveProtect = resolveBattleTurn(
+      protectedTurn.state,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    expect(failedSuccessiveProtect.state.player.roster[0].hp).toBeLessThan(protectedTurn.state.player.roster[0].hp)
+    expect(failedSuccessiveProtect.state.player.roster[0].protectStreak).toBe(0)
+  })
+
+  it('fails Ally Switch in the singles battle format because no ally is on the field', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'ally-switch',
+      damageClass: 'status',
+      power: null,
+      priority: 2,
+    })
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+
+    expect(result.state.player.active).toBe(0)
+    expect(result.state.player.roster[0].moves[0].pp).toBe(34)
+    expect(result.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+  })
+
   it('allows sleep moves and cures their documented target statuses', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
@@ -973,6 +1059,28 @@ describe('Random Battle engine', () => {
     expect(talked.events).toContainEqual(
       expect.objectContaining({ type: 'move', pokemon: 'player-0', move: 'quick-attack' }),
     )
+
+    const awakeSleepMoves = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    awakeSleepMoves.player.roster[0].moves[0].data = move({ name: 'sleep-talk', damageClass: 'status', power: null })
+    awakeSleepMoves.player.roster[0].stats[5] = 999
+    const awakeSleepTalk = resolveBattleTurn(
+      awakeSleepMoves,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(awakeSleepTalk.state.opponent.roster[0].hp).toBe(awakeSleepMoves.opponent.roster[0].hp)
+    expect(awakeSleepTalk.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+
+    awakeSleepMoves.player.roster[0].moves[0].data = move({ name: 'snore', damageClass: 'special', power: 50 })
+    const awakeSnore = resolveBattleTurn(
+      awakeSleepMoves,
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(awakeSnore.state.opponent.roster[0].hp).toBe(awakeSleepMoves.opponent.roster[0].hp)
+    expect(awakeSnore.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
 
     const wakeUpSlap = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     wakeUpSlap.player.roster[0].moves[0].data = move({ name: 'wake-up-slap', type: 'fighting', power: 70 })

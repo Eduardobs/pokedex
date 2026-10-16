@@ -47,6 +47,7 @@ export type BattleVolatileCondition =
   | 'throat-chop'
   | 'torment'
   | 'smack-down'
+  | 'protect'
   | 'flinch'
 export type BattlePokemon = {
   member: TeamMember
@@ -71,6 +72,7 @@ export type BattlePokemon = {
   encoreTurns: number
   encoreMoveIndex: number | null
   tauntTurns: number
+  protectStreak: number
   terastallized: boolean
   hasEnteredBattle: boolean
 }
@@ -171,6 +173,7 @@ export type BattleEvent =
   | { type: 'sideConditionSet'; side: 'player' | 'opponent'; condition: keyof BattleSideConditions; turns: number }
   | { type: 'sideConditionEnded'; side: 'player' | 'opponent'; condition: keyof BattleSideConditions }
   | { type: 'fieldBlocked'; pokemon: string; field: BattleTerrain }
+  | { type: 'protected'; pokemon: string }
   | { type: 'failed'; pokemon: string }
   | { type: 'faint'; pokemon: string }
   | { type: 'win'; side: 'player' | 'opponent' }
@@ -368,6 +371,7 @@ export function createBattlePokemon(
     encoreTurns: 0,
     encoreMoveIndex: null,
     tauntTurns: 0,
+    protectStreak: 0,
     terastallized: false,
     hasEnteredBattle: false,
   }
@@ -818,6 +822,7 @@ function applyMove(
   attacker.lastMoveIndex = moveSlot
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
+  if (sleepUsableMoves.has(move.name) && attacker.status !== 'sleep') return { hit: true, succeeded: false }
   if (move.name === 'sleep-talk') {
     const choices = attacker.moves.flatMap((candidate, index) =>
       index !== moveSlot && candidate.data.name !== 'sleep-talk' && candidate.pp > 0 ? [index] : [],
@@ -826,6 +831,21 @@ function applyMove(
     return selected === undefined
       ? { hit: true, succeeded: false }
       : applyMove(attacker, defender, defendingSide, field, selected, random, events, true)
+  }
+  if (move.name !== 'protect') attacker.protectStreak = 0
+  if (move.name === 'protect') {
+    const succeeds = random() < 1 / 3 ** attacker.protectStreak
+    if (!succeeds) {
+      attacker.protectStreak = 0
+      return { hit: true, succeeded: false }
+    }
+    attacker.volatile.protect = 1
+    attacker.protectStreak += 1
+    return { hit: true, succeeded: true }
+  }
+  if (move.name === 'ally-switch') {
+    // Random Battle is a singles format, so no adjacent ally can be selected.
+    return { hit: true, succeeded: false }
   }
   if (move.name === 'steel-roller' && !field.terrain) return { hit: true, succeeded: false }
   if (move.accuracy !== null && !defender.volatile.telekinesis && random() * 100 >= move.accuracy) {
@@ -838,19 +858,25 @@ function applyMove(
     return { hit: false, succeeded: false }
   }
 
+  if (defender.volatile.protect && move.target !== 'user' && move.name !== 'protect') {
+    events.push({ type: 'protected', pokemon: defender.pokemon.name })
+    return { hit: false, succeeded: false }
+  }
+
   if (defender.status === 'freeze' && (move.type === 'fire' || freezeThawingMoves.has(move.name))) {
     defender.status = null
     events.push({ type: 'thaw', pokemon: defender.pokemon.name })
   }
 
   if (move.name === 'rest') {
+    if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
     const needsRest = attacker.hp < attacker.maxHp || attacker.status !== null
     if (!needsRest) return { hit: true, succeeded: false }
     const amount = attacker.maxHp - attacker.hp
     attacker.hp = attacker.maxHp
     attacker.status = 'sleep'
-    // Rest's three sleeping turns start after the turn in which it is used.
-    attacker.sleepTurns = 3
+    // The user cannot act on its next two turns, then wakes before acting.
+    attacker.sleepTurns = 2
     attacker.toxicTurns = 0
     if (amount > 0) events.push({ type: 'heal', pokemon: attacker.pokemon.name, amount })
     events.push({ type: 'status', pokemon: attacker.pokemon.name, status: 'sleep' })
@@ -1046,6 +1072,7 @@ function performChoice(
     leaving.encoreTurns = 0
     leaving.encoreMoveIndex = null
     leaving.tauntTurns = 0
+    leaving.protectStreak = 0
     leaving.lastMoveIndex = null
     leaving.confusionTurns = 0
     leaving.attracted = false
@@ -1155,15 +1182,12 @@ function performChoice(
       }
     }
     if (supplemental?.kind === 'cure-team-status') {
-      const cured = own.roster.some(
-        (pokemon) => pokemon.status !== null || pokemon.confusionTurns > 0 || pokemon.attracted,
-      )
+      const cured = own.roster.some((pokemon) => pokemon.status !== null)
       own.roster.forEach((pokemon) => {
+        if (!pokemon.status) return
         pokemon.status = null
         pokemon.sleepTurns = 0
         pokemon.toxicTurns = 0
-        pokemon.confusionTurns = 0
-        pokemon.attracted = false
       })
       if (cured) {
         events.push({ type: 'teamStatusCured', side })
