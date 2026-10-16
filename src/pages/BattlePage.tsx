@@ -132,14 +132,14 @@ function GenderIcon({ gender }: { gender: PokemonGender }) {
   )
 }
 
-export function MajorStatusBadge({ status }: { status: MajorBattleStatus }) {
+export function MajorStatusBadge({ status, compact = false }: { status: MajorBattleStatus; compact?: boolean }) {
   const { t } = useLanguage()
   const presentation = majorStatusPresentation[status]
   const label = t(`battle.status.${status}`)
   const Icon = presentation.Icon
   return (
     <span
-      className={`battle-major-status battle-major-status--${presentation.className}`}
+      className={`battle-major-status battle-major-status--${presentation.className}${compact ? ' is-compact' : ''}`}
       aria-label={label}
       title={label}
     >
@@ -151,6 +151,41 @@ export function MajorStatusBadge({ status }: { status: MajorBattleStatus }) {
         </span>
       )}
       <span>{label}</span>
+    </span>
+  )
+}
+
+function BattlePokemonTypes({ pokemon }: { pokemon: BattlePokemon }) {
+  const { t } = useLanguage()
+  return (
+    <span className="battle-tooltip-pokemon-types">
+      <span className="battle-tooltip-original-types" aria-label={t('battle.originalTypes')}>
+        {pokemon.pokemon.types.map((type) => (
+          <TypeBadge key={type} type={type} iconOnly />
+        ))}
+      </span>
+      <span
+        className={`battle-tooltip-tera${pokemon.terastallized ? ' is-active' : ''}`}
+        aria-label={t('battle.teraType')}
+      >
+        <Sparkles size={12} aria-hidden="true" />
+        <TypeBadge type={pokemon.member.tera} iconOnly />
+        <small>{t(pokemon.terastallized ? 'battle.teraActive' : 'battle.teraInactive')}</small>
+      </span>
+    </span>
+  )
+}
+
+function BattlePokemonDetails({ pokemon }: { pokemon: BattlePokemon }) {
+  const { t } = useLanguage()
+  return (
+    <span className="battle-tooltip-pokemon-details">
+      {pokemon.status && (
+        <span className="battle-tooltip-status">
+          <b>{t('battle.statusLabel')}</b>
+          <MajorStatusBadge status={pokemon.status} compact />
+        </span>
+      )}
     </span>
   )
 }
@@ -552,6 +587,7 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
         <span className="battle-active-tooltip-title">
           <b>{prettyName(pokemon.pokemon.name)}</b>
           <GenderIcon gender={pokemon.member.gender} />
+          <BattlePokemonTypes pokemon={pokemon} />
         </span>
         <small>{t(opponent ? 'battle.opponentDetails' : 'battle.allyDetails')}</small>
       </span>
@@ -561,6 +597,7 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
         originalStats={opponent ? undefined : pokemon.originalStats}
         indexes={opponent ? opponentBattleStatIndexes : allBattleStatIndexes}
       />
+      <BattlePokemonDetails pokemon={pokemon} />
       {opponent ? (
         <>
           <span className="battle-resource-section">
@@ -620,30 +657,43 @@ function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: 
       </span>
       <ul className="battle-roster-icons" aria-label={t('battle.rosterStatus', { name: side.team.name })}>
         {side.roster.map((pokemon) => {
+          const tooltipId = `battle-roster-${side.team.id}-${pokemon.member.id}`
           const faintedPokemon = pokemon.hp === 0
           const homeSprite = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
+          const rosterLabel = t(
+            faintedPokemon
+              ? 'battle.rosterFainted'
+              : pokemon.hasEnteredBattle
+                ? 'battle.rosterUsed'
+                : 'battle.rosterUnused',
+            { name: prettyName(pokemon.pokemon.name) },
+          )
           return (
             <li
               key={pokemon.member.id}
               className={`${pokemon.hasEnteredBattle ? 'is-used' : 'is-unused'}${faintedPokemon ? ' is-fainted' : ''}`}
-              aria-label={t(
-                faintedPokemon
-                  ? 'battle.rosterFainted'
-                  : pokemon.hasEnteredBattle
-                    ? 'battle.rosterUsed'
-                    : 'battle.rosterUnused',
-                {
-                  name: prettyName(pokemon.pokemon.name),
-                },
-              )}
             >
-              {pokemon.hasEnteredBattle && homeSprite ? (
-                <img src={homeSprite} alt="" width={30} height={30} />
-              ) : pokemon.hasEnteredBattle ? (
-                <Shield aria-hidden="true" />
-              ) : (
-                <span className="battle-pokeball" aria-hidden="true" />
-              )}
+              <span
+                className={pokemon.hasEnteredBattle ? 'battle-roster-tooltip-trigger' : undefined}
+                tabIndex={pokemon.hasEnteredBattle ? 0 : undefined}
+                aria-label={rosterLabel}
+                aria-describedby={pokemon.hasEnteredBattle ? tooltipId : undefined}
+                onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+                onBlur={() => resetBattleTooltip(tooltipId)}
+                onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+                onPointerLeave={() => resetBattleTooltip(tooltipId)}
+              >
+                {pokemon.hasEnteredBattle && homeSprite ? (
+                  <img src={homeSprite} alt="" width={30} height={30} />
+                ) : pokemon.hasEnteredBattle ? (
+                  <Shield aria-hidden="true" />
+                ) : (
+                  <span className="battle-pokeball" aria-hidden="true" />
+                )}
+                {pokemon.hasEnteredBattle && (
+                  <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
+                )}
+              </span>
             </li>
           )
         })}

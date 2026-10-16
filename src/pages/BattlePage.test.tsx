@@ -274,6 +274,7 @@ describe('BattlePage lobby', () => {
         team,
         team.id === opponent.id ? { pokemonStats: [200, 100, 200, 100, 100, 100] } : undefined,
       )
+      loaded[0].status = team.id === opponent.id ? 'burn' : 'poison'
       if (team.id === opponent.id) {
         loaded.forEach((pokemon) => {
           pokemon.moves.forEach((move) => {
@@ -322,6 +323,14 @@ describe('BattlePage lobby', () => {
     expect(activeTooltips[0]).not.toHaveTextContent('HP')
     expect(activeTooltips[0]).not.toHaveTextContent('Atk')
     expect(activeTooltips[0]).toHaveTextContent('Habilidades possíveis')
+    expect(activeTooltips[0]).not.toHaveTextContent('Tipo original')
+    expect(activeTooltips[0]).not.toHaveTextContent('Tipo Tera')
+    expect(activeTooltips[0]).toHaveTextContent('Inativo')
+    expect(
+      activeTooltips[0].querySelector('.battle-active-tooltip-title .battle-tooltip-original-types'),
+    ).not.toBeNull()
+    expect(activeTooltips[0].querySelector('.battle-active-tooltip-title .battle-tooltip-tera')).not.toBeNull()
+    expect(within(activeTooltips[0]).getByLabelText('Queimadura')).toHaveClass('is-compact')
     expect(activeTooltips[0]).not.toHaveTextContent('Golpes utilizados')
     expect(within(activeTooltips[0]).getByRole('img', { name: 'Gênero: Feminino' })).toBeVisible()
     expect(activeTooltips[1]).toHaveTextContent('Atributos atuais')
@@ -337,12 +346,33 @@ describe('BattlePage lobby', () => {
     expect(activeTooltips[1]).toHaveTextContent('Permite fugir.')
     expect(activeTooltips[1]).toHaveTextContent('Restos')
     expect(activeTooltips[1]).toHaveTextContent('Recupera HP a cada turno.')
+    expect(activeTooltips[1]).not.toHaveTextContent('Tipo original')
+    expect(activeTooltips[1]).not.toHaveTextContent('Tipo Tera')
+    expect(activeTooltips[1]).toHaveTextContent('Inativo')
+    expect(
+      activeTooltips[1].querySelector('.battle-active-tooltip-title .battle-tooltip-original-types'),
+    ).not.toBeNull()
+    expect(activeTooltips[1].querySelector('.battle-active-tooltip-title .battle-tooltip-tera')).not.toBeNull()
+    expect(within(activeTooltips[1]).getByLabelText('Envenenamento')).toHaveClass('is-compact')
     expect(within(activeTooltips[1]).getByRole('img', { name: 'Gênero: Masculino' })).toBeVisible()
-    expect(screen.getAllByRole('img', { name: 'Gênero: Feminino' })).toHaveLength(2)
-    expect(screen.getAllByRole('img', { name: 'Gênero: Masculino' })).toHaveLength(2)
+    expect(screen.getAllByRole('img', { name: 'Gênero: Feminino' })).toHaveLength(3)
+    expect(screen.getAllByRole('img', { name: 'Gênero: Masculino' })).toHaveLength(3)
     expect(screen.getAllByRole('listitem')).toHaveLength(12)
     expect(screen.getAllByLabelText(/ainda não entrou em batalha/)).toHaveLength(10)
     expect(screen.getAllByLabelText(/já entrou em batalha/)).toHaveLength(2)
+    const rosterTriggers = screen.getAllByLabelText(/já entrou em batalha/)
+    const playerRosterTooltip = within(rosterTriggers[0]).getByRole('tooltip')
+    const opponentRosterTooltip = within(rosterTriggers[1]).getByRole('tooltip')
+    expect(playerRosterTooltip).toHaveTextContent('Atributos atuais')
+    expect(playerRosterTooltip).toHaveTextContent('Fuga')
+    expect(within(playerRosterTooltip).getByLabelText('Envenenamento')).toHaveClass('is-compact')
+    expect(opponentRosterTooltip).toHaveTextContent('Velocidade possível')
+    expect(opponentRosterTooltip).toHaveTextContent('Habilidades possíveis')
+    expect(within(opponentRosterTooltip).getByLabelText('Queimadura')).toHaveClass('is-compact')
+    fireEvent.focus(rosterTriggers[0])
+    expect(playerRosterTooltip).toHaveClass('is-pointer-positioned')
+    fireEvent.blur(rosterTriggers[0])
+    expect(playerRosterTooltip).not.toHaveClass('is-pointer-positioned')
     const playerSprite = screen
       .getAllByRole('img', { name: 'Pokemon 0' })
       .find((image) => image.getAttribute('src')?.includes('/back/1.gif'))
@@ -429,6 +459,8 @@ describe('BattlePage lobby', () => {
     expect(within(activeTeraType!).getByText('Tipo Tera')).toBeVisible()
     expect(within(activeTeraType!).getByLabelText('Normal')).toBeVisible()
     expect(activeTeraType!.querySelector('.lucide-sparkles')).toBeInTheDocument()
+    expect(activeTooltips[1]).toHaveTextContent('Ativo')
+    expect(activeTooltips[1].querySelector('.battle-tooltip-tera.is-active')).not.toBeNull()
     expect(screen.getAllByText(/usou/).length).toBeGreaterThan(0)
     const moveLog = screen.getAllByText(/usou/)[0].closest('.battle-log-event')
     expect(moveLog).toHaveClass('is-move')
