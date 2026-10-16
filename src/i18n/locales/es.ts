@@ -96,6 +96,7 @@ export const es = {
   'battle.opponentDetails': 'Velocidad posible',
   'battle.statRange': '{minimum}–{maximum}',
   'battle.possibleAbilities': 'Habilidades posibles',
+  'battle.revealedMoves': 'Movimientos revelados',
   'battle.itemActivated': 'Objeto activado',
   'battle.noItem': 'Ninguno',
   'battle.itemDescriptionUnavailable': 'Descripción del objeto no disponible.',

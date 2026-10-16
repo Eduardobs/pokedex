@@ -97,6 +97,7 @@ export const ptBR = {
   'battle.opponentDetails': 'Velocidade possível',
   'battle.statRange': '{minimum}–{maximum}',
   'battle.possibleAbilities': 'Habilidades possíveis',
+  'battle.revealedMoves': 'Golpes utilizados',
   'battle.itemActivated': 'Item ativado',
   'battle.noItem': 'Nenhum',
   'battle.itemDescriptionUnavailable': 'Descrição do item indisponível.',

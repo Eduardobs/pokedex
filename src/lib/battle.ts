@@ -59,6 +59,7 @@ export type BattlePokemon = {
   maxHp: number
   hp: number
   moves: { data: BattleMove; pp: number }[]
+  revealedMoves: string[]
   stages: BattleStages
   status: BattleStatus
   sleepTurns: number
@@ -358,6 +359,7 @@ export function createBattlePokemon(
     maxHp: stats[0],
     hp: stats[0],
     moves: moves.map((data) => ({ data, pp: data.pp })),
+    revealedMoves: [],
     stages: emptyStages(),
     status: null,
     sleepTurns: 0,
@@ -442,6 +444,7 @@ function cloneState(state: BattleState): BattleState {
         ...move,
         data: { ...move.data, statChanges: [...move.data.statChanges] },
       })),
+      revealedMoves: [...pokemon.revealedMoves],
       stages: { ...pokemon.stages },
       volatile: { ...pokemon.volatile },
     })),
@@ -1109,6 +1112,10 @@ function performChoice(
     events.push({ type: 'failed', pokemon: attacker.pokemon.name })
     tickMoveRestrictions(attacker)
     return
+  }
+  const selectedMove = attacker.moves[selectedMoveIndex]?.data.name
+  if (side === 'opponent' && selectedMove && !attacker.revealedMoves.includes(selectedMove)) {
+    attacker.revealedMoves = [...attacker.revealedMoves, selectedMove].slice(0, 4)
   }
   const outcome = applyMove(attacker, defender, foe, field, selectedMoveIndex, random, events)
   for (let index = start; index < events.length; index += 1) {

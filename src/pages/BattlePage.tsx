@@ -518,10 +518,18 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
         indexes={opponent ? opponentBattleStatIndexes : allBattleStatIndexes}
       />
       {opponent ? (
-        <span className="battle-resource-section">
-          <b>{t('battle.possibleAbilities')}</b>
-          <span>{pokemon.pokemon.abilities.map(prettyName).join(' · ')}</span>
-        </span>
+        <>
+          <span className="battle-resource-section">
+            <b>{t('battle.possibleAbilities')}</b>
+            <span>{pokemon.pokemon.abilities.map(prettyName).join(' · ')}</span>
+          </span>
+          {pokemon.revealedMoves.length > 0 && (
+            <span className="battle-resource-section">
+              <b>{t('battle.revealedMoves')}</b>
+              <span>{pokemon.revealedMoves.map(prettyName).join(' · ')}</span>
+            </span>
+          )}
+        </>
       ) : (
         <span className="battle-resource-section">
           <b>{t('resource.field.ability')}</b>
@@ -1107,9 +1115,6 @@ export function BattlePage() {
                   opponent
                   activeMove={activeMove?.side === 'opponent' ? activeMove.name : undefined}
                 />
-              </div>
-              <div className="battle-versus" aria-hidden="true">
-                <Swords />
               </div>
               <div className="battle-side player">
                 <BattleSideHazards hazards={battle.player.hazards} side="player" />

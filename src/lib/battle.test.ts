@@ -92,6 +92,18 @@ describe('Random Battle engine', () => {
     expect(selected.stats[1]).toBe(neutral.stats[1] * 2)
   })
 
+  it('records each opponent move once, up to its four move slots', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    let state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+
+    for (const index of [0, 1, 2, 3, 3]) {
+      state = resolveBattleTurn(state, { kind: 'move', index: 2 }, { kind: 'move', index }, () => 0.5).state
+    }
+
+    expect(state.opponent.roster[0].revealedMoves).toEqual(['tackle', 'quick-attack', 'recover', 'growl'])
+  })
+
   it('applies conditional ability stats only when their condition is active', () => {
     const pokemon = { ...teamPokemon('ursaring'), abilities: ['guts'] }
     const inactiveMember = { ...member(0, 'ursaring'), ability: 'guts' }

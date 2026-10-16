@@ -74,6 +74,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle keeps the full action history in a fixed-height, scrollable battle log that follows newly added actions.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
+- On narrow screens, Random Battle keeps move and replacement-choice lists in two columns.
 - Team members are edited in tabs with Pokémon thumbnails and names; EV sliders must preserve the same limits as numeric inputs.
 - Team member tabs can be reordered by dragging their headers, with an equivalent keyboard action and a visible insertion indicator while dragging.
 - Team move selectors display the move name, type, damage-class icon, power, accuracy, and PP inside each option. Nature labels show their stat modifiers when applicable.

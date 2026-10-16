@@ -293,6 +293,7 @@ describe('BattlePage lobby', () => {
     expect(activeTooltips[0]).not.toHaveTextContent('HP')
     expect(activeTooltips[0]).not.toHaveTextContent('Atk')
     expect(activeTooltips[0]).toHaveTextContent('Habilidades possíveis')
+    expect(activeTooltips[0]).not.toHaveTextContent('Golpes utilizados')
     expect(within(activeTooltips[0]).getByRole('img', { name: 'Gênero: Feminino' })).toBeVisible()
     expect(activeTooltips[1]).toHaveTextContent('Atributos atuais')
     expect(activeTooltips[1]).toHaveTextContent('HP')
@@ -379,6 +380,9 @@ describe('BattlePage lobby', () => {
     await waitFor(() => expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'false'), {
       timeout: 800,
     })
+    expect(activeTooltips[0]).toHaveTextContent('Golpes utilizados')
+    expect(activeTooltips[0]).toHaveTextContent('Growl')
+    expect(activeTooltips[0].textContent?.match(/Growl/g)).toHaveLength(1)
     const activeTeraType = playerInformationCard!.querySelector<HTMLElement>('.battle-active-types.is-tera')
     expect(activeTeraType).not.toBeNull()
     expect(within(activeTeraType!).getByText('Tipo Tera')).toBeVisible()
