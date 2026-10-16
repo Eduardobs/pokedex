@@ -118,3 +118,47 @@ it('switches one visible editor with arrow keys and keeps edits when switching b
   expect(first).toHaveAttribute('aria-selected', 'true')
   await waitFor(() => expect(screen.getByLabelText('Nível')).toHaveValue(42))
 })
+
+it('reorders members with the keyboard and dragged tab headers', () => {
+  function Show() {
+    const [team, setTeam] = useState<Team>({
+      id: 'team',
+      name: 'Team',
+      members: ['pikachu', 'bulbasaur'].map((name) =>
+        newMember({
+          name,
+          id: 1,
+          species: name,
+          types: ['grass'],
+          abilities: ['overgrow'],
+          moves: [],
+          stats: [50, 50, 50, 50, 50, 50],
+        }),
+      ),
+    })
+    return (
+      <LanguageProvider>
+        <TeamTabs team={team} onChange={setTeam} />
+      </LanguageProvider>
+    )
+  }
+  render(<Show />)
+  const pikachu = screen.getByRole('tab', { name: 'Pikachu' })
+  fireEvent.keyDown(pikachu, { key: 'ArrowRight', altKey: true, shiftKey: true })
+  expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual(['Bulbasaur', 'Pikachu'])
+  expect(screen.getByText('Pikachu movido para a posição 2.')).toHaveAttribute('role', 'status')
+
+  const movedPikachu = screen.getByRole('tab', { name: 'Pikachu' })
+  const bulbasaur = screen.getByRole('tab', { name: 'Bulbasaur' })
+  const dataTransfer = {
+    effectAllowed: '',
+    setData: vi.fn(),
+    getData: vi.fn(() => movedPikachu.id.replace('member-tab-', '')),
+  }
+  fireEvent.dragStart(movedPikachu, { dataTransfer })
+  fireEvent.dragOver(bulbasaur, { dataTransfer })
+  expect(movedPikachu).toHaveAttribute('data-dragging', 'true')
+  expect(bulbasaur).toHaveAttribute('data-drop-position', 'before')
+  fireEvent.drop(bulbasaur, { dataTransfer })
+  expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual(['Pikachu', 'Bulbasaur'])
+})

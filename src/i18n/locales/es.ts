@@ -174,6 +174,9 @@ export const es = {
   'teams.noItems': 'No se encontraron objetos.',
   'teams.moveUnavailable': 'Datos del movimiento no disponibles.',
   'teams.members': 'Pokémon del equipo',
+  'teams.reorderMemberHint':
+    'Arrastra para reordenar. Usa Alt+Mayús+Flecha izquierda o derecha para reordenar con el teclado.',
+  'teams.memberReordered': '{name} se movió a la posición {position}.',
   'teams.evSlider': 'Ajustar EV de {stat}',
   'teams.natureModifier': '{name} (+10% {increased}, −10% {decreased})',
   'teams.moveSearch': 'Buscar movimiento por nombre',

@@ -14,6 +14,7 @@ const move = (name: string) => ({
   accuracy: 100,
   pp: 25,
   priority: 0,
+  effect_entries: [{ short_effect: `${name} burns the target.`, language: ref('pt-br', 'language') }],
 })
 afterEach(() => {
   cleanup()
@@ -54,6 +55,7 @@ it('shows move data in options, supports keyboard selection, clearing and escape
   fireEvent.click(option)
   expect(trigger).toHaveFocus()
   expect(trigger).toHaveTextContent('Ember')
+  await waitFor(() => expect(within(trigger).getByRole('tooltip')).toHaveTextContent('ember burns the target.'))
   expect(screen.queryByRole('listbox')).toBeNull()
   fireEvent.click(trigger)
   fireEvent.change(screen.getByRole('textbox'), { target: { value: 'missing' } })

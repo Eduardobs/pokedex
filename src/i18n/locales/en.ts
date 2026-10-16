@@ -175,6 +175,8 @@ export const en = {
   'teams.noItems': 'No items found.',
   'teams.moveUnavailable': 'Move details unavailable.',
   'teams.members': 'Team Pokémon',
+  'teams.reorderMemberHint': 'Drag to reorder. Use Alt+Shift+Left or Right Arrow to reorder with the keyboard.',
+  'teams.memberReordered': '{name} moved to position {position}.',
   'teams.evSlider': 'Adjust {stat} EV',
   'teams.natureModifier': '{name} (+10% {increased}, −10% {decreased})',
   'teams.moveSearch': 'Search moves by name',

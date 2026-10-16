@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { useProgressiveList } from '../hooks/useProgressiveList'
-import { localizedName, prettyName } from '../lib/api'
+import { localizedName, localizedText, prettyName } from '../lib/api'
 import { moveIdentifier, parseComparisonMove } from '../lib/move-comparison'
 import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { reference } from '../lib/resource-data'
@@ -12,13 +12,17 @@ import { DamageClassBadge } from './SemanticBadges'
 import { SearchField } from './SearchField'
 
 /** Loads only visible options; the API client shares and caches repeated move requests. */
-function MoveRow({ name, onError }: { name: string; onError: () => void }) {
+function MoveRow({ name, onError, descriptionId }: { name: string; onError: () => void; descriptionId?: string }) {
   const { t, apiLanguage } = useLanguage()
   const state = useApi(`move/${name}`, parseComparisonMove)
   useEffect(() => {
     if (state.error) onError()
   }, [state.error, onError])
   const move = state.data
+  const description = move
+    ? localizedText(move.effect_entries, ['short_effect', 'effect'], apiLanguage) ||
+      t('battle.moveDescriptionUnavailable')
+    : ''
   return (
     <span className="move-select-row">
       <strong>{move ? localizedName(move.names, apiLanguage) || prettyName(name) : prettyName(name)}</strong>
@@ -32,6 +36,11 @@ function MoveRow({ name, onError }: { name: string; onError: () => void }) {
               <span>{String(move[field] ?? '—')}</span>
             </span>
           ))}
+          {descriptionId && (
+            <span id={descriptionId} role="tooltip" className="move-select-description-tooltip">
+              {description}
+            </span>
+          )}
         </>
       ) : (
         <span className="muted">{t(state.error ? 'teams.moveUnavailable' : 'common.loadingShort')}</span>
@@ -60,6 +69,7 @@ export function MoveSelect({
   const [query, setQuery] = useState('')
   const [retry, setRetry] = useState(0)
   const [hasError, setHasError] = useState(false)
+  const descriptionId = `${id}-description`
   const reportError = useCallback(() => setHasError(true), [])
   const filtered = sortByLocalizedLabel(
     [...new Set(options)].filter(
@@ -111,6 +121,7 @@ export function MoveSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={open ? `${id}-list` : undefined}
+        aria-describedby={value ? descriptionId : undefined}
         onClick={() => {
           setOpen(!open)
           setQuery('')
@@ -122,7 +133,11 @@ export function MoveSelect({
           }
         }}
       >
-        {value ? <MoveRow key={retry} name={value} onError={reportError} /> : <span>{t('teams.none')}</span>}
+        {value ? (
+          <MoveRow key={retry} name={value} onError={reportError} descriptionId={descriptionId} />
+        ) : (
+          <span>{t('teams.none')}</span>
+        )}
         <ChevronDown size={16} aria-hidden="true" />
       </button>
       {open && (

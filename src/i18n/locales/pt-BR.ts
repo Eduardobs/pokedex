@@ -175,6 +175,9 @@ export const ptBR = {
   'teams.noItems': 'Nenhum item encontrado.',
   'teams.moveUnavailable': 'Dados do golpe indisponíveis.',
   'teams.members': 'Pokémon da equipe',
+  'teams.reorderMemberHint':
+    'Arraste para reordenar. Use Alt+Shift+Seta para a esquerda ou direita para reordenar pelo teclado.',
+  'teams.memberReordered': '{name} movido para a posição {position}.',
   'teams.evSlider': 'Ajustar EV de {stat}',
   'teams.natureModifier': '{name} (+10% {increased}, −10% {decreased})',
   'teams.moveSearch': 'Buscar golpe pelo nome',

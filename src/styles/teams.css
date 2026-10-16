@@ -69,6 +69,7 @@
   padding: 4px 0;
 }
 .team-tabs > button {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,7 +84,38 @@
   padding: 4px 12px;
   font: inherit;
   font-size: 13px;
-  cursor: pointer;
+  cursor: grab;
+}
+.team-tabs > button:active {
+  cursor: grabbing;
+}
+.team-tabs > button[data-dragging='true'] {
+  opacity: 0.55;
+}
+.team-tabs > button[data-drop-position] {
+  background: color-mix(in srgb, var(--red) 8%, var(--surface));
+}
+.team-tabs > button[data-drop-position]::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 999px;
+  background: var(--red);
+  box-shadow: 0 0 0 2px var(--surface);
+  pointer-events: none;
+}
+.team-tabs > button[data-drop-position='before']::after {
+  left: -3px;
+}
+.team-tabs > button[data-drop-position='after']::after {
+  right: -3px;
+}
+.team-tabs > button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--red) 30%, transparent);
+  outline-offset: 2px;
 }
 .team-tabs > button[aria-selected='true'] {
   background: var(--surface);
@@ -640,6 +672,34 @@
 .move-select-trigger:hover,
 .move-select-trigger[aria-expanded='true'] {
   background: var(--surface-soft);
+}
+.move-select-description-tooltip {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(360px, 100%);
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--ink);
+  color: var(--page-bg);
+  box-shadow: 0 8px 24px #0003;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-3px);
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.move-select-trigger:hover .move-select-description-tooltip,
+.move-select-trigger:focus-visible .move-select-description-tooltip {
+  opacity: 1;
+  transform: translateY(0);
 }
 .move-select-popover {
   position: absolute;
