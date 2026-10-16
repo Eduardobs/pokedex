@@ -48,6 +48,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Gender uses icon-labelled radio controls, Tera types reuse the shared type icons and colors, and training can be reset to zero EVs and maximum IVs.
 - A locally persisted team-level competitive preset documents unrestricted, singles, and doubles battle composition without enforcing seasonal ban lists.
 - Random team creation saves a complete six-member team only after every selected Pokémon has loaded successfully, using the bundled Gen 9 Pokémon Showdown Random Battle set catalog and its species, type, weakness, level, Tera, and set-selection rules.
+- Random Battle offers six pre-battle difficulty levels from Very easy to Expert; opponents use only revealed player Pokémon and moves, never the pending player action or private build data, and obey the same battle rules and resources as the player.
 - Random Battle is a local singles battle at `/battle` between a complete saved team and a generated six-Pokémon opponent, reusing the team-builder data model.
 - In Random Battle, each Pokémon may Terastallize once; the selected transformation resolves only after the turn's actions.
 - Random Battle applies entry hazards on every switch and honors pivot and forced-switch moves before the next action choice.

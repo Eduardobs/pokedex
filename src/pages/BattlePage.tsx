@@ -1,3 +1,4 @@
+import { BATTLE_DIFFICULTIES, type BattleDifficulty } from '../lib/battle-ai'
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -1059,6 +1060,7 @@ export function BattleSideHazards({ hazards, side }: { hazards: BattleHazards; s
 export function BattlePage() {
   const { t } = useLanguage()
   const teams = readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []).filter(isBattleReadyTeam)
+  const [difficulty, setDifficulty] = useState<BattleDifficulty>('medium')
   const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id ?? '')
   const [screen, setScreen] = useState<ScreenState>('idle')
   const [battle, setBattle] = useState<BattleState | null>(null)
@@ -1119,10 +1121,14 @@ export function BattlePage() {
     if (choice.kind === 'switch') setShowSwitches(false)
     const sequence = ++sequenceRef.current
     setResolving(true)
-    let steps = resolveBattleTurnSteps(battle, choice, chooseOpponentAction(battle))
+    let steps = resolveBattleTurnSteps(battle, choice, chooseOpponentAction(battle, Math.random, difficulty))
     const lastState = steps.at(-1)?.state
     if (lastState?.phase === 'opponent-switch') {
-      const automatic = resolveBattleTurnSteps(lastState, choice, chooseOpponentAction(lastState))
+      const automatic = resolveBattleTurnSteps(
+        lastState,
+        choice,
+        chooseOpponentAction(lastState, Math.random, difficulty),
+      )
       if (automatic.length) {
         automatic[0] = { ...automatic[0], events: automatic[0].events.filter((event) => event.type !== 'turn') }
       }
@@ -1214,6 +1220,25 @@ export function BattlePage() {
                   ))}
                 </select>
               </label>
+              <label>
+                {t('battle.difficulty')}
+                <select
+                  value={difficulty}
+                  disabled={screen === 'loading'}
+                  aria-describedby="battle-difficulty-help"
+                  onChange={(event) => {
+                    const value = BATTLE_DIFFICULTIES.find((entry) => entry === event.target.value)
+                    if (value) setDifficulty(value)
+                  }}
+                >
+                  {BATTLE_DIFFICULTIES.map((value) => (
+                    <option key={value} value={value}>
+                      {t(`battle.difficulty.${value}`)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p id="battle-difficulty-help">{t(`battle.difficulty.${difficulty}.description`)}</p>
               <button className="button primary" onClick={startBattle} disabled={screen === 'loading'}>
                 <Swords size={18} aria-hidden="true" />
                 {screen === 'loading' ? t('battle.loading') : t('battle.start')}

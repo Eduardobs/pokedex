@@ -131,6 +131,23 @@ afterEach(() => {
 })
 
 describe('BattlePage lobby', () => {
+  it('offers six ordered difficulties and describes the selected strategy', () => {
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([completeTeam('player', 'Minha equipe')]))
+    show()
+    const selector = screen.getByRole('combobox', { name: 'Dificuldade' })
+    expect(selector).toHaveValue('medium')
+    expect(
+      within(selector)
+        .getAllByRole('option')
+        .map((option) => option.textContent),
+    ).toEqual(['Muito fácil', 'Fácil', 'Médio', 'Difícil', 'Muito difícil', 'Especialista'])
+    fireEvent.change(selector, { target: { value: 'expert' } })
+    expect(selector).toHaveValue('expert')
+    expect(selector).toHaveAccessibleDescription(
+      'Combina as análises anteriores e considera possíveis trocas para Pokémon já revelados.',
+    )
+  })
+
   it('uses the supplied icon and color treatment for each major status', () => {
     render(
       <LanguageProvider>

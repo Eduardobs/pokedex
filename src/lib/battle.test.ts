@@ -1,3 +1,4 @@
+import { BATTLE_DIFFICULTIES } from './battle-ai'
 import { describe, expect, it } from 'vitest'
 import {
   battleMoveEffectiveness,
@@ -1883,5 +1884,134 @@ describe('multi-turn moves', () => {
   ])('%s remains vulnerable while charging', (name) => {
     const result = act(setup(name), 0, 0).state
     expect(result.player.roster[0].hp).toBeLessThan(result.player.roster[0].maxHp)
+  })
+})
+
+describe('Opponent difficulty and information boundaries', () => {
+  const battle = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    return createBattleState(player, roster(player, ['grass']), opponent, roster(opponent, ['water']))
+  }
+
+  it.each(BATTLE_DIFFICULTIES)('ignores private player information at %s difficulty', (difficulty) => {
+    const state = battle()
+    state.player.roster[0].revealedMoves = ['tackle']
+    const before = JSON.stringify(state)
+    const expected = chooseOpponentAction(state, () => 0.5, difficulty)
+    expect(JSON.stringify(state)).toBe(before)
+    const hidden = state.player.roster[0]
+    hidden.member.tera = 'dragon'
+    hidden.member.evs = [252, 252, 0, 0, 0, 0]
+    hidden.member.nature = 'adamant'
+    hidden.member.item = 'choice-band'
+    hidden.stats = [900, 900, 900, 900, 900, 900]
+    hidden.ability.name = 'wonder-guard'
+    hidden.item = { name: 'choice-band', names: [], descriptions: [], sprite: null }
+    hidden.moves[1].data = move({ name: 'thunder', type: 'electric', power: 110 })
+    hidden.moves[0].pp = 0
+    hidden.lastMoveIndex = 1
+    hidden.chargingMoveIndex = 1
+    hidden.encoreMoveIndex = 1
+    state.player.team.members.reverse()
+    for (const entry of state.player.roster.slice(1)) {
+      entry.pokemon.types = ['electric']
+      entry.pokemon.stats = [255, 255, 255, 255, 255, 255]
+      entry.hp = 0
+      entry.moves = []
+    }
+    expect(chooseOpponentAction(state, () => 0.5, difficulty)).toEqual(expected)
+  })
+
+  it('keeps very easy on the field and avoids voluntary pivot moves', () => {
+    const state = battle()
+    state.opponent.roster[0].moves[0].data = move({ name: 'u-turn', type: 'bug' })
+    expect(chooseOpponentAction(state, () => 0, 'very-easy')).toEqual({ kind: 'move', index: 1 })
+    state.opponent.roster[0].hp = 0
+    expect(chooseOpponentAction(state, () => 0, 'very-easy')).toEqual({ kind: 'switch', index: 1 })
+  })
+
+  it('uses type effectiveness on easy without switching', () => {
+    const state = battle()
+    state.opponent.roster[0].moves[0].data = move({ type: 'water', power: 80 })
+    state.opponent.roster[0].moves[1].data = move({ type: 'fire', power: 80 })
+    expect(chooseOpponentAction(state, () => 0.5, 'easy')).toEqual({ kind: 'move', index: 1 })
+  })
+
+  it('switches out of a bad matchup from medium onward but respects trapping', () => {
+    const state = battle()
+    state.player.roster[0].pokemon.types = ['electric']
+    state.opponent.roster[0].pokemon.types = ['water', 'flying']
+    state.opponent.roster[1].pokemon.types = ['ground']
+    state.opponent.roster[1].moves[0].data = move({ type: 'ground', power: 100 })
+    expect(chooseOpponentAction(state, () => 0.5, 'medium')).toEqual({ kind: 'switch', index: 1 })
+    state.opponent.roster[0].volatile.bound = 3
+    expect(chooseOpponentAction(state, () => 0.5, 'medium').kind).toBe('move')
+  })
+
+  it('learns player attacks only after the turn has exposed them', () => {
+    const state = battle()
+    expect(state.player.roster[0].revealedMoves).toEqual([])
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(result.state.player.roster[0].revealedMoves).toEqual(['tackle'])
+    expect(state.player.roster[0].revealedMoves).toEqual([])
+  })
+
+  it.each(BATTLE_DIFFICULTIES)('obeys PP, Encore and recharge on %s', (difficulty) => {
+    const state = battle()
+    const own = state.opponent.roster[0]
+    own.volatile.bound = 3
+    own.moves[0].pp = 0
+    own.encoreTurns = 2
+    own.encoreMoveIndex = 1
+    expect(chooseOpponentAction(state, () => 0.5, difficulty)).toMatchObject({ kind: 'move', index: 1 })
+    own.recharging = true
+    expect(chooseOpponentAction(state, () => 0.5, difficulty)).toMatchObject({ kind: 'move', index: 0 })
+  })
+
+  it('avoids a forced replacement that would faint to entry hazards on very hard', () => {
+    const state = battle()
+    state.phase = 'opponent-switch'
+    state.opponent.roster[0].hp = 0
+    state.opponent.roster[1].hp = 1
+    state.opponent.roster[1].moves[0].data = move({ type: 'fire', power: 150 })
+    state.opponent.hazards.stealthRock = true
+    const choice = chooseOpponentAction(state, () => 0.5, 'very-hard')
+    expect(choice.kind).toBe('switch')
+    expect(choice.index).not.toBe(1)
+  })
+})
+
+describe('Advanced opponent tactics', () => {
+  const battle = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    state.opponent.roster[0].volatile.bound = 3
+    return state
+  }
+
+  it('uses revealed threats to choose defensive Tera without changing resources', () => {
+    const state = battle()
+    const own = state.opponent.roster[0]
+    own.pokemon.types = ['water', 'flying']
+    own.member.tera = 'ground'
+    state.player.roster[0].moves[0].data = move({ name: 'thunderbolt', type: 'electric', power: 90 })
+    const unknown = chooseOpponentAction(state, () => 0.5, 'expert')
+    expect(unknown).not.toHaveProperty('tera', true)
+    state.player.roster[0].revealedMoves = ['thunderbolt']
+    expect(chooseOpponentAction(state, () => 0.5, 'expert')).toMatchObject({ kind: 'move', tera: true })
+    expect(own.terastallized).toBe(false)
+    own.terastallized = true
+    expect(chooseOpponentAction(state, () => 0.5, 'expert')).not.toHaveProperty('tera', true)
+  })
+
+  it('prioritizes clearing entry hazards at very hard', () => {
+    const state = battle()
+    state.opponent.roster[0].moves[0].data = move({ name: 'rapid-spin', power: 20 })
+    state.opponent.roster[0].moves[1].data = move({ power: 70 })
+    expect(chooseOpponentAction(state, () => 0.5, 'very-hard')).toMatchObject({ kind: 'move', index: 1 })
+    state.opponent.hazards.spikes = 3
+    expect(chooseOpponentAction(state, () => 0.5, 'very-hard')).toMatchObject({ kind: 'move', index: 0 })
   })
 })

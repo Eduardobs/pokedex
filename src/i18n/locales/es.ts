@@ -1,4 +1,23 @@
 export const es = {
+  'battle.difficulty': 'Dificultad',
+  'battle.difficulty.very-easy': 'Muy fácil',
+  'battle.difficulty.very-easy.description':
+    'Elige movimientos al azar, sin cambios voluntarios ni teracristalización.',
+  'battle.difficulty.easy': 'Fácil',
+  'battle.difficulty.easy.description':
+    'Considera potencia y tipos, pero aún comete errores. No cambia voluntariamente.',
+  'battle.difficulty.medium': 'Medio',
+  'battle.difficulty.medium.description':
+    'Evalúa daño, recuperación y estados; puede cambiar para mejorar el enfrentamiento.',
+  'battle.difficulty.hard': 'Difícil',
+  'battle.difficulty.hard.description':
+    'Usa movimientos revelados para evaluar amenazas, mejoras de estadísticas y teracristalización, con decisiones más arriesgadas.',
+  'battle.difficulty.very-hard': 'Muy difícil',
+  'battle.difficulty.very-hard.description':
+    'Considera precisión, peligros de entrada, condiciones del campo y conservación del equipo.',
+  'battle.difficulty.expert': 'Experto',
+  'battle.difficulty.expert.description':
+    'Combina los análisis anteriores y considera posibles cambios a Pokémon ya revelados.',
   'battle.log.charging': '{name} está preparando su ataque.',
   'battle.log.recharging': '{name} necesita descansar para recargar.',
   'battle.log.futureSight': 'Se preparó un ataque futuro en el lado de {name}.',

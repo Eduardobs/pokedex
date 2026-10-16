@@ -1,4 +1,21 @@
 export const ptBR = {
+  'battle.difficulty': 'Dificuldade',
+  'battle.difficulty.very-easy': 'Muito fácil',
+  'battle.difficulty.very-easy.description': 'Escolhe golpes ao acaso, sem trocas voluntárias ou Terastallização.',
+  'battle.difficulty.easy': 'Fácil',
+  'battle.difficulty.easy.description': 'Considera poder e tipos, mas ainda comete erros. Não troca voluntariamente.',
+  'battle.difficulty.medium': 'Médio',
+  'battle.difficulty.medium.description':
+    'Avalia dano, recuperação e condições de status; pode trocar para melhorar o confronto.',
+  'battle.difficulty.hard': 'Difícil',
+  'battle.difficulty.hard.description':
+    'Usa golpes revelados para avaliar ameaças, melhorias de atributos e Terastallização, com escolhas mais arriscadas.',
+  'battle.difficulty.very-hard': 'Muito difícil',
+  'battle.difficulty.very-hard.description':
+    'Considera precisão, perigos de entrada, condições de campo e preservação da equipe.',
+  'battle.difficulty.expert': 'Especialista',
+  'battle.difficulty.expert.description':
+    'Combina as análises anteriores e considera possíveis trocas para Pokémon já revelados.',
   'battle.log.charging': '{name} está preparando o ataque.',
   'battle.log.recharging': '{name} precisa descansar para recarregar.',
   'battle.log.futureSight': 'Um ataque futuro foi preparado no lado de {name}.',

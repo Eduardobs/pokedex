@@ -1,3 +1,4 @@
+import { chooseBattleOpponentAction, type BattleDifficulty } from './battle-ai'
 import { getDamageMultiplier, type BattleType } from './type-chart'
 import { calculatedCoreStats, calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
 import { supplementalMoveEffect } from './battle-move-effects'
@@ -1352,13 +1353,14 @@ function performChoice(
     return
   }
   const selectedMove = attacker.moves[selectedMoveIndex]?.data.name
-  if (side === 'opponent' && selectedMove && !attacker.revealedMoves.includes(selectedMove)) {
-    attacker.revealedMoves = [...attacker.revealedMoves, selectedMove].slice(0, 4)
-  }
   const outcome = applyMove(attacker, defender, foe, field, selectedMoveIndex, random, events)
   for (let index = start; index < events.length; index += 1) {
     const event = events[index]
-    if (event.type === 'move') event.side = side
+    if (event.type === 'move') {
+      event.side = side
+      if (selectedMove && !attacker.revealedMoves.includes(selectedMove))
+        attacker.revealedMoves = [...attacker.revealedMoves, selectedMove].slice(0, 4)
+    }
   }
   if (!outcome) return
   let succeeded = outcome.succeeded
@@ -1764,18 +1766,12 @@ function settlePhase(state: BattleState, events: BattleEvent[]) {
   else state.phase = 'choice'
 }
 
-export function chooseOpponentAction(state: BattleState, random: RandomSource = Math.random): BattleChoice {
-  const side = state.opponent
-  if (state.phase === 'opponent-switch' || side.roster[side.active].hp === 0) {
-    const choices = side.roster.flatMap((pokemon, index) => (index !== side.active && pokemon.hp > 0 ? [index] : []))
-    return { kind: 'switch', index: choices[Math.floor(random() * choices.length)] }
-  }
-  const moves = legalBattleMoveIndexes(side.roster[side.active])
-  return {
-    kind: 'move',
-    index: moves[Math.floor(random() * moves.length)] ?? 0,
-    tera: !side.roster[side.active].terastallized && random() < 0.12,
-  }
+export function chooseOpponentAction(
+  state: BattleState,
+  random: RandomSource = Math.random,
+  difficulty: BattleDifficulty = 'medium',
+): BattleChoice {
+  return chooseBattleOpponentAction(state, difficulty, random)
 }
 
 export function resolveBattleTurnSteps(

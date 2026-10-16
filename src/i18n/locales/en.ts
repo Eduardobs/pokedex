@@ -1,4 +1,21 @@
 export const en = {
+  'battle.difficulty': 'Difficulty',
+  'battle.difficulty.very-easy': 'Very easy',
+  'battle.difficulty.very-easy.description': 'Chooses moves at random, without voluntary switches or Terastallization.',
+  'battle.difficulty.easy': 'Easy',
+  'battle.difficulty.easy.description':
+    'Considers power and types but still makes mistakes. Does not switch voluntarily.',
+  'battle.difficulty.medium': 'Medium',
+  'battle.difficulty.medium.description': 'Evaluates damage, recovery and status; may switch for a better matchup.',
+  'battle.difficulty.hard': 'Hard',
+  'battle.difficulty.hard.description':
+    'Uses revealed moves to assess threats, stat boosts and Terastallization, with riskier choices.',
+  'battle.difficulty.very-hard': 'Very hard',
+  'battle.difficulty.very-hard.description':
+    'Considers accuracy, entry hazards, field conditions and team preservation.',
+  'battle.difficulty.expert': 'Expert',
+  'battle.difficulty.expert.description':
+    'Combines earlier analyses and considers possible switches to previously revealed Pokémon.',
   'battle.log.charging': '{name} is preparing its attack.',
   'battle.log.recharging': '{name} must rest to recharge.',
   'battle.log.futureSight': 'A future attack was set on {name}’s side.',
