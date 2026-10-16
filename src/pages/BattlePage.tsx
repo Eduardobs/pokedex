@@ -138,7 +138,11 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
         <span style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }} />
       </div>
       <div className="battle-health-meta">
-        {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
+        <span className="battle-pokemon-conditions">
+          {pokemon.status && <span>{t(`battle.status.${pokemon.status}`)}</span>}
+          {pokemon.encoreTurns > 0 && <span>{t('battle.pokemonCondition.encore')}</span>}
+          {pokemon.tauntTurns > 0 && <span>{t('battle.pokemonCondition.taunt')}</span>}
+        </span>
         <span>
           {formatNumber(displayedHp, language)} / {formatNumber(pokemon.maxHp, language)}
         </span>
@@ -659,6 +663,10 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.asleep', { name })
     case 'wake':
       return t('battle.log.wake', { name })
+    case 'thaw':
+      return t('battle.log.thaw', { name })
+    case 'ability':
+      return t('battle.log.ability', { name, ability: prettyName(event.ability) })
     case 'stage':
       return t('battle.log.stage', { name, stat: t(`battle.stat.${event.stat}`), change: event.change })
     case 'encore':
@@ -750,7 +758,7 @@ function BattleLogEvent({ event }: { event: BattleEvent }) {
 
 const sideConditionKeys: (keyof BattleSideConditions)[] = ['reflect', 'lightScreen', 'auroraVeil', 'tailwind']
 
-function BattleFieldEffects({
+export function BattleFieldEffects({
   field,
   player,
   opponent,
@@ -761,13 +769,13 @@ function BattleFieldEffects({
 }) {
   const { t } = useLanguage()
   const effects = [
-    ...(field.weather ? [{ id: field.weather, turns: field.weatherTurns }] : []),
-    ...(field.terrain ? [{ id: field.terrain, turns: field.terrainTurns }] : []),
-    ...(field.trickRoomTurns > 0 ? [{ id: 'trick-room' as const, turns: field.trickRoomTurns }] : []),
+    ...(field.weather ? [{ id: field.weather }] : []),
+    ...(field.terrain ? [{ id: field.terrain }] : []),
+    ...(field.trickRoomTurns > 0 ? [{ id: 'trick-room' as const }] : []),
     ...(['player', 'opponent'] as const).flatMap((sideName) => {
       const side = sideName === 'player' ? player : opponent
       return sideConditionKeys.flatMap((condition) =>
-        side.conditions[condition] > 0 ? [{ id: condition, turns: side.conditions[condition], side: sideName }] : [],
+        side.conditions[condition] > 0 ? [{ id: condition, side: sideName }] : [],
       )
     }),
   ]
@@ -778,7 +786,6 @@ function BattleFieldEffects({
         <span key={`${effect.id}-${'side' in effect ? effect.side : 'field'}`}>
           {t(`battle.fieldEffect.${effect.id}`)}
           {'side' in effect && ` · ${t(`battle.fieldSide.${effect.side}`)}`}
-          <small>{t('battle.fieldTurns', { turns: effect.turns })}</small>
         </span>
       ))}
     </div>

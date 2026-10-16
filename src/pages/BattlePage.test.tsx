@@ -4,11 +4,11 @@ import { MemoryRouter } from 'react-router-dom'
 import { STORAGE_KEYS } from '../config/app'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { clearApiCache } from '../lib/api-client'
-import { createBattlePokemon, type BattleMove } from '../lib/battle'
+import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/battle'
 import * as battleData from '../lib/battle-data'
 import * as randomTeam from '../lib/random-team'
 import type { Team } from '../lib/teams'
-import { BattlePage } from './BattlePage'
+import { BattleFieldEffects, BattlePage } from './BattlePage'
 
 const completeTeam = (id: string, name: string): Team => ({
   id,
@@ -130,6 +130,33 @@ afterEach(() => {
 })
 
 describe('BattlePage lobby', () => {
+  it('shows active field and side conditions without their remaining turns', () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    const state = createBattleState(player, battleRoster(player), opponent, battleRoster(opponent))
+    state.field.weather = 'rain'
+    state.field.weatherTurns = 3
+    state.field.terrain = 'grassy'
+    state.field.terrainTurns = 2
+    state.field.trickRoomTurns = 1
+    state.player.conditions.reflect = 4
+    state.opponent.conditions.tailwind = 2
+
+    render(
+      <LanguageProvider>
+        <BattleFieldEffects field={state.field} player={state.player} opponent={state.opponent} />
+      </LanguageProvider>,
+    )
+
+    const effects = screen.getByRole('group', { name: 'Efeitos ativos no campo de batalha' })
+    expect(within(effects).getByText('Chuva')).toBeVisible()
+    expect(within(effects).getByText('Campo de Grama')).toBeVisible()
+    expect(within(effects).getByText('Trick Room')).toBeVisible()
+    expect(within(effects).getByText('Reflect · seu lado')).toBeVisible()
+    expect(within(effects).getByText('Tailwind · lado adversário')).toBeVisible()
+    expect(within(effects).queryByText(/turno/)).not.toBeInTheDocument()
+  })
+
   it('guides the user to the team builder when no complete team is available', () => {
     show()
     expect(screen.getByRole('heading', { name: 'Batalha' })).toBeVisible()

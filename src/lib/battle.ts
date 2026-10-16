@@ -27,7 +27,7 @@ export type BattleStages = {
   specialDefense: number
   speed: number
 }
-export type BattleStatus = 'burn' | 'paralysis' | 'poison' | 'sleep' | null
+export type BattleStatus = 'burn' | 'freeze' | 'paralysis' | 'poison' | 'sleep' | null
 export type BattlePokemon = {
   member: TeamMember
   pokemon: TeamPokemon
@@ -123,6 +123,8 @@ export type BattleEvent =
   | { type: 'weatherDamage'; pokemon: string; weather: 'sandstorm'; amount: number }
   | { type: 'asleep'; pokemon: string }
   | { type: 'wake'; pokemon: string }
+  | { type: 'thaw'; pokemon: string }
+  | { type: 'ability'; pokemon: string; ability: string }
   | { type: 'stage'; pokemon: string; stat: keyof BattleStages; change: number }
   | { type: 'encore'; pokemon: string; move: string; turns: number }
   | { type: 'taunt'; pokemon: string }
@@ -213,6 +215,24 @@ const selfStatChangeMoves = new Set([
 // These moves raise a selected opponent's stage rather than the user's.
 const targetStatChangeMoves = new Set(['decorate', 'flatter', 'swagger'])
 const itemRemovalMoves = new Set(['corrosive-gas', 'knock-off'])
+const entryStageAbilities: Partial<Record<string, keyof BattleStages>> = {
+  'intrepid-sword': 'attack',
+  'dauntless-shield': 'defense',
+}
+const entryWeatherAbilities: Partial<Record<string, BattleWeather>> = {
+  drizzle: 'rain',
+  drought: 'sun',
+  'orichalcum-pulse': 'sun',
+  'sand-stream': 'sandstorm',
+  'snow-warning': 'snow',
+}
+const entryTerrainAbilities: Partial<Record<string, BattleTerrain>> = {
+  'electric-surge': 'electric',
+  'hadron-engine': 'electric',
+  'grassy-surge': 'grassy',
+  'misty-surge': 'misty',
+  'psychic-surge': 'psychic',
+}
 
 function changesApplyToUser(move: BattleMove) {
   return move.target === 'user' || selfStatChangeMoves.has(move.name)
@@ -238,8 +258,13 @@ export function createBattlePokemon(
   details: Partial<Pick<BattlePokemon, 'ability' | 'item'>> = {},
 ): BattlePokemon {
   if (moves.length !== 4 || moves.some((move) => !moveTypes.has(move.type))) throw new Error('Invalid battle moves.')
-  const stats = calculatedStats(pokemon, member)
   const ability = pokemon.abilities.includes(member.ability) ? member.ability : pokemon.abilities[0]
+  // Entry boosts are represented by battle stages so they correctly disappear on
+  // switching out and trigger again every time the Pokémon enters.
+  const stats = calculatedStats(pokemon, {
+    ...member,
+    abilityActive: entryStageAbilities[ability] ? false : member.abilityActive,
+  })
   return {
     member,
     pokemon,
@@ -289,7 +314,7 @@ export function createBattleState(
     opponent.length !== 6
   )
     throw new Error('Battle requires two complete teams.')
-  return {
+  const state: BattleState = {
     turn: 1,
     player: {
       team: playerTeam,
@@ -310,6 +335,9 @@ export function createBattleState(
     field: emptyField(),
     phase: 'choice',
   }
+  applyEntryAbility(state.player, state.opponent, state.field, [])
+  applyEntryAbility(state.opponent, state.player, state.field, [])
+  return state
 }
 
 function cloneState(state: BattleState): BattleState {
@@ -447,7 +475,62 @@ function canAct(pokemon: BattlePokemon, random: RandomSource, events: BattleEven
     events.push({ type: 'failed', pokemon: pokemon.pokemon.name })
     return false
   }
+  if (pokemon.status === 'freeze') {
+    if (random() >= 0.2) {
+      events.push({ type: 'failed', pokemon: pokemon.pokemon.name })
+      return false
+    }
+    pokemon.status = null
+    events.push({ type: 'thaw', pokemon: pokemon.pokemon.name })
+  }
   return true
+}
+
+function applyEntryAbility(own: BattleSide, foe: BattleSide, field: BattleField, events: BattleEvent[]) {
+  const pokemon = own.roster[own.active]
+  if (!pokemon || pokemon.hp <= 0) return
+  const ability = pokemon.ability.name
+  const stage = entryStageAbilities[ability]
+  const weather = entryWeatherAbilities[ability]
+  const terrain = entryTerrainAbilities[ability]
+  const activates = Boolean(stage || weather || terrain || ability === 'intimidate')
+  if (!activates) return
+
+  events.push({ type: 'ability', pokemon: pokemon.pokemon.name, ability })
+  if (stage) {
+    const previous = pokemon.stages[stage]
+    pokemon.stages[stage] = Math.min(6, previous + 1)
+    if (pokemon.stages[stage] !== previous)
+      events.push({
+        type: 'stage',
+        pokemon: pokemon.pokemon.name,
+        stat: stage,
+        change: pokemon.stages[stage] - previous,
+      })
+  }
+  if (weather) {
+    field.weather = weather
+    field.weatherTurns = 5
+    events.push({ type: 'fieldSet', field: weather, turns: field.weatherTurns })
+  }
+  if (terrain) {
+    field.terrain = terrain
+    field.terrainTurns = 5
+    events.push({ type: 'fieldSet', field: terrain, turns: field.terrainTurns })
+  }
+  if (ability === 'intimidate') {
+    const target = foe.roster[foe.active]
+    if (!target || target.hp <= 0) return
+    const previous = target.stages.attack
+    target.stages.attack = Math.max(-6, previous - 1)
+    if (target.stages.attack !== previous)
+      events.push({
+        type: 'stage',
+        pokemon: target.pokemon.name,
+        stat: 'attack',
+        change: target.stages.attack - previous,
+      })
+  }
 }
 
 export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
@@ -632,7 +715,9 @@ function applyMove(
 
   const statusTarget = selfTarget ? attacker : defender
   if (move.ailment && !statusTarget.status && statusTarget.hp > 0 && random() * 100 < move.ailmentChance) {
-    const status = ({ burn: 'burn', paralysis: 'paralysis', poison: 'poison', sleep: 'sleep' } as const)[move.ailment]
+    const status = (
+      { burn: 'burn', freeze: 'freeze', paralysis: 'paralysis', poison: 'poison', sleep: 'sleep' } as const
+    )[move.ailment]
     if (status && !statusPreventedByTerrain(status, statusTarget, field)) {
       statusTarget.status = status
       if (status === 'sleep') statusTarget.sleepTurns = 1 + Math.floor(random() * 3)
@@ -665,6 +750,7 @@ function performChoice(
     replacement.hasEnteredBattle = true
     own.switchRequested = false
     events.push({ type: 'switch', side, pokemon: replacement.pokemon.name })
+    applyEntryAbility(own, foe, field, events)
     applyEntryHazards(own, replacement, events)
     if (replacement.hp === 0) events.push({ type: 'faint', pokemon: replacement.pokemon.name })
     return

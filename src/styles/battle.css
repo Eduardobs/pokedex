@@ -104,10 +104,6 @@
   font-weight: 800;
   backdrop-filter: blur(6px);
 }
-.battle-field-effects small {
-  color: var(--muted);
-  font-size: 10px;
-}
 .battle-side {
   position: relative;
   min-height: 0;
@@ -499,6 +495,20 @@
 }
 .battle-health-meta > span:last-child {
   margin-left: auto;
+}
+.battle-pokemon-conditions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.battle-pokemon-conditions > span {
+  padding: 2px 5px;
+  border: 1px solid color-mix(in srgb, var(--red) 35%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--red) 8%, transparent);
+  color: color-mix(in srgb, var(--red) 72%, var(--ink));
+  font-size: 10px;
+  font-weight: 800;
 }
 .battle-gender-icon {
   display: inline-grid;

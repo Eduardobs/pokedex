@@ -459,6 +459,146 @@ describe('Random Battle engine', () => {
     ])
   })
 
+  it('clears move stages on a switch while retaining Nature and item stats', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    playerTeam.members[0] = { ...playerTeam.members[0], nature: 'adamant', item: 'choice-band' }
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const persistentAttack = state.player.roster[0].stats[1]
+    state.player.roster[0].stages.attack = 2
+    state.player.roster[0].stages.defense = -1
+
+    const switched = resolveBattleTurn(state, { kind: 'switch', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(switched.state.player.roster[0].stages).toEqual({
+      attack: 0,
+      defense: 0,
+      specialAttack: 0,
+      specialDefense: 0,
+      speed: 0,
+    })
+
+    const returned = resolveBattleTurn(
+      switched.state,
+      { kind: 'switch', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(returned.state.player.roster[0].stats[1]).toBe(persistentAttack)
+    expect(currentBattleStats(returned.state.player.roster[0])[1]).toBe(persistentAttack)
+  })
+
+  it('activates entry abilities on the initial send-out and each return to the field', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    playerTeam.members = playerTeam.members.map((entry) => ({
+      ...entry,
+      ability: 'intrepid-sword',
+      abilityActive: true,
+    }))
+    const playerRoster = playerTeam.members.map((entry) =>
+      createBattlePokemon(entry, { ...teamPokemon(entry.pokemon), abilities: ['intrepid-sword'] }, [
+        move(),
+        move(),
+        move(),
+        move(),
+      ]),
+    )
+    const state = createBattleState(playerTeam, playerRoster, opponentTeam, roster(opponentTeam))
+
+    expect(state.player.roster[0].stages.attack).toBe(1)
+    expect(state.player.roster[0].stats[1]).toBe(state.player.roster[0].originalStats[1])
+
+    const switched = resolveBattleTurn(state, { kind: 'switch', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(switched.state.player.roster[0].stages.attack).toBe(0)
+    expect(switched.state.player.roster[1].stages.attack).toBe(1)
+    expect(switched.events).toContainEqual(
+      expect.objectContaining({ type: 'ability', pokemon: 'player-1', ability: 'intrepid-sword' }),
+    )
+
+    const returned = resolveBattleTurn(
+      switched.state,
+      { kind: 'switch', index: 0 },
+      { kind: 'move', index: 2 },
+      () => 0.5,
+    )
+    expect(returned.state.player.roster[0].stages.attack).toBe(1)
+    expect(returned.events).toContainEqual(
+      expect.objectContaining({ type: 'ability', pokemon: 'player-0', ability: 'intrepid-sword' }),
+    )
+  })
+
+  it('reapplies weather from an entry ability whenever its Pokémon returns', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    playerTeam.members[0] = { ...playerTeam.members[0], ability: 'drizzle' }
+    playerTeam.members[1] = { ...playerTeam.members[1], ability: 'drought' }
+    const playerRoster = playerTeam.members.map((entry) =>
+      createBattlePokemon(entry, { ...teamPokemon(entry.pokemon), abilities: [entry.ability] }, [
+        move(),
+        move(),
+        move(),
+        move(),
+      ]),
+    )
+    const state = createBattleState(playerTeam, playerRoster, opponentTeam, roster(opponentTeam))
+    expect(state.field.weather).toBe('rain')
+
+    const sun = resolveBattleTurn(state, { kind: 'switch', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(sun.state.field.weather).toBe('sun')
+    expect(sun.events).toContainEqual(expect.objectContaining({ type: 'ability', ability: 'drought' }))
+
+    const rain = resolveBattleTurn(sun.state, { kind: 'switch', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(rain.state.field.weather).toBe('rain')
+    expect(rain.events).toContainEqual(expect.objectContaining({ type: 'ability', ability: 'drizzle' }))
+  })
+
+  it('applies terrain and Intimidate as Pokémon enter the field', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    playerTeam.members[0] = { ...playerTeam.members[0], ability: 'electric-surge' }
+    opponentTeam.members[0] = { ...opponentTeam.members[0], ability: 'intimidate' }
+    const playerRoster = playerTeam.members.map((entry) =>
+      createBattlePokemon(entry, { ...teamPokemon(entry.pokemon), abilities: [entry.ability] }, [
+        move(),
+        move(),
+        move(),
+        move(),
+      ]),
+    )
+    const opponentRoster = opponentTeam.members.map((entry) =>
+      createBattlePokemon(entry, { ...teamPokemon(entry.pokemon), abilities: [entry.ability] }, [
+        move(),
+        move(),
+        move(),
+        move(),
+      ]),
+    )
+
+    const state = createBattleState(playerTeam, playerRoster, opponentTeam, opponentRoster)
+
+    expect(state.field).toMatchObject({ terrain: 'electric', terrainTurns: 5 })
+    expect(state.player.roster[0].stages.attack).toBe(-1)
+  })
+
+  it('shows frozen Pokémon as unable to act until they thaw', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const frozenState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    frozenState.player.roster[0].status = 'freeze'
+    frozenState.player.roster[0].stats[5] = 999
+
+    const frozen = resolveBattleTurn(frozenState, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(frozen.state.player.roster[0].status).toBe('freeze')
+    expect(frozen.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+
+    const thawedState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    thawedState.player.roster[0].status = 'freeze'
+    thawedState.player.roster[0].stats[5] = 999
+    const thawed = resolveBattleTurn(thawedState, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0)
+    expect(thawed.state.player.roster[0].status).toBeNull()
+    expect(thawed.events).toContainEqual({ type: 'thaw', pokemon: 'player-0' })
+  })
+
   it('uses priority, consumes PP, applies damage, and preserves a complete immutable state', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
