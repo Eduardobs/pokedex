@@ -564,7 +564,7 @@
 .battle-pokemon-conditions {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 3px;
 }
 .battle-pokemon-conditions > span:not(.battle-major-status) {
   padding: 2px 5px;
@@ -581,10 +581,10 @@
   --status-icon: #e9ffff;
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  min-height: 20px;
-  padding: 1px 7px 1px 4px;
-  border: 2px solid var(--status-edge);
+  gap: 2px;
+  min-height: 17px;
+  padding: 0 5px 0 3px;
+  border: 1px solid var(--status-edge);
   border-radius: 999px;
   background: linear-gradient(180deg, color-mix(in srgb, white 18%, var(--status-fill)), var(--status-fill));
   box-shadow:
@@ -592,7 +592,7 @@
     0 1px 1px color-mix(in srgb, var(--ink) 24%, transparent);
   color: white;
   font:
-    800 10px Outfit,
+    800 8px Outfit,
     sans-serif;
   letter-spacing: 0.015em;
   line-height: 1;
@@ -601,8 +601,8 @@
 }
 .battle-major-status svg,
 .battle-major-status-sleep-icon {
-  width: 14px;
-  height: 14px;
+  width: 11px;
+  height: 11px;
   flex: none;
   color: var(--status-icon);
   stroke-width: 3;
@@ -610,16 +610,16 @@
 .battle-major-status-sleep-icon {
   display: inline-flex;
   align-items: flex-end;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 900;
   font-style: italic;
   letter-spacing: -0.18em;
-  line-height: 11px;
+  line-height: 9px;
 }
 .battle-major-status-sleep-icon small {
   align-self: flex-start;
   margin-left: 1px;
-  font-size: 8px;
+  font-size: 6px;
 }
 .battle-major-status--paralysis {
   --status-fill: #efd20a;
@@ -1271,6 +1271,27 @@
   .battle-active {
     grid-template-columns: minmax(130px, 0.9fr) minmax(120px, 1fr);
     padding: 12px;
+  }
+  .battle-pokemon-conditions {
+    gap: 2px;
+  }
+  .battle-major-status {
+    gap: 1px;
+    min-height: 15px;
+    padding: 0 4px 0 2px;
+    font-size: 7px;
+  }
+  .battle-major-status svg,
+  .battle-major-status-sleep-icon {
+    width: 9px;
+    height: 9px;
+  }
+  .battle-major-status-sleep-icon {
+    font-size: 8px;
+    line-height: 7px;
+  }
+  .battle-major-status-sleep-icon small {
+    font-size: 5px;
   }
   .battle-side-hazards.opponent {
     top: 8px;

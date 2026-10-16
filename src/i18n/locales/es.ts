@@ -52,7 +52,7 @@ export const es = {
   'battle.status.freeze': 'Congelación',
   'battle.status.paralysis': 'Parálisis',
   'battle.status.poison': 'Envenenamiento',
-  'battle.status.badly-poisoned': 'Envenenamiento grave',
+  'battle.status.badly-poisoned': 'Envenenamiento',
   'battle.status.sleep': 'Sueño',
   'battle.status.attraction': 'Enamoramiento',
   'battle.status.confusion': 'Confusión',

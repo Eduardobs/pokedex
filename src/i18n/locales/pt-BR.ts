@@ -53,7 +53,7 @@ export const ptBR = {
   'battle.status.freeze': 'Congelamento',
   'battle.status.paralysis': 'Paralisia',
   'battle.status.poison': 'Envenenamento',
-  'battle.status.badly-poisoned': 'Envenenamento grave',
+  'battle.status.badly-poisoned': 'Envenenamento',
   'battle.status.sleep': 'Sono',
   'battle.status.attraction': 'Paixão',
   'battle.status.confusion': 'Confusão',

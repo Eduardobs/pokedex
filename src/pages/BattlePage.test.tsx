@@ -148,8 +148,9 @@ describe('BattlePage lobby', () => {
     expect(screen.getByLabelText('Sono')).toHaveClass('battle-major-status--sleep')
     expect(screen.getByLabelText('Congelamento')).toHaveClass('battle-major-status--freeze')
     expect(screen.getByLabelText('Queimadura')).toHaveClass('battle-major-status--burn')
-    expect(screen.getByLabelText('Envenenamento')).toHaveClass('battle-major-status--poison')
-    expect(screen.getByLabelText('Envenenamento grave')).toHaveClass('battle-major-status--badly-poisoned')
+    const poisoned = screen.getAllByLabelText('Envenenamento')
+    expect(poisoned[0]).toHaveClass('battle-major-status--poison')
+    expect(poisoned[1]).toHaveClass('battle-major-status--badly-poisoned')
     expect(screen.getByLabelText('Sono').querySelector('.battle-major-status-sleep-icon')).toBeInTheDocument()
   })
 

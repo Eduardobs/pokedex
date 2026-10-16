@@ -53,7 +53,7 @@ export const en = {
   'battle.status.freeze': 'Freeze',
   'battle.status.paralysis': 'Paralysis',
   'battle.status.poison': 'Poison',
-  'battle.status.badly-poisoned': 'Badly poisoned',
+  'battle.status.badly-poisoned': 'Poison',
   'battle.status.sleep': 'Sleep',
   'battle.status.attraction': 'Infatuation',
   'battle.status.confusion': 'Confusion',
