@@ -268,7 +268,18 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
       <div className="battle-health-copy">
         <strong>
           {prettyName(pokemon.pokemon.name)}
-          <GenderIcon gender={pokemon.member.gender} />
+          <span className="battle-health-identity">
+            <GenderIcon gender={pokemon.member.gender} />
+            <span className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
+              {pokemon.terastallized ? (
+                <span aria-label={t('teams.tera')} title={t('teams.tera')}>
+                  <TeraTypeBadge type={pokemon.member.tera} iconOnly />
+                </span>
+              ) : (
+                pokemon.pokemon.types.map((type) => <TypeBadge key={type} type={type} iconOnly />)
+              )}
+            </span>
+          </span>
         </strong>
         <span className="battle-health-level">
           {t('battle.level', { level: formatNumber(pokemon.member.level, language) })}
@@ -314,21 +325,6 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           ))}
           {pokemon.encoreTurns > 0 && <span>{t('battle.pokemonCondition.encore')}</span>}
           {pokemon.tauntTurns > 0 && <span>{t('battle.pokemonCondition.taunt')}</span>}
-        </span>
-      </div>
-      <div className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
-        {pokemon.terastallized && (
-          <span className="battle-active-type-label">
-            <Sparkles size={14} aria-hidden="true" />
-            {t('teams.tera')}
-          </span>
-        )}
-        <span className="battle-active-type-badges">
-          {pokemon.terastallized ? (
-            <TeraTypeBadge type={pokemon.member.tera} />
-          ) : (
-            pokemon.pokemon.types.map((type) => <TypeBadge key={type} type={type} iconOnly />)
-          )}
         </span>
       </div>
     </div>

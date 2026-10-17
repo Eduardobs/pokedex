@@ -88,8 +88,8 @@
 .battle-field {
   position: relative;
   display: grid;
-  grid-template-rows: 1fr 1fr;
-  min-height: 440px;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  height: 480px;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -634,11 +634,8 @@
 }
 .battle-health {
   z-index: 1;
-  padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 9%, transparent);
+  padding: 0;
+  min-width: 0;
 }
 .battle-health-copy,
 .battle-health-meta {
@@ -1395,7 +1392,7 @@
     padding: 16px;
   }
   .battle-field {
-    min-height: 350px;
+    height: 440px;
   }
   .battle-active {
     grid-template-columns: minmax(130px, 0.9fr) minmax(120px, 1fr);
@@ -1450,9 +1447,6 @@
   .battle-sprite-trigger,
   .battle-pokemon-visual img {
     max-height: 160px;
-  }
-  .battle-health {
-    padding: 10px;
   }
   .battle-health-copy strong {
     font-size: 15px;
@@ -1683,37 +1677,48 @@
   }
 }
 
-/* Reserve each information row even while its effects are inactive. */
-.battle-health {
-  box-sizing: border-box;
-  height: 220px;
-  display: grid;
-  grid-template-rows: 42px 24px 36px minmax(0, 1fr) 40px;
-  gap: 4px;
-  min-width: 0;
-}
-.battle-health-copy,
-.battle-health-meta,
-.battle-stat-modifiers {
+/* Keep changing information within the battlefield, without fixing card heights. */
+.battle-side,
+.battle-active {
   min-height: 0;
 }
-.battle-health-copy strong {
-  overflow-wrap: anywhere;
-  font-size: 15px;
-}
-.battle-stat-modifiers,
-.battle-health-meta {
-  overflow: auto;
-  align-content: start;
-  align-items: start;
-  margin: 0;
-}
-.battle-health .battle-active-types {
-  margin: 0;
+.battle-active {
+  height: 100%;
   box-sizing: border-box;
 }
 .battle-active-data {
-  grid-template-rows: auto 36px;
+  min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  overflow: auto;
+}
+.battle-health-copy {
+  align-items: flex-start;
+}
+.battle-health-copy strong {
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.battle-health-identity,
+.battle-health .battle-active-types {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+.battle-health .battle-active-types {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+.battle-health-identity > .battle-active-types > span {
+  display: inline-flex;
+}
+.battle-stat-modifiers:empty,
+.battle-health-meta:has(.battle-pokemon-conditions:empty) {
+  display: none;
 }
 .battle-tera-control .button {
   width: auto;
@@ -1723,11 +1728,6 @@
   gap: 4px;
 }
 @media (max-width: 720px) {
-  .battle-health {
-    height: 250px;
-    grid-template-rows: 44px 24px 40px minmax(0, 1fr) 40px;
-    padding: 8px;
-  }
   .battle-health-copy {
     gap: 3px;
   }
@@ -1737,8 +1737,4 @@
   .battle-health-level {
     font-size: 10px;
   }
-}
-
-.battle-health .battle-health-bar {
-  margin: 0;
 }
