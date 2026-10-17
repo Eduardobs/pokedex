@@ -78,6 +78,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle Encore lasts a randomly selected two to six actions and ends when the affected Pokémon switches or the repeated move runs out of PP.
 - Move detail pages display the local supplemental battle behavior when the selected move has one.
 - Random Battle resolves combatants' actions sequentially after a configurable presentation delay, announcing each move over its user and completing that combatant's HP and effect presentation before announcing the next action or accepting another choice.
+- Random Battle briefly displays a localized miss announcement over the intended target, fading in and out while respecting reduced motion.
+- Random Battle active Pokémon information cards keep a fixed height per breakpoint and reserve space for changing stats, conditions, and types.
 - Random Battle keeps the full action history in a fixed-height, scrollable battle log that follows newly added actions.
 - Random Battle move choices display each move's priority alongside its remaining PP.
 - Move names in the Random Battle log expose the move's type, damage class, priority, and localized description in a keyboard-accessible tooltip.

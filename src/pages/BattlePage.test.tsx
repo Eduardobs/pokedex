@@ -306,6 +306,38 @@ describe('BattlePage lobby', () => {
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeEnabled()
   })
 
+  it('temporarily announces misses over the defender for either side', async () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
+      const roster = battleRoster(team, { pokemonStats: [100, 100, 100, 100, 100, team.id === player.id ? 200 : 50] })
+      roster.forEach((pokemon) =>
+        pokemon.moves.forEach((move) => {
+          move.data = { ...testMove('tackle'), accuracy: 0 }
+        }),
+      )
+      return roster
+    })
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    await screen.findByRole('heading', { name: 'O que Pokemon 0 fará?' })
+    vi.useFakeTimers()
+    fireEvent.click(screen.getAllByRole('button', { name: 'Tackle' })[0])
+    expect(screen.queryByText('Errou')).not.toBeInTheDocument()
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs))
+    expect(screen.getByText('Errou').closest('article')).toHaveClass('opponent')
+    expect(screen.getByText('Errou')).toHaveAttribute('role', 'status')
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.resultDisplayMs))
+    expect(screen.queryByText('Errou')).not.toBeInTheDocument()
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs))
+    expect(screen.getByText('Errou').closest('article')).toHaveClass('player')
+    await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.resultDisplayMs))
+    expect(screen.queryByText('Errou')).not.toBeInTheDocument()
+  })
+
   it('starts a battle and supports Terastallization, moves, switching, and returning to the lobby', async () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
@@ -493,6 +525,32 @@ describe('BattlePage lobby', () => {
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('Efetividade: Dano normal')
     expect(within(tackle).getByRole('tooltip')).toHaveTextContent('tackle em detalhes.')
     const moveTooltip = within(tackle).getByRole('tooltip')
+    const measureTooltip = vi.spyOn(moveTooltip, 'getBoundingClientRect').mockImplementation(() => {
+      expect(moveTooltip.style.display).toBe('grid')
+      return { x: 0, y: 0, left: 0, top: 0, right: 250, bottom: 180, width: 250, height: 180, toJSON: () => ({}) }
+    })
+    vi.stubGlobal('innerWidth', 320)
+    vi.stubGlobal('innerHeight', 568)
+    const measureTrigger = vi.spyOn(tackle, 'getBoundingClientRect').mockReturnValue({
+      x: 200,
+      y: 900,
+      left: 200,
+      top: 900,
+      right: 300,
+      bottom: 944,
+      width: 100,
+      height: 44,
+      toJSON: () => ({}),
+    })
+    fireEvent.focus(tackle)
+    expect(moveTooltip).toHaveStyle({ left: '60px', top: '378px' })
+    measureTrigger.mockRestore()
+    expect(moveTooltip).toHaveClass('is-pointer-positioned')
+    fireEvent.pointerMove(tackle, { clientX: 310, clientY: 558 })
+    expect(moveTooltip).toHaveStyle({ left: '60px', top: '378px' })
+    fireEvent.blur(tackle)
+    measureTooltip.mockRestore()
+    vi.unstubAllGlobals()
     fireEvent.pointerMove(tackle, { clientX: 120, clientY: 140 })
     expect(moveTooltip).toHaveClass('is-pointer-positioned')
     expect(moveTooltip).toHaveStyle({ left: '130px', top: '150px' })

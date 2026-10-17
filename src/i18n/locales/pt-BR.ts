@@ -161,6 +161,7 @@ export const ptBR = {
   'battle.log.move': '{name} usou {move}.',
   'battle.log.switch': '{name} entrou em campo.',
   'battle.log.tera': '{name} Terastalizou para o tipo {type}.',
+  'battle.missed': 'Errou',
   'battle.log.miss': 'O golpe errou {name}.',
   'battle.log.immune': 'Não afetou {name}.',
   'battle.log.damage': '{name} perdeu {damage} HP.',

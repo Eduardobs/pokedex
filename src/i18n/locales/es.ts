@@ -162,6 +162,7 @@ export const es = {
   'battle.log.move': '{name} usó {move}.',
   'battle.log.switch': '{name} entró al combate.',
   'battle.log.tera': '{name} se Teracristalizó al tipo {type}.',
+  'battle.missed': 'Falló',
   'battle.log.miss': 'El movimiento falló contra {name}.',
   'battle.log.immune': 'No afectó a {name}.',
   'battle.log.damage': '{name} perdió {damage} PS.',

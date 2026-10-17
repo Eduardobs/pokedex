@@ -204,6 +204,8 @@ function BattlePokemonDetails({ pokemon }: { pokemon: BattlePokemon }) {
 function positionBattleTooltip(event: ReactPointerEvent<HTMLElement>, tooltipId: string) {
   const tooltip = document.getElementById(tooltipId)
   if (!tooltip) return
+  tooltip.classList.add('is-pointer-positioned')
+  tooltip.style.display = 'grid'
   const gap = 10
   const bounds = tooltip.getBoundingClientRect()
   const left = Math.max(gap, Math.min(event.clientX + gap, window.innerWidth - bounds.width - gap))
@@ -218,6 +220,7 @@ function positionBattleTooltip(event: ReactPointerEvent<HTMLElement>, tooltipId:
 function resetBattleTooltip(tooltipId: string) {
   const tooltip = document.getElementById(tooltipId)
   if (!tooltip) return
+  tooltip.style.removeProperty('display')
   tooltip.style.removeProperty('left')
   tooltip.style.removeProperty('top')
   tooltip.style.removeProperty('right')
@@ -228,6 +231,8 @@ function resetBattleTooltip(tooltipId: string) {
 function positionBattleTooltipAtTrigger(trigger: HTMLElement, tooltipId: string) {
   const tooltip = document.getElementById(tooltipId)
   if (!tooltip) return
+  tooltip.classList.add('is-pointer-positioned')
+  tooltip.style.display = 'grid'
   const gap = 10
   const triggerBounds = trigger.getBoundingClientRect()
   const tooltipBounds = tooltip.getBoundingClientRect()
@@ -235,9 +240,12 @@ function positionBattleTooltipAtTrigger(trigger: HTMLElement, tooltipId: string)
   const preferredTop = triggerBounds.bottom + gap
   const top = Math.max(
     gap,
-    preferredTop + tooltipBounds.height <= window.innerHeight
-      ? preferredTop
-      : triggerBounds.top - tooltipBounds.height - gap,
+    Math.min(
+      window.innerHeight - tooltipBounds.height - gap,
+      preferredTop + tooltipBounds.height <= window.innerHeight
+        ? preferredTop
+        : triggerBounds.top - tooltipBounds.height - gap,
+    ),
   )
   tooltip.style.left = `${left}px`
   tooltip.style.top = `${top}px`
@@ -330,12 +338,14 @@ function ActivePokemon({
   teraControl,
   activeMove,
   hit = false,
+  missed = false,
 }: {
   side: BattleSide
   opponent?: boolean
   teraControl?: ReactNode
   activeMove?: string
   hit?: boolean
+  missed?: boolean
 }) {
   const tooltipId = useId()
   const { t } = useLanguage()
@@ -355,6 +365,15 @@ function ActivePokemon({
         {teraControl}
       </div>
       <div className="battle-pokemon-visual">
+        {missed && (
+          <span
+            className="battle-move-announcement"
+            style={{ animationDuration: `${BATTLE_TIMING.resultDisplayMs}ms` }}
+            role="status"
+          >
+            {t('battle.missed')}
+          </span>
+        )}
         {activeMove && (
           <span
             className="battle-move-announcement"
@@ -371,6 +390,7 @@ function ActivePokemon({
           aria-describedby={tooltipId}
           onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
           onBlur={() => resetBattleTooltip(tooltipId)}
+          onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
           onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
           onPointerLeave={() => resetBattleTooltip(tooltipId)}
         >
@@ -445,6 +465,9 @@ function BattleMoveButton({
       aria-label={prettyName(move.data.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
+      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+      onBlur={() => resetBattleTooltip(tooltipId)}
+      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
@@ -693,6 +716,7 @@ function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: 
                 aria-describedby={pokemon.hasEnteredBattle ? tooltipId : undefined}
                 onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
                 onBlur={() => resetBattleTooltip(tooltipId)}
+                onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
                 onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
                 onPointerLeave={() => resetBattleTooltip(tooltipId)}
               >
@@ -735,6 +759,9 @@ function BattleSwitchButton({
       aria-label={prettyName(pokemon.pokemon.name)}
       aria-describedby={tooltipId}
       onClick={onChoose}
+      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+      onBlur={() => resetBattleTooltip(tooltipId)}
+      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
@@ -958,6 +985,7 @@ function BattleLogMove({ move, data }: { move: string; data?: BattlePokemon['mov
       aria-describedby={tooltipId}
       onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
       onBlur={() => resetBattleTooltip(tooltipId)}
+      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
       onPointerLeave={() => resetBattleTooltip(tooltipId)}
     >
@@ -1160,6 +1188,7 @@ export function BattlePage() {
   const [showSwitches, setShowSwitches] = useState(false)
   const [resolving, setResolving] = useState(false)
   const [activeMove, setActiveMove] = useState<ActiveMove | null>(null)
+  const [missedSide, setMissedSide] = useState<'player' | 'opponent' | null>(null)
   const [hitSide, setHitSide] = useState<'player' | 'opponent' | null>(null)
   const [trainerSprites, setTrainerSprites] = useState(randomTrainerSprites)
   const requestRef = useRef<AbortController | null>(null)
@@ -1186,6 +1215,7 @@ export function BattlePage() {
     setScreen('loading')
     setBattle(null)
     setHitSide(null)
+    setMissedSide(null)
     setEvents([])
     setTeraSelected(false)
     setShowSwitches(false)
@@ -1244,6 +1274,7 @@ export function BattlePage() {
             event.pokemon === nextDefender.pokemon.name &&
             event.amount > 0,
         )
+      setMissedSide(step.action?.move && step.events.some((event) => event.type === 'miss') ? defender : null)
       setHitSide(receivedHit ? defender : null)
       presentedState = step.state
       setBattle(step.state)
@@ -1251,6 +1282,7 @@ export function BattlePage() {
       if (step.action) await waitForBattleDelay(BATTLE_TIMING.resultDisplayMs)
       if (sequenceRef.current !== sequence) return
       setHitSide(null)
+      setMissedSide(null)
     }
     setTeraSelected(false)
     setResolving(false)
@@ -1376,6 +1408,7 @@ export function BattlePage() {
               <div className="battle-side opponent">
                 <BattleSideHazards hazards={battle.opponent.hazards} side="opponent" />
                 <ActivePokemon
+                  missed={missedSide === 'opponent'}
                   hit={hitSide === 'opponent'}
                   side={battle.opponent}
                   opponent
@@ -1385,6 +1418,7 @@ export function BattlePage() {
               <div className="battle-side player">
                 <BattleSideHazards hazards={battle.player.hazards} side="player" />
                 <ActivePokemon
+                  missed={missedSide === 'player'}
                   hit={hitSide === 'player'}
                   side={battle.player}
                   activeMove={activeMove?.side === 'player' ? activeMove.name : undefined}

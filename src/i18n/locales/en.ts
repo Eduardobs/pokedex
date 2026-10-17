@@ -161,6 +161,7 @@ export const en = {
   'battle.log.move': '{name} used {move}.',
   'battle.log.switch': '{name} entered the battle.',
   'battle.log.tera': '{name} Terastallized into the {type} type.',
+  'battle.missed': 'Missed',
   'battle.log.miss': 'The move missed {name}.',
   'battle.log.immune': 'It did not affect {name}.',
   'battle.log.damage': '{name} lost {damage} HP.',

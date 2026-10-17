@@ -1565,9 +1565,7 @@
 .battle-health-track.is-critical > .battle-health-fill {
   background: var(--red);
 }
-.battle-stat-modifiers:empty {
-  display: none;
-}
+
 .battle-active-types:not(.is-tera) {
   border-top: 0;
   padding-top: 0;
@@ -1676,4 +1674,64 @@
   .battle-sprite-exit.is-fainted {
     opacity: 0;
   }
+}
+
+/* Reserve each information row even while its effects are inactive. */
+.battle-health {
+  box-sizing: border-box;
+  height: 220px;
+  display: grid;
+  grid-template-rows: 42px 24px 36px minmax(0, 1fr) 40px;
+  gap: 4px;
+  min-width: 0;
+}
+.battle-health-copy,
+.battle-health-meta,
+.battle-stat-modifiers {
+  min-height: 0;
+}
+.battle-health-copy strong {
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.battle-stat-modifiers,
+.battle-health-meta {
+  overflow: auto;
+  align-content: start;
+  align-items: start;
+  margin: 0;
+}
+.battle-health .battle-active-types {
+  margin: 0;
+  box-sizing: border-box;
+}
+.battle-active-data {
+  grid-template-rows: auto 36px;
+}
+.battle-tera-control .button {
+  width: auto;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 11px;
+  gap: 4px;
+}
+@media (max-width: 720px) {
+  .battle-health {
+    height: 250px;
+    grid-template-rows: 44px 24px 40px minmax(0, 1fr) 40px;
+    padding: 8px;
+  }
+  .battle-health-copy {
+    gap: 3px;
+  }
+  .battle-health-copy strong {
+    font-size: 13px;
+  }
+  .battle-health-level {
+    font-size: 10px;
+  }
+}
+
+.battle-health .battle-health-bar {
+  margin: 0;
 }
