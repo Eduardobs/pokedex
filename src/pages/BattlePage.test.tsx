@@ -323,12 +323,14 @@ describe('BattlePage lobby', () => {
       )
       loaded[0].status = team.id === opponent.id ? 'burn' : 'poison'
       if (team.id === opponent.id) {
+        loaded[0].stages.specialDefense = -1
         loaded.forEach((pokemon) => {
           pokemon.moves.forEach((move) => {
             move.data = testMove('growl')
           })
         })
       } else {
+        loaded[0].stages.specialAttack = 2
         loaded[0].moves[1].data.priority = 1
         loaded[0].moves[2].data.priority = -1
       }
@@ -345,7 +347,7 @@ describe('BattlePage lobby', () => {
     expect(battleLog).toHaveAttribute('tabindex', '0')
     Object.defineProperty(battleLog, 'scrollHeight', { configurable: true, value: 560 })
     expect(screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]).toHaveAttribute('aria-valuenow')
-    expect(screen.getAllByText('Nº 1')).toHaveLength(2)
+    expect(screen.queryByText('Nº 1')).not.toBeInTheDocument()
     expect(screen.queryByText('Saudável')).not.toBeInTheDocument()
     expect(screen.queryByText('Ataque 0')).not.toBeInTheDocument()
     const battleField = screen.getByLabelText('Campo de batalha')
@@ -354,11 +356,45 @@ describe('BattlePage lobby', () => {
     expect(screen.getByLabelText('Equipe de Minha equipe')).toBeVisible()
     expect(screen.getByLabelText('Equipe de Equipe adversária')).toBeVisible()
     const activePokemonTriggers = screen.getAllByLabelText('Detalhes de Pokemon 0')
+    const opponentInformationCard = activePokemonTriggers[0]
+      .closest('article')
+      ?.querySelector<HTMLElement>('.battle-health')
     const playerInformationCard = activePokemonTriggers[1]
       .closest('article')
       ?.querySelector<HTMLElement>('.battle-health')
     expect(playerInformationCard).not.toBeNull()
+    expect(opponentInformationCard).not.toBeNull()
+    const opponentInformationHeader = opponentInformationCard!.querySelector<HTMLElement>('.battle-health-copy')
+    const playerInformationHeader = playerInformationCard!.querySelector<HTMLElement>('.battle-health-copy')
+    expect(opponentInformationHeader).not.toBeNull()
+    expect(playerInformationHeader).not.toBeNull()
+    expect(opponentInformationHeader!.firstElementChild).toHaveTextContent('Pokemon 0')
+    expect(opponentInformationHeader!.lastElementChild).toHaveClass('battle-health-level')
+    expect(opponentInformationHeader!.lastElementChild).toHaveTextContent('Nv. 50')
+    expect(playerInformationHeader!.firstElementChild).toHaveTextContent('Pokemon 0')
+    expect(
+      within(playerInformationHeader!.firstElementChild as HTMLElement).getByRole('img', {
+        name: 'Gênero: Masculino',
+      }),
+    ).toBeVisible()
+    expect(playerInformationHeader!.lastElementChild).toHaveClass('battle-health-level')
+    expect(playerInformationHeader!.lastElementChild).toHaveTextContent('Nv. 100')
     expect(within(playerInformationCard!).getByText('100% HP')).toBeVisible()
+    const opponentHealthTrack = opponentInformationCard!.querySelector<HTMLElement>('.battle-health-track')
+    const playerHealthTrack = playerInformationCard!.querySelector<HTMLElement>('.battle-health-track')
+    expect(opponentHealthTrack).not.toBeNull()
+    expect(playerHealthTrack).not.toBeNull()
+    expect(within(opponentHealthTrack!).getByText(/\d+ \/ \d+/)).toHaveClass('battle-health-value')
+    expect(within(playerHealthTrack!).getByText('341 / 341')).toHaveClass('battle-health-value')
+    expect(playerInformationCard!.querySelector('.battle-health-meta .battle-health-value')).toBeNull()
+    const opponentModifiers = within(opponentInformationCard!).getByLabelText('Modificadores de atributo')
+    const playerModifiers = within(playerInformationCard!).getByLabelText('Modificadores de atributo')
+    expect(opponentModifiers).toHaveTextContent('SpD -1')
+    expect(opponentModifiers).not.toHaveTextContent('Defesa Especial')
+    expect(playerModifiers).toHaveTextContent('SpA +2')
+    expect(playerModifiers).not.toHaveTextContent('Ataque Especial')
+    expect(opponentInformationCard!.querySelector('.battle-health-bar')?.nextElementSibling).toBe(opponentModifiers)
+    expect(playerInformationCard!.querySelector('.battle-health-bar')?.nextElementSibling).toBe(playerModifiers)
     expect(within(playerInformationCard!).queryByText('Tipos')).not.toBeInTheDocument()
     expect(screen.getByRole('log', { name: /./ })).toHaveAttribute('tabindex', '0')
     expect(within(playerInformationCard!).getByLabelText('Normal')).toBeVisible()

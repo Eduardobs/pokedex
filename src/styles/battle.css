@@ -643,33 +643,29 @@
 .battle-health-copy,
 .battle-health-meta {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
-.battle-health-copy > div {
-  display: grid;
-  gap: 1px;
-}
-.battle-health-copy small {
-  color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
-}
 .battle-health-copy strong {
   display: inline-flex;
+  min-width: 0;
+  flex: 1;
   align-items: center;
   gap: 5px;
   font:
     700 18px Outfit,
     sans-serif;
 }
-.battle-health-copy span,
+.battle-health-level,
 .battle-health-meta {
   color: var(--muted);
   font-size: 12px;
 }
-.battle-health-meta > span:last-child {
-  margin-left: auto;
+.battle-health-level {
+  flex: none;
+  text-align: right;
+  white-space: nowrap;
 }
 .battle-pokemon-conditions {
   display: inline-flex;
@@ -784,7 +780,8 @@
   margin: 9px 0 6px;
 }
 .battle-health-track {
-  height: 12px;
+  position: relative;
+  height: 18px;
   overflow: hidden;
   border-radius: 999px;
   background: color-mix(in srgb, var(--line) 80%, var(--surface));
@@ -795,18 +792,33 @@
   font-weight: 800;
   white-space: nowrap;
 }
-.battle-health-track span {
+.battle-health-track > .battle-health-fill {
   display: block;
   height: 100%;
   border-radius: inherit;
   background: linear-gradient(90deg, #2d9b5f, #65c66e);
   transition: width 240ms ease;
 }
+.battle-health-value {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  right: 4px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
 .battle-stat-modifiers {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 8px;
-  margin-top: 9px;
+  margin: 0 0 6px;
   color: var(--muted);
   font-size: 10px;
   line-height: 1.2;
@@ -1320,7 +1332,7 @@
   bottom: auto;
 }
 @media (prefers-reduced-motion: reduce) {
-  .battle-health-track span {
+  .battle-health-track > .battle-health-fill {
     transition: none;
   }
   .battle-move-announcement {
@@ -1435,9 +1447,6 @@
   .battle-health {
     padding: 10px;
   }
-  .battle-health-copy {
-    flex-direction: column;
-  }
   .battle-health-copy strong {
     font-size: 15px;
   }
@@ -1550,10 +1559,10 @@
     transform: translateY(90px);
   }
 }
-.battle-health-track.is-low span {
+.battle-health-track.is-low > .battle-health-fill {
   background: #bc850c;
 }
-.battle-health-track.is-critical span {
+.battle-health-track.is-critical > .battle-health-fill {
   background: var(--red);
 }
 .battle-stat-modifiers:empty {

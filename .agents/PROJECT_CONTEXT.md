@@ -54,7 +54,10 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle applies entry hazards on every switch and honors pivot and forced-switch moves before the next action choice.
 - Random Battle identifies each trainer with a sprite, live/knockout count, and six roster indicators; active Pokémon expose keyboard-accessible detail tooltips with exact allied data and bounded opponent information.
 - Random Battle shows each Pokémon's configured gender beside its name in the field and detail tooltips.
+- Random Battle information cards omit Pokédex numbers and keep the active Pokémon's name and gender left-aligned with its level right-aligned on the same row.
 - Random Battle shows each active Pokémon's current type inside its information card without a generic type label and explicitly identifies an active Tera type.
+- Random Battle anchors each active Pokémon's current and total HP inside the right edge of its HP bar.
+- Random Battle shows altered stat stages directly below each active Pokémon's HP bar, using the same compact stat labels as its detail tooltip.
 - Random Battle animates entry from a thrown Poké Ball, attacks, received hits, and fainting while respecting reduced-motion preferences.
 - Random Battle tooltips are compact, 50% translucent, follow the pointer while it remains over their trigger, and never scroll internally.
 - Active Pokémon detail tooltips are triggered only by their sprite, while remaining keyboard-accessible.

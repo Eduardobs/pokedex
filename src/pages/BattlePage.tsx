@@ -32,6 +32,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
+import type { TranslationKey } from '../i18n/types'
 import { formatDecimal, formatNumber, localizedName, localizedText, pokemonHomeSprite, prettyName } from '../lib/api'
 import { loadBattleRoster } from '../lib/battle-data'
 import { useApi } from '../hooks/useApi'
@@ -51,6 +52,7 @@ import {
   type BattlePokemon,
   type BattleSide,
   type BattleSideConditions,
+  type BattleStages,
   type BattleStatRanges,
   type BattleState,
   type BattleVolatileCondition,
@@ -63,6 +65,14 @@ import type { PokemonGender } from '../lib/teams'
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
 type ActiveMove = { side: 'player' | 'opponent'; name: string }
 type MajorBattleStatus = Exclude<BattlePokemon['status'], null>
+
+const battleStageShortStatKeys: Record<keyof BattleStages, TranslationKey> = {
+  attack: 'battle.statShort.attack',
+  defense: 'battle.statShort.defense',
+  specialAttack: 'battle.statShort.specialAttack',
+  specialDefense: 'battle.statShort.specialDefense',
+  speed: 'battle.statShort.speed',
+}
 
 const majorStatusPresentation: Record<MajorBattleStatus, { className: string; Icon?: LucideIcon }> = {
   paralysis: { className: 'paralysis', Icon: Zap },
@@ -247,14 +257,13 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
   return (
     <div className="battle-health">
       <div className="battle-health-copy">
-        <div>
-          <small>{t('battle.number', { number: formatNumber(pokemon.pokemon.id, language) })}</small>
-          <strong>
-            {prettyName(pokemon.pokemon.name)}
-            <GenderIcon gender={pokemon.member.gender} />
-          </strong>
-        </div>
-        <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
+        <strong>
+          {prettyName(pokemon.pokemon.name)}
+          <GenderIcon gender={pokemon.member.gender} />
+        </strong>
+        <span className="battle-health-level">
+          {t('battle.level', { level: formatNumber(pokemon.member.level, language) })}
+        </span>
       </div>
       <div className="battle-health-bar">
         <div
@@ -265,11 +274,24 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           aria-valuemax={pokemon.maxHp}
           aria-valuenow={pokemon.hp}
         >
-          <span style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }} />
+          <span
+            className="battle-health-fill"
+            style={{ width: `${percent}%`, transitionDuration: `${BATTLE_TIMING.hpTransitionMs}ms` }}
+          />
+          <span className="battle-health-value">
+            {formatNumber(displayedHp, language)} / {formatNumber(pokemon.maxHp, language)}
+          </span>
         </div>
         <span className="battle-health-percentage">
           {t('battle.healthPercentage', { percentage: formattedPercent })}
         </span>
+      </div>
+      <div className="battle-stat-modifiers" aria-label={t('battle.statModifiers')}>
+        {stages.map(({ stat, value }) => (
+          <span key={stat} className={value > 0 ? 'raised' : 'lowered'}>
+            {t(battleStageShortStatKeys[stat])} {value > 0 ? `+${value}` : value}
+          </span>
+        ))}
       </div>
       <div className="battle-health-meta">
         <span className="battle-pokemon-conditions">
@@ -284,9 +306,6 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           {pokemon.encoreTurns > 0 && <span>{t('battle.pokemonCondition.encore')}</span>}
           {pokemon.tauntTurns > 0 && <span>{t('battle.pokemonCondition.taunt')}</span>}
         </span>
-        <span>
-          {formatNumber(displayedHp, language)} / {formatNumber(pokemon.maxHp, language)}
-        </span>
       </div>
       <div className={`battle-active-types${pokemon.terastallized ? ' is-tera' : ''}`}>
         {pokemon.terastallized && (
@@ -300,13 +319,6 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
             <TypeBadge key={type} type={type} iconOnly />
           ))}
         </span>
-      </div>
-      <div className="battle-stat-modifiers" aria-label={t('battle.statModifiers')}>
-        {stages.map(({ stat, value }) => (
-          <span key={stat} className={value > 0 ? 'raised' : value < 0 ? 'lowered' : undefined}>
-            {t(`battle.stat.${stat}`)} {value > 0 ? `+${value}` : value}
-          </span>
-        ))}
       </div>
     </div>
   )
