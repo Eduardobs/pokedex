@@ -590,7 +590,12 @@ describe('BattlePage lobby', () => {
     await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.resultDisplayMs))
     expect(screen.getByText('Growl', { selector: '.battle-move-announcement' })).toBeVisible()
     await act(() => vi.advanceTimersByTimeAsync(BATTLE_TIMING.actionDelayMs + BATTLE_TIMING.resultDisplayMs))
-    expect(screen.getAllByText(/Terastalizou para o tipo Normal/).length).toBeGreaterThan(0)
+    const teraLog = screen.getAllByText(
+      (_, element) =>
+        Boolean(element?.matches('.battle-log-event')) &&
+        Boolean(element?.textContent?.includes('Terastalizou para o tipo Normal')),
+    )[0]
+    expect(teraLog.querySelector('.tera-type-badge')).toHaveClass('type-normal')
     expect(screen.getByLabelText('Campo de batalha')).toHaveAttribute('aria-busy', 'false')
     expect(activeTooltips[0]).toHaveTextContent('Golpes utilizados')
     expect(activeTooltips[0]).toHaveTextContent('Growl')
@@ -598,7 +603,8 @@ describe('BattlePage lobby', () => {
     const activeTeraType = playerInformationCard!.querySelector<HTMLElement>('.battle-active-types.is-tera')
     expect(activeTeraType).not.toBeNull()
     expect(within(activeTeraType!).getByText('Tipo Tera')).toBeVisible()
-    expect(within(activeTeraType!).getByLabelText('Normal')).toBeVisible()
+    expect(within(activeTeraType!).getByText('Normal')).toBeVisible()
+    expect(activeTeraType!.querySelector('.tera-type-badge')).toHaveClass('type-normal')
     expect(activeTeraType!.querySelector('.lucide-sparkles')).toBeInTheDocument()
     expect(activeTooltips[1]).toHaveTextContent('Ativo')
     expect(activeTooltips[1].querySelector('.battle-tooltip-tera.is-active')).not.toBeNull()

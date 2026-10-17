@@ -849,9 +849,10 @@
   background: var(--red);
   color: white;
 }
-.battle-tera-control .type-badge {
+.battle-tera-control .tera-type-badge {
   flex: none;
-  padding: 3px 6px;
+  min-height: 26px;
+  padding-block: 5px;
   font-size: 9px;
 }
 .battle-console {
@@ -975,6 +976,12 @@
 .battle-log-event.is-important {
   color: var(--ink);
   font-weight: 750;
+}
+.battle-log-event .tera-type-badge {
+  min-height: 24px;
+  margin-inline: 3px;
+  padding-block: 4px;
+  vertical-align: middle;
 }
 .battle-resolving {
   font-style: italic;
@@ -1215,7 +1222,7 @@
   font-size: 9px;
 }
 .battle-switch-type-list .type-badge,
-.battle-switch-tooltip-tera .type-badge {
+.battle-switch-tooltip-tera .tera-type-badge {
   flex: none;
 }
 .battle-switch-stats {

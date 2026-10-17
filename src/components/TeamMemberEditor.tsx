@@ -27,6 +27,7 @@ import { RadioSelection } from './RadioSelection'
 import { SelectMenu } from './SelectMenu'
 import { ShinyToggle } from './ShinyToggle'
 import { TypeBadge, typeLabel } from './TypeBadge'
+import { TeraTypeBadge } from './TeraTypeBadge'
 import { InlineRetryError } from './FeedbackState'
 import { EstimatedSpreadSuggestion } from './EstimatedSpreadSuggestion'
 import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
@@ -242,10 +243,10 @@ export function TeamMemberEditor({
               renderSelected={(option) => (
                 <>
                   <small className="tera-type-select-label">{t('teams.tera')}</small>
-                  <TypeBadge type={option.value} />
+                  <TeraTypeBadge type={option.value} />
                 </>
               )}
-              renderOption={(option) => <TypeBadge type={option.value} />}
+              renderOption={(option) => <TeraTypeBadge type={option.value} />}
             />
             {select(
               t('teams.ability'),

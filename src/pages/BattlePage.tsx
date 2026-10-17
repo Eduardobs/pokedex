@@ -29,6 +29,7 @@ import { BattleSprite } from '../components/BattleSprite'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
+import { TeraTypeBadge } from '../components/TeraTypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
@@ -180,7 +181,7 @@ function BattlePokemonTypes({ pokemon }: { pokemon: BattlePokemon }) {
         aria-label={t('battle.teraType')}
       >
         <Sparkles size={12} aria-hidden="true" />
-        <TypeBadge type={pokemon.member.tera} iconOnly />
+        <TeraTypeBadge type={pokemon.member.tera} iconOnly />
         <small>{t(pokemon.terastallized ? 'battle.teraActive' : 'battle.teraInactive')}</small>
       </span>
     </span>
@@ -323,9 +324,11 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
           </span>
         )}
         <span className="battle-active-type-badges">
-          {(pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types).map((type) => (
-            <TypeBadge key={type} type={type} iconOnly />
-          ))}
+          {pokemon.terastallized ? (
+            <TeraTypeBadge type={pokemon.member.tera} />
+          ) : (
+            pokemon.pokemon.types.map((type) => <TypeBadge key={type} type={type} iconOnly />)
+          )}
         </span>
       </div>
     </div>
@@ -796,7 +799,7 @@ function BattleSwitchButton({
             ))}
           </span>
           <span className="battle-switch-tooltip-tera">
-            {t('teams.tera')}: <TypeBadge type={pokemon.member.tera} />
+            {t('teams.tera')}: <TeraTypeBadge type={pokemon.member.tera} />
           </span>
         </span>
         <span>
@@ -1015,6 +1018,8 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
   const nameIndex = name ? text.indexOf(name) : -1
   const moveName = event.type === 'move' ? prettyName(event.move) : ''
   const moveIndex = event.type === 'move' && moveName ? text.indexOf(moveName, nameIndex + name.length) : -1
+  const teraName = event.type === 'tera' ? prettyName(event.tera) : ''
+  const teraIndex = event.type === 'tera' ? text.indexOf(teraName, nameIndex + name.length) : -1
   const tone =
     event.type === 'damage' ||
     event.type === 'substituteDamage' ||
@@ -1066,7 +1071,15 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
     <p className={`battle-log-event is-${tone}`}>
       <Icon className="battle-log-icon" size={15} aria-hidden="true" />
       <span>
-        {nameIndex >= 0 ? (
+        {event.type === 'tera' && nameIndex >= 0 && teraIndex >= 0 ? (
+          <>
+            {text.slice(0, nameIndex)}
+            <strong>{name}</strong>
+            {text.slice(nameIndex + name.length, teraIndex)}
+            <TeraTypeBadge type={event.tera} />
+            {text.slice(teraIndex + teraName.length)}
+          </>
+        ) : nameIndex >= 0 ? (
           <>
             {text.slice(0, nameIndex)}
             <strong>{name}</strong>
@@ -1438,7 +1451,7 @@ export function BattlePage() {
                           onClick={() => setTeraSelected((selected) => !selected)}
                         >
                           {teraSelected && <Check size={16} strokeWidth={3} aria-hidden="true" />}
-                          {t('battle.terastallize')} <TypeBadge type={player.member.tera} />
+                          {t('battle.terastallize')} <TeraTypeBadge type={player.member.tera} />
                         </button>
                       </div>
                     )

@@ -758,6 +758,95 @@
   display: inline-grid;
   place-items: center;
 }
+.tera-type-badge {
+  --type-color: #66717a;
+  --type-background: var(--type-color);
+  position: relative;
+  isolation: isolate;
+  min-width: 66px;
+  min-height: 32px;
+  padding: 7px 15px 7px 8px;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex: none;
+  background: var(--type-background);
+  --s: calc(2/3);
+  clip-path: polygon(
+    calc(var(--s) * 4.8px) 0,
+    calc(var(--s) * 8.6px) 16.67%,
+    calc(var(--s) * 5px) 41.67%,
+    0 50%,
+    calc(var(--s) * 4.9px) 57.71%,
+    calc(var(--s) * 8.6px) 83.33%,
+    calc(var(--s) * 6.6px) 100%,
+    calc(var(--s) * 13px) 91.67%,
+    calc(100% - var(--s) * 13.1px) 91.67%,
+    calc(100% - var(--s) * 7px) 100%,
+    calc(100% - var(--s) * 8.8px) 82.71%,
+    calc(100% - var(--s) * 5.1px) 58.12%,
+    100% 49.58%,
+    calc(100% - var(--s) * 5.1px) 41.88%,
+    calc(100% - var(--s) * 8.7px) 16.67%,
+    calc(100% - var(--s) * 6.8px) 0,
+    calc(100% - var(--s) * 13px) 8.33%,
+    calc(var(--s) * 13.1px) 8.33%
+  );
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 1px 1px #00000038;
+  text-transform: uppercase;
+}
+.tera-type-badge::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    linear-gradient(145deg, #ffffff30 0 18%, transparent 18% 72%, #00000018 72%),
+    linear-gradient(35deg, transparent 0 76%, #ffffff24 76%);
+  content: '';
+}
+.tera-type-badge svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  filter: drop-shadow(0 1px 1px #00000035);
+}
+.tera-type-badge.icon-only {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+  clip-path: polygon(
+    43.59% 12.33%,
+    25.18% 22.53%,
+    8.14% 20.81%,
+    16.67% 40.1%,
+    16.67% 59.84%,
+    8.29% 79.04%,
+    25.25% 77.43%,
+    43.52% 87.68%,
+    49.92% 100%,
+    56.27% 87.35%,
+    75.08% 77.07%,
+    91.68% 79.11%,
+    83.33% 60.37%,
+    83.33% 39.8%,
+    91.75% 20.83%,
+    74.71% 22.52%,
+    56.35% 12.36%,
+    49.93% 0
+  );
+}
+.tera-type-badge.icon-only svg {
+  width: 16px;
+  height: 16px;
+}
 .type-normal {
   --type-color: #999;
 }
