@@ -14,6 +14,15 @@ describe('TypeIcon', () => {
     expect(icon?.querySelector('use')).toHaveAttribute('href', `${import.meta.env.BASE_URL}type-icons.svg#type-${type}`)
   })
 
+  it('renders the dedicated Stellar icon', () => {
+    const { container } = render(<TypeIcon type="stellar" />)
+
+    expect(container.querySelector('use')).toHaveAttribute(
+      'href',
+      `${import.meta.env.BASE_URL}type-icons.svg#type-stellar`,
+    )
+  })
+
   it('uses a safe fallback for API types outside the reference palette', () => {
     const { container } = render(<TypeIcon type="unknown-api-type" />)
 

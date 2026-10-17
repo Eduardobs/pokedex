@@ -407,7 +407,7 @@
   gap: 3px;
 }
 .battle-active-tooltip .type-badge {
-  background: var(--type-color);
+  background: var(--type-background, var(--type-color));
   color: #fff;
 }
 .battle-active-tooltip .type-badge svg {

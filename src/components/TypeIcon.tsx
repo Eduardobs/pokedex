@@ -19,6 +19,7 @@ const referenceTypes = new Set([
   'dragon',
   'dark',
   'fairy',
+  'stellar',
 ])
 
 const typeIconsUrl = `${import.meta.env.BASE_URL}type-icons.svg`

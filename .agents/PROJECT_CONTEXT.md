@@ -5,6 +5,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 ## Definitions
 
 - The colors and icons associated with Pokémon types must not be changed.
+- The Stellar type uses its seven-facet crystal icon and a green, cyan, blue, violet, and pink gradient wherever a type badge is shown.
 - The Mega Evolution icon must not be changed.
 - The evolution tree must preserve and make the branches and conditions of every alternative evolution visually unambiguous.
 - Evolution tree links must open the default variety of each species when the species name and the routable Pokémon name differ.
