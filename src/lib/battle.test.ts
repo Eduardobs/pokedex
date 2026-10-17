@@ -403,13 +403,15 @@ describe('Random Battle engine', () => {
     const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
 
     expect(result.state.opponent.roster[0].hp).toBe(initialHp - 100)
-    expect(result.events).toContainEqual({
-      type: 'damage',
-      pokemon: 'opponent-0',
-      amount: 100,
-      effectiveness: 1,
-      critical: false,
-    })
+    expect(result.events).toContainEqual(
+      expect.objectContaining({
+        type: 'damage',
+        pokemon: 'opponent-0',
+        amount: 100,
+        effectiveness: 1,
+        critical: false,
+      }),
+    )
   })
 
   it('splits the combatants current HP with Pain Split', () => {
@@ -430,14 +432,16 @@ describe('Random Battle engine', () => {
 
     expect(result.state.player.roster[0].hp).toBe(200)
     expect(result.state.opponent.roster[0].hp).toBe(200)
-    expect(result.events).toContainEqual({ type: 'heal', pokemon: 'player-0', amount: 99 })
-    expect(result.events).toContainEqual({
-      type: 'damage',
-      pokemon: 'opponent-0',
-      amount: 100,
-      effectiveness: 1,
-      critical: false,
-    })
+    expect(result.events).toContainEqual(expect.objectContaining({ type: 'heal', pokemon: 'player-0', amount: 99 }))
+    expect(result.events).toContainEqual(
+      expect.objectContaining({
+        type: 'damage',
+        pokemon: 'opponent-0',
+        amount: 100,
+        effectiveness: 1,
+        critical: false,
+      }),
+    )
   })
 
   it('creates a Substitute that costs HP and absorbs incoming damage', () => {
@@ -1050,13 +1054,15 @@ describe('Random Battle engine', () => {
 
     expect(result.state.player.roster[0].hp).toBe(0)
     expect(result.state.opponent.roster[0].cursed).toBe(true)
-    expect(result.events).toContainEqual({
-      type: 'damage',
-      pokemon: 'player-0',
-      amount: hpCost,
-      effectiveness: 1,
-      critical: false,
-    })
+    expect(result.events).toContainEqual(
+      expect.objectContaining({
+        type: 'damage',
+        pokemon: 'player-0',
+        amount: hpCost,
+        effectiveness: 1,
+        critical: false,
+      }),
+    )
     expect(result.events).toContainEqual({ type: 'status', pokemon: 'opponent-0', status: 'curse' })
     expect(result.events).toContainEqual({ type: 'faint', pokemon: 'player-0' })
   })
@@ -1392,7 +1398,7 @@ describe('Random Battle engine', () => {
     expect(switched.state.player.roster[1].hp).toBeLessThan(switched.state.player.roster[1].maxHp)
   })
 
-  it('resolves each Pokémon’s Terastallization after both actions and only once', () => {
+  it('resolves each Pokémon’s Terastallization before either action and only once', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
     const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
@@ -1406,9 +1412,7 @@ describe('Random Battle engine', () => {
       () => 0.5,
     )
     const teraEvent = first.events.findIndex((event) => event.type === 'tera')
-    expect(teraEvent).toBeGreaterThan(
-      Math.max(...first.events.map((event, index) => (event.type === 'move' ? index : -1))),
-    )
+    expect(teraEvent).toBeLessThan(first.events.findIndex((event) => event.type === 'move'))
     expect(first.state.player.roster[0].terastallized).toBe(true)
 
     const switched = resolveBattleTurn(first.state, { kind: 'switch', index: 1 }, { kind: 'move', index: 0 }, () => 0.5)
@@ -1420,6 +1424,52 @@ describe('Random Battle engine', () => {
     )
     expect(second.state.player.roster[0].terastallized).toBe(true)
     expect(second.state.player.roster[1].terastallized).toBe(true)
+  })
+
+  it('restores the active replacement with Wish one turn after it is used', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ name: 'wish', damageClass: 'status', power: null, target: 'user' })
+    state.player.roster[0].stats[5] = 999
+
+    const wished = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(wished.state.player.wish).toMatchObject({ turns: 1, amount: Math.floor(state.player.roster[0].maxHp / 2) })
+    wished.state.player.roster[1].hp = 1
+
+    const resolved = resolveBattleTurn(
+      wished.state,
+      { kind: 'switch', index: 1 },
+      { kind: 'move', index: 3 },
+      () => 0.5,
+    )
+    expect(resolved.state.player.roster[1].hp).toBe(1 + Math.floor(state.player.roster[0].maxHp / 2))
+    expect(resolved.events).toContainEqual(
+      expect.objectContaining({
+        type: 'heal',
+        pokemon: 'player-1',
+        amount: Math.floor(state.player.roster[0].maxHp / 2),
+      }),
+    )
+  })
+
+  it('prevents the target’s action when Iron Head causes flinching', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({
+      name: 'iron-head',
+      type: 'steel',
+      power: 80,
+      ailment: 'flinch',
+      ailmentChance: 30,
+    })
+    state.player.roster[0].stats[5] = 999
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0)
+    expect(result.events).toContainEqual({ type: 'status', pokemon: 'opponent-0', status: 'flinch' })
+    expect(result.events).toContainEqual({ type: 'failed', pokemon: 'opponent-0' })
+    expect(result.state.player.roster[0].hp).toBe(state.player.roster[0].maxHp)
   })
 
   it('calculates move effectiveness against the active Pokémon’s current types', () => {
@@ -1491,12 +1541,14 @@ describe('Random Battle engine', () => {
     expect(layered.opponent.hazards.spikes).toBe(3)
 
     const switched = resolveBattleTurn(layered, { kind: 'move', index: 3 }, { kind: 'switch', index: 1 }, () => 0.5)
-    expect(switched.events).toContainEqual({
-      type: 'hazardDamage',
-      pokemon: 'opponent-1',
-      hazard: 'spikes',
-      amount: Math.floor(layered.opponent.roster[1].maxHp / 4),
-    })
+    expect(switched.events).toContainEqual(
+      expect.objectContaining({
+        type: 'hazardDamage',
+        pokemon: 'opponent-1',
+        hazard: 'spikes',
+        amount: Math.floor(layered.opponent.roster[1].maxHp / 4),
+      }),
+    )
   })
 
   it('applies grounded entry effects and lets Defog clear hazards from both sides', () => {
@@ -1509,12 +1561,14 @@ describe('Random Battle engine', () => {
     const replacement = grounded.state.opponent.roster[1]
     expect(replacement.status).toBe('poison')
     expect(replacement.stages.speed).toBe(-1)
-    expect(grounded.events).toContainEqual({
-      type: 'hazardDamage',
-      pokemon: 'opponent-1',
-      hazard: 'spikes',
-      amount: Math.floor(state.opponent.roster[1].maxHp / 8),
-    })
+    expect(grounded.events).toContainEqual(
+      expect.objectContaining({
+        type: 'hazardDamage',
+        pokemon: 'opponent-1',
+        hazard: 'spikes',
+        amount: Math.floor(state.opponent.roster[1].maxHp / 8),
+      }),
+    )
 
     const airborne = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     airborne.opponent.roster[1].pokemon.types = ['flying']

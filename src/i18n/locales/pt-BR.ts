@@ -1298,6 +1298,7 @@ export const ptBR = {
   'moveSupplemental.kind.taunt': 'Impede o alvo de usar golpes de estado',
   'moveSupplemental.kind.fixedDamage': 'Causa dano calculado por uma regra fixa',
   'moveSupplemental.kind.equalizeHp': 'Divide igualmente o HP atual combinado entre o usuário e o alvo',
+  'moveSupplemental.kind.wish': 'Restaura até metade do HP máximo do usuário no turno seguinte, mesmo após troca',
   'moveSupplemental.kind.substitute': 'Gasta um quarto do HP máximo para criar um substituto que absorve dano',
   'moveSupplemental.kind.curse':
     'Usa o tipo atual para escolher entre amaldiçoar o alvo ou alterar os atributos do usuário',

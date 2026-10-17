@@ -1294,6 +1294,7 @@ export const en = {
   'moveSupplemental.kind.taunt': 'Prevents the target from using status moves',
   'moveSupplemental.kind.fixedDamage': 'Deals damage calculated by a fixed rule',
   'moveSupplemental.kind.equalizeHp': "Evenly splits the user and target's combined current HP",
+  'moveSupplemental.kind.wish': "Restores up to half of the user's maximum HP on the next turn, even after switching",
   'moveSupplemental.kind.substitute': 'Spends one quarter of maximum HP to create a damage-absorbing substitute',
   'moveSupplemental.kind.curse':
     "Uses the current type to choose between cursing the target or changing the user's stats",

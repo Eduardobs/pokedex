@@ -148,6 +148,53 @@ describe('BattlePage lobby', () => {
     )
   })
 
+  it('loads HOME thumbnails for the selected saved team', async () => {
+    const team = completeTeam('player', 'Minha equipe')
+    team.members = team.members.map((member) => ({ ...member, pokemon: 'pikachu' }))
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([team]))
+    const reference = (name: string, endpoint: string) => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/1/` })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() =>
+        Promise.resolve(
+          Response.json({
+            name: 'pikachu',
+            id: 25,
+            species: reference('pikachu', 'pokemon-species'),
+            types: [{ type: reference('electric', 'type') }],
+            abilities: [{ ability: reference('static', 'ability') }],
+            moves: [],
+            sprites: {
+              other: {
+                home: {
+                  front_default:
+                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/25.png',
+                  front_shiny: null,
+                },
+              },
+            },
+            stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name) => ({
+              stat: reference(name, 'stat'),
+              base_stat: 50,
+            })),
+          }),
+        ),
+      ),
+    )
+
+    show()
+    const preview = screen
+      .getAllByLabelText('Sua equipe')
+      .find((element) => element.classList.contains('battle-team-preview'))
+    expect(preview).toBeDefined()
+    await waitFor(() =>
+      expect(within(preview!).getAllByRole('img', { name: 'Pikachu' })[0]).toHaveAttribute(
+        'src',
+        expect.stringContaining('/sprites/pokemon/other/home/25.png'),
+      ),
+    )
+  })
+
   it('uses the supplied icon and color treatment for each major status', () => {
     render(
       <LanguageProvider>

@@ -1,4 +1,5 @@
 export type SupplementalMoveEffect =
+  | { kind: 'wish' }
   | { kind: 'encore'; minimumTurns: number; maximumTurns: number }
   | { kind: 'taunt'; turns: number }
   | { kind: 'fixed-damage'; amount: 'level' | 'half-current-hp' | 'hp-difference' }
@@ -43,6 +44,7 @@ export type SupplementalMoveEffect =
 
 /** Structured battle behavior that PokéAPI does not expose in its move payload. */
 const supplementalMoveEffects: Readonly<Record<string, SupplementalMoveEffect>> = {
+  wish: { kind: 'wish' },
   encore: { kind: 'encore', minimumTurns: 2, maximumTurns: 6 },
   taunt: { kind: 'taunt', turns: 3 },
   'seismic-toss': { kind: 'fixed-damage', amount: 'level' },

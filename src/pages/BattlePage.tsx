@@ -32,8 +32,9 @@ import { TypeBadge } from '../components/TypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
-import { formatDecimal, formatNumber, localizedName, localizedText, prettyName } from '../lib/api'
+import { formatDecimal, formatNumber, localizedName, localizedText, pokemonHomeSprite, prettyName } from '../lib/api'
 import { loadBattleRoster } from '../lib/battle-data'
+import { useApi } from '../hooks/useApi'
 import {
   chooseOpponentAction,
   battleMoveEffectiveness,
@@ -56,7 +57,7 @@ import {
 } from '../lib/battle'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { readStorage } from '../lib/storage'
-import { validTeams, type Stats, type Team } from '../lib/teams'
+import { parseTeamPokemon, validTeams, type Stats, type Team, type TeamMember } from '../lib/teams'
 import type { PokemonGender } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
@@ -802,8 +803,26 @@ function BattleSwitchButton({
   )
 }
 
+function BattleTeamPreviewMember({ member }: { member: TeamMember }) {
+  const { data } = useApi(`pokemon/${member.pokemon}`, parseTeamPokemon)
+  const sprite = data
+    ? ((member.shiny ? data.homeShinySprite : data.homeSprite) ?? pokemonHomeSprite(data.id, member.shiny))
+    : null
+  return (
+    <span className="battle-team-preview-member">
+      {sprite ? (
+        <img src={sprite} alt={prettyName(member.pokemon)} width={48} height={48} />
+      ) : (
+        <span aria-hidden="true" />
+      )}
+    </span>
+  )
+}
+
 function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
   const name = 'pokemon' in event ? prettyName(event.pokemon) : ''
+  const withHpPercentage = (text: string, percentage: number | undefined) =>
+    percentage === undefined ? text : `${text} (${percentage}%)`
   switch (event.type) {
     case 'charging':
     case 'recharging':
@@ -822,24 +841,30 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
     case 'immune':
       return t('battle.log.immune', { name })
     case 'damage':
-      return event.critical
-        ? t('battle.log.critical', { name, damage: event.amount })
-        : event.effectiveness > 1
-          ? t('battle.log.superEffective', { name, damage: event.amount })
-          : event.effectiveness < 1
-            ? t('battle.log.notEffective', { name, damage: event.amount })
-            : t('battle.log.damage', { name, damage: event.amount })
+      return withHpPercentage(
+        event.critical
+          ? t('battle.log.critical', { name, damage: event.amount })
+          : event.effectiveness > 1
+            ? t('battle.log.superEffective', { name, damage: event.amount })
+            : event.effectiveness < 1
+              ? t('battle.log.notEffective', { name, damage: event.amount })
+              : t('battle.log.damage', { name, damage: event.amount }),
+        event.percentage,
+      )
     case 'hazardSet':
       return t('battle.log.hazardSet', {
         hazard: prettyName(event.hazard),
         side: t(`battle.log.side.${event.side}`),
       })
     case 'hazardDamage':
-      return t('battle.log.hazardDamage', { name, hazard: prettyName(event.hazard), damage: event.amount })
+      return withHpPercentage(
+        t('battle.log.hazardDamage', { name, hazard: prettyName(event.hazard), damage: event.amount }),
+        event.percentage,
+      )
     case 'hazardsCleared':
       return t('battle.log.hazardsCleared', { side: t(`battle.log.side.${event.side}`) })
     case 'heal':
-      return t('battle.log.heal', { name, amount: event.amount })
+      return withHpPercentage(t('battle.log.heal', { name, amount: event.amount }), event.percentage)
     case 'substituteSet':
       return t('battle.log.substituteSet', { name, hp: event.hp })
     case 'substituteDamage':
@@ -854,7 +879,7 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
     case 'statusCured':
       return t('battle.log.statusCured', { name, status: t(`battle.status.${event.status}`) })
     case 'statusDamage':
-      return t('battle.log.statusDamage', { name, damage: event.amount })
+      return withHpPercentage(t('battle.log.statusDamage', { name, damage: event.amount }), event.percentage)
     case 'asleep':
       return t('battle.log.asleep', { name })
     case 'wake':
@@ -893,11 +918,14 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
     case 'protected':
       return t('battle.log.protected', { name })
     case 'weatherDamage':
-      return t('battle.log.weatherDamage', {
-        name,
-        damage: event.amount,
-        effect: t(`battle.fieldEffect.${event.weather}`),
-      })
+      return withHpPercentage(
+        t('battle.log.weatherDamage', {
+          name,
+          damage: event.amount,
+          effect: t(`battle.fieldEffect.${event.weather}`),
+        }),
+        event.percentage,
+      )
     case 'failed':
       return t('battle.log.failed', { name })
     case 'faint':
@@ -1112,6 +1140,7 @@ export function BattlePage() {
   const teams = readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []).filter(isBattleReadyTeam)
   const [difficulty, setDifficulty] = useState<BattleDifficulty>('medium')
   const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id ?? '')
+  const selectedTeamMembers = teams.find((team) => team.id === selectedTeam)?.members ?? []
   const [screen, setScreen] = useState<ScreenState>('idle')
   const [battle, setBattle] = useState<BattleState | null>(null)
   const [events, setEvents] = useState<BattleEvent[]>([])
@@ -1207,7 +1236,7 @@ export function BattlePage() {
       presentedState = step.state
       setBattle(step.state)
       setEvents((current) => [...current, ...step.events])
-      await waitForBattleDelay(BATTLE_TIMING.resultDisplayMs)
+      if (step.action) await waitForBattleDelay(BATTLE_TIMING.resultDisplayMs)
       if (sequenceRef.current !== sequence) return
       setHitSide(null)
     }
@@ -1270,6 +1299,11 @@ export function BattlePage() {
                   ))}
                 </select>
               </label>
+              <div className="battle-team-preview" aria-label={t('battle.yourTeam')}>
+                {selectedTeamMembers.map((member) => (
+                  <BattleTeamPreviewMember key={member.id} member={member} />
+                ))}
+              </div>
               <label>
                 {t('battle.difficulty')}
                 <select

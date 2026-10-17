@@ -125,6 +125,7 @@ export type BattleSide = {
   hazards: BattleHazards
   conditions: BattleSideConditions
   futureSight?: { turns: number; attacker: BattlePokemon; move: BattleMove }
+  wish?: { turns: number; amount: number }
   switchRequested: boolean
 }
 export type BattlePhase = 'choice' | 'player-switch' | 'opponent-switch' | 'won' | 'lost'
@@ -149,11 +150,11 @@ export type BattleEvent =
   | { type: 'tera'; side: 'player' | 'opponent'; pokemon: string; tera: string }
   | { type: 'miss'; pokemon: string }
   | { type: 'immune'; pokemon: string }
-  | { type: 'damage'; pokemon: string; amount: number; effectiveness: number; critical: boolean }
+  | { type: 'damage'; pokemon: string; amount: number; effectiveness: number; critical: boolean; percentage?: number }
   | { type: 'hazardSet'; side: 'player' | 'opponent'; hazard: BattleHazard }
-  | { type: 'hazardDamage'; pokemon: string; hazard: BattleHazard; amount: number }
+  | { type: 'hazardDamage'; pokemon: string; hazard: BattleHazard; amount: number; percentage?: number }
   | { type: 'hazardsCleared'; side: 'player' | 'opponent' }
-  | { type: 'heal'; pokemon: string; amount: number }
+  | { type: 'heal'; pokemon: string; amount: number; percentage?: number }
   | { type: 'substituteSet'; pokemon: string; hp: number }
   | { type: 'substituteDamage'; pokemon: string; amount: number; broken: boolean }
   | { type: 'itemRemoved'; pokemon: string; item: string }
@@ -167,8 +168,14 @@ export type BattleEvent =
       pokemon: string
       status: Exclude<BattleStatus, null> | BattleVolatileStatus | BattleVolatileCondition
     }
-  | { type: 'statusDamage'; pokemon: string; status: 'burn' | 'poison' | 'badly-poisoned' | 'curse'; amount: number }
-  | { type: 'weatherDamage'; pokemon: string; weather: 'sandstorm'; amount: number }
+  | {
+      type: 'statusDamage'
+      pokemon: string
+      status: 'burn' | 'poison' | 'badly-poisoned' | 'curse'
+      amount: number
+      percentage?: number
+    }
+  | { type: 'weatherDamage'; pokemon: string; weather: 'sandstorm'; amount: number; percentage?: number }
   | { type: 'asleep'; pokemon: string }
   | { type: 'wake'; pokemon: string }
   | { type: 'thaw'; pokemon: string }
@@ -209,6 +216,7 @@ const emptyField = (): BattleField => ({
   terrainTurns: 0,
   trickRoomTurns: 0,
 })
+const hpPercentage = (amount: number, maxHp: number) => Math.round((amount / Math.max(1, maxHp)) * 1000) / 10
 const stageMultiplier = (stage: number) => (stage >= 0 ? (2 + stage) / 2 : 2 / (2 - stage))
 const moveTypes = new Set<BattleType>([
   'normal',
@@ -447,6 +455,7 @@ function cloneState(state: BattleState): BattleState {
   const cloneSide = (side: BattleSide): BattleSide => ({
     ...side,
     futureSight: side.futureSight ? { ...side.futureSight } : undefined,
+    wish: side.wish ? { ...side.wish } : undefined,
     hazards: { ...side.hazards },
     conditions: { ...side.conditions },
     roster: side.roster.map((pokemon) => ({
@@ -559,7 +568,13 @@ function applyEntryHazards(side: BattleSide, pokemon: BattlePokemon, events: Bat
     if (amount <= 0 || pokemon.hp <= 0) return
     const applied = Math.min(pokemon.hp, amount)
     pokemon.hp -= applied
-    events.push({ type: 'hazardDamage', pokemon: pokemon.pokemon.name, hazard, amount: applied })
+    events.push({
+      type: 'hazardDamage',
+      pokemon: pokemon.pokemon.name,
+      hazard,
+      amount: applied,
+      percentage: hpPercentage(applied, pokemon.maxHp),
+    })
   }
   if (side.hazards.stealthRock) {
     const effectiveness = effectiveTypes(pokemon).reduce(
@@ -642,7 +657,14 @@ function canAct(pokemon: BattlePokemon, move: BattleMove, random: RandomSource, 
     if (random() < 1 / 3) {
       const amount = Math.min(pokemon.hp, confusionDamage(pokemon))
       pokemon.hp -= amount
-      events.push({ type: 'damage', pokemon: pokemon.pokemon.name, amount, effectiveness: 1, critical: false })
+      events.push({
+        type: 'damage',
+        pokemon: pokemon.pokemon.name,
+        amount,
+        effectiveness: 1,
+        critical: false,
+        percentage: hpPercentage(amount, pokemon.maxHp),
+      })
       if (pokemon.hp === 0) events.push({ type: 'faint', pokemon: pokemon.pokemon.name })
       if (pokemon.confusionTurns === 0)
         events.push({ type: 'statusCured', pokemon: pokemon.pokemon.name, status: 'confusion' })
@@ -812,7 +834,14 @@ function applyDirectMoveDamage(
     return { amount, hitSubstitute: true }
   }
   defender.hp = Math.max(0, defender.hp - damage)
-  events.push({ type: 'damage', pokemon: defender.pokemon.name, amount: damage, effectiveness, critical })
+  events.push({
+    type: 'damage',
+    pokemon: defender.pokemon.name,
+    amount: damage,
+    effectiveness,
+    critical,
+    percentage: hpPercentage(damage, defender.maxHp),
+  })
   return { amount: damage, hitSubstitute: false }
 }
 
@@ -1052,7 +1081,13 @@ function applyMove(
       const type = change.hp > change.pokemon.hp ? 'heal' : 'damage'
       change.pokemon.hp = change.hp
       succeeded = true
-      if (type === 'heal') events.push({ type, pokemon: change.pokemon.pokemon.name, amount })
+      if (type === 'heal')
+        events.push({
+          type,
+          pokemon: change.pokemon.pokemon.name,
+          amount,
+          percentage: hpPercentage(amount, change.pokemon.maxHp),
+        })
       else
         events.push({
           type,
@@ -1060,6 +1095,7 @@ function applyMove(
           amount,
           effectiveness: 1,
           critical: false,
+          percentage: hpPercentage(amount, change.pokemon.maxHp),
         })
     }
     return { hit: true, succeeded }
@@ -1075,7 +1111,13 @@ function applyMove(
     // The user cannot act on its next two turns, then wakes before acting.
     attacker.sleepTurns = 2
     attacker.toxicTurns = 0
-    if (amount > 0) events.push({ type: 'heal', pokemon: attacker.pokemon.name, amount })
+    if (amount > 0)
+      events.push({
+        type: 'heal',
+        pokemon: attacker.pokemon.name,
+        amount,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
     events.push({ type: 'status', pokemon: attacker.pokemon.name, status: 'sleep' })
     return { hit: true, succeeded: true }
   }
@@ -1085,7 +1127,14 @@ function applyMove(
     const amount = Math.min(attacker.hp, Math.floor(attacker.maxHp / 2))
     if (amount > 0) {
       attacker.hp -= amount
-      events.push({ type: 'damage', pokemon: attacker.pokemon.name, amount, effectiveness: 1, critical: false })
+      events.push({
+        type: 'damage',
+        pokemon: attacker.pokemon.name,
+        amount,
+        effectiveness: 1,
+        critical: false,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
     }
     defender.cursed = true
     events.push({ type: 'status', pokemon: defender.pokemon.name, status: 'curse' })
@@ -1178,7 +1227,12 @@ function applyMove(
       )
       if (move.drain > 0 && amount > 0) {
         attacker.hp += amount
-        events.push({ type: 'heal', pokemon: attacker.pokemon.name, amount })
+        events.push({
+          type: 'heal',
+          pokemon: attacker.pokemon.name,
+          amount,
+          percentage: hpPercentage(amount, attacker.maxHp),
+        })
       } else if (move.drain < 0)
         attacker.hp = Math.max(0, attacker.hp - Math.max(1, Math.floor((damage * Math.abs(move.drain)) / 100)))
     }
@@ -1204,7 +1258,12 @@ function applyMove(
     )
     if (amount > 0) {
       attacker.hp += amount
-      events.push({ type: 'heal', pokemon: attacker.pokemon.name, amount })
+      events.push({
+        type: 'heal',
+        pokemon: attacker.pokemon.name,
+        amount,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
       succeeded = true
     }
   }
@@ -1389,6 +1448,10 @@ function performChoice(
     if (supplemental?.kind === 'taunt' && !outcome.hitSubstitute && defender.tauntTurns <= 0) {
       defender.tauntTurns = supplemental.turns
       events.push({ type: 'taunt', pokemon: defender.pokemon.name })
+      succeeded = true
+    }
+    if (supplemental?.kind === 'wish') {
+      own.wish = { turns: 2, amount: Math.floor(attacker.maxHp / 2) }
       succeeded = true
     }
     if (supplemental?.kind === 'set-volatile') {
@@ -1589,7 +1652,12 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
   if (field.terrain === 'grassy' && isGrounded(pokemon) && pokemon.hp < pokemon.maxHp) {
     const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
     pokemon.hp += amount
-    events.push({ type: 'heal', pokemon: pokemon.pokemon.name, amount })
+    events.push({
+      type: 'heal',
+      pokemon: pokemon.pokemon.name,
+      amount,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
   }
   if (
     pokemon.ability.name !== 'magic-guard' &&
@@ -1598,7 +1666,13 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
   ) {
     const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
     pokemon.hp -= amount
-    events.push({ type: 'weatherDamage', pokemon: pokemon.pokemon.name, weather: 'sandstorm', amount })
+    events.push({
+      type: 'weatherDamage',
+      pokemon: pokemon.pokemon.name,
+      weather: 'sandstorm',
+      amount,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
   }
   if (pokemon.hp > 0 && isDamagingStatus(pokemon.status) && pokemon.ability.name !== 'magic-guard') {
     const status = pokemon.status
@@ -1606,7 +1680,12 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
       const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 8)))
       if (amount > 0) {
         pokemon.hp += amount
-        events.push({ type: 'heal', pokemon: pokemon.pokemon.name, amount })
+        events.push({
+          type: 'heal',
+          pokemon: pokemon.pokemon.name,
+          amount,
+          percentage: hpPercentage(amount, pokemon.maxHp),
+        })
       }
     } else {
       const denominator =
@@ -1619,20 +1698,39 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
             : 8
       const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / denominator)))
       pokemon.hp -= amount
-      events.push({ type: 'statusDamage', pokemon: pokemon.pokemon.name, status, amount })
+      events.push({
+        type: 'statusDamage',
+        pokemon: pokemon.pokemon.name,
+        status,
+        amount,
+        percentage: hpPercentage(amount, pokemon.maxHp),
+      })
       if (status === 'badly-poisoned') pokemon.toxicTurns += 1
     }
   }
   if (pokemon.hp > 0 && pokemon.cursed && pokemon.ability.name !== 'magic-guard') {
     const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 4)))
     pokemon.hp -= amount
-    events.push({ type: 'statusDamage', pokemon: pokemon.pokemon.name, status: 'curse', amount })
+    events.push({
+      type: 'statusDamage',
+      pokemon: pokemon.pokemon.name,
+      status: 'curse',
+      amount,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
   }
   const damageFromVolatile = (condition: BattleVolatileCondition, denominator: number) => {
     if (!pokemon.volatile[condition] || pokemon.hp <= 0 || pokemon.ability.name === 'magic-guard') return
     const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / denominator)))
     pokemon.hp -= amount
-    events.push({ type: 'damage', pokemon: pokemon.pokemon.name, amount, effectiveness: 1, critical: false })
+    events.push({
+      type: 'damage',
+      pokemon: pokemon.pokemon.name,
+      amount,
+      effectiveness: 1,
+      critical: false,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
   }
   if (pokemon.volatile.yawn) {
     pokemon.volatile.yawn -= 1
@@ -1653,7 +1751,12 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
     const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
     if (amount > 0) {
       pokemon.hp += amount
-      events.push({ type: 'heal', pokemon: pokemon.pokemon.name, amount })
+      events.push({
+        type: 'heal',
+        pokemon: pokemon.pokemon.name,
+        amount,
+        percentage: hpPercentage(amount, pokemon.maxHp),
+      })
     }
   }
   damageFromVolatile('bound', 8)
@@ -1667,7 +1770,12 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
       const healed = Math.min(source.maxHp - source.hp, amount)
       if (healed > 0) {
         source.hp += healed
-        events.push({ type: 'heal', pokemon: source.pokemon.name, amount: healed })
+        events.push({
+          type: 'heal',
+          pokemon: source.pokemon.name,
+          amount: healed,
+          percentage: hpPercentage(healed, source.maxHp),
+        })
       }
     }
   }
@@ -1696,6 +1804,18 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
     }
   }
   if (pokemon.hp === 0) events.push({ type: 'faint', pokemon: pokemon.pokemon.name })
+}
+
+function resolveWish(side: BattleSide, events: BattleEvent[]) {
+  if (!side.wish || --side.wish.turns > 0) return
+  const wish = side.wish
+  delete side.wish
+  const pokemon = side.roster[side.active]
+  if (!pokemon || pokemon.hp <= 0 || pokemon.volatile['heal-block']) return
+  const amount = Math.min(pokemon.maxHp - pokemon.hp, wish.amount)
+  if (amount <= 0) return
+  pokemon.hp += amount
+  events.push({ type: 'heal', pokemon: pokemon.pokemon.name, amount, percentage: hpPercentage(amount, pokemon.maxHp) })
 }
 
 function tickField(state: BattleState, events: BattleEvent[]) {
@@ -1843,6 +1963,13 @@ export function resolveBattleTurnSteps(
   }
   playerChoice = lockedChoice(state.player, playerChoice)
   opponentChoice = lockedChoice(state.opponent, opponentChoice)
+  const teraEventStart = events.length
+  applyTurnTerastallization(state.player, playerChoice, 'player', events)
+  applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)
+  if (events.length > teraEventStart) {
+    steps.push({ state: cloneState(state), events: events.slice(0), action: null })
+    events.length = 0
+  }
   const playerPriority = choicePriority(state.player, playerChoice)
   const opponentPriority = choicePriority(state.opponent, opponentChoice)
   const playerSpeed = speed(state.player)
@@ -1864,6 +1991,8 @@ export function resolveBattleTurnSteps(
   const finalEventStart = events.length
   residual(state.player, state.opponent, state.field, random, events)
   residual(state.opponent, state.player, state.field, random, events)
+  resolveWish(state.player, events)
+  resolveWish(state.opponent, events)
   for (const side of [state.player, state.opponent]) {
     const pending = side.futureSight
     if (!pending || --pending.turns > 0) continue
@@ -1879,8 +2008,6 @@ export function resolveBattleTurnSteps(
     if (target.hp === 0) events.push({ type: 'faint', pokemon: target.pokemon.name })
   }
   tickField(state, events)
-  applyTurnTerastallization(state.player, playerChoice, 'player', events)
-  applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events)
   settlePhase(state, events)
   state.turn += 1
   const finalEvents = events.slice(finalEventStart)

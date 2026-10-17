@@ -16,6 +16,8 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
     value: t('moveSupplemental.turns', { turns }),
   })
   switch (effect.kind) {
+    case 'wish':
+      return [mechanic(t('moveSupplemental.kind.wish'))]
     case 'encore':
       return [
         mechanic(t('moveSupplemental.kind.encore')),

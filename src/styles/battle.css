@@ -41,6 +41,34 @@
   color: var(--ink);
   font: inherit;
 }
+.battle-team-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 54px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--surface) 86%, var(--battle-blue));
+}
+.battle-team-preview-member {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+}
+.battle-team-preview-member > span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--line);
+}
+.battle-team-preview img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
 .battle-shell {
   display: grid;
   grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);

@@ -1305,6 +1305,8 @@ export const es = {
   'moveSupplemental.kind.taunt': 'Impide que el objetivo use movimientos de estado',
   'moveSupplemental.kind.fixedDamage': 'Inflige daño calculado mediante una regla fija',
   'moveSupplemental.kind.equalizeHp': 'Divide por igual los PS actuales combinados del usuario y el objetivo',
+  'moveSupplemental.kind.wish':
+    'Restaura hasta la mitad de los PS máximos del usuario en el siguiente turno, incluso tras cambiar',
   'moveSupplemental.kind.substitute': 'Gasta un cuarto de los PS máximos para crear un sustituto que absorbe daño',
   'moveSupplemental.kind.curse':
     'Usa el tipo actual para elegir entre maldecir al objetivo o cambiar las características del usuario',
