@@ -178,6 +178,8 @@ export const ptBR = {
   'battle.log.substituteDamage': 'O substituto de {name} absorveu {damage} de dano.',
   'battle.log.substituteBroken': 'O substituto de {name} absorveu {damage} de dano e foi destruído.',
   'battle.log.itemRemoved': 'O item {item} de {name} foi removido.',
+  'battle.log.itemActivated': 'O item {item} de {name} foi ativado.',
+  'battle.log.itemConsumed': 'O item {item} de {name} foi ativado e consumido.',
   'battle.log.status': '{name} recebeu o estado {status}.',
   'battle.log.statusCured': '{name} se recuperou de {status}.',
   'battle.log.statusDamage': '{name} sofreu {damage} de dano pelo estado.',

@@ -620,6 +620,8 @@ describe('BattlePage lobby', () => {
     const logMoveTooltip = within(logMove!).getByRole('tooltip')
     expect(within(logMoveTooltip).getByLabelText('Normal')).toBeVisible()
     expect(within(logMoveTooltip).getByLabelText('Classe: Físico')).toBeVisible()
+    expect(logMoveTooltip).toHaveTextContent('Poder: 80')
+    expect(logMoveTooltip).toHaveTextContent('Precisão: 100')
     expect(logMoveTooltip).toHaveTextContent('Prioridade: 0')
     expect(logMoveTooltip).toHaveTextContent('tackle em detalhes.')
     fireEvent.focus(logMove!)

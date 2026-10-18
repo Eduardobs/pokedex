@@ -178,6 +178,8 @@ export const en = {
   'battle.log.substituteDamage': "{name}'s substitute absorbed {damage} damage.",
   'battle.log.substituteBroken': "{name}'s substitute absorbed {damage} damage and broke.",
   'battle.log.itemRemoved': "{name}'s {item} was removed.",
+  'battle.log.itemActivated': "{name}'s {item} activated.",
+  'battle.log.itemConsumed': "{name}'s {item} activated and was consumed.",
   'battle.log.status': '{name} was afflicted with {status}.',
   'battle.log.statusCured': '{name} recovered from {status}.',
   'battle.log.statusDamage': '{name} took {damage} status damage.',

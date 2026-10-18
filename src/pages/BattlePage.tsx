@@ -912,6 +912,11 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       })
     case 'itemRemoved':
       return t('battle.log.itemRemoved', { name, item: prettyName(event.item) })
+    case 'itemActivated':
+      return t(event.consumed ? 'battle.log.itemConsumed' : 'battle.log.itemActivated', {
+        name,
+        item: prettyName(event.item),
+      })
     case 'status':
       return t('battle.log.status', { name, status: t(`battle.status.${event.status}`) })
     case 'statusCured':
@@ -1001,6 +1006,12 @@ function BattleLogMove({ move, data }: { move: string; data?: BattlePokemon['mov
             {t('move.priority')}: <b>{data ? formatNumber(data.priority, language) : '—'}</b>
           </span>
         </span>
+        <span>
+          {t('move.power')}: <b>{data?.power === null || !data ? '—' : formatNumber(data.power, language)}</b>
+        </span>
+        <span>
+          {t('move.accuracy')}: <b>{data?.accuracy === null || !data ? '—' : formatNumber(data.accuracy, language)}</b>
+        </span>
         <span>{description || t('battle.moveDescriptionUnavailable')}</span>
       </span>
     </span>
@@ -1041,6 +1052,7 @@ function BattleLogEvent({ event, move }: { event: BattleEvent; move?: BattlePoke
                 'sideConditionEnded',
                 'fieldBlocked',
                 'substituteSet',
+                'itemActivated',
               ].includes(event.type)
             ? 'effect'
             : event.type === 'faint' || event.type === 'win' || event.type === 'tera'

@@ -637,7 +637,140 @@ describe('Random Battle engine', () => {
       () => 0.5,
     )
     expect(returned.state.player.roster[0].stats[1]).toBe(persistentAttack)
-    expect(currentBattleStats(returned.state.player.roster[0])[1]).toBe(persistentAttack)
+    expect(currentBattleStats(returned.state.player.roster[0])[1]).toBe(Math.floor(persistentAttack * 1.5))
+  })
+
+  it('consumes White Herb once and restores every lowered stat stage', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const pokemon = state.player.roster[0]
+    pokemon.item = { name: 'white-herb', names: [], descriptions: [], sprite: null }
+    pokemon.stages.attack = -2
+    pokemon.stages.speed = -1
+    pokemon.stats[5] = 999
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 2 }, { kind: 'move', index: 2 }, () => 0.5)
+
+    expect(result.state.player.roster[0].stages).toMatchObject({ attack: 0, speed: 0 })
+    expect(result.state.player.roster[0].item).toBeNull()
+    expect(result.events).toContainEqual({
+      type: 'itemActivated',
+      pokemon: 'player-0',
+      item: 'white-herb',
+      consumed: true,
+    })
+  })
+
+  it('applies Life Orb damage power and recoil after a damaging move', () => {
+    const makeState = (withItem: boolean) => {
+      const playerTeam = team('player')
+      const opponentTeam = team('opponent')
+      const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+      state.player.roster[0].stats[5] = 999
+      if (withItem) state.player.roster[0].item = { name: 'life-orb', names: [], descriptions: [], sprite: null }
+      return state
+    }
+    const regular = resolveBattleTurn(
+      makeState(false),
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 3 },
+      () => 0.5,
+    )
+    const boosted = resolveBattleTurn(
+      makeState(true),
+      { kind: 'move', index: 0 },
+      { kind: 'move', index: 3 },
+      () => 0.5,
+    )
+
+    expect(boosted.state.opponent.roster[0].hp).toBeLessThan(regular.state.opponent.roster[0].hp)
+    expect(boosted.state.player.roster[0].hp).toBe(
+      boosted.state.player.roster[0].maxHp - Math.floor(boosted.state.player.roster[0].maxHp / 10),
+    )
+    expect(boosted.events).toContainEqual({
+      type: 'itemActivated',
+      pokemon: 'player-0',
+      item: 'life-orb',
+      consumed: false,
+    })
+  })
+
+  it('restores HP with Leftovers at the end of each turn', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const pokemon = state.player.roster[0]
+    pokemon.item = { name: 'leftovers', names: [], descriptions: [], sprite: null }
+    pokemon.hp -= 100
+    const expected = pokemon.hp + Math.floor(pokemon.maxHp / 16)
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 3 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(result.state.player.roster[0].hp).toBe(expected)
+    expect(result.events).toContainEqual({
+      type: 'itemActivated',
+      pokemon: 'player-0',
+      item: 'leftovers',
+      consumed: false,
+    })
+  })
+
+  it('removes dynamic held-item stat boosts and enforces Choice move locking', () => {
+    const pokemon = createBattlePokemon({ ...member(0), item: 'choice-band' }, teamPokemon('choice-user'), [
+      move(),
+      move(),
+      move(),
+      move(),
+    ])
+    const baseAttack = pokemon.stats[1]
+    pokemon.lastMoveIndex = 1
+
+    expect(currentBattleStats(pokemon)[1]).toBe(Math.floor(baseAttack * 1.5))
+    expect(legalBattleMoveIndexes(pokemon)).toEqual([1])
+    pokemon.item = null
+    expect(currentBattleStats(pokemon)[1]).toBe(baseAttack)
+    expect(legalBattleMoveIndexes(pokemon)).toEqual([0, 1, 2, 3])
+  })
+
+  it('applies defensive, threshold, and move-timing held items once', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const sashState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    sashState.player.roster[0].stats[1] = 9999
+    sashState.player.roster[0].stats[5] = 999
+    sashState.opponent.roster[0].item = { name: 'focus-sash', names: [], descriptions: [], sprite: null }
+    const sash = resolveBattleTurn(sashState, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(sash.state.opponent.roster[0].hp).toBe(1)
+    expect(sash.state.opponent.roster[0].item).toBeNull()
+
+    const berryState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const berryHolder = berryState.player.roster[0]
+    berryHolder.item = { name: 'sitrus-berry', names: [], descriptions: [], sprite: null }
+    berryHolder.hp = Math.floor(berryHolder.maxHp / 2)
+    const beforeBerry = berryHolder.hp
+    const berry = resolveBattleTurn(berryState, { kind: 'move', index: 3 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(berry.state.player.roster[0].hp).toBe(beforeBerry + Math.floor(berryHolder.maxHp / 4))
+    expect(berry.state.player.roster[0].item).toBeNull()
+
+    const herbState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    herbState.player.roster[0].stats[5] = 999
+    herbState.player.roster[0].moves[0].data = move({ name: 'solar-beam', type: 'grass', power: 120 })
+    herbState.player.roster[0].item = { name: 'power-herb', names: [], descriptions: [], sprite: null }
+    const herb = resolveBattleTurn(herbState, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(herb.state.player.roster[0].chargingMoveIndex).toBeUndefined()
+    expect(herb.state.player.roster[0].item).toBeNull()
+    expect(herb.state.opponent.roster[0].hp).toBeLessThan(herb.state.opponent.roster[0].maxHp)
+  })
+
+  it('prevents status moves while Assault Vest is held', () => {
+    const pokemon = createBattlePokemon({ ...member(0), item: 'assault-vest' }, teamPokemon('vest-user'), [
+      move(),
+      move(),
+      move({ damageClass: 'status', power: null }),
+      move({ damageClass: 'status', power: null }),
+    ])
+    expect(legalBattleMoveIndexes(pokemon)).toEqual([0, 1])
   })
 
   it('activates entry abilities on the initial send-out and each return to the field', () => {

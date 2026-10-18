@@ -158,6 +158,7 @@ export type BattleEvent =
   | { type: 'substituteSet'; pokemon: string; hp: number }
   | { type: 'substituteDamage'; pokemon: string; amount: number; broken: boolean }
   | { type: 'itemRemoved'; pokemon: string; item: string }
+  | { type: 'itemActivated'; pokemon: string; item: string; consumed: boolean }
   | {
       type: 'status'
       pokemon: string
@@ -336,6 +337,126 @@ const entryTerrainAbilities: Partial<Record<string, BattleTerrain>> = {
   'psychic-surge': 'psychic',
 }
 
+const typeBoostingItems: Partial<Record<BattleType, Set<string>>> = {
+  normal: new Set(['silk-scarf']),
+  fire: new Set(['charcoal', 'flame-plate']),
+  water: new Set(['mystic-water', 'sea-incense', 'splash-plate', 'wave-incense']),
+  electric: new Set(['magnet', 'zap-plate']),
+  grass: new Set(['meadow-plate', 'miracle-seed', 'rose-incense']),
+  ice: new Set(['icicle-plate', 'never-melt-ice']),
+  fighting: new Set(['black-belt', 'fist-plate']),
+  poison: new Set(['poison-barb', 'toxic-plate']),
+  ground: new Set(['earth-plate', 'soft-sand']),
+  flying: new Set(['sharp-beak', 'sky-plate']),
+  psychic: new Set(['mind-plate', 'odd-incense', 'twisted-spoon']),
+  bug: new Set(['insect-plate', 'silver-powder']),
+  rock: new Set(['hard-stone', 'rock-incense', 'stone-plate']),
+  ghost: new Set(['spooky-plate', 'spell-tag']),
+  dragon: new Set(['draco-plate', 'dragon-fang']),
+  dark: new Set(['black-glasses', 'dread-plate']),
+  steel: new Set(['iron-plate', 'metal-coat']),
+  fairy: new Set(['fairy-feather', 'pixie-plate']),
+}
+
+function activateItem(pokemon: BattlePokemon, events: BattleEvent[], consumed = false) {
+  if (!pokemon.item) return
+  const item = pokemon.item.name
+  const alreadyRevealed = pokemon.member.itemActive
+  pokemon.member.itemActive = true
+  if (consumed || !alreadyRevealed)
+    events.push({ type: 'itemActivated', pokemon: pokemon.pokemon.name, item, consumed })
+  if (consumed) pokemon.item = null
+}
+
+function applyWhiteHerb(pokemon: BattlePokemon, events: BattleEvent[]) {
+  if (pokemon.item?.name !== 'white-herb' || !Object.values(pokemon.stages).some((stage) => stage < 0)) return
+  activateItem(pokemon, events, true)
+  for (const stat of Object.keys(pokemon.stages) as (keyof BattleStages)[]) {
+    if (pokemon.stages[stat] < 0) pokemon.stages[stat] = 0
+  }
+  events.push({ type: 'stagesReset', pokemon: pokemon.pokemon.name })
+}
+
+function applyHpThresholdItem(pokemon: BattlePokemon, events: BattleEvent[]) {
+  const item = pokemon.item?.name
+  if (!item || pokemon.hp <= 0 || pokemon.hp * 2 > pokemon.maxHp || pokemon.volatile['heal-block']) return
+  const amount = item === 'sitrus-berry' ? Math.floor(pokemon.maxHp / 4) : item === 'oran-berry' ? 10 : 0
+  if (!amount || pokemon.hp >= pokemon.maxHp) return
+  const healed = Math.min(pokemon.maxHp - pokemon.hp, amount)
+  activateItem(pokemon, events, true)
+  pokemon.hp += healed
+  events.push({
+    type: 'heal',
+    pokemon: pokemon.pokemon.name,
+    amount: healed,
+    percentage: hpPercentage(healed, pokemon.maxHp),
+  })
+}
+
+function applyStatusHealingItem(pokemon: BattlePokemon, events: BattleEvent[]) {
+  const item = pokemon.item?.name
+  const curesStatus =
+    item === 'lum-berry' ||
+    (item === 'cheri-berry' && pokemon.status === 'paralysis') ||
+    (item === 'chesto-berry' && pokemon.status === 'sleep') ||
+    (item === 'pecha-berry' && isPoisoned(pokemon)) ||
+    (item === 'rawst-berry' && pokemon.status === 'burn') ||
+    (item === 'aspear-berry' && pokemon.status === 'freeze')
+  if (pokemon.status && curesStatus) {
+    const status = pokemon.status
+    activateItem(pokemon, events, true)
+    pokemon.status = null
+    pokemon.sleepTurns = 0
+    pokemon.toxicTurns = 0
+    events.push({ type: 'statusCured', pokemon: pokemon.pokemon.name, status })
+  } else if (item === 'lum-berry' && pokemon.confusionTurns > 0) {
+    activateItem(pokemon, events, true)
+    pokemon.confusionTurns = 0
+    events.push({ type: 'statusCured', pokemon: pokemon.pokemon.name, status: 'confusion' })
+  }
+}
+
+function heldItemStatMultiplier(pokemon: BattlePokemon, index: number) {
+  const item = pokemon.item?.name
+  if (!item) return 1
+  if (item === 'choice-band' && index === 1) return 1.5
+  if (item === 'choice-specs' && index === 3) return 1.5
+  if (item === 'choice-scarf' && index === 5) return 1.5
+  if (item === 'assault-vest' && index === 4) return 1.5
+  if (item === 'iron-ball' || item === 'macho-brace' || /^power-(weight|bracer|belt|lens|band|anklet)$/.test(item))
+    return index === 5 ? 0.5 : 1
+  if (item === 'deep-sea-tooth' && pokemon.pokemon.species === 'clamperl' && index === 3) return 2
+  if (item === 'deep-sea-scale' && pokemon.pokemon.species === 'clamperl' && index === 4) return 2
+  if (item === 'light-ball' && pokemon.pokemon.species === 'pikachu' && (index === 1 || index === 3)) return 2
+  if (item === 'thick-club' && ['cubone', 'marowak'].includes(pokemon.pokemon.species) && index === 1) return 2
+  if (item === 'quick-powder' && pokemon.pokemon.name === 'ditto' && index === 5) return 2
+  if (item === 'metal-powder' && pokemon.pokemon.name === 'ditto' && index === 2) return 2
+  if (item === 'eviolite' && pokemon.member.itemActive && (index === 2 || index === 4)) return 1.5
+  return 1
+}
+
+function heldItemPowerModifier(
+  attacker: BattlePokemon,
+  defender: BattlePokemon,
+  move: BattleMove,
+  effectiveness: number,
+  events: BattleEvent[],
+) {
+  const item = attacker.item?.name
+  if (move.name === 'knock-off' && defender.item) return 1.5
+  if (!item) return 1
+  if (item === 'life-orb') return 1.3
+  if (item === 'expert-belt' && effectiveness > 1) return 1.2
+  if (item === 'muscle-band' && move.damageClass === 'physical') return 1.1
+  if (item === 'wise-glasses' && move.damageClass === 'special') return 1.1
+  if (typeBoostingItems[move.type]?.has(item)) return 1.2
+  if (item === `${move.type}-gem`) {
+    activateItem(attacker, events, true)
+    return 1.3
+  }
+  return 1
+}
+
 function changesApplyToUser(move: BattleMove) {
   return move.target === 'user' || selfStatChangeMoves.has(move.name)
 }
@@ -365,6 +486,8 @@ export function createBattlePokemon(
   // switching out and trigger again every time the Pokémon enters.
   const stats = calculatedStats(pokemon, {
     ...member,
+    item: '',
+    itemActive: false,
     abilityActive: entryStageAbilities[ability] ? false : member.abilityActive,
   })
   return {
@@ -446,8 +569,12 @@ export function createBattleState(
     field: emptyField(),
     phase: 'choice',
   }
-  applyEntryAbility(state.player, state.opponent, state.field, [])
-  applyEntryAbility(state.opponent, state.player, state.field, [])
+  const entryEvents: BattleEvent[] = []
+  applyEntryAbility(state.player, state.opponent, state.field, entryEvents)
+  applyWhiteHerb(state.player.roster[state.player.active], entryEvents)
+  applyEntryAbility(state.opponent, state.player, state.field, entryEvents)
+  applyWhiteHerb(state.player.roster[state.player.active], entryEvents)
+  applyWhiteHerb(state.opponent.roster[state.opponent.active], entryEvents)
   return state
 }
 
@@ -512,7 +639,7 @@ export function currentBattleStats(pokemon: BattlePokemon): Stats {
   const specialAttack =
     pokemon.stats[3] * statusAbilityMultiplier(ability === 'flare-boost' && pokemon.status === 'burn', 2)
   const speedMultiplier = statusAbilityMultiplier(ability === 'quick-feet', 1.5)
-  return [
+  const values: Stats = [
     pokemon.stats[0],
     Math.floor(attack * stageMultiplier(pokemon.stages.attack)),
     Math.floor(defense * stageMultiplier(pokemon.stages.defense)),
@@ -525,6 +652,7 @@ export function currentBattleStats(pokemon: BattlePokemon): Stats {
         (pokemon.status === 'paralysis' && ability !== 'quick-feet' ? 0.5 : 1),
     ),
   ]
+  return values.map((value, index) => Math.floor(value * heldItemStatMultiplier(pokemon, index))) as Stats
 }
 
 function isPoisoned(pokemon: BattlePokemon) {
@@ -704,12 +832,20 @@ function applyEntryAbility(own: BattleSide, foe: BattleSide, field: BattleField,
   }
   if (weather) {
     field.weather = weather
-    field.weatherTurns = 5
+    const weatherRock = {
+      rain: 'damp-rock',
+      sun: 'heat-rock',
+      sandstorm: 'smooth-rock',
+      snow: 'icy-rock',
+    }[weather]
+    field.weatherTurns = pokemon.item?.name === weatherRock ? 8 : 5
+    if (field.weatherTurns === 8) activateItem(pokemon, events)
     events.push({ type: 'fieldSet', field: weather, turns: field.weatherTurns })
   }
   if (terrain) {
     field.terrain = terrain
-    field.terrainTurns = 5
+    field.terrainTurns = pokemon.item?.name === 'terrain-extender' ? 8 : 5
+    if (field.terrainTurns === 8) activateItem(pokemon, events)
     events.push({ type: 'fieldSet', field: terrain, turns: field.terrainTurns })
   }
   if (ability === 'intimidate') {
@@ -781,9 +917,12 @@ export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
     if (move.pp <= 0) return []
     if (pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== index) return []
     if (pokemon.tauntTurns > 0 && move.data.damageClass === 'status') return []
+    if (pokemon.item?.name === 'assault-vest' && move.data.damageClass === 'status') return []
     if (pokemon.disabledMoveIndex === index && pokemon.volatile.disable) return []
     if (pokemon.volatile.torment && pokemon.lastMoveIndex === index) return []
     if (pokemon.volatile['throat-chop'] && soundMoves.has(move.data.name)) return []
+    if (pokemon.item?.name.startsWith('choice-') && pokemon.lastMoveIndex !== null && pokemon.lastMoveIndex !== index)
+      return []
     return [index]
   })
 }
@@ -833,16 +972,31 @@ function applyDirectMoveDamage(
     })
     return { amount, hitSubstitute: true }
   }
-  defender.hp = Math.max(0, defender.hp - damage)
+  if (defender.item?.name === 'focus-sash' && defender.hp === defender.maxHp && damage >= defender.hp) {
+    activateItem(defender, events, true)
+    damage = Math.max(0, defender.hp - 1)
+  }
+  const amount = Math.min(defender.hp, damage)
+  defender.hp -= amount
   events.push({
     type: 'damage',
     pokemon: defender.pokemon.name,
-    amount: damage,
+    amount,
     effectiveness,
     critical,
-    percentage: hpPercentage(damage, defender.maxHp),
+    percentage: hpPercentage(amount, defender.maxHp),
   })
-  return { amount: damage, hitSubstitute: false }
+  if (effectiveness > 1 && defender.hp > 0 && defender.item?.name === 'weakness-policy') {
+    activateItem(defender, events, true)
+    for (const stat of ['attack', 'specialAttack'] as const) {
+      const previous = defender.stages[stat]
+      defender.stages[stat] = Math.min(6, previous + 2)
+      const change = defender.stages[stat] - previous
+      if (change) events.push({ type: 'stage', pokemon: defender.pokemon.name, stat, change })
+    }
+  }
+  applyHpThresholdItem(defender, events)
+  return { amount, hitSubstitute: false }
 }
 
 function solarMoveHasSun(attacker: BattlePokemon, defender: BattlePokemon, field: BattleField) {
@@ -981,9 +1135,12 @@ function applyMove(
       attacker.stages[boost] += change
       if (change) events.push({ type: 'stage', pokemon: attacker.pokemon.name, stat: boost, change })
     }
-    const instant =
+    const naturallyInstant =
       (['solar-beam', 'solar-blade'].includes(move.name) && solarMoveHasSun(attacker, defender, field)) ||
       (move.name === 'electro-shot' && field.weather === 'rain')
+    const usesPowerHerb = attacker.item?.name === 'power-herb' && !naturallyInstant
+    const instant = usesPowerHerb || naturallyInstant
+    if (usesPowerHerb) activateItem(attacker, events, true)
     if (!instant) {
       attacker.chargingMoveIndex = moveSlot
       events.push({ type: 'charging', pokemon: attacker.pokemon.name })
@@ -1204,6 +1361,8 @@ function applyMove(
         (physical ? defendingSide.conditions.reflect > 0 : defendingSide.conditions.lightScreen > 0))
         ? 0.5
         : 1
+    const heldItem = attacker.item?.name
+    const itemModifier = heldItemPowerModifier(attacker, defender, move, effectiveness, events)
     const damage = Math.max(
       1,
       Math.floor(
@@ -1215,11 +1374,38 @@ function applyMove(
           (delayed
             ? fieldPowerModifier(move, attacker, { ...defender, chargingMoveIndex: undefined }, field)
             : fieldPowerModifier(move, attacker, defender, field)) *
+          itemModifier *
           screen,
       ),
     )
     const applied = applyDirectMoveDamage(defender, damage, effectiveness, critical, events)
     hitSubstitute = applied.hitSubstitute
+    if (heldItem === 'life-orb' && attacker.hp > 0 && attacker.ability.name !== 'magic-guard') {
+      activateItem(attacker, events)
+      const amount = Math.min(attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 10)))
+      attacker.hp -= amount
+      events.push({
+        type: 'damage',
+        pokemon: attacker.pokemon.name,
+        amount,
+        effectiveness: 1,
+        critical: false,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
+    }
+    if (heldItem === 'shell-bell' && attacker.hp > 0 && !attacker.volatile['heal-block']) {
+      const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(applied.amount / 8)))
+      if (amount > 0) {
+        activateItem(attacker, events)
+        attacker.hp += amount
+        events.push({
+          type: 'heal',
+          pokemon: attacker.pokemon.name,
+          amount,
+          percentage: hpPercentage(amount, attacker.maxHp),
+        })
+      }
+    }
     if (move.drain && !attacker.volatile['heal-block']) {
       const amount = Math.min(
         attacker.maxHp - attacker.hp,
@@ -1391,6 +1577,9 @@ function performChoice(
     events.push({ type: 'switch', side, pokemon: replacement.pokemon.name })
     applyEntryAbility(own, foe, field, events)
     applyEntryHazards(own, replacement, events)
+    applyWhiteHerb(replacement, events)
+    applyWhiteHerb(foe.roster[foe.active], events)
+    applyHpThresholdItem(replacement, events)
     if (replacement.hp === 0) events.push({ type: 'faint', pokemon: replacement.pokemon.name })
     return
   }
@@ -1413,6 +1602,8 @@ function performChoice(
   }
   const selectedMove = attacker.moves[selectedMoveIndex]?.data.name
   const outcome = applyMove(attacker, defender, foe, field, selectedMoveIndex, random, events)
+  applyStatusHealingItem(attacker, events)
+  applyStatusHealingItem(defender, events)
   for (let index = start; index < events.length; index += 1) {
     const event = events[index]
     if (event.type === 'move') {
@@ -1511,14 +1702,22 @@ function performChoice(
     }
     if (supplemental?.kind === 'set-weather') {
       field.weather = supplemental.weather
-      field.weatherTurns = supplemental.turns
-      events.push({ type: 'fieldSet', field: supplemental.weather, turns: supplemental.turns })
+      const weatherRock = {
+        rain: 'damp-rock',
+        sun: 'heat-rock',
+        sandstorm: 'smooth-rock',
+        snow: 'icy-rock',
+      }[supplemental.weather]
+      field.weatherTurns = attacker.item?.name === weatherRock ? 8 : supplemental.turns
+      if (field.weatherTurns === 8 && attacker.item?.name === weatherRock) activateItem(attacker, events)
+      events.push({ type: 'fieldSet', field: supplemental.weather, turns: field.weatherTurns })
       succeeded = true
     }
     if (supplemental?.kind === 'set-terrain') {
       field.terrain = supplemental.terrain
-      field.terrainTurns = supplemental.turns
-      events.push({ type: 'fieldSet', field: supplemental.terrain, turns: supplemental.turns })
+      field.terrainTurns = attacker.item?.name === 'terrain-extender' ? 8 : supplemental.turns
+      if (field.terrainTurns === 8 && attacker.item?.name === 'terrain-extender') activateItem(attacker, events)
+      events.push({ type: 'fieldSet', field: supplemental.terrain, turns: field.terrainTurns })
       succeeded = true
     }
     if (supplemental?.kind === 'clear-terrain' && field.terrain) {
@@ -1548,8 +1747,10 @@ function performChoice(
         'crafty-shield': 'craftyShield',
       }[supplemental.condition] as keyof BattleSideConditions
       if (!supplemental.requiresWeather || field.weather === supplemental.requiresWeather) {
-        own.conditions[condition] = supplemental.turns
-        events.push({ type: 'sideConditionSet', side, condition, turns: supplemental.turns })
+        const turns = attacker.item?.name === 'light-clay' ? 8 : supplemental.turns
+        own.conditions[condition] = turns
+        if (turns === 8 && attacker.item?.name === 'light-clay') activateItem(attacker, events)
+        events.push({ type: 'sideConditionSet', side, condition, turns })
         succeeded = true
       }
     }
@@ -1622,10 +1823,17 @@ function performChoice(
       succeeded = true
     }
   }
+  applyWhiteHerb(attacker, events)
+  applyWhiteHerb(defender, events)
   tickMoveRestrictions(attacker)
   if (!succeeded && outcome.hit) events.push({ type: 'failed', pokemon: attacker.pokemon.name })
   if (defender.hp === 0 && !events.some((event, index) => index >= start && event.type === 'faint'))
     events.push({ type: 'faint', pokemon: defender.pokemon.name })
+  if (
+    attacker.hp === 0 &&
+    !events.some((event, index) => index >= start && event.type === 'faint' && event.pokemon === attacker.pokemon.name)
+  )
+    events.push({ type: 'faint', pokemon: attacker.pokemon.name })
 }
 
 function choicePriority(side: BattleSide, choice: BattleChoice) {
@@ -1803,6 +2011,62 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
         events.push({ type: 'stage', pokemon: pokemon.pokemon.name, stat, change: pokemon.stages[stat] - previous })
     }
   }
+  if (
+    pokemon.hp > 0 &&
+    pokemon.item?.name === 'leftovers' &&
+    pokemon.hp < pokemon.maxHp &&
+    !pokemon.volatile['heal-block']
+  ) {
+    const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
+    activateItem(pokemon, events)
+    pokemon.hp += amount
+    events.push({
+      type: 'heal',
+      pokemon: pokemon.pokemon.name,
+      amount,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
+  }
+  if (pokemon.hp > 0 && pokemon.item?.name === 'black-sludge') {
+    if (effectiveTypes(pokemon).includes('poison') && pokemon.hp < pokemon.maxHp && !pokemon.volatile['heal-block']) {
+      const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
+      activateItem(pokemon, events)
+      pokemon.hp += amount
+      events.push({
+        type: 'heal',
+        pokemon: pokemon.pokemon.name,
+        amount,
+        percentage: hpPercentage(amount, pokemon.maxHp),
+      })
+    } else if (!effectiveTypes(pokemon).includes('poison') && pokemon.ability.name !== 'magic-guard') {
+      const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 8)))
+      activateItem(pokemon, events)
+      pokemon.hp -= amount
+      events.push({
+        type: 'damage',
+        pokemon: pokemon.pokemon.name,
+        amount,
+        effectiveness: 1,
+        critical: false,
+        percentage: hpPercentage(amount, pokemon.maxHp),
+      })
+    }
+  }
+  if (pokemon.hp > 0 && !pokemon.status && (pokemon.item?.name === 'flame-orb' || pokemon.item?.name === 'toxic-orb')) {
+    const status = pokemon.item.name === 'flame-orb' ? 'burn' : 'badly-poisoned'
+    if (
+      !statusPreventedByTerrain(status, pokemon, field) &&
+      !majorStatusImmune(status, pokemon, pokemon, side, field)
+    ) {
+      activateItem(pokemon, events)
+      pokemon.status = status
+      pokemon.toxicTurns = 0
+      events.push({ type: 'status', pokemon: pokemon.pokemon.name, status })
+    }
+  }
+  applyStatusHealingItem(pokemon, events)
+  applyHpThresholdItem(pokemon, events)
+  applyWhiteHerb(pokemon, events)
   if (pokemon.hp === 0) events.push({ type: 'faint', pokemon: pokemon.pokemon.name })
 }
 

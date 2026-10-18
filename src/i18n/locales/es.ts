@@ -179,6 +179,8 @@ export const es = {
   'battle.log.substituteDamage': 'El sustituto de {name} absorbió {damage} de daño.',
   'battle.log.substituteBroken': 'El sustituto de {name} absorbió {damage} de daño y se rompió.',
   'battle.log.itemRemoved': 'Se eliminó el objeto {item} de {name}.',
+  'battle.log.itemActivated': 'El objeto {item} de {name} se activó.',
+  'battle.log.itemConsumed': 'El objeto {item} de {name} se activó y se consumió.',
   'battle.log.status': '{name} recibió el estado {status}.',
   'battle.log.statusCured': '{name} se recuperó de {status}.',
   'battle.log.statusDamage': '{name} sufrió {damage} de daño por el estado.',
