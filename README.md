@@ -219,6 +219,8 @@ Pokémon data is provided by the community-maintained [PokéAPI](https://pokeapi
 
 The bundled Gen 9 Random Battle set catalog is adapted from [Pokémon Showdown](https://github.com/smogon/pokemon-showdown) under the MIT License; its license text is included at [`src/data/third-party/pokemon-showdown-MIT-LICENSE.txt`](src/data/third-party/pokemon-showdown-MIT-LICENSE.txt).
 
+The offline battle audit covers all 919 PokéAPI move IDs from 1 through 919. Run `npm run audit:battle-moves` to regenerate [`docs/battle-move-audit.md`](docs/battle-move-audit.md) and its detailed JSON. The audit distinguishes execution invariants from mechanic conformance and records unresolved rules; it does not certify complete battle parity. The PokéAPI payload subset and syntax-only Pokémon Showdown move reference are bundled under `src/data/third-party/`. The reference uses the same MIT license above and records the source SHA-256. Snapshot refresh commands and scope limitations are documented in the report.
+
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE) for the full text.

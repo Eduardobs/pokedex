@@ -39,6 +39,13 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Selectable item, move, nature, ability, and other option lists use alphabetical order while preserving semantic placeholder and numeric sequences.
 - Resource lists under `/explore` preserve the PokéAPI numeric order.
 
+
+- Random Battle OHKO moves faint a directly hit target immediately, using the regular accuracy check without a level gate; Protect, type immunity, and Substitute interception still prevent a direct hit.
+- Random Battle Sky Drop spends one turn carrying its target and blocking attacks, then releases and deals damage on the next turn; the defender may switch while carried, cancelling the pending damage.
+- Random Battle Gigaton Hammer and Blood Moon fail only when the same move succeeded on the immediately preceding turn; a failed execution permits another attempt and does not force recharge.
+- Random Battle accuracy and evasion use separate stages from -6 to +6 with 3-based multipliers; hit probability is base accuracy times the user's multiplier divided by the target's multiplier, followed by Bright Powder and weather evasion modifiers.
+- Random Battle does not implement Z-Move or Max Move activation.
+
 ## Maintenance
 
 - Teams are saved locally in the browser, support multiple teams with at most six Pokémon each, and allow at most four compatible moves and one held item per member.

@@ -20,7 +20,8 @@
     "release:patch": "npm version patch",
     "release:minor": "npm version minor",
     "release:major": "npm version major",
-    "check": "npm run format:check && npm run lint && npm run test:coverage && npm run test:e2e && npm run build"
+    "check": "npm run format:check && npm run lint && npm run test:coverage && npm run test:e2e && npm run build",
+    "audit:battle-moves": "BATTLE_AUDIT_REPORT=1 vitest run src/lib/battle-move-audit.test.ts && prettier --write docs/battle-move-audit.md docs/battle-move-audit.json"
   },
   "dependencies": {
     "lucide-react": "1.52.0",

@@ -356,6 +356,7 @@ describe('BattlePage lobby', () => {
       loaded[0].status = team.id === opponent.id ? 'burn' : 'poison'
       if (team.id === opponent.id) {
         loaded[0].stages.specialDefense = -1
+        loaded[0].stages.evasion = 1
         loaded.forEach((pokemon) => {
           pokemon.moves.forEach((move) => {
             move.data = testMove('growl')
@@ -363,6 +364,7 @@ describe('BattlePage lobby', () => {
         })
       } else {
         loaded[0].stages.specialAttack = 2
+        loaded[0].stages.accuracy = -1
         loaded[0].moves[1].data.priority = 1
         loaded[0].moves[2].data.priority = -1
       }
@@ -422,8 +424,10 @@ describe('BattlePage lobby', () => {
     const opponentModifiers = within(opponentInformationCard!).getByLabelText('Modificadores de atributo')
     const playerModifiers = within(playerInformationCard!).getByLabelText('Modificadores de atributo')
     expect(opponentModifiers).toHaveTextContent('SpD -1')
+    expect(opponentModifiers).toHaveTextContent('Eva +1')
     expect(opponentModifiers).not.toHaveTextContent('Defesa Especial')
     expect(playerModifiers).toHaveTextContent('SpA +2')
+    expect(playerModifiers).toHaveTextContent('Prec -1')
     expect(playerModifiers).not.toHaveTextContent('Ataque Especial')
     expect(opponentInformationCard!.querySelector('.battle-health-bar')?.nextElementSibling).toBe(opponentModifiers)
     expect(playerInformationCard!.querySelector('.battle-health-bar')?.nextElementSibling).toBe(playerModifiers)

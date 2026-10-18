@@ -119,7 +119,7 @@ describe('Random Battle engine', () => {
 
   it('calculates the current stats after battle stage and paralysis modifiers', () => {
     const pokemon = createBattlePokemon(member(0), teamPokemon('modified'), [move(), move(), move(), move()])
-    pokemon.stages = { attack: 2, defense: -1, specialAttack: 1, specialDefense: -2, speed: 1 }
+    pokemon.stages = { accuracy: 0, evasion: 0, attack: 2, defense: -1, specialAttack: 1, specialDefense: -2, speed: 1 }
     pokemon.status = 'paralysis'
 
     expect(currentBattleStats(pokemon)).toEqual([341, 472, 157, 354, 118, 177])
@@ -623,6 +623,8 @@ describe('Random Battle engine', () => {
 
     const switched = resolveBattleTurn(state, { kind: 'switch', index: 1 }, { kind: 'move', index: 2 }, () => 0.5)
     expect(switched.state.player.roster[0].stages).toEqual({
+      accuracy: 0,
+      evasion: 0,
       attack: 0,
       defense: 0,
       specialAttack: 0,
@@ -1914,6 +1916,8 @@ describe('multi-turn moves', () => {
     'rock-wrecker',
     'roar-of-time',
     'meteor-assault',
+    'prismatic-laser',
+    'eternabeam',
   ])('%s spends its next turn recharging and cannot switch', (name) => {
     const first = act(setup(name)).state
     expect(first.player.roster[0].recharging).toBe(true)

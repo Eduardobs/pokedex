@@ -1,3 +1,4 @@
+import { supplementalMoveMetadata } from './battle-move-effects'
 import { apiFetch } from './api'
 import { array, record, reference } from './resource-data'
 import { parseTeamPokemon, type Team } from './teams'
@@ -11,6 +12,8 @@ import {
 } from './battle'
 
 const battleStats: Record<string, keyof BattleStages> = {
+  accuracy: 'accuracy',
+  evasion: 'evasion',
   attack: 'attack',
   defense: 'defense',
   'special-attack': 'specialAttack',
@@ -102,7 +105,13 @@ export function parseBattleMove(value: unknown): BattleMove {
       const amount = boundedInteger(change.change, -6, 6)
       return stat && amount ? [{ stat, change: amount }] : []
     }),
+    minHits: boundedInteger(meta.min_hits, 1, 10) ?? 1,
+    maxHits: boundedInteger(meta.max_hits, 1, 10) ?? 1,
+    critRate: boundedInteger(meta.crit_rate, 0, 6) ?? 0,
+    flinchChance: boundedInteger(meta.flinch_chance, 0, 100) ?? 0,
+    statChance: boundedInteger(meta.stat_chance, 1, 100),
     descriptions,
+    ...(data.meta === null ? supplementalMoveMetadata[name] : {}),
   }
 }
 

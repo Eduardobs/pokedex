@@ -68,6 +68,8 @@ type ActiveMove = { side: 'player' | 'opponent'; name: string }
 type MajorBattleStatus = Exclude<BattlePokemon['status'], null>
 
 const battleStageShortStatKeys: Record<keyof BattleStages, TranslationKey> = {
+  accuracy: 'battle.statShort.accuracy',
+  evasion: 'battle.statShort.evasion',
   attack: 'battle.statShort.attack',
   defense: 'battle.statShort.defense',
   specialAttack: 'battle.statShort.specialAttack',
@@ -1539,7 +1541,10 @@ export function BattlePage() {
                 <div className="battle-secondary-actions">
                   <button
                     className="button secondary"
-                    disabled={resolving || player.recharging || player.chargingMoveIndex !== undefined}
+                    disabled={
+                      resolving ||
+                      (!player.skyDropSourceId && (player.recharging || player.chargingMoveIndex !== undefined))
+                    }
                     onClick={() => setShowSwitches(true)}
                   >
                     <ArrowRightLeft size={16} aria-hidden="true" /> {t('battle.switch')}
