@@ -24,9 +24,9 @@
     "audit:battle-moves": "BATTLE_AUDIT_REPORT=1 vitest run src/lib/battle-move-audit.test.ts && prettier --write docs/battle-move-audit.md docs/battle-move-audit.json"
   },
   "dependencies": {
-    "lucide-react": "1.52.0",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "lucide-react": "1.57.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-router-dom": "7.18.4"
   },
   "devDependencies": {
