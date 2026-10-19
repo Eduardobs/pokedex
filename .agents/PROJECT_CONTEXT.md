@@ -48,6 +48,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Maintenance
 
+- Team Pokémon search allows playable battle forms, including Mega Evolutions, Gigantamax, and regional forms, while excluding ride-only forms and unobtainable boss forms.
 - Teams are saved locally in the browser, support multiple teams with at most six Pokémon each, and allow at most four compatible moves and one held item per member.
 - A team can be exported as a versioned team file and imported without losing any editable team or member data.
 - Team builds default to level 100, non-shiny, a concrete gender allowed by the species, and the Pokémon's first type as its Tera type; genderless species use the genderless value, EVs are limited to 252 per stat and 510 total, and IVs to 31 per stat.

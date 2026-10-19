@@ -8,6 +8,7 @@ import { readTeams, writeTeams } from '../lib/team-storage'
 import { createTeamExport, importTeam, parseTeamExport } from '../lib/team-transfer'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { prettyName } from '../lib/api'
+import { isTeamPokemonEligible } from '../lib/team-pokemon-eligibility'
 import { moveIdentifier } from '../lib/move-comparison'
 import { array, record, reference } from '../lib/resource-data'
 import { PageHeader } from '../components/PageHeader'
@@ -276,10 +277,15 @@ function PokemonAdder({
   const directory = useApi('pokemon?limit=2000', (value) =>
     array(record(value).results)
       .map(reference)
-      .filter((v) => v !== null),
+      .filter((v) => v !== null)
+      .filter((v) => isTeamPokemonEligible(v.name)),
   )
   const pokemon = useApi(selected ? `pokemon/${selected}` : null, parseTeamPokemon)
   const species = useApi(pokemon.data ? `pokemon-species/${pokemon.data.species}` : null, parseTeamSpecies)
+  const searchValue = moveIdentifier(query)
+  const searchMatch = directory.data?.find(
+    (entry) => entry.name === searchValue || entry.url.split('/').filter(Boolean).at(-1) === searchValue,
+  )
   const candidates = query.trim()
     ? directory.data
         ?.filter(
@@ -294,8 +300,7 @@ function PokemonAdder({
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          const value = moveIdentifier(query)
-          if (value) setSelected(value)
+          if (searchMatch) setSelected(searchMatch.name)
         }}
       >
         <SearchField
@@ -306,7 +311,7 @@ function PokemonAdder({
           placeholder={t('teams.search')}
           maxLength={100}
         />
-        <button className="button secondary" type="submit" disabled={!moveIdentifier(query)}>
+        <button className="button secondary" type="submit" disabled={!searchMatch}>
           {t('teams.find')}
         </button>
       </form>
@@ -321,7 +326,7 @@ function PokemonAdder({
       </div>
       <ApiFeedback state={pokemon} />
       <ApiFeedback state={species} />
-      {pokemon.data && species.data && (
+      {pokemon.data && species.data && isTeamPokemonEligible(pokemon.data.name) && (
         <button
           className="button primary"
           onClick={() => {
