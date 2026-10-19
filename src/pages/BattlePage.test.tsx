@@ -576,6 +576,9 @@ describe('BattlePage lobby', () => {
     const opponentHealth = screen.getAllByRole('meter', { name: 'Pontos de vida de Pokemon 0' })[0]
     const opponentHealthBefore = Number(opponentHealth.getAttribute('aria-valuenow'))
     battleLog.scrollTop = 0
+    // The -1 accuracy / +1 evasion fixture gives Tackle a 56.25% hit chance.
+    // Control battle rolls after trainer selection so this journey exercises a hit.
+    vi.spyOn(Math, 'random').mockReturnValue(0.5)
     vi.useFakeTimers()
     fireEvent.click(screen.getByRole('button', { name: /Tackle/ }))
     expect(screen.getByText('Tackle', { selector: '.battle-move-announcement' })).toBeVisible()
