@@ -79,6 +79,7 @@ test('searches the Pokédex and persists a favorite across a reload', async ({ p
 
   await page.getByRole('button', { name: /Adicionar pikachu aos favoritos/i }).click()
   await expect(page.getByRole('status')).toContainText('pikachu foi adicionado aos favoritos.')
+  await page.getByRole('button', { name: 'Pokédex' }).click()
   await page.getByRole('link', { name: /Favoritos 1/ }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Pokémon favoritos' })).toBeVisible()
   await expect(page.getByRole('heading', { level: 3, name: 'Pikachu' })).toBeVisible()

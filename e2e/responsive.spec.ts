@@ -17,7 +17,9 @@ test('collapses the brand before switching navigation to the hamburger menu', as
   await page.goto('/#/')
   const brandText = page.locator('.brand .logo > span:last-child')
   const menuButton = page.getByRole('button', { name: 'Alternar menu' })
-  const pokedexLink = page.getByRole('navigation', { name: 'Navegação principal' }).getByRole('link', {
+  const navigation = page.getByRole('navigation', { name: 'Navegação principal' })
+  const pokedexGroup = navigation.getByRole('button', { name: 'Pokédex' })
+  const pokedexLink = navigation.getByRole('link', {
     name: 'Pokédex',
   })
 
@@ -26,14 +28,16 @@ test('collapses the brand before switching navigation to the hamburger menu', as
 
   await page.setViewportSize({ width: 901, height: 844 })
   await expect(brandText).toBeHidden()
-  await expect(pokedexLink).toBeVisible()
+  await expect(pokedexGroup).toBeVisible()
   await expect(menuButton).toBeHidden()
 
   await page.setViewportSize({ width: 768, height: 844 })
   await expect(brandText).toBeHidden()
-  await expect(pokedexLink).toBeHidden()
+  await expect(pokedexGroup).toBeHidden()
   await expect(menuButton).toBeVisible()
   await menuButton.click()
+  await expect(pokedexGroup).toBeVisible()
+  await pokedexGroup.click()
   await expect(pokedexLink).toBeVisible()
 })
 
