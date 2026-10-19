@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { useState } from 'react'
+import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamTabs } from './TeamTabs'
 import { newMember, type Team } from '../lib/teams'
@@ -65,8 +66,13 @@ it('switches one visible editor with arrow keys and keeps edits when switching b
       </LanguageProvider>
     )
   }
-  const view = render(<Show />)
+  const view = render(
+    <MemoryRouter>
+      <Show />
+    </MemoryRouter>,
+  )
   await screen.findByLabelText('Nível')
+  expect(screen.getByRole('link', { name: 'Pikachu' })).toHaveAttribute('href', '/pokemon/pikachu')
   expect(screen.getByRole('heading', { name: 'Configuração' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Atributos e treinamento' })).toBeInTheDocument()
   expect(screen.getByRole('heading', { name: 'Golpes' })).toBeInTheDocument()

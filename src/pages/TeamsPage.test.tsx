@@ -1,11 +1,14 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { cleanup, fireEvent, render as renderTestingLibrary, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamsPage } from './TeamsPage'
 import { STORAGE_KEYS } from '../config/app'
 import { createTeamExport } from '../lib/team-transfer'
 import { validTeams } from '../lib/teams'
 import { clearApiCache } from '../lib/api-client'
+
+const render = (ui: Parameters<typeof renderTestingLibrary>[0]) => renderTestingLibrary(ui, { wrapper: MemoryRouter })
 
 afterEach(() => {
   cleanup()

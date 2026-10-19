@@ -1,5 +1,6 @@
 import { CircleSlash2, Dumbbell, Info, Mars, RotateCcw, Settings2, Swords, Trash2, Trophy, Venus } from 'lucide-react'
 import { useId, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
 import { localizedApiTerm, localizedName, localizedText, pokemonArtwork, prettyName } from '../lib/api'
@@ -171,7 +172,11 @@ export function TeamMemberEditor({
         <img src={pokemonArtwork(p.id, m.shiny)} alt={prettyName(p.name)} width={120} height={120} />
         <div>
           <span className="eyebrow">{species.data ? `#${String(species.data.id).padStart(4, '0')}` : '—'}</span>
-          <h3>{prettyName(p.name)}</h3>
+          <h3>
+            <Link className="team-member-pokemon-link" to={`/pokemon/${encodeURIComponent(p.name)}`}>
+              {prettyName(p.name)}
+            </Link>
+          </h3>
           <div className="team-types">
             {p.types.map((type) => (
               <TypeBadge key={type} type={type} />
