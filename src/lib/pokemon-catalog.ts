@@ -1,5 +1,5 @@
 import { GRAPHQL_API_URL, NETWORK, POKEMON_CATALOG_LIMIT } from '../config/app'
-import { ApiError } from './api-client'
+import { ApiError, readBoundedJsonResponse } from './api-client'
 import type { PokemonSortDetails } from './pokemon-sort'
 
 const SORT_DETAILS_QUERY = `query PokemonSortDetails {
@@ -244,7 +244,7 @@ async function fetchPokemonCatalogDetails<T>(
       signal: controller.signal,
     })
     if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
-    return parse(await response.json())
+    return parse(await readBoundedJsonResponse(response))
   } catch (error) {
     if (controller.signal.aborted && !signal?.aborted) {
       throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')

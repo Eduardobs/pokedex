@@ -12,6 +12,13 @@ vi.mock('../hooks/useIntersectionVisibility', () => ({
   useIntersectionVisibility: () => ({ targetRef: { current: null }, visible: true }),
 }))
 
+const formDetails = (name: string, id: number) => ({
+  id,
+  name,
+  types: [{ slot: 1, type: { name: 'dragon', url: '' } }],
+  isBattleOnly: true,
+})
+
 describe('PokemonCard with form resources', () => {
   beforeEach(() => {
     retryMock.mockReset()
@@ -36,6 +43,8 @@ describe('PokemonCard with form resources', () => {
               url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
             }}
             category="mega"
+            loadError
+            onRetry={retryMock}
           />
         </LanguageProvider>
       </MemoryRouter>,
@@ -69,6 +78,7 @@ describe('PokemonCard with form resources', () => {
               url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
             }}
             category="mega"
+            details={formDetails('charizard-mega-x', 10034)}
             shiny
           />
         </LanguageProvider>
@@ -105,6 +115,7 @@ describe('PokemonCard with form resources', () => {
                     url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
                   }}
                   category="mega"
+                  details={formDetails('charizard-mega-x', 10034)}
                 />
               }
             />
@@ -144,6 +155,7 @@ describe('PokemonCard with form resources', () => {
               url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
             }}
             category="mega"
+            details={formDetails('zygarde-mega', 10301)}
             shiny
           />
         </LanguageProvider>
@@ -181,6 +193,7 @@ describe('PokemonCard with form resources', () => {
               url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
             }}
             category="mega"
+            details={formDetails('zygarde-mega', 10301)}
             shiny={shiny}
           />
         </LanguageProvider>
@@ -228,6 +241,7 @@ describe('PokemonCard with form resources', () => {
             <PokemonCard
               resource={{ name, url: `https://pokeapi.co/api/v2/pokemon-form/${pokemonId}/` }}
               category="mega"
+              details={formDetails(name, pokemonId)}
               shiny={shiny}
             />
           </LanguageProvider>

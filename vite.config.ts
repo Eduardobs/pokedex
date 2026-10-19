@@ -9,7 +9,12 @@ export default defineConfig({
       apply: 'serve',
       transformIndexHtml(html) {
         // React Refresh injects a small inline module only in the local dev server.
-        return html.replace("script-src 'self'", "script-src 'self' 'unsafe-inline'")
+        return html
+          .replace("script-src 'self'", "script-src 'self' 'unsafe-inline'")
+          .replace(
+            "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co",
+            "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co ws://localhost:* ws://127.0.0.1:*",
+          )
       },
     },
   ],

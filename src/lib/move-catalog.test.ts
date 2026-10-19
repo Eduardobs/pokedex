@@ -63,7 +63,9 @@ describe('move summary catalog', () => {
   })
 
   it('performs a limited localized query and reuses the validated result', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(movePayload)))
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response(JSON.stringify(movePayload), { headers: { 'content-type': 'application/json' } }))
     const { fetchMoveListDetails } = await import('./move-catalog')
 
     const first = await fetchMoveListDetails([85], 'es')

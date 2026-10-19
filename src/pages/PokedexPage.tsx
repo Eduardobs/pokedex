@@ -10,6 +10,7 @@ import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
 import { usePokemonCatalogDetails } from '../hooks/usePokemonCatalogDetails'
+import { usePokemonCardDetails } from '../hooks/usePokemonCardDetails'
 import { usePokemonTypeFilter } from '../hooks/usePokemonTypeFilter'
 import { formatNumber, pokemonListItems, prettyName } from '../lib/api'
 import {
@@ -82,16 +83,20 @@ export function PokedexPage() {
     [direction, filteredPokemon, language, pokemonDetails, sort],
   )
   const visiblePokemon = useMemo(() => sortedPokemon.slice(0, visibleCount), [sortedPokemon, visibleCount])
+  const cardDetails = usePokemonCardDetails(
+    visiblePokemon.map((pokemon) => pokemon.name),
+    'pokemon',
+  )
   const total = catalog.length
   const hasMore = visibleCount < sortedPokemon.length
 
   const loadMore = useCallback(() => {
-    if (loading || sortingDetails || !hasMore) return
+    if (loading || sortingDetails || cardDetails.loading || !hasMore) return
     setVisibleCount((current) => Math.min(current + LIMIT, sortedPokemon.length))
-  }, [hasMore, loading, setVisibleCount, sortedPokemon.length, sortingDetails])
+  }, [cardDetails.loading, hasMore, loading, setVisibleCount, sortedPokemon.length, sortingDetails])
 
   const loadMoreRef = useInfiniteScroll<HTMLDivElement>({
-    enabled: hasMore && !loading && !sortingDetails,
+    enabled: hasMore && !loading && !sortingDetails && !cardDetails.loading,
     onLoadMore: loadMore,
     observationKey: visibleCount,
   })
@@ -168,7 +173,17 @@ export function PokedexPage() {
           {visiblePokemon.map((pokemon) => {
             const value = getPokemonSortValue(pokemonDetails[pokemon.name], sort)
             const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }
-            return <PokemonCard key={pokemon.name} {...pokemon} sortMetric={sortMetric} shiny={shiny} />
+            return (
+              <PokemonCard
+                key={pokemon.name}
+                {...pokemon}
+                details={cardDetails.data[pokemon.name]}
+                loadError={Boolean(cardDetails.error && !cardDetails.data[pokemon.name])}
+                onRetry={cardDetails.retry}
+                sortMetric={sortMetric}
+                shiny={shiny}
+              />
+            )
           })}
         </div>
       ) : (
@@ -181,7 +196,7 @@ export function PokedexPage() {
       {hasMore && (
         <div ref={loadMoreRef} className="infinite-loader" role="status" aria-live="polite">
           <span className="pokeball-spinner" />
-          <button onClick={loadMore} disabled={loading || sortingDetails}>
+          <button onClick={loadMore} disabled={loading || sortingDetails || cardDetails.loading}>
             {loading ? t('pokedex.loadingMore') : sortingDetails ? t('pokedex.sort.loading') : t('pokedex.loadMore')}
           </button>
         </div>

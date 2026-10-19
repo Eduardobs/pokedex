@@ -1,5 +1,5 @@
 import { GRAPHQL_API_URL, NETWORK } from '../config/app'
-import { ApiError } from './api-client'
+import { ApiError, readBoundedJsonResponse } from './api-client'
 
 const MAX_MOVE_PAGE_SIZE = 40
 const NAME_PATTERN = /^[a-z0-9-]{1,100}$/
@@ -165,7 +165,7 @@ async function requestMoveListDetails(
       signal: controller.signal,
     })
     if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
-    return parseMoveListDetails(await response.json(), ids)
+    return parseMoveListDetails(await readBoundedJsonResponse(response), ids)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error

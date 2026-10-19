@@ -1,5 +1,5 @@
 import { GRAPHQL_API_URL, NETWORK } from '../config/app'
-import { ApiError } from './api-client'
+import { ApiError, readBoundedJsonResponse } from './api-client'
 
 const MAX_ABILITY_PAGE_SIZE = 40
 const NAME_PATTERN = /^[a-z0-9-]{1,100}$/
@@ -140,7 +140,7 @@ async function requestAbilityListDetails(
       signal: controller.signal,
     })
     if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
-    return parseAbilityListDetails(await response.json(), ids)
+    return parseAbilityListDetails(await readBoundedJsonResponse(response), ids)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error

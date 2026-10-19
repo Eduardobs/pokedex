@@ -3,12 +3,10 @@ import type { ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
-import { useApi } from '../hooks/useApi'
-import { useIntersectionVisibility } from '../hooks/useIntersectionVisibility'
-import { idFromUrl, pokemonArtwork, prettyName } from '../lib/api'
-import { pokemonFormDirectoryImageSources } from '../lib/pokemon-form-artwork'
+import { pokemonArtwork, prettyName } from '../lib/api'
+import type { PokemonCardDetails } from '../lib/pokemon-card-catalog'
 import { formLabels, type FormCategory } from '../lib/pokemon-forms'
-import type { NamedResource, Pokemon, PokemonForm } from '../types'
+import type { NamedResource, Pokemon } from '../types'
 import { FallbackImage } from './FallbackImage'
 import { MegaEvolutionIcon } from './MegaEvolutionIcon'
 import { TypeBadge } from './TypeBadge'
@@ -21,6 +19,9 @@ type PokemonProps = {
   pokemon?: Pokemon
   sortMetric?: SortMetric
   shiny?: boolean
+  details?: PokemonCardDetails
+  loadError?: boolean
+  onRetry?: () => void
   resource?: never
   category?: never
 }
@@ -30,6 +31,9 @@ type PokemonFormProps = {
   category: FormCategory
   sortMetric?: SortMetric
   shiny?: boolean
+  details?: PokemonCardDetails
+  loadError?: boolean
+  onRetry?: () => void
   id?: never
   name?: never
   pokemon?: never
@@ -43,7 +47,7 @@ type PokemonCardViewProps = {
   name: string
   displayName: string
   artwork: ReactNode
-  types: Pokemon['types'] | PokemonForm['types']
+  types: Pokemon['types']
   sortMetric?: SortMetric
   action?: ReactNode
   category?: FormCategory
@@ -106,19 +110,30 @@ function PokemonCardView({
   )
 }
 
-function PokemonSummaryCard({ id, name, pokemon, sortMetric, shiny = false }: PokemonProps) {
+function PokemonSummaryCard({
+  id,
+  name,
+  pokemon,
+  details,
+  loadError,
+  onRetry,
+  sortMetric,
+  shiny = false,
+}: PokemonProps) {
   const { isFavorite, toggle } = useFavoritesContext()
   const { t } = useLanguage()
-  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLElement>(Boolean(pokemon))
-  const { data: loadedPokemon, error, retry } = useApi<Pokemon>(!pokemon && visible ? `pokemon/${name}` : null)
-  const detail = pokemon ?? loadedPokemon
+  const cardRef = { current: null }
+  const detail = pokemon ?? details
   const favorite = isFavorite(name)
   const displayName = prettyName(name)
   const normalArtwork =
-    detail?.sprites.other?.['official-artwork']?.front_default ?? detail?.sprites.front_default ?? pokemonArtwork(id)
-  const shinyArtwork = detail?.sprites.other?.['official-artwork']?.front_shiny ?? detail?.sprites.front_shiny
-  const showingShiny = shiny && Boolean(shinyArtwork)
-  const artwork = showingShiny ? (shinyArtwork ?? normalArtwork) : normalArtwork
+    pokemon?.sprites.other?.['official-artwork']?.front_default ?? pokemon?.sprites.front_default ?? pokemonArtwork(id)
+  const shinyArtwork =
+    pokemon?.sprites.other?.['official-artwork']?.front_shiny ??
+    pokemon?.sprites.front_shiny ??
+    pokemonArtwork(id, true)
+  const showingShiny = shiny
+  const artwork = showingShiny ? shinyArtwork : normalArtwork
 
   return (
     <PokemonCardView
@@ -148,15 +163,15 @@ function PokemonSummaryCard({ id, name, pokemon, sortMetric, shiny = false }: Po
         </button>
       }
       typeFallback={
-        error ? (
+        loadError ? (
           <span className="inline-card-error">{t('error.message')}</span>
         ) : (
           <span className="card-type-skeleton skeleton" aria-label={t('common.loadingShort')} />
         )
       }
       footer={
-        error && !pokemon ? (
-          <button type="button" className="card-retry" onClick={retry}>
+        loadError && !pokemon ? (
+          <button type="button" className="card-retry" onClick={onRetry}>
             {t('common.retry')}
           </button>
         ) : undefined
@@ -167,43 +182,61 @@ function PokemonSummaryCard({ id, name, pokemon, sortMetric, shiny = false }: Po
 
 function DirectoryFormArtwork({
   pokemonId,
-  sprites,
   shiny,
   normalAlt,
   shinyAlt,
 }: {
   pokemonId: number
-  sprites: PokemonForm['sprites']
   shiny: boolean
   normalAlt: string
   shinyAlt: string
 }) {
-  const sources = pokemonFormDirectoryImageSources(pokemonId, sprites, shiny).map((source) => ({
-    src: source.url,
-    className: source.sprite ? 'sprite-art' : undefined,
-    alt: source.shiny ? shinyAlt : normalAlt,
-  }))
+  const sources = [
+    ...(shiny
+      ? [
+          { src: pokemonArtwork(pokemonId, true), alt: shinyAlt },
+          {
+            src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${pokemonId}.png`,
+            className: 'sprite-art',
+            alt: shinyAlt,
+          },
+        ]
+      : []),
+    { src: pokemonArtwork(pokemonId), alt: normalAlt },
+    {
+      src: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
+      className: 'sprite-art',
+      alt: normalAlt,
+    },
+  ]
 
   return <FallbackImage sources={sources} alt={normalAlt} width="165" height="165" loading="lazy" decoding="async" />
 }
 
-function PokemonFormCard({ resource, category, shiny = false, sortMetric }: PokemonFormProps) {
+function PokemonFormCard({
+  resource,
+  category,
+  details,
+  loadError,
+  onRetry,
+  shiny = false,
+  sortMetric,
+}: PokemonFormProps) {
   const { t } = useLanguage()
-  const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLElement>(false, '300px')
-  const { data, loading, error, retry } = useApi<PokemonForm>(visible ? resource.url : null)
+  const cardRef = { current: null }
 
-  if (error)
+  if (loadError)
     return (
       <article ref={cardRef} className="pokemon-card pokemon-card-error" role="alert">
         <Shield aria-hidden="true" />
         <h2>{prettyName(resource.name)}</h2>
         <p>{t('forms.cardUnavailable')}</p>
-        <button type="button" onClick={retry}>
+        <button type="button" onClick={onRetry}>
           {t('common.retry')}
         </button>
       </article>
     )
-  if (!data || loading)
+  if (!details)
     return (
       <article
         ref={cardRef}
@@ -212,8 +245,8 @@ function PokemonFormCard({ resource, category, shiny = false, sortMetric }: Poke
       />
     )
 
-  const pokemonId = idFromUrl(data.pokemon.url)
-  const labels = formLabels(data.pokemon.name, category, t)
+  const pokemonId = details.id
+  const labels = formLabels(details.name, category, t)
   const config = categoryConfig[category]
   const Icon = config.icon
   const baseAlt = `${labels.pokemon} — ${labels.variation}`
@@ -222,9 +255,9 @@ function PokemonFormCard({ resource, category, shiny = false, sortMetric }: Poke
     <PokemonCardView
       cardRef={cardRef}
       id={pokemonId}
-      name={data.pokemon.name}
+      name={details.name}
       displayName={labels.pokemon}
-      types={data.types}
+      types={details.types}
       sortMetric={sortMetric}
       category={category}
       categoryLabel={
@@ -237,16 +270,15 @@ function PokemonFormCard({ resource, category, shiny = false, sortMetric }: Poke
       linkState={{ fromCatalog: 'forms' }}
       artwork={
         <DirectoryFormArtwork
-          key={`${data.pokemon.name}:${shiny}`}
+          key={`${details.name}:${shiny}`}
           pokemonId={pokemonId}
-          sprites={data.sprites}
           shiny={shiny}
           normalAlt={`${baseAlt} — ${t('detail.normal')}`}
           shinyAlt={`${baseAlt} — ${t('detail.shiny')}`}
         />
       }
       action={
-        data.is_battle_only ? (
+        details.isBattleOnly ? (
           <small className="pokemon-card-battle" title={t('form.battleOnly')}>
             <Shield size={11} />
             {t('form.battle')}

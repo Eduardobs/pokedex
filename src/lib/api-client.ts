@@ -90,7 +90,7 @@ function validateJsonBounds(value: unknown) {
   visit(value, 0)
 }
 
-async function readJsonResponse(response: Response): Promise<unknown> {
+export async function readBoundedJsonResponse(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type')
   if (contentType && !/\b(?:application|text)\/[\w.+-]*json\b/i.test(contentType)) {
     throw new ApiError('PokéAPI returned an unexpected format.', response.status, 'invalid-response')
@@ -204,7 +204,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
             response.status === 404 ? 'Content not found.' : 'PokéAPI did not respond as expected.',
             response.status,
           )
-        const data = await readJsonResponse(response)
+        const data = await readBoundedJsonResponse(response)
         cacheResponse(url, data)
         return data
       })

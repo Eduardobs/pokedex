@@ -67,7 +67,11 @@ describe('ability summary catalog', () => {
   })
 
   it('performs a language-limited query and reuses the validated result', async () => {
-    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify(abilityPayload)))
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(
+        new Response(JSON.stringify(abilityPayload), { headers: { 'content-type': 'application/json' } }),
+      )
     const { fetchAbilityListDetails } = await import('./ability-catalog')
 
     const first = await fetchAbilityListDetails([1], 'pt-br')

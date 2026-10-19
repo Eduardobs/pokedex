@@ -92,6 +92,7 @@ describe('Pokédex stat catalog', () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ data: { pokemon: [{ name: 'pikachu', pokemonstats: stats }] } }), {
         status: 200,
+        headers: { 'content-type': 'application/json' },
       }),
     )
     const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
@@ -120,6 +121,18 @@ describe('Pokédex stat catalog', () => {
     const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
 
     await expect(fetchPokemonSortDetails()).rejects.toMatchObject({ status: 503, code: 'http' })
+  })
+
+  it('rejects an oversized GraphQL response before parsing it', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('{}', {
+        status: 200,
+        headers: { 'content-length': String(9 * 1024 * 1024), 'content-type': 'application/json' },
+      }),
+    )
+    const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
+
+    await expect(fetchPokemonSortDetails()).rejects.toMatchObject({ code: 'invalid-response' })
   })
 
   it('distinguishes a timeout from cancellation requested by the consumer', async () => {
@@ -218,7 +231,9 @@ describe('Pokédex rarity catalog', () => {
   it('fetches and reuses the validated classification', async () => {
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(new Response(JSON.stringify(rarityPayload), { status: 200 }))
+      .mockResolvedValue(
+        new Response(JSON.stringify(rarityPayload), { status: 200, headers: { 'content-type': 'application/json' } }),
+      )
     const { fetchPokemonRarityDetails } = await import('./pokemon-catalog')
 
     const first = await fetchPokemonRarityDetails()
@@ -287,7 +302,9 @@ describe('Pokédex region catalog', () => {
   it('fetches and reuses the validated regional classification', async () => {
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(new Response(JSON.stringify(regionPayload), { status: 200 }))
+      .mockResolvedValue(
+        new Response(JSON.stringify(regionPayload), { status: 200, headers: { 'content-type': 'application/json' } }),
+      )
     const { fetchPokemonRegionDetails } = await import('./pokemon-catalog')
 
     const first = await fetchPokemonRegionDetails()

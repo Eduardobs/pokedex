@@ -12,6 +12,7 @@ import { useApi } from '../hooks/useApi'
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll'
 import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
 import { usePokemonCatalogDetails } from '../hooks/usePokemonCatalogDetails'
+import { usePokemonCardDetails } from '../hooks/usePokemonCardDetails'
 import { usePokemonTypeFilter } from '../hooks/usePokemonTypeFilter'
 import { formatNumber, idFromUrl, normalizeSearchText } from '../lib/api'
 import {
@@ -185,14 +186,18 @@ export function FormsPage() {
     [direction, filtered, language, pokemonDetails, sort],
   )
   const visible = useMemo(() => sorted.slice(0, visibleCount), [sorted, visibleCount])
+  const cardDetails = usePokemonCardDetails(
+    visible.map((resource) => resource.name),
+    'form',
+  )
   const hasMore = visibleCount < sorted.length
   const filteredLength = sorted.length
   const loadMore = useCallback(() => {
-    if (loading || speciesLoading || sortingDetails || !hasMore) return
+    if (loading || speciesLoading || sortingDetails || cardDetails.loading || !hasMore) return
     setVisibleCount((count) => Math.min(count + PAGE_SIZE, filteredLength))
-  }, [filteredLength, hasMore, loading, setVisibleCount, sortingDetails, speciesLoading])
+  }, [cardDetails.loading, filteredLength, hasMore, loading, setVisibleCount, sortingDetails, speciesLoading])
   const sentinelRef = useInfiniteScroll<HTMLDivElement>({
-    enabled: hasMore && !loading && !speciesLoading && !sortingDetails,
+    enabled: hasMore && !loading && !speciesLoading && !sortingDetails && !cardDetails.loading,
     onLoadMore: loadMore,
     observationKey: visibleCount,
     rootMargin: '300px',
@@ -351,6 +356,9 @@ export function FormsPage() {
               <PokemonCard
                 resource={resource}
                 category={resourceCategory}
+                details={cardDetails.data[resource.name]}
+                loadError={Boolean(cardDetails.error && !cardDetails.data[resource.name])}
+                onRetry={cardDetails.retry}
                 shiny={shiny}
                 sortMetric={sortMetric}
                 key={resource.name}
@@ -368,7 +376,7 @@ export function FormsPage() {
       {hasMore && !isFilterPending && (
         <div className="infinite-loader" ref={sentinelRef} role="status" aria-live="polite">
           <span className="pokeball-spinner" />
-          <button onClick={loadMore} disabled={sortingDetails}>
+          <button onClick={loadMore} disabled={sortingDetails || cardDetails.loading}>
             {t('forms.loadMore')}
           </button>
         </div>

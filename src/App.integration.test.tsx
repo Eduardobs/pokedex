@@ -40,8 +40,17 @@ describe('App integration', () => {
 
   it('connects API retry, routing, providers and persistent favorites', async () => {
     let listRequests = 0
-    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = new URL(String(input))
+      if (url.origin === 'https://graphql.pokeapi.co') {
+        const body = JSON.parse(String(init?.body))
+        expect(body).toMatchObject({ operationName: 'PokemonCardDetails', variables: { names: ['pikachu'] } })
+        return Response.json({
+          data: {
+            pokemon: [{ id: 25, name: 'pikachu', pokemontypes: [{ slot: 1, type: { name: 'electric' } }] }],
+          },
+        })
+      }
       if (url.pathname === '/api/v2/pokemon' && url.searchParams.get('limit') === '2000') {
         listRequests += 1
         if (listRequests === 1) return new Response('{}', { status: 503 })
@@ -73,6 +82,6 @@ describe('App integration', () => {
     await waitFor(() => expect(window.location.hash).toBe('#/favorites'))
 
     expect(listRequests).toBe(2)
-    expect(fetchMock).toHaveBeenCalledTimes(3)
+    expect(fetchMock).toHaveBeenCalledTimes(4)
   })
 })

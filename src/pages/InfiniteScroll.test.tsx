@@ -15,6 +15,9 @@ const { fetchPokemonRarityDetailsMock, fetchPokemonRegionDetailsMock, fetchPokem
   }))
 
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
+vi.mock('../hooks/usePokemonCardDetails', () => ({
+  usePokemonCardDetails: () => ({ data: {}, error: null, loading: false, retry: vi.fn() }),
+}))
 vi.mock('../lib/pokemon-catalog', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../lib/pokemon-catalog')>()),
   fetchPokemonRarityDetails: fetchPokemonRarityDetailsMock,
