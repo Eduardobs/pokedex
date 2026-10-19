@@ -403,6 +403,8 @@ export const en = {
   'nav.types': 'Types',
   'nav.maps': 'Maps',
   'nav.favorites': 'Favorites',
+  'nav.battles': 'Battles',
+  'nav.battle': 'Battle',
   'nav.menu': 'Toggle menu',
   'nav.skip': 'Skip to content',
   'theme.dark': 'Enable dark theme',

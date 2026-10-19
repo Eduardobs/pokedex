@@ -405,6 +405,8 @@ export const ptBR = {
   'nav.types': 'Tipos',
   'nav.maps': 'Mapas',
   'nav.favorites': 'Favoritos',
+  'nav.battles': 'Batalhas',
+  'nav.battle': 'Batalhar',
   'nav.menu': 'Alternar menu',
   'nav.skip': 'Pular para o conteúdo',
   'theme.dark': 'Ativar tema escuro',

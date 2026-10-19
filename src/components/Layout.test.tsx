@@ -74,4 +74,27 @@ describe('Layout focus management', () => {
     expect(trigger).toHaveFocus()
     expect(screen.queryByRole('listbox', { name: 'Idioma' })).not.toBeInTheDocument()
   })
+
+  it('groups navigation links and marks the selected route', () => {
+    renderLayout()
+
+    const pokedexGroup = screen.getByRole('button', { name: 'Pokédex' })
+    expect(pokedexGroup).toHaveClass('nav-group-trigger')
+    expect(pokedexGroup.closest('.nav-group')).toHaveClass('has-active-item')
+
+    fireEvent.click(pokedexGroup)
+    expect(screen.getByRole('link', { name: 'Pokédex' })).toHaveClass('active')
+    expect(screen.getByRole('link', { name: /Favoritos/ })).toBeInTheDocument()
+  })
+
+  it('closes an open navigation group when clicking outside it', () => {
+    renderLayout()
+
+    const pokedexGroup = screen.getByRole('button', { name: 'Pokédex' })
+    fireEvent.click(pokedexGroup)
+    expect(pokedexGroup).toHaveAttribute('aria-expanded', 'true')
+
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'Idioma' }))
+    expect(pokedexGroup).toHaveAttribute('aria-expanded', 'false')
+  })
 })

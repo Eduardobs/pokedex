@@ -40,6 +40,12 @@
 :root[data-theme='dark'] .nav a.active {
   color: var(--red);
 }
+:root[data-theme='dark'] .nav-group-trigger {
+  color: #b5bec8;
+}
+:root[data-theme='dark'] .nav-group-menu {
+  box-shadow: 0 14px 30px #0006;
+}
 :root[data-theme='dark'] .theme-toggle {
   background: #202731;
   border-color: #343d48;

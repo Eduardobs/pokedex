@@ -114,6 +114,81 @@
   outline: 3px solid var(--red);
   outline-offset: 3px;
 }
+.nav {
+  gap: 10px;
+}
+.nav-group {
+  position: relative;
+}
+.nav-group-trigger {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #58616c;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.nav-group-trigger svg {
+  transition: transform 0.16s ease;
+}
+.nav-group.open .nav-group-trigger svg {
+  transform: rotate(180deg);
+}
+.nav-group.has-active-item .nav-group-trigger,
+.nav-group-trigger:hover,
+.nav-group-trigger[aria-expanded='true'] {
+  color: var(--red);
+}
+.nav-group.has-active-item .nav-group-trigger::after {
+  content: '';
+  position: absolute;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--red);
+  left: 8px;
+  right: 8px;
+  bottom: -16px;
+}
+.nav-group-menu {
+  position: absolute;
+  z-index: 1;
+  top: calc(100% + 11px);
+  left: 0;
+  display: none;
+  min-width: 190px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 14px 30px #17212b20;
+}
+.nav-group.open .nav-group-menu {
+  display: grid;
+  gap: 2px;
+}
+.nav .nav-group-menu a {
+  min-height: 42px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+}
+.nav .nav-group-menu a > svg {
+  display: block;
+}
+.nav .nav-group-menu a:hover,
+.nav .nav-group-menu a.active {
+  background: color-mix(in srgb, var(--red) 10%, var(--surface));
+  color: var(--red);
+}
+.nav .nav-group-menu a.active::after {
+  display: none;
+}
+
 @media (max-width: 1200px) {
   .topbar {
     gap: clamp(10px, 1.2vw, 16px);
@@ -230,20 +305,38 @@
   .nav.open {
     display: flex;
   }
-  .nav a {
+  .nav-group {
+    width: 100%;
+  }
+  .nav-group-trigger {
+    width: 100%;
     min-height: 44px;
     padding: 8px 12px;
-    border-radius: 8px;
+    justify-content: space-between;
   }
-  .nav a.active {
+  .nav-group.has-active-item .nav-group-trigger {
     background: color-mix(in srgb, var(--red) 10%, var(--surface));
     font-weight: 800;
   }
-  .nav a > svg {
-    display: block;
-  }
-  .nav a.active::after {
+  .nav-group.has-active-item .nav-group-trigger::after {
     display: none;
+  }
+  .nav-group-menu {
+    position: static;
+    min-width: 0;
+    margin-top: 4px;
+    padding: 4px;
+    border: 0;
+    border-radius: 8px;
+    background: var(--surface-soft);
+    box-shadow: none;
+  }
+  .nav .nav-group-menu a {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+  .nav .nav-group-menu a > svg {
+    display: block;
   }
 }
 @media (max-width: 950px) {

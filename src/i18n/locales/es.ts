@@ -406,6 +406,8 @@ export const es = {
   'nav.types': 'Tipos',
   'nav.maps': 'Mapas',
   'nav.favorites': 'Favoritos',
+  'nav.battles': 'Combates',
+  'nav.battle': 'Combatir',
   'nav.menu': 'Alternar menú',
   'nav.skip': 'Saltar al contenido',
   'theme.dark': 'Activar tema oscuro',

@@ -8,8 +8,10 @@ import {
   MapPinned,
   Menu,
   Moon,
+  NotebookTabs,
   Search,
   Swords,
+  UsersRound,
   Layers3,
   Sun,
   X,
@@ -28,6 +30,7 @@ import { ScrollToTop } from './ScrollToTop'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [openNavigationGroup, setOpenNavigationGroup] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchButtonRef = useRef<HTMLButtonElement>(null)
@@ -43,6 +46,7 @@ export function Layout() {
   const mainRef = useRef<HTMLElement>(null)
   const previousPathnameRef = useRef<string | null>(null)
   const menuButtonRef = useRef<HTMLButtonElement>(null)
+  const navigationRef = useRef<HTMLElement>(null)
   const languageRef = useRef<HTMLDivElement>(null)
   const languageButtonRef = useRef<HTMLButtonElement>(null)
   const languageOptionRefs = useRef<Record<Language, HTMLButtonElement | null>>({
@@ -128,6 +132,7 @@ export function Layout() {
     if (previousPathnameRef.current === location.pathname) return
     previousPathnameRef.current = location.pathname
     setMenuOpen(false)
+    setOpenNavigationGroup(null)
     if (navigationType !== 'POP') window.scrollTo({ top: 0, behavior: 'auto' })
     window.requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }))
   }, [location.pathname, navigationType])
@@ -140,6 +145,7 @@ export function Layout() {
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMenuOpen(false)
+        setOpenNavigationGroup(null)
         menuButtonRef.current?.focus()
       }
       if (event.key !== 'Tab' || !focusable.length) return
@@ -163,6 +169,15 @@ export function Layout() {
       document.removeEventListener('pointerdown', closeOutside)
     }
   }, [menuOpen])
+
+  useEffect(() => {
+    if (!openNavigationGroup) return
+    const closeOutsideNavigation = (event: PointerEvent) => {
+      if (!navigationRef.current?.contains(event.target as Node)) setOpenNavigationGroup(null)
+    }
+    document.addEventListener('pointerdown', closeOutsideNavigation)
+    return () => document.removeEventListener('pointerdown', closeOutsideNavigation)
+  }, [openNavigationGroup])
 
   useEffect(() => {
     if (!languageOpen) return
@@ -233,8 +248,28 @@ export function Layout() {
       navigate(`/pokemon?q=${encodeURIComponent(value)}`)
       setQuery('')
       setMenuOpen(false)
+      setOpenNavigationGroup(null)
       setSearchOpen(false)
     }
+  }
+
+  const closeNavigation = () => {
+    setMenuOpen(false)
+    setOpenNavigationGroup(null)
+  }
+
+  const isNavigationGroupActive = (group: 'pokedex' | 'explore' | 'battles') => {
+    if (group === 'pokedex')
+      return (
+        location.pathname.startsWith('/pokemon') || location.pathname === '/forms' || location.pathname === '/favorites'
+      )
+    if (group === 'explore')
+      return (
+        location.pathname.startsWith('/explore') ||
+        location.pathname === '/types-table' ||
+        location.pathname.startsWith('/maps')
+      )
+    return location.pathname === '/teams' || location.pathname === '/battle'
   }
 
   return (
@@ -291,35 +326,89 @@ export function Layout() {
             <kbd>↵</kbd>
           )}
         </form>
-        <nav id="main-navigation" className={menuOpen ? 'nav open' : 'nav'} aria-label={t('nav.main')}>
-          <NavLink to="/pokemon" onClick={() => setMenuOpen(false)}>
-            {t('nav.pokedex')}
-          </NavLink>
-          <NavLink to="/forms" onClick={() => setMenuOpen(false)}>
-            <Layers3 size={17} /> {t('nav.forms')}
-          </NavLink>
-          <NavLink to="/explore" onClick={() => setMenuOpen(false)}>
-            <Compass size={17} /> {t('nav.explore')}
-          </NavLink>
-          <NavLink to="/types-table" onClick={() => setMenuOpen(false)}>
-            <Grid3X3 size={17} /> {t('nav.types')}
-          </NavLink>
-          {FEATURE_FLAGS.mapGenieIntegration && (
-            <NavLink to="/maps" onClick={() => setMenuOpen(false)}>
-              <MapPinned size={17} /> {t('nav.maps')}
-            </NavLink>
-          )}
-          <NavLink to="/teams" onClick={() => setMenuOpen(false)}>
-            {t('teams.title')}
-          </NavLink>
-          {FEATURE_FLAGS.battle && (
-            <NavLink to="/battle" onClick={() => setMenuOpen(false)}>
-              <Swords size={17} /> {t('battle.title')}
-            </NavLink>
-          )}
-          <NavLink to="/favorites" onClick={() => setMenuOpen(false)}>
-            <Heart size={17} /> {t('nav.favorites')} <span className="nav-count">{favorites.length}</span>
-          </NavLink>
+        <nav
+          id="main-navigation"
+          ref={navigationRef}
+          className={menuOpen ? 'nav open' : 'nav'}
+          aria-label={t('nav.main')}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setOpenNavigationGroup(null)
+          }}
+        >
+          <div
+            className={`nav-group${isNavigationGroupActive('pokedex') ? ' has-active-item' : ''}${openNavigationGroup === 'pokedex' ? ' open' : ''}`}
+          >
+            <button
+              type="button"
+              className="nav-group-trigger"
+              aria-expanded={openNavigationGroup === 'pokedex'}
+              aria-controls="pokedex-navigation-group"
+              onClick={() => setOpenNavigationGroup((group) => (group === 'pokedex' ? null : 'pokedex'))}
+            >
+              {t('nav.pokedex')} <ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <div className="nav-group-menu" id="pokedex-navigation-group">
+              <NavLink to="/pokemon" onClick={closeNavigation}>
+                <NotebookTabs size={17} aria-hidden="true" /> {t('nav.pokedex')}
+              </NavLink>
+              <NavLink to="/forms" onClick={closeNavigation}>
+                <Layers3 size={17} aria-hidden="true" /> {t('nav.forms')}
+              </NavLink>
+              <NavLink to="/favorites" onClick={closeNavigation}>
+                <Heart size={17} aria-hidden="true" /> {t('nav.favorites')}{' '}
+                <span className="nav-count">{favorites.length}</span>
+              </NavLink>
+            </div>
+          </div>
+          <div
+            className={`nav-group${isNavigationGroupActive('explore') ? ' has-active-item' : ''}${openNavigationGroup === 'explore' ? ' open' : ''}`}
+          >
+            <button
+              type="button"
+              className="nav-group-trigger"
+              aria-expanded={openNavigationGroup === 'explore'}
+              aria-controls="explore-navigation-group"
+              onClick={() => setOpenNavigationGroup((group) => (group === 'explore' ? null : 'explore'))}
+            >
+              {t('nav.explore')} <ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <div className="nav-group-menu" id="explore-navigation-group">
+              <NavLink to="/explore" onClick={closeNavigation}>
+                <Compass size={17} aria-hidden="true" /> {t('nav.explore')}
+              </NavLink>
+              <NavLink to="/types-table" onClick={closeNavigation}>
+                <Grid3X3 size={17} aria-hidden="true" /> {t('nav.types')}
+              </NavLink>
+              {FEATURE_FLAGS.mapGenieIntegration && (
+                <NavLink to="/maps" onClick={closeNavigation}>
+                  <MapPinned size={17} aria-hidden="true" /> {t('nav.maps')}
+                </NavLink>
+              )}
+            </div>
+          </div>
+          <div
+            className={`nav-group${isNavigationGroupActive('battles') ? ' has-active-item' : ''}${openNavigationGroup === 'battles' ? ' open' : ''}`}
+          >
+            <button
+              type="button"
+              className="nav-group-trigger"
+              aria-expanded={openNavigationGroup === 'battles'}
+              aria-controls="battles-navigation-group"
+              onClick={() => setOpenNavigationGroup((group) => (group === 'battles' ? null : 'battles'))}
+            >
+              {t('nav.battles')} <ChevronDown size={16} aria-hidden="true" />
+            </button>
+            <div className="nav-group-menu" id="battles-navigation-group">
+              <NavLink to="/teams" onClick={closeNavigation}>
+                <UsersRound size={17} aria-hidden="true" /> {t('teams.title')}
+              </NavLink>
+              {FEATURE_FLAGS.battle && (
+                <NavLink to="/battle" onClick={closeNavigation}>
+                  <Swords size={17} aria-hidden="true" /> {t('nav.battle')}
+                </NavLink>
+              )}
+            </div>
+          </div>
         </nav>
         <div
           className="language-select"
