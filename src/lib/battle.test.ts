@@ -168,6 +168,70 @@ describe('Random Battle engine', () => {
     expect(healed.state.player.roster[0].hp).toBeGreaterThan(poisonHeal.player.roster[0].hp)
   })
 
+  it.each([
+    ['volt-absorb', 'electric', 'heal', null],
+    ['water-absorb', 'water', 'heal', null],
+    ['dry-skin', 'water', 'heal', null],
+    ['earth-eater', 'ground', 'heal', null],
+    ['lightning-rod', 'electric', 'stage', 'specialAttack'],
+    ['motor-drive', 'electric', 'stage', 'speed'],
+    ['storm-drain', 'water', 'stage', 'specialAttack'],
+    ['sap-sipper', 'grass', 'stage', 'attack'],
+    ['well-baked-body', 'fire', 'stage', 'defense'],
+  ] as const)('%s absorbs %s moves and applies its follow-up effect', (ability, type, effect, stat) => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].moves[0].data = move({ type, damageClass: 'special' })
+    state.player.roster[0].stats[5] = 999
+    state.opponent.roster[0].ability.name = ability
+    state.opponent.roster[0].hp -= 100
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(result.events).toContainEqual({ type: 'immune', pokemon: 'opponent-0' })
+    expect(result.events).toContainEqual({ type: 'ability', pokemon: 'opponent-0', ability })
+    if (effect === 'heal') expect(result.state.opponent.roster[0].hp).toBeGreaterThan(state.opponent.roster[0].hp)
+    if (stat) expect(result.state.opponent.roster[0].stages[stat]).toBe(ability === 'well-baked-body' ? 2 : 1)
+  })
+
+  it('lets Mold Breaker bypass supplemental move-type immunities', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].ability.name = 'mold-breaker'
+    state.player.roster[0].moves[0].data = move({ type: 'ground' })
+    state.player.roster[0].stats[5] = 999
+    state.opponent.roster[0].ability.name = 'levitate'
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+
+    expect(result.events).not.toContainEqual({ type: 'immune', pokemon: 'opponent-0' })
+    expect(result.state.opponent.roster[0].hp).toBeLessThan(state.opponent.roster[0].hp)
+  })
+
+  it('applies supplemental weather recovery and status immunity rules', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.field.weather = 'rain'
+    state.field.weatherTurns = 5
+    state.player.roster[0].ability.name = 'rain-dish'
+    state.player.roster[0].hp -= 100
+    state.player.roster[0].moves[0].data = move({
+      damageClass: 'status',
+      power: null,
+      ailment: 'poison',
+      ailmentChance: 100,
+    })
+    state.opponent.roster[0].ability.name = 'pastel-veil'
+
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0)
+
+    expect(result.state.player.roster[0].hp).toBeGreaterThan(state.player.roster[0].hp)
+    expect(result.state.opponent.roster[0].status).toBeNull()
+  })
+
   it('accepts only complete teams with four selected moves per member', () => {
     const complete = team('player')
     expect(isBattleReadyTeam(complete)).toBe(true)

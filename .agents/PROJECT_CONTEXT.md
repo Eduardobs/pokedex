@@ -94,6 +94,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Move names in the Random Battle log expose the move's type, damage class, priority, and localized description in a keyboard-accessible tooltip.
 - Move names in the Random Battle log also expose the move's power and accuracy.
 - Random Battle applies held-item stat and damage modifiers, immediate and end-of-turn triggers, and one-use consumption at their battle timing.
+- Random Battle ability audits cover every PokéAPI ability with an ID from 1 through 314, exclude IDs above 10000, and keep prose-only battle rules in a structured local supplement without treating a detected handler as proof of full parity.
 - Random Battle is controlled by a build-time feature flag and is enabled by default.
 - On narrow screens, Random Battle prioritizes the battlefield first, action controls second, and the battle log last.
 - On narrow screens, Random Battle keeps move and replacement-choice lists in two columns.

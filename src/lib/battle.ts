@@ -2,6 +2,11 @@ import { chooseBattleOpponentAction, type BattleDifficulty } from './battle-ai'
 import { getDamageMultiplier, type BattleType } from './type-chart'
 import { calculatedCoreStats, calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
 import { supplementalMoveDamage, supplementalMoveEffect, supplementalMoveTimings } from './battle-move-effects'
+import {
+  supplementalAbilityMoveImmunities,
+  supplementalAbilityStatusImmunities,
+  supplementalAbilityWeather,
+} from './battle-ability-effects'
 
 export type BattleMove = {
   name: string
@@ -629,12 +634,21 @@ function isGrounded(pokemon: BattlePokemon) {
   return !effectiveTypes(pokemon).includes('flying') && pokemon.ability.name !== 'levitate'
 }
 
-export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemon) {
+export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemon, attacker?: BattlePokemon) {
+  const immunity = supplementalAbilityMoveImmunities[defender.ability.name]
+  const bypassesAbility = attacker && ['mold-breaker', 'turboblaze', 'teravolt'].includes(attacker.ability.name)
+  if (
+    !bypassesAbility &&
+    immunity?.type === move.type &&
+    !(defender.ability.name === 'levitate' && isGrounded(defender))
+  )
+    return 0
   const typeEffectiveness = effectiveTypes(defender).reduce(
     (value, type) => value * getDamageMultiplier(move.type, type as BattleType),
     1,
   )
-  return typeEffectiveness * (move.type === 'fire' && defender.volatile['tar-shot'] ? 2 : 1)
+  const effectiveness = typeEffectiveness * (move.type === 'fire' && defender.volatile['tar-shot'] ? 2 : 1)
+  return !bypassesAbility && defender.ability.name === 'wonder-guard' && effectiveness <= 1 ? 0 : effectiveness
 }
 
 export function battleSameTypeAttackBonus(attacker: BattlePokemon, moveType: BattleType) {
@@ -756,9 +770,12 @@ function applyEntryHazards(side: BattleSide, pokemon: BattlePokemon, events: Bat
   }
 }
 
-function speed(side: BattleSide) {
+function speed(side: BattleSide, field: BattleField) {
   const pokemon = side.roster[side.active]
-  return currentBattleStats(pokemon)[5] * (side.conditions.tailwind > 0 ? 2 : 1)
+  const weatherSpeed = supplementalAbilityWeather[pokemon.ability.name]?.find(
+    (rule) => rule.weather === field.weather && rule.speedMultiplier,
+  )?.speedMultiplier
+  return currentBattleStats(pokemon)[5] * (weatherSpeed ?? 1) * (side.conditions.tailwind > 0 ? 2 : 1)
 }
 
 function confusionDamage(pokemon: BattlePokemon) {
@@ -1057,18 +1074,55 @@ function majorStatusImmune(
   if (ability === 'leaf-guard' && field?.weather === 'sun') return true
   if (status === 'burn')
     return (
-      effectiveTypes(target).includes('fire') || ['thermal-exchange', 'water-bubble', 'water-veil'].includes(ability)
+      effectiveTypes(target).includes('fire') || supplementalAbilityStatusImmunities.burn?.includes(ability) === true
     )
-  if (status === 'freeze') return effectiveTypes(target).includes('ice') || ability === 'magma-armor'
-  if (status === 'paralysis') return effectiveTypes(target).includes('electric') || ability === 'limber'
+  if (status === 'freeze')
+    return (
+      effectiveTypes(target).includes('ice') || supplementalAbilityStatusImmunities.freeze?.includes(ability) === true
+    )
+  if (status === 'paralysis')
+    return (
+      effectiveTypes(target).includes('electric') ||
+      supplementalAbilityStatusImmunities.paralysis?.includes(ability) === true
+    )
   if (isPoisonStatus(status))
     return (
-      ability === 'immunity' ||
-      ability === 'poison-heal' ||
+      supplementalAbilityStatusImmunities[status]?.includes(ability) === true ||
       ((effectiveTypes(target).includes('poison') || effectiveTypes(target).includes('steel')) &&
         attacker.ability.name !== 'corrosion')
     )
-  return ['insomnia', 'vital-spirit', 'sweet-veil'].includes(ability)
+  return supplementalAbilityStatusImmunities.sleep?.includes(ability) === true
+}
+
+function applyAbilityMoveImmunity(
+  attacker: BattlePokemon,
+  defender: BattlePokemon,
+  move: BattleMove,
+  events: BattleEvent[],
+) {
+  if (['mold-breaker', 'turboblaze', 'teravolt'].includes(attacker.ability.name)) return false
+  const rule = supplementalAbilityMoveImmunities[defender.ability.name]
+  if (!rule || rule.type !== move.type || (defender.ability.name === 'levitate' && isGrounded(defender))) return false
+  events.push({ type: 'ability', pokemon: defender.pokemon.name, ability: defender.ability.name })
+  events.push({ type: 'immune', pokemon: defender.pokemon.name })
+  if (rule.healFraction && defender.hp < defender.maxHp && !defender.volatile['heal-block']) {
+    const amount = Math.min(defender.maxHp - defender.hp, Math.max(1, Math.floor(defender.maxHp * rule.healFraction)))
+    defender.hp += amount
+    events.push({
+      type: 'heal',
+      pokemon: defender.pokemon.name,
+      amount,
+      percentage: hpPercentage(amount, defender.maxHp),
+    })
+  }
+  if (rule.boost) {
+    const previous = defender.stages[rule.boost.stat]
+    defender.stages[rule.boost.stat] = Math.min(6, previous + rule.boost.stages)
+    const change = defender.stages[rule.boost.stat] - previous
+    if (change) events.push({ type: 'stage', pokemon: defender.pokemon.name, stat: rule.boost.stat, change })
+  }
+  if (rule.activatesPowerBoost) defender.member.abilityActive = true
+  return true
 }
 
 function isPoisonStatus(status: Exclude<BattleStatus, null>) {
@@ -1232,8 +1286,11 @@ function applyMove(
     return { hit: false, succeeded: false }
   }
 
+  if (move.target !== 'user' && applyAbilityMoveImmunity(attacker, defender, move, events))
+    return { hit: false, succeeded: true }
+
   if (!releasing && timing?.carriesTarget) {
-    if (defender.substituteHp > 0 || battleMoveEffectiveness(move, defender) === 0)
+    if (defender.substituteHp > 0 || battleMoveEffectiveness(move, defender, attacker) === 0)
       return { hit: true, succeeded: false }
     attacker.chargingMoveIndex = moveSlot
     attacker.skyDropTargetId = defender.member.id
@@ -1367,7 +1424,7 @@ function applyMove(
   let succeeded = false
   let hitSubstitute = false
   if (supplemental?.kind === 'fixed-damage') {
-    const effectiveness = battleMoveEffectiveness(move, defender)
+    const effectiveness = battleMoveEffectiveness(move, defender, attacker)
     if (effectiveness === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return { hit: false, succeeded: false }
@@ -1381,7 +1438,7 @@ function applyMove(
   }
   const damageRule = supplementalMoveDamage[move.name]
   if (damageRule?.ohko) {
-    if (battleMoveEffectiveness(move, defender) === 0) {
+    if (battleMoveEffectiveness(move, defender, attacker) === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return { hit: false, succeeded: false }
     }
@@ -1402,7 +1459,7 @@ function applyMove(
     return { hit: true, succeeded: true }
   }
   if (damageRule?.fixedDamage !== undefined) {
-    if (battleMoveEffectiveness(move, defender) === 0) {
+    if (battleMoveEffectiveness(move, defender, attacker) === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return { hit: false, succeeded: false }
     }
@@ -1447,7 +1504,7 @@ function applyMove(
     !damageRule?.fixedDamage &&
     supplemental?.kind !== 'fixed-damage'
   ) {
-    const effectiveness = battleMoveEffectiveness(move, defender)
+    const effectiveness = battleMoveEffectiveness(move, defender, attacker)
     if (effectiveness === 0) {
       events.push({ type: 'immune', pokemon: defender.pokemon.name })
       return { hit: false, succeeded: false }
@@ -2074,6 +2131,38 @@ function residual(side: BattleSide, foe: BattleSide, field: BattleField, random:
     pokemon.sleepTurns = 0
     pokemon.toxicTurns = 0
   }
+  const weatherRule = supplementalAbilityWeather[pokemon.ability.name]?.find((rule) => rule.weather === field.weather)
+  if (
+    pokemon.hp > 0 &&
+    weatherRule?.weather === field.weather &&
+    weatherRule.healFraction &&
+    pokemon.hp < pokemon.maxHp &&
+    !pokemon.volatile['heal-block']
+  ) {
+    const amount = Math.min(
+      pokemon.maxHp - pokemon.hp,
+      Math.max(1, Math.floor(pokemon.maxHp * weatherRule.healFraction)),
+    )
+    pokemon.hp += amount
+    events.push({
+      type: 'heal',
+      pokemon: pokemon.pokemon.name,
+      amount,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
+  }
+  if (pokemon.hp > 0 && weatherRule?.damageFraction && pokemon.ability.name !== 'magic-guard') {
+    const amount = Math.min(pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp * weatherRule.damageFraction)))
+    pokemon.hp -= amount
+    events.push({
+      type: 'damage',
+      pokemon: pokemon.pokemon.name,
+      amount,
+      effectiveness: 1,
+      critical: false,
+      percentage: hpPercentage(amount, pokemon.maxHp),
+    })
+  }
   if (field.terrain === 'grassy' && isGrounded(pokemon) && pokemon.hp < pokemon.maxHp) {
     const amount = Math.min(pokemon.maxHp - pokemon.hp, Math.max(1, Math.floor(pokemon.maxHp / 16)))
     pokemon.hp += amount
@@ -2468,8 +2557,8 @@ export function resolveBattleTurnSteps(
   }
   const playerPriority = choicePriority(state.player, playerChoice)
   const opponentPriority = choicePriority(state.opponent, opponentChoice)
-  const playerSpeed = speed(state.player)
-  const opponentSpeed = speed(state.opponent)
+  const playerSpeed = speed(state.player, state.field)
+  const opponentSpeed = speed(state.opponent, state.field)
   const playerWinsSpeed = state.field.trickRoomTurns > 0 ? playerSpeed < opponentSpeed : playerSpeed > opponentSpeed
   const playerFirst =
     playerPriority > opponentPriority ||
