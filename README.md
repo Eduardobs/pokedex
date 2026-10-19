@@ -155,6 +155,7 @@ The main data flow is intentionally layered:
 
 - `src/lib/api-client.ts` owns validated HTTP access, request cancellation, caching, timeouts, and request deduplication.
 - `src/lib/api.ts` provides the Pokémon-specific API facade and maps remote data into UI-friendly structures.
+- `src/lib/team-storage.ts` owns the versioned local team collection contract, including validation and graceful storage failures.
 - Hooks and contexts coordinate asynchronous data and shared interface state.
 - Pages compose screens, while components focus on presentation and user interaction.
 - `PageHeader` and the feedback-state components own the common page heading, empty, and retry presentations.

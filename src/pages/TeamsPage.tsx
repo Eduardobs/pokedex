@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { Dices, Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
-import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS, STORAGE_KEYS } from '../config/app'
-import { readStorage, writeStorage } from '../lib/storage'
-import { newMember, parseTeamPokemon, parseTeamSpecies, validTeams, type Team } from '../lib/teams'
+import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS } from '../config/app'
+import { newMember, parseTeamPokemon, parseTeamSpecies, type Team } from '../lib/teams'
+import { readTeams, writeTeams } from '../lib/team-storage'
 import { createTeamExport, importTeam, parseTeamExport } from '../lib/team-transfer'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
 import { prettyName } from '../lib/api'
@@ -18,7 +18,7 @@ import { ApiFeedback } from '../components/TeamMemberEditor'
 
 export function TeamsPage() {
   const { t } = useLanguage()
-  const [teams, setTeams] = useState(() => readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []))
+  const [teams, setTeams] = useState(readTeams)
   const [selected, setSelected] = useState(teams[0]?.id ?? '')
   const [saved, setSaved] = useState<boolean | null>(null)
   const [transferMessage, setTransferMessage] = useState<
@@ -41,7 +41,7 @@ export function TeamsPage() {
   useEffect(() => () => randomRequestRef.current?.abort(), [])
   const update = (next: Team[]) => {
     setTeams(next)
-    setSaved(writeStorage(STORAGE_KEYS.teams, next))
+    setSaved(writeTeams(next))
   }
   const change = (next: Team) => update(teams.map((v) => (v.id === next.id ? next : v)))
   const create = () => {
@@ -194,7 +194,7 @@ export function TeamsPage() {
         {saved === false ? t('teams.saveError') : saved ? t('teams.saved') : t('teams.local')}
       </p>
       {saved === false && (
-        <button className="button secondary" onClick={() => setSaved(writeStorage(STORAGE_KEYS.teams, teams))}>
+        <button className="button secondary" onClick={() => setSaved(writeTeams(teams))}>
           {t('common.retry')}
         </button>
       )}

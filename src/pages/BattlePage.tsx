@@ -32,7 +32,7 @@ import { TypeBadge } from '../components/TypeBadge'
 import { TeraTypeBadge } from '../components/TeraTypeBadge'
 import { DamageClassBadge } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
-import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
+import { BATTLE_TIMING } from '../config/app'
 import type { TranslationKey } from '../i18n/types'
 import { formatDecimal, formatNumber, localizedName, localizedText, pokemonHomeSprite, prettyName } from '../lib/api'
 import { loadBattleRoster } from '../lib/battle-data'
@@ -59,8 +59,8 @@ import {
   type BattleVolatileCondition,
 } from '../lib/battle'
 import { createRandomTeam, loadRandomTeamPokemon } from '../lib/random-team'
-import { readStorage } from '../lib/storage'
-import { parseTeamPokemon, validTeams, type Stats, type Team, type TeamMember } from '../lib/teams'
+import { parseTeamPokemon, type Stats, type TeamMember } from '../lib/teams'
+import { readTeams } from '../lib/team-storage'
 import type { PokemonGender } from '../lib/teams'
 
 type ScreenState = 'idle' | 'loading' | 'error' | 'battle'
@@ -1200,7 +1200,7 @@ export function BattleSideHazards({ hazards, side }: { hazards: BattleHazards; s
 
 export function BattlePage() {
   const { t } = useLanguage()
-  const teams = readStorage<Team[]>(STORAGE_KEYS.teams, validTeams, []).filter(isBattleReadyTeam)
+  const teams = readTeams().filter(isBattleReadyTeam)
   const [difficulty, setDifficulty] = useState<BattleDifficulty>('medium')
   const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id ?? '')
   const selectedTeamMembers = teams.find((team) => team.id === selectedTeam)?.members ?? []
