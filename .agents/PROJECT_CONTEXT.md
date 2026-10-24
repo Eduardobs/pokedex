@@ -60,6 +60,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random team creation saves a complete six-member team only after every selected Pokémon has loaded successfully, using the bundled Gen 9 Pokémon Showdown Random Battle set catalog and its species, type, weakness, level, Tera, and set-selection rules.
 - Random Battle offers six pre-battle difficulty levels from Very easy to Expert; opponents use only revealed player Pokémon and moves, never the pending player action or private build data, and obey the same battle rules and resources as the player.
 - Random Battle is a local singles battle at `/battle` between a complete saved team and a generated six-Pokémon opponent, reusing the team-builder data model.
+- The team editor offers a battle action for the selected complete, saved team, opening battle preparation with that team selected and the existing six difficulty choices.
 - In Random Battle, each Pokémon may Terastallize once at the start of its selected turn, before either chosen move resolves.
 - Random Battle applies entry hazards on every switch and honors pivot and forced-switch moves before the next action choice.
 - Random Battle identifies each trainer with a sprite, live/knockout count, and six roster indicators; active Pokémon expose keyboard-accessible detail tooltips with exact allied data and bounded opponent information.

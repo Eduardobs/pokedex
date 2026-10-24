@@ -41,17 +41,6 @@
   color: var(--ink);
   font: inherit;
 }
-.battle-team-preview {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  min-height: 54px;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: color-mix(in srgb, var(--surface) 86%, var(--battle-blue));
-}
 .battle-team-preview-member {
   display: grid;
   width: 42px;
@@ -64,9 +53,40 @@
   border-radius: 50%;
   background: var(--line);
 }
-.battle-team-preview img {
-  width: 42px;
-  height: 42px;
+.battle-team-select {
+  min-width: 0;
+  width: 100%;
+}
+.battle-team-select .catalog-select-trigger {
+  height: auto;
+  min-height: var(--field-control-height);
+}
+.battle-team-selected {
+  min-width: 0;
+  text-align: left;
+}
+.battle-team-selected > small {
+  color: var(--muted);
+  font-weight: 700;
+}
+.battle-team-option {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding-block: 8px;
+}
+.battle-team-option-name {
+  overflow-wrap: anywhere;
+}
+.battle-team-option-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.battle-team-option-roster .battle-team-preview-member,
+.battle-team-option-roster img {
+  width: 32px;
+  height: 32px;
   object-fit: contain;
 }
 .battle-shell {

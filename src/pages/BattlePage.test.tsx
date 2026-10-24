@@ -33,9 +33,9 @@ const completeTeam = (id: string, name: string): Team => ({
   })),
 })
 
-function show() {
+function show(entry = '/battle') {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[entry]}>
       <LanguageProvider>
         <BattlePage />
       </LanguageProvider>
@@ -131,6 +131,18 @@ afterEach(() => {
 })
 
 describe('BattlePage lobby', () => {
+  it.each(['second', 'missing'])('validates the requested team %s before showing difficulty choices', (requested) => {
+    localStorage.setItem(
+      STORAGE_KEYS.teams,
+      JSON.stringify([completeTeam('first', 'Primeira equipe'), completeTeam('second', 'Segunda equipe')]),
+    )
+    show(`/battle?team=${requested}`)
+    expect(screen.getByRole('combobox', { name: 'Sua equipe' })).toHaveTextContent(
+      requested === 'second' ? 'Segunda equipe' : 'Primeira equipe',
+    )
+    expect(within(screen.getByRole('combobox', { name: 'Dificuldade' })).getAllByRole('option')).toHaveLength(6)
+  })
+
   it('offers six ordered difficulties and describes the selected strategy', () => {
     localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([completeTeam('player', 'Minha equipe')]))
     show()
@@ -151,7 +163,8 @@ describe('BattlePage lobby', () => {
   it('loads HOME thumbnails for the selected saved team', async () => {
     const team = completeTeam('player', 'Minha equipe')
     team.members = team.members.map((member) => ({ ...member, pokemon: 'pikachu' }))
-    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([team]))
+    const otherTeam = { ...team, id: 'other', name: 'Outra equipe' }
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([team, otherTeam]))
     const reference = (name: string, endpoint: string) => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/1/` })
     vi.stubGlobal(
       'fetch',
@@ -183,16 +196,30 @@ describe('BattlePage lobby', () => {
     )
 
     show()
-    const preview = screen
-      .getAllByLabelText('Sua equipe')
-      .find((element) => element.classList.contains('battle-team-preview'))
-    expect(preview).toBeDefined()
-    await waitFor(() =>
-      expect(within(preview!).getAllByRole('img', { name: 'Pikachu' })[0]).toHaveAttribute(
-        'src',
-        expect.stringContaining('/sprites/pokemon/other/home/25.png'),
-      ),
-    )
+    const selector = screen.getByRole('combobox', { name: 'Sua equipe' })
+    await waitFor(() => {
+      const sprites = within(selector).getAllByRole('img', { name: 'Pikachu' })
+      expect(sprites).toHaveLength(6)
+      for (const sprite of sprites) {
+        expect(sprite).toHaveAttribute('src', expect.stringContaining('/sprites/pokemon/other/home/25.png'))
+      }
+    })
+    fireEvent.click(selector)
+    for (const name of ['Minha equipe', 'Outra equipe']) {
+      const option = screen.getByRole('option', { name: new RegExp(name) })
+      await waitFor(() => {
+        const sprites = within(option).getAllByRole('img', { name: 'Pikachu' })
+        expect(sprites).toHaveLength(6)
+        for (const sprite of sprites) {
+          expect(sprite).toHaveAttribute('src', expect.stringContaining('/sprites/pokemon/other/home/25.png'))
+        }
+      })
+    }
+    fireEvent.click(screen.getByRole('option', { name: /Outra equipe/ }))
+    expect(selector).toHaveTextContent('Outra equipe')
+    expect(within(selector).getAllByRole('img', { name: 'Pikachu' })).toHaveLength(6)
+    expect(selector).toHaveFocus()
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
   })
 
   it('uses the supplied icon and color treatment for each major status', () => {
@@ -298,8 +325,9 @@ describe('BattlePage lobby', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
 
     show()
-    expect(screen.getByRole('option', { name: 'Equipe completa' })).toBeVisible()
-    expect(screen.queryByRole('option', { name: 'Equipe incompleta' })).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('combobox', { name: 'Sua equipe' }))
+    expect(screen.getByRole('option', { name: /Equipe completa/ })).toBeVisible()
+    expect(screen.queryByRole('option', { name: /Equipe incompleta/ })).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
     expect(screen.getByRole('status')).toHaveTextContent('Gerando a equipe adversária')
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível preparar a batalha'))

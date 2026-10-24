@@ -34,6 +34,7 @@ it('creates and renames separate teams and restores saved teams', async () => {
     )
   show()
   fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  expect(screen.getByRole('button', { name: 'Batalhar com esta equipe' })).toBeDisabled()
   fireEvent.change(screen.getByLabelText('Nome da equipe'), { target: { value: 'Kanto' } })
   fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
   expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)).toHaveLength(2)

@@ -207,6 +207,7 @@ export const ptBR = {
   'battle.log.faint': '{name} desmaiou.',
   'battle.log.playerWin': 'Todos os Pokémon adversários desmaiaram.',
   'battle.log.opponentWin': 'Todos os seus Pokémon desmaiaram.',
+  'teams.battle': 'Batalhar com esta equipe',
   'teams.loadMoreMoves': 'Carregar mais golpes',
   'teams.loadMoreItems': 'Carregar mais itens',
   'teams.optionsShown': '{visible} de {total} opções exibidas.',

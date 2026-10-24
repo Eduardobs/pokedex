@@ -1,6 +1,6 @@
 import { BATTLE_DIFFICULTIES, type BattleDifficulty } from '../lib/battle-ai'
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   ArrowDown,
   ArrowRightLeft,
@@ -26,6 +26,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { BattleSprite } from '../components/BattleSprite'
+import { SelectMenu } from '../components/SelectMenu'
 import { ItemImage } from '../components/ItemImage'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
@@ -843,6 +844,19 @@ function BattleSwitchButton({
   )
 }
 
+function BattleTeamOption({ name, members }: { name: string; members: TeamMember[] }) {
+  return (
+    <span className="battle-team-option">
+      <span className="battle-team-option-name">{name}</span>
+      <span className="battle-team-option-roster">
+        {members.map((member) => (
+          <BattleTeamPreviewMember key={member.id} member={member} />
+        ))}
+      </span>
+    </span>
+  )
+}
+
 function BattleTeamPreviewMember({ member }: { member: TeamMember }) {
   const { data } = useApi(`pokemon/${member.pokemon}`, parseTeamPokemon)
   const sprite = data
@@ -853,7 +867,7 @@ function BattleTeamPreviewMember({ member }: { member: TeamMember }) {
       {sprite ? (
         <img src={sprite} alt={prettyName(member.pokemon)} width={48} height={48} />
       ) : (
-        <span aria-hidden="true" />
+        <span role="img" aria-label={prettyName(member.pokemon)} />
       )}
     </span>
   )
@@ -1202,7 +1216,10 @@ export function BattlePage() {
   const { t } = useLanguage()
   const teams = readTeams().filter(isBattleReadyTeam)
   const [difficulty, setDifficulty] = useState<BattleDifficulty>('medium')
-  const [selectedTeam, setSelectedTeam] = useState(teams[0]?.id ?? '')
+  const [searchParams] = useSearchParams()
+  const [selectedTeam, setSelectedTeam] = useState(
+    () => teams.find((team) => team.id === searchParams.get('team'))?.id ?? teams[0]?.id ?? '',
+  )
   const selectedTeamMembers = teams.find((team) => team.id === selectedTeam)?.members ?? []
   const [screen, setScreen] = useState<ScreenState>('idle')
   const [battle, setBattle] = useState<BattleState | null>(null)
@@ -1356,21 +1373,26 @@ export function BattlePage() {
           </div>
           {teams.length ? (
             <div className="battle-lobby-actions">
-              <label>
-                {t('battle.yourTeam')}
-                <select value={selectedTeam} onChange={(event) => setSelectedTeam(event.target.value)}>
-                  {teams.map((team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <div className="battle-team-preview" aria-label={t('battle.yourTeam')}>
-                {selectedTeamMembers.map((member) => (
-                  <BattleTeamPreviewMember key={member.id} member={member} />
-                ))}
-              </div>
+              <SelectMenu
+                className="battle-team-select"
+                icon={<UserRound size={16} />}
+                label={t('battle.yourTeam')}
+                value={selectedTeam}
+                onChange={setSelectedTeam}
+                options={teams.map((team) => ({ value: team.id, label: team.name }))}
+                renderSelected={(option) => (
+                  <span className="battle-team-selected">
+                    <small>{t('battle.yourTeam')}</small>
+                    <BattleTeamOption name={option.label} members={selectedTeamMembers} />
+                  </span>
+                )}
+                renderOption={(option) => (
+                  <BattleTeamOption
+                    name={option.label}
+                    members={teams.find((team) => team.id === option.value)?.members ?? []}
+                  />
+                )}
+              />
               <label>
                 {t('battle.difficulty')}
                 <select

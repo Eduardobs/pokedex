@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { Dices, Users } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { FEATURE_FLAGS } from '../config/feature-flags'
+import { isBattleReadyTeam } from '../lib/battle'
+import { Dices, Swords, Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS } from '../config/app'
@@ -19,6 +22,7 @@ import { ApiFeedback } from '../components/TeamMemberEditor'
 
 export function TeamsPage() {
   const { t } = useLanguage()
+  const navigate = useNavigate()
   const [teams, setTeams] = useState(readTeams)
   const [selected, setSelected] = useState(teams[0]?.id ?? '')
   const [saved, setSaved] = useState<boolean | null>(null)
@@ -223,6 +227,16 @@ export function TeamsPage() {
             <button ref={deleteButtonRef} className="button secondary" onClick={() => setDeleteConfirmationOpen(true)}>
               {t('teams.delete')}
             </button>
+            {FEATURE_FLAGS.battle && (
+              <button
+                className="button primary"
+                disabled={!isBattleReadyTeam(team) || saved === false}
+                title={!isBattleReadyTeam(team) ? t('battle.chooseTeamDescription') : undefined}
+                onClick={() => navigate(`/battle?${new URLSearchParams({ team: team.id })}`)}
+              >
+                <Swords size={18} aria-hidden="true" /> {t('teams.battle')}
+              </button>
+            )}
             <strong>{team.members.length} / 6</strong>
           </div>
           {team.members.length < TEAM_LIMITS.members ? (

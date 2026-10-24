@@ -208,6 +208,7 @@ export const es = {
   'battle.log.faint': '{name} se debilitó.',
   'battle.log.playerWin': 'Todos los Pokémon rivales se debilitaron.',
   'battle.log.opponentWin': 'Todos tus Pokémon se debilitaron.',
+  'teams.battle': 'Combatir con este equipo',
   'teams.loadMoreMoves': 'Cargar más movimientos',
   'teams.loadMoreItems': 'Cargar más objetos',
   'teams.optionsShown': '{visible} de {total} opciones mostradas.',
