@@ -46,6 +46,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle accuracy and evasion use separate stages from -6 to +6 with 3-based multipliers; hit probability is base accuracy times the user's multiplier divided by the target's multiplier, followed by Bright Powder and weather evasion modifiers.
 - Random Battle does not implement Z-Move or Max Move activation.
 
+- Team member editing offers compatible bundled Showdown sets by role and a repeatable Random option that randomizes all editable build fields, spends all 510 EVs, and respects the available abilities, moves, and genders.
+
 ## Maintenance
 
 - Team Pokémon search allows playable battle forms, including Mega Evolutions, Gigantamax, and regional forms, while excluding ride-only forms and unobtainable boss forms.

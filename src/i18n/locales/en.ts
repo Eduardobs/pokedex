@@ -207,6 +207,8 @@ export const en = {
   'battle.log.faint': '{name} fainted.',
   'battle.log.playerWin': 'All opposing Pokémon fainted.',
   'battle.log.opponentWin': 'All of your Pokémon fainted.',
+  'teams.set': 'Set',
+  'teams.randomSet': 'Random',
   'teams.battle': 'Battle with this team',
   'teams.loadMoreMoves': 'Load more moves',
   'teams.loadMoreItems': 'Load more items',

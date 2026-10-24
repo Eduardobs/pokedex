@@ -5,6 +5,8 @@ import { BATTLE_TYPES, getDamageMultiplier, type BattleType } from './type-chart
 import { array, record, reference } from './resource-data'
 import {
   genderForRate,
+  gendersForRate,
+  natureNames,
   parseTeamPokemon,
   parseTeamSpecies,
   teraTypes,
@@ -296,5 +298,51 @@ export function createRandomTeam(
     name,
     competitiveFormat: 'singles-6v6',
     members,
+  }
+}
+
+/** Compatible roles available for the individual team editor. */
+export function teamMemberSets(pokemon: TeamPokemon) {
+  return compatibleSets(pokemon, false)
+}
+
+export function applyTeamMemberSet(
+  member: TeamMember,
+  pokemon: TeamPokemon,
+  set: ShowdownSet,
+  random: RandomSource = Math.random,
+): TeamMember {
+  return { ...randomMember(pokemon, set, random, false), id: member.id }
+}
+
+export function randomizeTeamMember(
+  member: TeamMember,
+  pokemon: TeamPokemon,
+  items: readonly string[],
+  random: RandomSource = Math.random,
+): TeamMember {
+  const evs: Stats = [0, 0, 0, 0, 0, 0]
+  for (let remaining = 510; remaining > 0; remaining--) {
+    const available = evs.flatMap((value, index) => (value < 252 ? [index] : []))
+    evs[randomChoice(available, random)]++
+  }
+  const moves = randomUniqueChoices(pokemon.moves, Math.min(4, new Set(pokemon.moves).size), random)
+  while (moves.length < 4) moves.push('')
+  const item = randomChoice(['', ...items], random)
+  return {
+    ...member,
+    level: randomInteger(1, 100, random),
+    friendship: randomInteger(0, 255, random),
+    shiny: random() < 0.5,
+    gender: randomChoice(gendersForRate(pokemon.genderRate ?? 4), random),
+    tera: randomChoice(teraTypes, random),
+    ability: randomChoice(pokemon.abilities, random),
+    nature: randomChoice(natureNames, random),
+    item,
+    moves,
+    evs,
+    ivs: member.ivs.map(() => randomInteger(0, 31, random)) as Stats,
+    abilityActive: random() < 0.5,
+    itemActive: item === 'eviolite' && random() < 0.5,
   }
 }

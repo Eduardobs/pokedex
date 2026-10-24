@@ -20,6 +20,7 @@ import {
   type TeamMember,
 } from '../lib/teams'
 import { record } from '../lib/resource-data'
+import { TeamMemberSetSelect } from './TeamMemberSetSelect'
 import { MoveSelect } from './MoveSelect'
 import { EvSlider } from './EvSlider'
 import { FriendshipSlider } from './FriendshipSlider'
@@ -201,6 +202,14 @@ export function TeamMemberEditor({
               <span id={`build-${m.id}`}>{t('teams.build')}</span>
             </SectionTitle>
           </header>
+          {species.data && (
+            <TeamMemberSetSelect
+              key={m.id}
+              member={m}
+              pokemon={{ ...p, genderRate: species.data.genderRate }}
+              onChange={onChange}
+            />
+          )}
           <div className="team-fields">
             <div className="team-primary-fields">
               <label className="team-level-field">
