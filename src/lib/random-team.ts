@@ -197,7 +197,7 @@ function randomMember(pokemon: TeamPokemon, set: ShowdownSet, random: RandomSour
   }
 }
 
-export async function loadRandomTeamPokemon(signal?: AbortSignal, random: RandomSource = Math.random) {
+async function loadRandomCandidates(signal?: AbortSignal, random: RandomSource = Math.random) {
   const directory = await apiFetch<unknown>(`pokemon?limit=${POKEMON_CATALOG_LIMIT}`, signal)
   const candidates = pokemonListItems(
     array(record(directory).results, POKEMON_CATALOG_LIMIT)
@@ -213,7 +213,10 @@ export async function loadRandomTeamPokemon(signal?: AbortSignal, random: Random
     names.map(async (name) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${name}`, signal))),
   )
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
-  const selected = selectRandomBattlePokemon(pokemon, random)
+  return pokemon
+}
+
+async function loadGenderRates(selected: readonly TeamPokemon[], signal?: AbortSignal) {
   const withGenderRates = await Promise.all(
     selected.map(async (entry) => ({
       ...entry,
@@ -222,6 +225,53 @@ export async function loadRandomTeamPokemon(signal?: AbortSignal, random: Random
   )
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
   return withGenderRates
+}
+
+export async function loadRandomTeamPokemon(signal?: AbortSignal, random: RandomSource = Math.random) {
+  return loadGenderRates(selectRandomBattlePokemon(await loadRandomCandidates(signal, random), random), signal)
+}
+
+export function selectRandomTeamMember(
+  candidates: readonly TeamPokemon[],
+  existingPokemon: readonly TeamPokemon[],
+  members: readonly TeamMember[],
+  random: RandomSource = Math.random,
+): TeamMember {
+  if (members.length >= TEAM_LIMITS.members) throw new Error('The team is full.')
+  const teraBlastUsed = members.some((member) => member.moves.includes('tera-blast'))
+  const candidate = randomChoice(
+    candidates.filter(
+      (entry) => isCompatibleWithTeam(entry, existingPokemon) && compatibleSets(entry, teraBlastUsed).length > 0,
+    ),
+    random,
+  )
+  return randomMember(
+    candidate,
+    randomChoice(compatibleSets(candidate, teraBlastUsed), random),
+    random,
+    members.length === 0,
+  )
+}
+
+export async function loadRandomTeamMember(
+  members: readonly TeamMember[],
+  signal?: AbortSignal,
+  random: RandomSource = Math.random,
+) {
+  if (members.length >= TEAM_LIMITS.members) throw new Error('The team is full.')
+  const [candidates, existingPokemon] = await Promise.all([
+    loadRandomCandidates(signal, random),
+    Promise.all(
+      members.map(async (member) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${member.pokemon}`, signal))),
+    ),
+  ])
+  const teraBlastUsed = members.some((member) => member.moves.includes('tera-blast'))
+  const compatible = candidates.filter(
+    (entry) => isCompatibleWithTeam(entry, existingPokemon) && compatibleSets(entry, teraBlastUsed).length > 0,
+  )
+  const selected = randomChoice(compatible, random)
+  const hydrated = await loadGenderRates([selected], signal)
+  return selectRandomTeamMember(hydrated, existingPokemon, members, random)
 }
 
 export function createRandomTeam(

@@ -1,9 +1,13 @@
-import { useRef, useState, type DragEvent } from 'react'
+import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
 import { formatNumber, pokemonHomeSprite, prettyName } from '../lib/api'
 import { parseTeamPokemon, type Team, type TeamMember } from '../lib/teams'
 import { TeamMemberEditor } from './TeamMemberEditor'
+
+import { TEAM_LIMITS } from '../config/app'
+import { loadRandomTeamMember } from '../lib/random-team'
+import { Dices } from 'lucide-react'
 
 type DropIndicator = { id: string; placement: 'before' | 'after' }
 
@@ -20,6 +24,36 @@ export function TeamTabs({ team, onChange }: { team: Team; onChange: (team: Team
   const [draggedId, setDraggedId] = useState<string | null>(null)
   const [dropIndicator, setDropIndicator] = useState<DropIndicator | null>(null)
   const [reorderMessage, setReorderMessage] = useState('')
+  const [randomState, setRandomState] = useState<'loading' | 'error' | null>(null)
+  const requestRef = useRef<AbortController | null>(null)
+  const currentTeam = useRef(team)
+  const currentOnChange = useRef(onChange)
+  useEffect(() => {
+    currentTeam.current = team
+    currentOnChange.current = onChange
+  }, [team, onChange])
+  useEffect(() => () => requestRef.current?.abort(), [])
+  const addRandom = async () => {
+    if (requestRef.current || team.members.length >= TEAM_LIMITS.members) return
+    const controller = new AbortController()
+    requestRef.current = controller
+    setRandomState('loading')
+    try {
+      const added = await loadRandomTeamMember(team.members, controller.signal)
+      if (controller.signal.aborted) return
+      const latest = currentTeam.current
+      if (latest.id === team.id && JSON.stringify(latest.members) === JSON.stringify(team.members)) {
+        currentOnChange.current({ ...latest, members: [...latest.members, added] })
+        setSelected(added.id)
+        requestAnimationFrame(() => refs.current[latest.members.length]?.focus())
+      }
+      setRandomState(null)
+    } catch {
+      if (!controller.signal.aborted) setRandomState('error')
+    } finally {
+      if (requestRef.current === controller) requestRef.current = null
+    }
+  }
   const refs = useRef<(HTMLButtonElement | null)[]>([])
   const member = team.members.find((v) => v.id === selected) ?? team.members[0]
   const reorder = (id: string, destination: number) => {
@@ -46,7 +80,6 @@ export function TeamTabs({ team, onChange }: { team: Team; onChange: (team: Team
     const target = event.currentTarget.getBoundingClientRect()
     return event.clientX > target.left + target.width / 2 ? 'after' : 'before'
   }
-  if (!member) return null
   return (
     <div className="team-roster">
       <span id="team-tab-reorder-hint" className="sr-only">
@@ -55,93 +88,108 @@ export function TeamTabs({ team, onChange }: { team: Team; onChange: (team: Team
       <p className="sr-only" role="status" aria-live="polite">
         {reorderMessage}
       </p>
-      <div className="team-tabs" role="tablist" aria-label={t('teams.members')}>
-        {team.members.map((entry, index) => (
-          <button
-            ref={(node) => {
-              refs.current[index] = node
-            }}
-            type="button"
-            role="tab"
-            key={entry.id}
-            id={`member-tab-${entry.id}`}
-            aria-controls={`member-panel-${entry.id}`}
-            aria-describedby="team-tab-reorder-hint"
-            aria-selected={member.id === entry.id}
-            aria-keyshortcuts="Alt+Shift+ArrowLeft Alt+Shift+ArrowRight"
-            tabIndex={member.id === entry.id ? 0 : -1}
-            data-dragging={draggedId === entry.id || undefined}
-            data-drop-position={dropIndicator?.id === entry.id ? dropIndicator.placement : undefined}
-            draggable
-            onDragStart={(event) => {
-              event.dataTransfer.effectAllowed = 'move'
-              event.dataTransfer.setData('text/plain', entry.id)
-              setDraggedId(entry.id)
-              setDropIndicator(null)
-            }}
-            onDragOver={(event) => {
-              if (!draggedId || draggedId === entry.id) return
-              event.preventDefault()
-              event.dataTransfer.dropEffect = 'move'
-              setDropIndicator({ id: entry.id, placement: dropPlacement(event) })
-            }}
-            onDrop={(event) => {
-              event.preventDefault()
-              const id = event.dataTransfer.getData('text/plain') || draggedId
-              const source = team.members.findIndex((member) => member.id === id)
-              const insertion = index + (dropPlacement(event) === 'after' ? 1 : 0)
-              const destination = source < insertion ? insertion - 1 : insertion
-              if (id && source >= 0) reorder(id, destination)
-              setDraggedId(null)
-              setDropIndicator(null)
-            }}
-            onDragEnd={() => {
-              setDraggedId(null)
-              setDropIndicator(null)
-            }}
-            onClick={() => selectFromClick(entry.id)}
-            onKeyDown={(e) => {
-              if (e.altKey && e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
-                const destination = e.key === 'ArrowLeft' ? index - 1 : index + 1
-                if (destination >= 0 && destination < team.members.length) {
-                  e.preventDefault()
-                  reorder(entry.id, destination)
-                  requestAnimationFrame(() => refs.current[destination]?.focus())
+      <div className="team-tabs-row">
+        <div className="team-tabs" role="tablist" aria-label={t('teams.members')}>
+          {team.members.map((entry, index) => (
+            <button
+              ref={(node) => {
+                refs.current[index] = node
+              }}
+              type="button"
+              role="tab"
+              key={entry.id}
+              id={`member-tab-${entry.id}`}
+              aria-controls={`member-panel-${entry.id}`}
+              aria-describedby="team-tab-reorder-hint"
+              aria-selected={member?.id === entry.id}
+              aria-keyshortcuts="Alt+Shift+ArrowLeft Alt+Shift+ArrowRight"
+              tabIndex={member?.id === entry.id ? 0 : -1}
+              data-dragging={draggedId === entry.id || undefined}
+              data-drop-position={dropIndicator?.id === entry.id ? dropIndicator.placement : undefined}
+              draggable
+              onDragStart={(event) => {
+                event.dataTransfer.effectAllowed = 'move'
+                event.dataTransfer.setData('text/plain', entry.id)
+                setDraggedId(entry.id)
+                setDropIndicator(null)
+              }}
+              onDragOver={(event) => {
+                if (!draggedId || draggedId === entry.id) return
+                event.preventDefault()
+                event.dataTransfer.dropEffect = 'move'
+                setDropIndicator({ id: entry.id, placement: dropPlacement(event) })
+              }}
+              onDrop={(event) => {
+                event.preventDefault()
+                const id = event.dataTransfer.getData('text/plain') || draggedId
+                const source = team.members.findIndex((member) => member?.id === id)
+                const insertion = index + (dropPlacement(event) === 'after' ? 1 : 0)
+                const destination = source < insertion ? insertion - 1 : insertion
+                if (id && source >= 0) reorder(id, destination)
+                setDraggedId(null)
+                setDropIndicator(null)
+              }}
+              onDragEnd={() => {
+                setDraggedId(null)
+                setDropIndicator(null)
+              }}
+              onClick={() => selectFromClick(entry.id)}
+              onKeyDown={(e) => {
+                if (e.altKey && e.shiftKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+                  const destination = e.key === 'ArrowLeft' ? index - 1 : index + 1
+                  if (destination >= 0 && destination < team.members.length) {
+                    e.preventDefault()
+                    reorder(entry.id, destination)
+                    requestAnimationFrame(() => refs.current[destination]?.focus())
+                  }
+                  return
                 }
-                return
-              }
-              const next =
-                e.key === 'ArrowRight'
-                  ? (index + 1) % team.members.length
-                  : e.key === 'ArrowLeft'
-                    ? (index - 1 + team.members.length) % team.members.length
-                    : e.key === 'Home'
-                      ? 0
-                      : e.key === 'End'
-                        ? team.members.length - 1
-                        : null
-              if (next !== null) {
-                e.preventDefault()
-                setSelected(team.members[next].id)
-                refs.current[next]?.focus()
-              }
-            }}
+                const next =
+                  e.key === 'ArrowRight'
+                    ? (index + 1) % team.members.length
+                    : e.key === 'ArrowLeft'
+                      ? (index - 1 + team.members.length) % team.members.length
+                      : e.key === 'Home'
+                        ? 0
+                        : e.key === 'End'
+                          ? team.members.length - 1
+                          : null
+                if (next !== null) {
+                  e.preventDefault()
+                  setSelected(team.members[next].id)
+                  refs.current[next]?.focus()
+                }
+              }}
+            >
+              <MemberThumbnail member={entry} />
+              <span>{prettyName(entry.pokemon)}</span>
+            </button>
+          ))}
+        </div>
+        {team.members.length < TEAM_LIMITS.members && (
+          <button
+            type="button"
+            className="button secondary team-random-add"
+            onClick={addRandom}
+            disabled={randomState === 'loading'}
           >
-            <MemberThumbnail member={entry} />
-            <span>{prettyName(entry.pokemon)}</span>
+            <Dices size={24} aria-hidden="true" />
+            {t('teams.randomAdd')}
           </button>
-        ))}
+        )}
       </div>
+      {randomState === 'loading' && <p role="status">{t('teams.randomAdding')}</p>}
+      {randomState === 'error' && <p role="alert">{t('teams.randomAddError')}</p>}
       {team.members.map((entry) => (
         <div
           key={entry.id}
           id={`member-panel-${entry.id}`}
           role="tabpanel"
           aria-labelledby={`member-tab-${entry.id}`}
-          hidden={entry.id !== member.id}
+          hidden={entry.id !== member?.id}
           tabIndex={0}
         >
-          {entry.id === member.id && (
+          {entry.id === member?.id && (
             <TeamMemberEditor
               member={entry}
               competitiveFormat={team.competitiveFormat}

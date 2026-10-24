@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createRandomTeam, selectRandomBattlePokemon } from './random-team'
+import { createRandomTeam, selectRandomBattlePokemon, selectRandomTeamMember } from './random-team'
 import { competitiveFormats, natureNames, teraTypes, validTeams, type TeamPokemon } from './teams'
 
 const catalog: Record<string, Omit<TeamPokemon, 'name' | 'id' | 'species'>> = {
@@ -134,4 +134,15 @@ describe('random teams', () => {
       ),
     ).toThrow('Cannot choose from an empty collection.')
   })
+})
+
+it('adds one compatible built member and rejects full or incompatible teams', () => {
+  const existing = compatiblePokemon().slice(0, 5)
+  const members = createRandomTeam('Team', compatiblePokemon(), () => 0.4).members
+  const added = selectRandomTeamMember(compatiblePokemon(), existing, members.slice(0, 5), () => 0.4)
+  expect(added.pokemon).toBe('raichu')
+  expect(added.moves).toHaveLength(4)
+  expect(added.item).toBeTruthy()
+  expect(() => selectRandomTeamMember(compatiblePokemon(), existing, members)).toThrow('full')
+  expect(() => selectRandomTeamMember(existing, existing, members.slice(0, 5))).toThrow()
 })

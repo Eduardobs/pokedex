@@ -156,6 +156,22 @@ it('creates a complete random team only after every selected Pokémon is availab
     team.members.every((member: { moves: string[]; item: string }) => member.moves.length === 4 && member.item),
   ).toBe(true)
   expect(validTeams([team])).toBe(true)
+  expect(screen.queryByRole('button', { name: '+ aleatório' })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Nova equipe' }))
+  for (let count = 1; count <= 6; count++) {
+    fireEvent.click(screen.getByRole('button', { name: '+ aleatório' }))
+    expect(screen.getByRole('button', { name: '+ aleatório' })).toBeDisabled()
+    await waitFor(() => expect(JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)[1].members).toHaveLength(count))
+  }
+  const individualTeam = JSON.parse(localStorage.getItem(STORAGE_KEYS.teams)!)[1]
+  expect(validTeams([individualTeam])).toBe(true)
+  expect(new Set(individualTeam.members.map((member: { pokemon: string }) => member.pokemon)).size).toBe(6)
+  expect(
+    individualTeam.members.every(
+      (member: { moves: string[]; item: string }) => member.moves.length === 4 && member.item,
+    ),
+  ).toBe(true)
+  expect(screen.queryByRole('button', { name: '+ aleatório' })).not.toBeInTheDocument()
 })
 
 it('does not save a partial team when random team data cannot be loaded', async () => {
