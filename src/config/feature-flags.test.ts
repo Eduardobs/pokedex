@@ -2,10 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { FEATURE_FLAGS, featureFlag } from './feature-flags'
 
 describe('feature flags', () => {
-  it('enables the MapGenie integration by default', () => {
+  it('enables features by default', () => {
     expect(FEATURE_FLAGS).toEqual({
       mapGenieIntegration: true,
       battle: true,
+      pokemon3D: true,
     })
   })
 

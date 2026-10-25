@@ -34,3 +34,5 @@ export const BATTLE_TIMING = {
   hpTransitionMs: 420,
   resultDisplayMs: 420,
 } as const
+
+export const POKEMON_3D_API_URL = 'https://pokemon-3d-api.onrender.com/v1/pokemon'

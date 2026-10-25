@@ -4,10 +4,23 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { FavoritesProvider } from '../contexts/FavoritesContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import type { Pokemon, PokemonType, Species } from '../types'
+import { FEATURE_FLAGS } from '../config/feature-flags'
 import { PokemonDetailPage } from './PokemonDetailPage'
 
 const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
+vi.mock('../config/feature-flags', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../config/feature-flags')>()
+  return {
+    ...actual,
+    FEATURE_FLAGS: {
+      ...actual.FEATURE_FLAGS,
+      get pokemon3D() {
+        return true
+      },
+    },
+  }
+})
 
 const apiBase = 'https://pokeapi.co/api/v2'
 const resource = (endpoint: string, id: number, name: string) => ({
@@ -120,9 +133,25 @@ afterEach(() => {
   localStorage.clear()
   useApiMock.mockReset()
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
 })
 
 describe('PokemonDetailPage', () => {
+  it('hides 3D and excludes it from keyboard navigation when disabled', () => {
+    vi.spyOn(FEATURE_FLAGS, 'pokemon3D', 'get').mockReturnValue(false)
+    useApiMock.mockImplementation((path: string | null) => ({
+      data: path === 'pokemon/pikachu' ? pokemon : null,
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    }))
+    renderPage()
+    expect(screen.queryByRole('tab', { name: '3D' })).not.toBeInTheDocument()
+    fireEvent.keyDown(screen.getByRole('tab', { name: 'Visão geral' }), { key: 'End' })
+    expect(screen.getByRole('tab', { name: 'Dados' })).toHaveFocus()
+    expect(screen.queryByRole('tabpanel', { name: '3D' })).not.toBeInTheDocument()
+  })
+
   it('connects the overview, favorites, shiny art and keyboard-accessible tabs', async () => {
     useApiMock.mockImplementation((pathOrUrl: string | null) => {
       if (pathOrUrl === 'pokemon/pikachu') return { data: pokemon, loading: false, error: null, retry: vi.fn() }
@@ -145,6 +174,7 @@ describe('PokemonDetailPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Adicionar Pikachu aos favoritos' }))
     expect(screen.getByRole('button', { name: 'Remover Pikachu dos favoritos' })).toBeVisible()
 
+    expect(screen.getByRole('tab', { name: '3D' })).toBeVisible()
     const overview = screen.getByRole('tab', { name: 'Visão geral' })
     fireEvent.keyDown(overview, { key: 'ArrowRight' })
     expect(screen.getByRole('tab', { name: 'Golpes 0' })).toHaveAttribute('aria-selected', 'true')

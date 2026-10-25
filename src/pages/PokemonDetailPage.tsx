@@ -1,6 +1,7 @@
 import { ArrowLeft, ChevronRight, Heart, Ruler, ShieldAlert, Sparkles, Weight } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
+import { FEATURE_FLAGS } from '../config/feature-flags'
 import { ErrorState } from '../components/ErrorState'
 import { InlineRetryError } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
@@ -26,10 +27,12 @@ import { level100StatRange } from '../lib/pokemon-stats'
 import { calculateImmunities, calculateResistances, calculateWeaknesses } from '../lib/type-effectiveness'
 import type { ApiList, Encounter, EvolutionChain, Pokemon, PokemonType, Species } from '../types'
 
+const Pokemon3DTab = lazy(() => import('../components/pokemon-detail/Pokemon3DTab'))
+
 export function PokemonDetailPage() {
   const { apiLanguage, language, t } = useLanguage()
   const { name = '' } = useParams()
-  const [tab, setTab] = useState<'about' | 'moves' | 'encounters' | 'data'>('about')
+  const [tab, setTab] = useState<'about' | 'moves' | 'encounters' | 'data' | '3d'>('about')
   const [shiny, setShiny] = useState(false)
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
@@ -123,7 +126,9 @@ export function PokemonDetailPage() {
     'special-defense': t('stats.specialDefense'),
     speed: t('stats.speed'),
   }
-  const tabOrder = ['about', 'moves', 'encounters', 'data'] as const
+  const tabOrder = (['about', 'moves', 'encounters', 'data', '3d'] as const).filter(
+    (value) => value !== '3d' || FEATURE_FLAGS.pokemon3D,
+  )
   const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, current: (typeof tabOrder)[number]) => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
     event.preventDefault()
@@ -220,8 +225,8 @@ export function PokemonDetailPage() {
               className="shiny-toggle"
               pressed={shiny}
               label={shiny ? t('detail.shinyVersion') : t('detail.showShiny')}
-              disabled={!shinyArtwork}
-              title={!shinyArtwork ? t('detail.shinyUnavailable') : undefined}
+              disabled={!shinyArtwork && tab !== '3d'}
+              title={!shinyArtwork && tab !== '3d' ? t('detail.shinyUnavailable') : undefined}
               onChange={setShiny}
             />
           </div>
@@ -246,23 +251,26 @@ export function PokemonDetailPage() {
               ['moves', t('detail.moves'), pokemon.moves.length],
               ['encounters', t('detail.encounters'), encounters?.length],
               ['data', t('detail.data'), null],
+              ['3d', t('detail.modelTab'), null],
             ] as const
-          ).map(([value, label, count]) => (
-            <button
-              type="button"
-              role="tab"
-              id={`tab-${value}`}
-              aria-selected={tab === value}
-              aria-controls={`panel-${value}`}
-              tabIndex={tab === value ? 0 : -1}
-              className={tab === value ? 'active' : ''}
-              onKeyDown={(event) => handleTabKey(event, value)}
-              onClick={() => setTab(value)}
-              key={value}
-            >
-              {label} {count !== null && count !== undefined && <span>{count}</span>}
-            </button>
-          ))}
+          )
+            .filter(([value]) => value !== '3d' || FEATURE_FLAGS.pokemon3D)
+            .map(([value, label, count]) => (
+              <button
+                type="button"
+                role="tab"
+                id={`tab-${value}`}
+                aria-selected={tab === value}
+                aria-controls={`panel-${value}`}
+                tabIndex={tab === value ? 0 : -1}
+                className={tab === value ? 'active' : ''}
+                onKeyDown={(event) => handleTabKey(event, value)}
+                onClick={() => setTab(value)}
+                key={value}
+              >
+                {label} {count !== null && count !== undefined && <span>{count}</span>}
+              </button>
+            ))}
         </nav>
         {tab === 'about' && (
           <div className="about-grid" role="tabpanel" id="panel-about" aria-labelledby="tab-about">
@@ -442,6 +450,13 @@ export function PokemonDetailPage() {
             ) : (
               <PokemonEncounters encounters={encounters ?? []} />
             )}
+          </article>
+        )}
+        {FEATURE_FLAGS.pokemon3D && tab === '3d' && (
+          <article className="info-card wide-card" role="tabpanel" id="panel-3d" aria-labelledby="tab-3d">
+            <Suspense fallback={<Loading />}>
+              <Pokemon3DTab pokemon={pokemon} shiny={shiny} />
+            </Suspense>
           </article>
         )}
         {tab === 'data' && (

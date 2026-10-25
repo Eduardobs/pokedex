@@ -109,6 +109,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Team member tabs use Pokémon HOME sprites above the Pokémon name, and gender is edited through a radio selection.
 - Team training offers an explicitly applied Showdown-style estimated EV and Nature spread based on the member's four moves, item, ability, level, and base stats; manual training remains available.
 - The MapGenie integration is controlled by a build-time feature flag and is enabled by default.
+- The Pokémon detail 3D tab is controlled by a build-time feature flag and is enabled by default.
 
 - Record in this section every new lasting, project-wide definition introduced by a request.
 - Write each definition briefly and unambiguously, without temporary implementation details.

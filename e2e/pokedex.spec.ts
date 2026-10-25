@@ -139,3 +139,49 @@ test('keeps the mobile Pokémon detail and its statistics inside the page', asyn
   await page.getByRole('tab', { name: 'Visão geral' }).scrollIntoViewIfNeeded()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
 })
+
+test('loads the 3D tab on demand and shares the shiny toggle', async ({ page }) => {
+  await mockPokeApi(page)
+  let requests = 0
+  await page.route('https://pokemon-3d-api.onrender.com/v1/pokemon', (route) => {
+    requests++
+    return route.fulfill({
+      json: [
+        {
+          id: 25,
+          forms: [
+            {
+              name: 'Pikachu',
+              formName: 'regular',
+              model: 'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/regular/25.glb',
+            },
+            {
+              name: 'Shiny Pikachu',
+              formName: 'shiny',
+              model: 'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/shiny/25.glb',
+            },
+          ],
+        },
+      ],
+    })
+  })
+  await page.route('**/Pokemon-3D-api/assets/**/*.glb', (route) => route.fulfill({ status: 404 }))
+  await page.goto('/#/pokemon/pikachu')
+  const tab = page.getByRole('tab', { name: '3D', exact: true })
+  await expect(tab).toBeVisible()
+  expect(requests).toBe(0)
+  await tab.click()
+  await expect(page.locator('model-viewer')).toHaveJSProperty(
+    'src',
+    'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/regular/25.glb',
+  )
+  const loadedRequests = requests
+  await page.getByRole('button', { name: 'Ver shiny' }).click()
+  await expect(page.locator('model-viewer')).toHaveJSProperty(
+    'src',
+    'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/shiny/25.glb',
+  )
+  await expect(page.getByText('Não foi possível carregar o modelo 3D.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible()
+  expect(requests).toBe(loadedRequests)
+})

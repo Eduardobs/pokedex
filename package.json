@@ -25,6 +25,7 @@
     "audit:battle-abilities": "BATTLE_ABILITY_AUDIT_REPORT=1 vitest run src/lib/battle-ability-audit.test.ts && prettier --write docs/battle-ability-audit.md docs/battle-ability-audit.json"
   },
   "dependencies": {
+    "@google/model-viewer": "^4.4.0",
     "lucide-react": "1.57.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
