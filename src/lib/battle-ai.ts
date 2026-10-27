@@ -1,5 +1,6 @@
 import {
   currentBattleStats,
+  battleMoveSlot,
   legalBattleMoveIndexes,
   possibleBattleStats,
   type BattleChoice,
@@ -62,15 +63,18 @@ function damageScore(
   field: BattleField,
   detailed: boolean,
 ) {
-  const effectiveness = multiplier(move.type, foe.types)
+  const effectiveness = move.name === 'struggle' ? 1 : multiplier(move.type, foe.types)
   if (!effectiveness || move.damageClass === 'status') return 0
-  const stab = own.pokemon.types.includes(move.type)
-    ? own.terastallized && own.member.tera === move.type
-      ? 2
-      : 1.5
-    : own.terastallized && own.member.tera === move.type
-      ? 1.5
-      : 1
+  const stab =
+    move.name === 'struggle'
+      ? 1
+      : own.pokemon.types.includes(move.type)
+        ? own.terastallized && own.member.tera === move.type
+          ? 2
+          : 1.5
+        : own.terastallized && own.member.tera === move.type
+          ? 1.5
+          : 1
   if (!detailed) return ((move.power ?? 50) * stab * effectiveness) / 2
   const stats = currentBattleStats(own)
   const physical = move.damageClass === 'physical'
@@ -131,7 +135,7 @@ export function chooseBattleOpponentAction(
   const switches = side.roster.flatMap((pokemon, index) => (index !== side.active && pokemon.hp > 0 ? [index] : []))
   const legal = legalBattleMoveIndexes(own)
   // Beginner levels avoid voluntary pivot moves too, unless no legal alternative remains.
-  const simpleMoves = rank <= 1 ? legal.filter((index) => !pivots.has(own.moves[index].data.name)) : legal
+  const simpleMoves = rank <= 1 ? legal.filter((index) => !pivots.has(battleMoveSlot(own, index).data.name)) : legal
   const moves = simpleMoves.length ? simpleMoves : legal
   const pick = (indexes: number[]) => indexes[Math.min(indexes.length - 1, Math.floor(random() * indexes.length))] ?? 0
   if (rank === 0) return forced ? { kind: 'switch', index: pick(switches) } : { kind: 'move', index: pick(moves) }
@@ -235,7 +239,9 @@ export function chooseBattleOpponentAction(
     const candidate = side.roster[index]
     const attack = Math.max(
       0,
-      ...legalBattleMoveIndexes(candidate).map((moveIndex) => scoreMove(candidate, candidate.moves[moveIndex].data)),
+      ...legalBattleMoveIndexes(candidate).map((moveIndex) =>
+        scoreMove(candidate, battleMoveSlot(candidate, moveIndex).data),
+      ),
     )
     let cost = 0
     if (rank >= 4 && candidate.item?.name !== 'heavy-duty-boots' && candidate.ability.name !== 'magic-guard') {
@@ -256,7 +262,7 @@ export function chooseBattleOpponentAction(
     }
   const options: { choice: BattleChoice; score: number }[] = moves.map((index) => ({
     choice: { kind: 'move', index },
-    score: scoreMove(own, own.moves[index].data),
+    score: scoreMove(own, battleMoveSlot(own, index).data),
   }))
   if (rank >= 2 && !own.volatile.bound && !own.volatile.ingrain && !own.volatile.octolock) {
     for (const index of switches)
@@ -271,7 +277,7 @@ export function chooseBattleOpponentAction(
   if (best.kind === 'move' && rank >= 3 && !own.terastallized) {
     const defensiveGain = threat - incomingThreat(own, foe, detailed, true)
     const transformed = { ...own, terastallized: true }
-    const move = own.moves[best.index].data
+    const move = battleMoveSlot(own, best.index).data
     const offensiveGain = scoreMove(transformed, move) - scoreMove(own, move)
     // Tera resolves after this turn, so value it for subsequent turns only.
     best.tera = defensiveGain + offensiveGain > 18 && own.hp / own.maxHp > 0.25

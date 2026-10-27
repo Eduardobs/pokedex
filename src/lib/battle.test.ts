@@ -2,6 +2,8 @@ import { BATTLE_DIFFICULTIES } from './battle-ai'
 import { describe, expect, it } from 'vitest'
 import {
   battleMoveEffectiveness,
+  STRUGGLE_INDEX,
+  STRUGGLE_MOVE,
   battleSameTypeAttackBonus,
   chooseOpponentAction,
   createBattlePokemon,
@@ -77,6 +79,104 @@ const roster = (source: Team, firstTypes = ['normal']) =>
       move({ name: 'growl', damageClass: 'status', power: null, statChanges: [{ stat: 'attack', change: -1 }] }),
     ]),
   )
+
+describe('Struggle fallback', () => {
+  const setup = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    state.player.roster[0].moves.forEach((slot) => {
+      slot.pp = 0
+    })
+    return state
+  }
+
+  it('only offers the fallback when all moves are unusable, including restrictions', () => {
+    const state = setup()
+    const user = state.player.roster[0]
+    expect(legalBattleMoveIndexes(user)).toEqual([STRUGGLE_INDEX])
+    user.moves[0].pp = 1
+    expect(legalBattleMoveIndexes(user)).toEqual([0])
+    user.disabledMoveIndex = 0
+    user.volatile.disable = 3
+    expect(legalBattleMoveIndexes(user)).toEqual([STRUGGLE_INDEX])
+    user.recharging = true
+    expect(legalBattleMoveIndexes(user)).toEqual([])
+  })
+
+  it.each(['magic-guard', 'rock-head', 'reckless'])(
+    'hits Ghosts through Wonder Guard and applies maximum-HP recoil with %s',
+    (ability) => {
+      const state = setup()
+      const user = state.player.roster[0]
+      user.ability.name = ability
+      user.maxHp = user.hp = 301
+      user.stages.accuracy = -6
+      const target = state.opponent.roster[0]
+      target.pokemon.types = ['ghost']
+      target.ability.name = 'wonder-guard'
+      target.stages.evasion = 6
+      expect(battleMoveEffectiveness(STRUGGLE_MOVE, target, user)).toBe(1)
+      const result = resolveBattleTurn(state, { kind: 'move', index: -1 }, { kind: 'switch', index: 0 }, () => 0.99)
+      expect(result.state.opponent.roster[0].hp).toBeLessThan(target.hp)
+      expect(result.state.player.roster[0].hp).toBe(226)
+      expect(result.state.player.roster[0].moves.map((slot) => slot.pp)).toEqual([0, 0, 0, 0])
+      expect(result.events).toContainEqual(expect.objectContaining({ type: 'move', move: 'struggle' }))
+      expect(result.events.some((event) => event.type === 'miss')).toBe(false)
+    },
+  )
+
+  it.each(['protect', 'detect'])('is blocked by %s without recoil', (name) => {
+    const state = setup()
+    state.opponent.roster[0].moves[0].data = move({
+      name,
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      priority: 4,
+    })
+    const result = resolveBattleTurn(state, { kind: 'move', index: -1 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(state.player.roster[0].hp)
+    expect(result.state.opponent.roster[0].hp).toBe(state.opponent.roster[0].hp)
+    expect(result.events.some((event) => event.type === 'protected')).toBe(true)
+  })
+
+  it('does not receive STAB, including Normal Terastallization', () => {
+    const damage = (types: string[], tera: boolean) => {
+      const state = setup()
+      state.player.roster[0].pokemon.types = types
+      state.player.roster[0].terastallized = tera
+      return resolveBattleTurn(state, { kind: 'move', index: -1 }, { kind: 'switch', index: 0 }, () => 0.5).state
+        .opponent.roster[0].hp
+    }
+    expect(damage(['normal'], true)).toBe(damage(['water'], false))
+  })
+
+  it('applies recoil through Substitute and can faint the user', () => {
+    const state = setup()
+    state.player.roster[0].hp = 1
+    state.opponent.roster[0].substituteHp = 100
+    const result = resolveBattleTurn(state, { kind: 'move', index: -1 }, { kind: 'switch', index: 0 }, () => 0.5)
+    expect(result.state.opponent.roster[0].hp).toBe(state.opponent.roster[0].hp)
+    expect(result.state.opponent.roster[0].substituteHp).toBeLessThan(100)
+    expect(result.state.player.roster[0].hp).toBe(0)
+    expect(result.events).toContainEqual({ type: 'faint', pokemon: state.player.roster[0].pokemon.name })
+    expect(result.state.phase).toBe('player-switch')
+  })
+
+  it.each(BATTLE_DIFFICULTIES)('allows the %s AI to use Struggle repeatedly', (difficulty) => {
+    const state = setup()
+    state.opponent.roster.forEach((pokemon) =>
+      pokemon.moves.forEach((slot) => {
+        slot.pp = 0
+      }),
+    )
+    const choice = chooseOpponentAction(state, () => 0.5, difficulty)
+    expect(choice).toMatchObject({ kind: 'move', index: STRUGGLE_INDEX })
+    const result = resolveBattleTurn(state, { kind: 'move', index: -1 }, choice, () => 0.5)
+    expect(legalBattleMoveIndexes(result.state.opponent.roster[0])).toEqual([STRUGGLE_INDEX])
+  })
+})
 
 describe('Random Battle engine', () => {
   it('uses the selected ability when calculating battle stats', () => {

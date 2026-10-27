@@ -45,6 +45,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle Gigaton Hammer and Blood Moon fail only when the same move succeeded on the immediately preceding turn; a failed execution permits another attempt and does not force recharge.
 - Random Battle accuracy and evasion use separate stages from -6 to +6 with 3-based multipliers; hit probability is base accuracy times the user's multiplier divided by the target's multiplier, followed by Bright Powder and weather evasion modifiers.
 - Random Battle does not implement Z-Move or Max Move activation.
+- Random Battle offers Struggle only when no learned move is usable; it has 50 physical power, deals typeless damage without STAB, bypasses accuracy checks and Wonder Guard, respects Protect and Detect, and costs one quarter of maximum HP in recoil regardless of Magic Guard or Rock Head.
 
 - Team member editing offers compatible bundled Showdown sets by role and a repeatable Random option that randomizes all editable build fields, spends all 510 EVs, and respects the available abilities, moves, and genders.
 

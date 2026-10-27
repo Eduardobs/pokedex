@@ -1,4 +1,6 @@
 export const en = {
+  'battle.struggleDescription':
+    'Used when no other move is usable. Deals typeless damage and costs one quarter of the user’s maximum HP in recoil.',
   'battle.difficulty': 'Difficulty',
   'battle.difficulty.very-easy': 'Very easy',
   'battle.difficulty.very-easy.description': 'Chooses moves at random, without voluntary switches or Terastallization.',

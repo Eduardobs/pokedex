@@ -1,4 +1,6 @@
 export const es = {
+  'battle.struggleDescription':
+    'Se usa cuando ningún otro movimiento está disponible. Causa daño sin tipo y resta un cuarto de los PS máximos del usuario por retroceso.',
   'battle.difficulty': 'Dificultad',
   'battle.difficulty.very-easy': 'Muy fácil',
   'battle.difficulty.very-easy.description':

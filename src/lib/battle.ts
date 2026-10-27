@@ -32,6 +32,29 @@ export type BattleMove = {
   descriptions?: { language: string; text: string }[]
 }
 
+// A virtual slot keeps the fallback out of learned moves and their PP.
+export const STRUGGLE_INDEX = -1
+export const STRUGGLE_MOVE: BattleMove = {
+  name: 'struggle',
+  type: 'normal',
+  damageClass: 'physical',
+  power: 50,
+  accuracy: null,
+  priority: 0,
+  pp: 1,
+  target: 'random-opponent',
+  healing: 0,
+  drain: 0,
+  ailment: null,
+  ailmentChance: 0,
+  effectChance: null,
+  statChanges: [],
+}
+
+export function battleMoveSlot(pokemon: BattlePokemon, index: number) {
+  return index === STRUGGLE_INDEX ? { data: STRUGGLE_MOVE, pp: 1 } : pokemon.moves[index]
+}
+
 export type BattleStages = {
   accuracy: number
   evasion: number
@@ -473,6 +496,7 @@ function heldItemPowerModifier(
   if (item === 'expert-belt' && effectiveness > 1) return 1.2
   if (item === 'muscle-band' && move.damageClass === 'physical') return 1.1
   if (item === 'wise-glasses' && move.damageClass === 'special') return 1.1
+  if (move.name === 'struggle') return 1
   if (typeBoostingItems[move.type]?.has(item)) return 1.2
   if (item === `${move.type}-gem`) {
     activateItem(attacker, events, true)
@@ -635,6 +659,7 @@ function isGrounded(pokemon: BattlePokemon) {
 }
 
 export function battleMoveEffectiveness(move: BattleMove, defender: BattlePokemon, attacker?: BattlePokemon) {
+  if (move.name === 'struggle') return 1
   const immunity = supplementalAbilityMoveImmunities[defender.ability.name]
   const bypassesAbility = attacker && ['mold-breaker', 'turboblaze', 'teravolt'].includes(attacker.ability.name)
   if (
@@ -919,7 +944,7 @@ function semiInvulnerableMultiplier(defender: BattlePokemon, move: BattleMove) {
 export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
   if (pokemon.recharging) return []
   if (pokemon.chargingMoveIndex !== undefined) return [pokemon.chargingMoveIndex]
-  return pokemon.moves.flatMap((move, index) => {
+  const legal = pokemon.moves.flatMap((move, index) => {
     if (move.pp <= 0) return []
     if (pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== index) return []
     if (pokemon.tauntTurns > 0 && move.data.damageClass === 'status') return []
@@ -931,9 +956,11 @@ export function legalBattleMoveIndexes(pokemon: BattlePokemon) {
       return []
     return [index]
   })
+  return legal.length ? legal : [STRUGGLE_INDEX]
 }
 
 function selectedBattleMoveIndex(pokemon: BattlePokemon, requestedIndex: number) {
+  if (legalBattleMoveIndexes(pokemon).includes(STRUGGLE_INDEX)) return STRUGGLE_INDEX
   if (pokemon.chargingMoveIndex !== undefined) return pokemon.chargingMoveIndex
   return pokemon.encoreTurns > 0 && pokemon.encoreMoveIndex !== null ? pokemon.encoreMoveIndex : requestedIndex
 }
@@ -1100,6 +1127,7 @@ function applyAbilityMoveImmunity(
   move: BattleMove,
   events: BattleEvent[],
 ) {
+  if (move.name === 'struggle') return false
   if (['mold-breaker', 'turboblaze', 'teravolt'].includes(attacker.ability.name)) return false
   const rule = supplementalAbilityMoveImmunities[defender.ability.name]
   if (!rule || rule.type !== move.type || (defender.ability.name === 'levitate' && isGrounded(defender))) return false
@@ -1161,10 +1189,10 @@ function applyMove(
   delayed = false,
   blockedByRepeat = false,
 ): MoveOutcome {
-  const slot = attacker.moves[moveSlot]
+  const slot = battleMoveSlot(attacker, moveSlot)
   const releasing = attacker.chargingMoveIndex === moveSlot
   if (!slot || (!releasing && slot.pp <= 0) || attacker.hp <= 0 || defender.hp <= 0) return null
-  if (!releasing) slot.pp -= 1
+  if (!releasing && moveSlot !== STRUGGLE_INDEX) slot.pp -= 1
   const timing = supplementalMoveTimings[slot.data.name]
   const boost = timing?.chargeBoost
   const move = { ...slot.data, statChanges: boost ? [] : slot.data.statChanges }
@@ -1191,7 +1219,7 @@ function applyMove(
   delete attacker.chargingMoveIndex
   const curse = supplementalMoveEffect(move.name)?.kind === 'curse'
   const ghostCurse = curse && effectiveTypes(attacker).includes('ghost')
-  attacker.lastMoveIndex = moveSlot
+  if (moveSlot !== STRUGGLE_INDEX) attacker.lastMoveIndex = moveSlot
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
   if (blockedByRepeat || (releasingCarry && !carriedTargetMatches)) return { hit: true, succeeded: false }
@@ -1547,7 +1575,7 @@ function applyMove(
       let defense = defenderStats[physical ? 2 : 4]
       if (physical && field.weather === 'snow' && effectiveTypes(defender).includes('ice')) defense *= 1.5
       if (!physical && field.weather === 'sandstorm' && effectiveTypes(defender).includes('rock')) defense *= 1.5
-      const stab = battleSameTypeAttackBonus(attacker, move.type)
+      const stab = move.name === 'struggle' ? 1 : battleSameTypeAttackBonus(attacker, move.type)
       const criticalStage = Math.min(
         3,
         (move.critRate ?? (['razor-wind', 'sky-attack'].includes(move.name) ? 1 : 0)) +
@@ -1623,6 +1651,18 @@ function applyMove(
           percentage: hpPercentage(amount, attacker.maxHp),
         })
       }
+    }
+    if (move.name === 'struggle' && applied.amount > 0) {
+      const amount = Math.min(attacker.hp, Math.max(1, Math.round(attacker.maxHp / 4)))
+      attacker.hp -= amount
+      events.push({
+        type: 'damage',
+        pokemon: attacker.pokemon.name,
+        amount,
+        effectiveness: 1,
+        critical: false,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
     }
     if (move.drain && (move.drain < 0 || !attacker.volatile['heal-block'])) {
       const amount = Math.min(
@@ -1853,7 +1893,7 @@ function performChoice(
     tickMoveRestrictions(attacker)
     return
   }
-  const selectedMove = attacker.moves[selectedMoveIndex]?.data.name
+  const selectedMove = battleMoveSlot(attacker, selectedMoveIndex)?.data.name
   const previous = attacker.previousMoveExecution
   const blockedByRepeat = Boolean(
     selectedMove &&
@@ -1886,7 +1926,7 @@ function performChoice(
   }
   if (!outcome) return
   let succeeded = outcome.succeeded
-  const move = attacker.moves[selectedMoveIndex]?.data
+  const move = battleMoveSlot(attacker, selectedMoveIndex)?.data
   if (outcome.hit && move) {
     if (outcome.succeeded && supplementalMoveTimings[move.name]?.rechargeTurns) attacker.recharging = true
     if (move.name === 'smack-down' && ['fly', 'bounce'].includes(semiInvulnerableMove(defender) ?? ''))
@@ -2114,7 +2154,7 @@ function choicePriority(side: BattleSide, choice: BattleChoice) {
   if (choice.kind === 'switch' && pokemon.skyDropSourceId) return 6
   if (pokemon.recharging) return 0
   if (choice.kind === 'switch' && pokemon.chargingMoveIndex === undefined) return 6
-  return pokemon.moves[selectedBattleMoveIndex(pokemon, choice.index)]?.data.priority ?? 0
+  return battleMoveSlot(pokemon, selectedBattleMoveIndex(pokemon, choice.index))?.data.priority ?? 0
 }
 
 function residual(side: BattleSide, foe: BattleSide, field: BattleField, random: RandomSource, events: BattleEvent[]) {
@@ -2495,8 +2535,8 @@ export function resolveBattleTurnSteps(
       !own.roster[own.active]?.recharging &&
       own.roster[own.active]?.hp > 0 &&
       foe.roster[foe.active]?.hp > 0
-        ? (own.roster[own.active].moves[selectedBattleMoveIndex(own.roster[own.active], choice.index)]?.data.name ??
-          null)
+        ? (battleMoveSlot(own.roster[own.active], selectedBattleMoveIndex(own.roster[own.active], choice.index))?.data
+            .name ?? null)
         : null
     performChoice(own, foe, state.field, choice, side, random, events, state.turn)
     if (events.length > eventStart || move) {

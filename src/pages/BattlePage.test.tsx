@@ -334,6 +334,35 @@ describe('BattlePage lobby', () => {
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeEnabled()
   })
 
+  it('offers a reusable Struggle button when every learned move has zero PP', async () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
+      const roster = battleRoster(team)
+      roster.forEach((pokemon) =>
+        pokemon.moves.forEach((slot) => {
+          slot.pp = 0
+        }),
+      )
+      return roster
+    })
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    const fallback = await screen.findByRole('button', { name: 'Struggle' })
+    expect(fallback).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Tackle' })).toBeDisabled()
+    fallback.focus()
+    expect(fallback).toHaveFocus()
+    vi.useFakeTimers()
+    fireEvent.click(fallback)
+    await act(() => vi.runAllTimersAsync())
+    expect(screen.getByRole('button', { name: 'Struggle' })).toBeEnabled()
+    expect(screen.getAllByText('Struggle').length).toBeGreaterThan(1)
+  })
+
   it('temporarily announces misses over the defender for either side', async () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')

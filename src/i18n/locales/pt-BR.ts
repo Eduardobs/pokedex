@@ -1,4 +1,6 @@
 export const ptBR = {
+  'battle.struggleDescription':
+    'Usado quando nenhum outro movimento está disponível. Causa dano sem tipo e retira um quarto do HP máximo do usuário por recuo.',
   'battle.difficulty': 'Dificuldade',
   'battle.difficulty.very-easy': 'Muito fácil',
   'battle.difficulty.very-easy.description': 'Escolhe golpes ao acaso, sem trocas voluntárias ou Terastallização.',

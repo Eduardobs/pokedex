@@ -45,6 +45,8 @@ import {
   currentBattleStats,
   isBattleReadyTeam,
   legalBattleMoveIndexes,
+  STRUGGLE_INDEX,
+  STRUGGLE_MOVE,
   possibleBattleStats,
   resolveBattleTurnSteps,
   type BattleChoice,
@@ -448,7 +450,8 @@ function BattleMoveButton({
 }) {
   const tooltipId = useId()
   const { apiLanguage, language, t } = useLanguage()
-  const description = moveDescription(move.data, apiLanguage)
+  const description =
+    move.data.name === 'struggle' ? t('battle.struggleDescription') : moveDescription(move.data, apiLanguage)
   const number = (value: number | null) => (value === null ? '—' : formatNumber(value, language))
   const multiplier = battleMoveEffectiveness(move.data, opponent)
   const formattedMultiplier = formatDecimal(multiplier, language, 2)
@@ -476,7 +479,7 @@ function BattleMoveButton({
       <span>{prettyName(move.data.name)}</span>
       <TypeBadge type={move.data.type} iconOnly />
       <span className="battle-move-meta">
-        <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
+        <small>{move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
         <small>
           {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
         </small>
@@ -834,7 +837,9 @@ function BattleSwitchButton({
                   <DamageClassBadge value={move.data.damageClass} compact />
                   <TypeBadge type={move.data.type} iconOnly />
                 </span>
-                <small>{t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
+                <small>
+                  {move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}
+                </small>
               </span>
             ))}
           </span>
@@ -995,9 +1000,11 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
 }
 
 function BattleLogMove({ move, data }: { move: string; data?: BattlePokemon['moves'][number]['data'] }) {
+  if (!data && move.toLowerCase() === 'struggle') data = STRUGGLE_MOVE
   const tooltipId = useId()
   const { apiLanguage, language, t } = useLanguage()
-  const description = data ? moveDescription(data, apiLanguage) : ''
+  const description =
+    data?.name === 'struggle' ? t('battle.struggleDescription') : data ? moveDescription(data, apiLanguage) : ''
   return (
     <span
       className="battle-log-move-trigger"
@@ -1546,6 +1553,14 @@ export function BattlePage() {
                   </button>
                 )}
                 <div className="battle-moves">
+                  {legalBattleMoveIndexes(player).includes(STRUGGLE_INDEX) && (
+                    <BattleMoveButton
+                      move={{ data: STRUGGLE_MOVE, pp: 1 }}
+                      opponent={battle.opponent.roster[battle.opponent.active]}
+                      disabled={resolving}
+                      onChoose={() => void play({ kind: 'move', index: STRUGGLE_INDEX, tera: teraSelected })}
+                    />
+                  )}
                   {player.moves.map((move, index) => (
                     <BattleMoveButton
                       key={`${move.data.name}-${index}`}
