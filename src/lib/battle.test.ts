@@ -1942,6 +1942,69 @@ describe('Random Battle engine', () => {
     expect(spun.events).toContainEqual({ type: 'hazardsCleared', side: 'player' })
   })
 
+  it.each(['bound', 'ingrain', 'octolock'] as const)(
+    'allows fainted replacements on either side despite %s, but blocks living switches',
+    (condition) => {
+      for (const side of ['player', 'opponent'] as const) {
+        for (const fainted of [false, true]) {
+          const playerTeam = team('player')
+          const opponentTeam = team('opponent')
+          const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+          const leaving = state[side].roster[0]
+          leaving.volatile[condition] = 5
+          if (fainted) {
+            leaving.hp = 0
+            state.phase = side === 'player' ? 'player-switch' : 'opponent-switch'
+          }
+          const result = resolveBattleTurn(
+            state,
+            side === 'player' ? { kind: 'switch', index: 1 } : { kind: 'move', index: 3 },
+            side === 'opponent' ? { kind: 'switch', index: 1 } : { kind: 'move', index: 3 },
+            () => 0.5,
+          )
+          expect(result.state[side].active).toBe(fainted ? 1 : 0)
+          if (fainted) {
+            expect(result.state.phase).toBe('choice')
+            expect(result.state.turn).toBe(state.turn)
+            expect(result.state[side].roster[0].volatile).toEqual({})
+            expect(result.events).toContainEqual({ type: 'switch', side, pokemon: `${side}-1` })
+            expect(result.events.some((event) => event.type === 'failed')).toBe(false)
+          } else {
+            expect(result.events).toContainEqual({ type: 'failed', pokemon: leaving.pokemon.name })
+          }
+        }
+      }
+    },
+  )
+
+  it('continues after Magma Storm knocks out and binds the active Pokémon', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].hp = 1
+    state.opponent.roster[0].stats[5] = 999
+    state.opponent.roster[0].moves[0].data = move({
+      name: 'magma-storm',
+      type: 'fire',
+      damageClass: 'special',
+      power: 100,
+    })
+    const fainted = resolveBattleTurn(state, { kind: 'move', index: 3 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(fainted.state.player.roster[0].hp).toBe(0)
+    expect(fainted.state.player.roster[0].volatile.bound).toBeGreaterThan(0)
+    expect(fainted.state.phase).toBe('player-switch')
+    const replaced = resolveBattleTurn(
+      fainted.state,
+      { kind: 'switch', index: 1 },
+      chooseOpponentAction(fainted.state, () => 0.5),
+      () => 0.5,
+    )
+    expect(replaced.state.player.active).toBe(1)
+    expect(replaced.state.phase).toBe('choice')
+    const next = resolveBattleTurn(replaced.state, { kind: 'move', index: 3 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(next.state.turn).toBe(replaced.state.turn + 1)
+  })
+
   it('requires a replacement after the active Pokémon faints', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')

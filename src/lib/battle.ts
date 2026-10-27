@@ -1817,7 +1817,11 @@ function performChoice(
     const replacement = own.roster[choice.index]
     if (!replacement || choice.index === own.active || replacement.hp <= 0) return
     const leaving = own.roster[own.active]
-    if (!own.switchRequested && (leaving.volatile.bound || leaving.volatile.ingrain || leaving.volatile.octolock)) {
+    if (
+      leaving.hp > 0 &&
+      !own.switchRequested &&
+      (leaving.volatile.bound || leaving.volatile.ingrain || leaving.volatile.octolock)
+    ) {
       events.push({ type: 'failed', pokemon: leaving.pokemon.name })
       return
     }
