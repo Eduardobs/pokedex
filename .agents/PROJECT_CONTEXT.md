@@ -4,6 +4,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Definitions
 
+- The Android application uses Capacitor to bundle the same React application as the website.
+- The Android application name is Atlas Pokémon and its permanent application ID is `app.atlaspokemon.android`.
 - The colors and icons associated with Pokémon types must not be changed.
 - The Stellar type uses its seven-facet crystal icon and a green, cyan, blue, violet, and pink gradient wherever a type badge is shown.
 - Tera type references reuse each type's icon and colors inside a crystalline insignia; labeled references use the extended crystalline badge.

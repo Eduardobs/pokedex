@@ -234,3 +234,49 @@ The `/teams` route supports multiple locally saved teams of up to six Pokémon. 
 The `/battle` route consumes that same validated team model. A complete saved team faces a generated six-Pokémon Random Battle opponent in a local singles simulation. Six selectable difficulties range from random moves without voluntary switching to tactical switching, revealed-move threat assessment, field management and coverage of previously revealed reserves. The opponent never reads the pending player action, unrevealed Pokémon or moves, or private build data; difficulty changes decisions rather than stats or resources. The engine covers the core turn loop, priority and Speed order, accuracy, damage variation, STAB and type effectiveness, critical hits, PP, common non-volatile status conditions, stat stages, recovery and drain, voluntary and forced switching, Terastallization, and battle completion. Highly move-specific scripts and the full interaction matrix for every ability and item remain outside this lightweight client-side simulator.
 
 Pokémon details include a lazy-loaded **3D** tab powered by the public [Pokemon3D API](https://github.com/Pokemon-3D-api/api-server). It shares the existing shiny toggle, supports rotation and zoom, and reports unavailable forms without substituting a base model. The catalog is cached for five minutes; models come from the project’s GitHub assets. Google model-viewer renders GLB files with locally hosted Draco decoders. CSP permits these two data origins, blob textures/workers, and WebAssembly compilation for Draco.
+
+## Android (Capacitor)
+
+The Android app bundles the production web build with Capacitor 8. It does not load the GitHub Pages site. Remote data, images, maps, and 3D models still require an internet connection. Preferences, favorites, and teams belong to the app's WebView storage and are separate from browser storage.
+
+### Setup and development
+
+Install Android Studio 2025.2.1 or newer, Android SDK Platform 36, and JDK 21. Configure the Android SDK through Android Studio (or `ANDROID_HOME` for command-line builds), and select JDK 21 as the Gradle JDK / `JAVA_HOME`.
+
+The current Gradle 9.6 / Android Gradle Plugin 9.4.1 configuration also builds with the JDK 25 bundled in Android Studio. On Linux, if Studio is installed under `/opt/android-studio`, use its JDK without installing another Java distribution:
+
+```bash
+JAVA_HOME=/opt/android-studio/jbr ANDROID_HOME="$HOME/Android/Sdk" npm run android:apk
+```
+
+In Android Studio, select that same bundled JDK under **Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK**. Adjust the paths above if your installation uses different locations.
+
+```bash
+npm ci
+npm run android:sync
+npm run android:open
+```
+
+Choose an emulator or connected device in Android Studio and run the `app` configuration. Alternatively, `npm run android:run` builds the web app, syncs it, and launches the Capacitor device selector. Repeat `npm run android:sync` after web or plugin changes; opening Android Studio alone does not update bundled assets.
+
+To generate an installable debug APK on Linux/macOS:
+
+```bash
+npm run android:apk
+```
+
+The APK is generated at `android/app/build/outputs/apk/debug/app-debug.apk`. On Windows, run `npm run android:sync`, then `gradlew.bat assembleDebug` inside `android/`.
+
+### Release preparation
+
+The initial application ID is `app.atlaspokemon.android`; confirm ownership and the final identifier before the first store submission. The launcher icons and splash screen currently use the Capacitor defaults and must be replaced before publication. The display version comes from `package.json`; the native `versionCode` defaults to 1 and must increase for each Google Play upload, for example:
+
+```bash
+npm run android:sync
+cd android
+./gradlew bundleRelease -PversionCode=2
+```
+
+Release builds require the signing environment variables described in [Android releases](docs/android-release.md). The **Android build** GitHub Actions workflow generates downloadable debug APKs for pull requests and pushes to `main`/`master`, plus signed AABs for matching version tags or manual release runs once signing secrets are configured. It does not upload to Google Play yet. The guide covers upload key creation, GitHub secrets, version codes, and first submission requirements.
+
+Before release, verify hardware back navigation, keyboard and system-bar insets, external links, team import/export, maps, and 3D models on real Android devices. The existing browser tests do not validate Android WebView or native integration.

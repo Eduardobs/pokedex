@@ -29,3 +29,9 @@ test-results
 *.tsbuildinfo
 .DS_Store
 *.local
+
+# Android signing credentials
+.android-signing/
+*.jks
+*.keystore
+android/keystore.properties

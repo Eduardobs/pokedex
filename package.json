@@ -10,6 +10,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "android:sync": "npm run build && cap sync android",
+    "android:open": "cap open android",
+    "android:run": "npm run android:sync && cap run android --no-sync",
+    "android:apk": "npm run android:sync && cd android && ./gradlew assembleDebug",
+    "android:bundle": "npm run android:sync && cd android && ./gradlew bundleRelease",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
@@ -25,6 +30,8 @@
     "audit:battle-abilities": "BATTLE_ABILITY_AUDIT_REPORT=1 vitest run src/lib/battle-ability-audit.test.ts && prettier --write docs/battle-ability-audit.md docs/battle-ability-audit.json"
   },
   "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
     "@google/model-viewer": "^4.4.0",
     "lucide-react": "1.61.0",
     "react": "19.3.1",
@@ -32,6 +39,7 @@
     "react-router-dom": "7.18.4"
   },
   "devDependencies": {
+    "@capacitor/cli": "8.5.3",
     "@eslint/js": "10.0.1",
     "@playwright/test": "1.64.1",
     "@testing-library/jest-dom": "7.0.1",
