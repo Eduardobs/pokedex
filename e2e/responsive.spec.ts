@@ -133,3 +133,23 @@ for (const theme of ['light', 'dark']) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
   })
 }
+
+test('uses the persistent mobile shortcuts and keeps the page above them', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 })
+  await page.goto('/#/')
+  const shortcuts = page.getByRole('navigation', { name: 'Navegação rápida' })
+  const teams = shortcuts.getByRole('link', { name: 'Abrir Equipes' })
+  await expect(teams).toBeInViewport()
+  await teams.focus()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL(/#\/teams$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Criar equipes' })).toBeVisible()
+  await expect(teams).toHaveAttribute('aria-current', 'page')
+  const footer = page.locator('footer')
+  await page.evaluate(() => document.fonts.ready)
+  await footer.scrollIntoViewIfNeeded()
+  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }))
+  const footerBox = await footer.boundingBox()
+  const navigationBox = await shortcuts.boundingBox()
+  expect(footerBox!.y + footerBox!.height).toBeLessThanOrEqual(navigationBox!.y)
+})

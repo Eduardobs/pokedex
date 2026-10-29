@@ -135,3 +135,43 @@ describe('ResourceValue', () => {
     )
   })
 })
+
+it('paginates comparable records in a labeled table without losing later rows', () => {
+  renderValue(Array.from({ length: 8 }, (_, index) => ({ level: index + 1, experience: (index + 1) * 100 })))
+  const table = screen.getByRole('table', { name: 'Registros estruturados' })
+  expect(table).toBeInTheDocument()
+  expect(screen.getByRole('columnheader', { name: 'Nível' })).toBeInTheDocument()
+  expect(screen.getByText('600')).toBeInTheDocument()
+  expect(screen.queryByText('800')).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Próxima' }))
+  expect(screen.getByText('800')).toBeInTheDocument()
+  expect(screen.getByText('7–8 de 8')).toBeInTheDocument()
+})
+
+it('allows deep structures to be expanded and preserves fields after the old truncation boundary', async () => {
+  renderValue(Object.fromEntries(Array.from({ length: 18 }, (_, index) => [`field_${index}`, `Value ${index}`])), 4)
+  const disclosure = screen.getByText('Explorar estrutura (18 campos)').closest('details')!
+  expect(screen.queryByText('Value 17')).not.toBeInTheDocument()
+  disclosure.open = true
+  fireEvent(disclosure, new Event('toggle'))
+  expect(await screen.findByText('Value 17')).toBeInTheDocument()
+})
+
+it('preserves prose capitalization and punctuation in structured values', () => {
+  renderValue({ description: 'Lowers the target’s Defense — sometimes.' })
+  expect(screen.getByText('Lowers the target’s Defense — sometimes.')).toBeInTheDocument()
+})
+
+it('retains nested version data associated with a related Pokemon', () => {
+  renderValue([
+    {
+      pokemon: { name: 'pikachu', url: `${API_BASE}/pokemon/25/` },
+      version_details: [{ rarity: 5, version: { name: 'red', url: `${API_BASE}/version/1/` } }],
+    },
+  ])
+  expect(screen.getByRole('link', { name: /Abrir Pikachu/ })).toBeInTheDocument()
+  const summary = screen.getByText('Detalhes desta relação')
+  fireEvent.click(summary)
+  expect(screen.getByText('Detalhes por versão')).toBeInTheDocument()
+  expect(screen.getByText('5')).toBeInTheDocument()
+})

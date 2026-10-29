@@ -1,0 +1,441 @@
+/* Explore presents records by meaning and complexity, rather than JSON depth. */
+.explore-directory-toolbar {
+  margin-block: 24px;
+}
+.explore-group-filters,
+.resource-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.explore-group-filters button,
+.resource-section-nav button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+}
+.explore-group-filters button[aria-pressed='true'] {
+  background: var(--midnight);
+  border-color: var(--midnight);
+  color: #fff;
+}
+.explore-group-filters button:hover,
+.resource-section-nav button:hover {
+  border-color: var(--red);
+}
+.explore-directory-toolbar > p,
+.resource-result-summary {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-block: 16px;
+}
+.resource-result-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
+.resource-result-summary > span {
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.resource-page .data-list {
+  min-width: 0;
+  background: transparent;
+}
+.resource-list-heading {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 24px;
+  gap: 16px;
+  padding: 12px 20px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.resource-page .data-list:not(.move-data-list):not(.ability-data-list) > a {
+  min-height: 72px;
+  grid-template-columns: 58px 40px minmax(0, 1fr) 24px;
+  gap: 16px;
+}
+.resource-page .data-list > a {
+  min-width: 0;
+}
+.resource-page .data-list > a b,
+.resource-page .move-list-name b,
+.resource-page .named-resource {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.resource-page .data-resource-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+.resource-page .data-list b {
+  font-size: 16px;
+}
+.resource-page .data-index {
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+}
+:root[data-theme] .detail-resource-page .resource-detail-header p {
+  color: #d0daeb;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.resource-detail-header > div {
+  min-width: 0;
+}
+.resource-detail-header .language-fallback {
+  color: #d0daeb;
+}
+.resource-section-nav {
+  margin-block: 24px 32px;
+}
+.resource-section-nav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+.resource-section-nav button > span {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 2px 6px;
+  background: var(--surface-soft);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.resource-section {
+  margin-block: 32px;
+}
+.resource-section > h2 {
+  scroll-margin-top: calc(var(--topbar-height) + 20px);
+  font:
+    750 26px Outfit,
+    sans-serif;
+  letter-spacing: -0.6px;
+  margin: 0 0 18px;
+  color: var(--ink);
+}
+.structured-field-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+}
+:root[data-theme] .structured-field {
+  min-width: 0;
+  padding: 0;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  overflow: hidden;
+}
+.structured-field[data-kind='collection'],
+.structured-field[data-kind='object'] {
+  grid-column: 1 / -1;
+}
+.structured-field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--resource-color) 4%, var(--surface));
+}
+.structured-field-heading h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font:
+    650 16px/1.4 Outfit,
+    sans-serif;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+:root[data-theme] .structured-field-heading .detail-field-icon {
+  background: color-mix(in srgb, var(--resource-color) 12%, var(--surface));
+}
+.structured-count {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.structured-field-body {
+  min-width: 0;
+  padding: 20px;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.structured-field[data-kind='metric'] .structured-field-body {
+  font:
+    750 28px/1.35 Outfit,
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.structured-field[data-kind='metric'] .boolean {
+  font:
+    700 14px 'DM Sans',
+    sans-serif;
+}
+.structured-field .boolean {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.structured-field .resource-missing {
+  color: var(--muted);
+}
+:root[data-theme] .nested-value {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+}
+:root[data-theme] .nested-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.35fr) minmax(0, 1fr);
+  align-items: start;
+  padding-block: 12px;
+  gap: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.nested-row:first-child {
+  padding-top: 0;
+}
+:root[data-theme] .nested-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.nested-row > dt {
+  color: var(--muted);
+  line-height: 1.6;
+  font-weight: 600;
+}
+.nested-row > dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.6;
+}
+.resource-records,
+.resource-record-scroll {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+.resource-record-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  scrollbar-width: thin;
+}
+.resource-record-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+  line-height: 1.6;
+}
+.resource-record-table th,
+.resource-record-table td {
+  min-width: 100px;
+  max-width: 380px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+.resource-record-table th {
+  color: var(--muted);
+  background: var(--surface-soft);
+  font-size: 11px;
+  font-weight: 750;
+}
+.resource-record-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.resource-record-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface-soft) 50%, var(--surface));
+}
+.resource-record-table tbody tr:hover {
+  background: color-mix(in srgb, var(--resource-color) 5%, var(--surface));
+}
+.resource-records > .page-navigation,
+.resource-value-pages > .page-navigation,
+.related-pokemon-pages > .page-navigation {
+  margin-bottom: 0;
+}
+:root[data-theme] .resource-value-item {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+.resource-value-meta,
+.resource-value-index {
+  color: var(--muted);
+}
+:root[data-theme] .resource-chip {
+  min-height: 36px;
+  padding: 7px 10px;
+  border-color: var(--line);
+  background: var(--surface-soft);
+  color: var(--ink);
+  line-height: 1.4;
+}
+.resource-object-disclosure {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.resource-object-disclosure > summary {
+  padding: 12px;
+  min-height: 44px;
+  cursor: pointer;
+  color: var(--red);
+  font-weight: 700;
+}
+.resource-object-disclosure > .nested-value {
+  padding: 12px;
+}
+:root[data-theme] .technical-details > summary {
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+@media (max-width: 1000px) {
+  .structured-field-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 720px) {
+  .explore-group-filters {
+    gap: 6px;
+  }
+  .explore-group-filters button {
+    padding-inline: 12px;
+    font-size: 12px;
+  }
+  .resource-list-heading {
+    grid-template-columns: 44px minmax(0, 1fr) 18px;
+    padding-inline: 12px;
+  }
+  .resource-page .data-list:not(.move-data-list):not(.ability-data-list) > a {
+    grid-template-columns: 44px 36px minmax(0, 1fr) 18px;
+    gap: 8px;
+    padding: 12px;
+  }
+  .resource-page .data-resource-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .resource-section-nav {
+    gap: 6px;
+    margin-block: 20px;
+  }
+  .resource-section-nav button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  .structured-field-grid {
+    gap: 10px;
+  }
+  .structured-field-heading {
+    padding: 14px;
+  }
+  .structured-field-heading h3 {
+    font-size: 14px;
+  }
+  .structured-field-body {
+    padding: 14px;
+  }
+  .structured-field[data-kind='metric'] .structured-field-body {
+    font-size: 24px;
+  }
+  :root[data-theme] .nested-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .resource-record-table th,
+  .resource-record-table td {
+    padding: 10px 12px;
+  }
+}
+@media (max-width: 400px) {
+  .structured-field[data-kind='reference'] {
+    grid-column: 1 / -1;
+  }
+  .structured-field-heading h3 {
+    flex-wrap: wrap;
+  }
+}
+
+.related-record-details {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: var(--surface-soft);
+}
+.related-record-details > summary {
+  min-height: 32px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--red);
+}
+.related-record-details[open] > summary {
+  margin-bottom: 12px;
+}
+.related-record-details .nested-value {
+  font-size: 12px;
+}
+
+.structured-field[data-kind='text'] {
+  grid-column: 1 / -1;
+}
+.value-list > .nested-value {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+:root[data-theme] .nested-row[data-complex='true'] {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+.related-pokemon-list:has(.related-record-details) {
+  grid-template-columns: minmax(0, 1fr);
+}
+:root[data-theme] .related-pokemon-card {
+  background: var(--surface-soft);
+  border-color: var(--line);
+}
+.structured-field-grid:has(> .structured-field:only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+:root[data-theme] .resource-detail-header .api-link,
+:root[data-theme] .resource-detail-header > .icon-button {
+  background: #ffffff12;
+  border-color: #ffffff30;
+  color: #fff;
+}

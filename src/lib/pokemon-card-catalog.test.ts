@@ -28,6 +28,53 @@ afterEach(() => {
 })
 
 describe('Pokémon card catalog', () => {
+  it('loads and caches Pokédex cards through REST without requesting GraphQL', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = String(input)
+      expect(url).toMatch(/^https:\/\/pokeapi.co\/api\/v2\/pokemon\//)
+      const pokemon = pokemonPayload.data.pokemon.find((entry) => url.endsWith(`/${entry.name}`))!
+      return Response.json({ ...pokemon, types: pokemon.pokemontypes })
+    })
+    const { fetchPokemonCardDetails } = await import('./pokemon-card-catalog')
+    const details = await fetchPokemonCardDetails(['pikachu', 'bulbasaur'], 'pokemon')
+    expect(details.pikachu.types[0].type.name).toBe('electric')
+    expect(details.bulbasaur.types).toHaveLength(2)
+    await fetchPokemonCardDetails(['pikachu', 'bulbasaur'], 'pokemon')
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('loads the routable Pokémon for a REST form fallback', async () => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = String(input)
+      if (url.includes('graphql.pokeapi.co')) return new Response('{}', { status: 404 })
+      return Response.json(
+        url.includes('pokemon-form/')
+          ? { name: 'pikachu-rock-star', is_battle_only: false, pokemon: { name: 'pikachu-rock-star' } }
+          : { id: 10080, name: 'pikachu-rock-star', types: [{ slot: 1, type: { name: 'electric' } }] },
+      )
+    })
+    const { fetchPokemonCardDetails } = await import('./pokemon-card-catalog')
+    await expect(fetchPokemonCardDetails(['pikachu-rock-star'], 'form')).resolves.toMatchObject({
+      'pikachu-rock-star': { id: 10080, name: 'pikachu-rock-star', isBattleOnly: false },
+    })
+  })
+
+  it('rejects malformed REST fallback data without caching card details', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockImplementation(async (input) =>
+        String(input).includes('graphql.pokeapi.co')
+          ? new Response('{}', { status: 404 })
+          : Response.json({ id: 25, name: 'pikachu', types: [] }),
+      )
+    const { fetchPokemonCardDetails } = await import('./pokemon-card-catalog')
+    await expect(fetchPokemonCardDetails(['pikachu'], 'pokemon')).rejects.toMatchObject({ code: 'invalid-response' })
+    await expect(fetchPokemonCardDetails(['pikachu'], 'pokemon')).rejects.toMatchObject({ code: 'invalid-response' })
+    expect(
+      fetchMock.mock.calls.every(([input]) => String(input).startsWith('https://pokeapi.co/api/v2/pokemon/')),
+    ).toBe(true)
+  })
+
   it('maps a bounded Pokémon batch to the card model', () => {
     expect(parsePokemonCardDetails(pokemonPayload, ['bulbasaur', 'pikachu'], 'pokemon')).toEqual({
       bulbasaur: {
@@ -97,28 +144,6 @@ describe('Pokémon card catalog', () => {
         'pokemon',
       ),
     ).toThrow(ApiError)
-  })
-
-  it('replaces per-card REST fan-out with one field-limited request and caches it', async () => {
-    const fetchMock = vi
-      .spyOn(globalThis, 'fetch')
-      .mockResolvedValue(
-        new Response(JSON.stringify(pokemonPayload), { headers: { 'content-type': 'application/json' } }),
-      )
-    const { fetchPokemonCardDetails } = await import('./pokemon-card-catalog')
-
-    const first = await fetchPokemonCardDetails(['pikachu', 'bulbasaur'], 'pokemon')
-    const second = await fetchPokemonCardDetails(['bulbasaur', 'pikachu'], 'pokemon')
-
-    expect(first).toEqual(second)
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    const body = JSON.parse(String(fetchMock.mock.calls[0][1]?.body))
-    expect(body).toMatchObject({
-      operationName: 'PokemonCardDetails',
-      variables: { names: ['bulbasaur', 'pikachu'] },
-    })
-    expect(body.query).toContain('pokemontypes')
-    expect(body.query).not.toContain('pokemonsprites')
   })
 
   it('rejects more than one rendered batch', async () => {

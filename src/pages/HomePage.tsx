@@ -1,18 +1,23 @@
-import { ArrowRight, BookOpen, Database, MapPin, MapPinned, Grid3X3, UsersRound, Sparkles, Swords } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import {
+  ArrowRight,
+  BookOpen,
+  Database,
+  MapPin,
+  MapPinned,
+  Grid3X3,
+  UsersRound,
+  Sparkles,
+  Swords,
+  Search,
+} from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { RESOURCE_COLLECTION_COUNT } from '../data/resource-summary'
 import { formatNumber } from '../lib/api'
 
-const featured = [
-  { id: 1, name: 'bulbasaur', color: '#74c856' },
-  { id: 4, name: 'charmander', color: '#f07a46' },
-  { id: 7, name: 'squirtle', color: '#5bb7db' },
-  { id: 25, name: 'pikachu', color: '#f2c94c' },
-]
-
 export function HomePage() {
   const { language, t } = useLanguage()
+  const navigate = useNavigate()
   return (
     <>
       <section className="hero">
@@ -26,6 +31,29 @@ export function HomePage() {
             <em>{t('home.titleAccent')}</em>
           </h1>
           <p>{t('home.description')}</p>
+          <form
+            className="home-search search-field"
+            role="search"
+            aria-label={t('home.openPokedex')}
+            onSubmit={(event) => {
+              event.preventDefault()
+              const query = String(new FormData(event.currentTarget).get('query') ?? '').trim()
+              navigate(query ? `/pokemon?q=${encodeURIComponent(query)}` : '/pokemon')
+            }}
+          >
+            <Search size={20} aria-hidden="true" />
+            <input
+              name="query"
+              aria-label={t('nav.searchLabel')}
+              placeholder={t('nav.searchPlaceholder')}
+              maxLength={64}
+              autoComplete="off"
+              enterKeyHint="search"
+            />
+            <button type="submit" aria-label={t('home.openPokedex')}>
+              <ArrowRight size={20} aria-hidden="true" />
+            </button>
+          </form>
           <div className="hero-actions">
             <Link to="/pokemon" className="button primary">
               {t('home.openPokedex')} <ArrowRight size={18} />
@@ -47,27 +75,40 @@ export function HomePage() {
           </div>
         </div>
         <div className="hero-visual" aria-label={t('home.featured')}>
-          <div className="hero-rings" />
-          {featured.map((pokemon, index) => (
-            <Link
-              to={`/pokemon/${pokemon.name}`}
-              key={pokemon.name}
-              className={`hero-pokemon p${index + 1}`}
-              style={{ '--accent': pokemon.color } as React.CSSProperties}
-            >
-              <img
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
-                alt={pokemon.name}
-                width="190"
-                height="190"
-                decoding="async"
-                loading={index === 0 ? 'eager' : 'lazy'}
-                fetchPriority={index === 0 ? 'high' : 'low'}
-              />
-            </Link>
-          ))}
-          <div className="hero-ball">
-            <span />
+          <span className="hero-specimen-number" aria-hidden="true">
+            006
+          </span>
+          <div className="hero-orbit" aria-hidden="true" />
+          <Link to="/pokemon/charizard" className="hero-featured-pokemon">
+            <img
+              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png"
+              alt="Charizard"
+              width="475"
+              height="475"
+              fetchPriority="high"
+              decoding="async"
+            />
+            <span className="hero-specimen-caption">
+              <span>#0006</span> Charizard <ArrowRight size={20} aria-hidden="true" />
+            </span>
+          </Link>
+          <div className="hero-starters">
+            {[
+              { id: 1, name: 'Bulbasaur' },
+              { id: 4, name: 'Charmander' },
+              { id: 7, name: 'Squirtle' },
+            ].map((pokemon) => (
+              <Link to={`/pokemon/${pokemon.name.toLowerCase()}`} key={pokemon.id}>
+                <img
+                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
+                  alt={pokemon.name}
+                  width="64"
+                  height="64"
+                  loading="lazy"
+                />
+                <span>{pokemon.name}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
@@ -84,6 +125,9 @@ export function HomePage() {
         </div>
         <div className="quick-grid">
           <Link to="/pokemon" className="quick-card red">
+            <span className="quick-card-index" aria-hidden="true">
+              01
+            </span>
             <div className="quick-icon">
               <BookOpen />
             </div>
@@ -94,6 +138,9 @@ export function HomePage() {
             <ArrowRight />
           </Link>
           <Link to="/explore/move" className="quick-card purple">
+            <span className="quick-card-index" aria-hidden="true">
+              02
+            </span>
             <div className="quick-icon">
               <Swords />
             </div>
@@ -104,6 +151,9 @@ export function HomePage() {
             <ArrowRight />
           </Link>
           <Link to="/explore/region" className="quick-card green">
+            <span className="quick-card-index" aria-hidden="true">
+              03
+            </span>
             <div className="quick-icon">
               <MapPin />
             </div>
@@ -114,6 +164,9 @@ export function HomePage() {
             <ArrowRight />
           </Link>
           <Link to="/explore" className="quick-card blue">
+            <span className="quick-card-index" aria-hidden="true">
+              04
+            </span>
             <div className="quick-icon">
               <Database />
             </div>

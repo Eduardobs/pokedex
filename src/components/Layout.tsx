@@ -25,6 +25,7 @@ import { FEATURE_FLAGS } from '../config/feature-flags'
 import { writeStorageString } from '../lib/storage'
 import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { Logo } from './Logo'
+import { PrimaryShortcuts } from './PrimaryShortcuts'
 import { Loading } from './Loading'
 import { ScrollToTop } from './ScrollToTop'
 import { Seo } from './Seo'
@@ -496,6 +497,7 @@ export function Layout() {
           {menuOpen ? <X /> : <Menu />}
         </button>
       </header>
+      <PrimaryShortcuts />
       <p className="sr-only" aria-live="polite">
         {routeTitle}
       </p>

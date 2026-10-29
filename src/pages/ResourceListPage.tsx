@@ -184,6 +184,10 @@ export function ResourceListPage() {
           <small>{t('ui.collectionSearchHint')}</small>
         </div>
       </div>
+      <p className="resource-result-summary" role="status">
+        {t('resource.collectionCount', { count: formatNumber(resultCount, language) })}
+        {query && <span>{t('resource.searchQuery', { query })}</span>}
+      </p>
       {resultCount > LIMIT && pagination('top')}
       {loading && (
         <div className="resource-list-skeleton" role="status" aria-label={t('common.loadingShort')}>
@@ -207,6 +211,13 @@ export function ResourceListPage() {
         className={`data-list${resource === 'move' ? ' move-data-list' : ''}${resource === 'ability' ? ' ability-data-list' : ''}`}
         aria-busy={(resource === 'move' && moveDetails.loading) || (resource === 'ability' && abilityDetails.loading)}
       >
+        {resource !== 'move' && resource !== 'ability' && (
+          <div className="resource-list-heading" aria-hidden="true">
+            <span>#</span>
+            <span>{getResourceLabel(resource, language)}</span>
+            <span />
+          </div>
+        )}
         {resource === 'move' && (
           <div className="move-list-heading" aria-hidden="true">
             <span>#</span>

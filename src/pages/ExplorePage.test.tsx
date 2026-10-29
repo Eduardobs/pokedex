@@ -57,3 +57,13 @@ describe('ExplorePage', () => {
     expect(screen.getByRole('heading', { level: 2, name: 'Idiomas' })).toBeVisible()
   })
 })
+
+it('persists the group filter and combines it with the collection search', () => {
+  renderPage('/explore?q=classes')
+  fireEvent.click(screen.getByRole('button', { name: 'Combate' }))
+  expect(screen.getByTestId('location')).toHaveTextContent('group=move')
+  expect(screen.getByRole('button', { name: 'Combate' })).toHaveAttribute('aria-pressed', 'true')
+  expect(screen.getByRole('link', { name: /Classes de dano/ })).toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Pokémon' })).not.toBeInTheDocument()
+  expect(screen.getByText('Coleções: 1 · Grupos: 1')).toBeInTheDocument()
+})

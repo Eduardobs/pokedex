@@ -1,17 +1,10 @@
 import { GRAPHQL_API_URL, NETWORK, POKEMON_CATALOG_LIMIT } from '../config/app'
 import { ApiError, readBoundedJsonResponse } from './api-client'
+import { apiFetch } from './api'
 
 const MAX_CARD_BATCH_SIZE = 32
 const NAME_PATTERN = /^[a-z0-9-]{1,100}$/
 const TYPE_PATTERN = /^[a-z0-9-]{1,32}$/
-
-const POKEMON_CARD_QUERY = `query PokemonCardDetails($names: [String!]!) {
-  pokemon(limit: ${MAX_CARD_BATCH_SIZE}, where: { name: { _in: $names } }) {
-    id
-    name
-    pokemontypes(order_by: { slot: asc }) { slot type { name } }
-  }
-}`
 
 const FORM_CARD_QUERY = `query PokemonFormCardDetails($names: [String!]!) {
   pokemonform(limit: ${MAX_CARD_BATCH_SIZE}, where: { name: { _in: $names } }) {
@@ -122,6 +115,41 @@ export function parsePokemonCardDetails(
   return details
 }
 
+async function requestRestCardDetails(kind: CardKind, names: string[], signal: AbortSignal) {
+  const entries: unknown[] = new Array(names.length)
+  let nextIndex = 0
+  await Promise.all(
+    Array.from({ length: Math.min(4, names.length) }, async () => {
+      while (nextIndex < names.length) {
+        const index = nextIndex++
+        const name = names[index]
+        const resource = await apiFetch<unknown>(
+          `${kind === 'form' ? 'pokemon-form' : 'pokemon'}/${encodeURIComponent(name)}`,
+          signal,
+        )
+        if (!isRecord(resource))
+          throw new ApiError('PokéAPI returned invalid card data.', undefined, 'invalid-response')
+        if (kind === 'form') {
+          if (
+            !isRecord(resource.pokemon) ||
+            typeof resource.pokemon.name !== 'string' ||
+            !NAME_PATTERN.test(resource.pokemon.name)
+          ) {
+            throw new ApiError('PokéAPI returned invalid card data.', undefined, 'invalid-response')
+          }
+          const pokemon = await apiFetch<unknown>(`pokemon/${encodeURIComponent(resource.pokemon.name)}`, signal)
+          if (!isRecord(pokemon))
+            throw new ApiError('PokéAPI returned invalid card data.', undefined, 'invalid-response')
+          entries[index] = { ...resource, pokemon: { ...pokemon, pokemontypes: pokemon.types } }
+        } else {
+          entries[index] = { ...resource, pokemontypes: resource.types }
+        }
+      }
+    }),
+  )
+  return parsePokemonCardDetails({ data: { [kind === 'form' ? 'pokemonform' : 'pokemon']: entries } }, names, kind)
+}
+
 async function requestCardDetails(kind: CardKind, names: string[], controller: AbortController) {
   let timedOut = false
   const timeout = window.setTimeout(() => {
@@ -129,18 +157,23 @@ async function requestCardDetails(kind: CardKind, names: string[], controller: A
     controller.abort()
   }, NETWORK.requestTimeoutMs)
   try {
+    // The Pokédex only needs the visible Pokémon; REST avoids relying on the beta GraphQL service.
+    if (kind === 'pokemon') return await requestRestCardDetails(kind, names, controller.signal)
     const response = await fetch(GRAPHQL_API_URL, {
       method: 'POST',
       headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        query: kind === 'pokemon' ? POKEMON_CARD_QUERY : FORM_CARD_QUERY,
+        query: FORM_CARD_QUERY,
         variables: { names },
-        operationName: kind === 'pokemon' ? 'PokemonCardDetails' : 'PokemonFormCardDetails',
+        operationName: 'PokemonFormCardDetails',
       }),
       credentials: 'omit',
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
+    if (response.status === 404 || response.status >= 500) {
+      return await requestRestCardDetails(kind, names, controller.signal)
+    }
     if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
     return parsePokemonCardDetails(await readBoundedJsonResponse(response), names, kind)
   } catch (error) {

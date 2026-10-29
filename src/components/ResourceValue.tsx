@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react'
+import { Check, ChevronRight, X } from 'lucide-react'
 import { Pagination } from './Pagination'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -7,13 +7,14 @@ import { useLanguage } from '../contexts/LanguageContext'
 import type { Language, TranslationKey } from '../contexts/LanguageContext'
 import { getResourceLabel } from '../data/resources'
 import { messages } from '../i18n/messages'
-import { pokemonVariantForSpeciesGender } from '../lib/pokemon-species'
+import { defaultPokemonNameForSpecies, pokemonVariantForSpeciesGender } from '../lib/pokemon-species'
 import { parseRelatedPokemonList } from '../lib/related-pokemon'
 import type { RelatedPokemonDatum, RelatedPokemon } from '../lib/related-pokemon'
 import { DamageClassBadge } from './SemanticBadges'
 import { TypeBadge } from './TypeBadge'
+import { resourceRecordColumns } from '../lib/resource-presentation'
 
-const excluded = new Set(['sprites', 'game_indices', 'version_group_details', 'past_values', 'past_types'])
+const excluded = new Set(['sprites'])
 const PAGE_SIZE = 6
 
 export const resourceFieldLabel = (key: string, language: Language) => {
@@ -29,7 +30,7 @@ function routeFromReference(url: string, resourceName: string) {
       .split('/')
       .filter(Boolean)
     if ((endpoint === 'pokemon' || endpoint === 'pokemon-species') && resourceName) {
-      return `/pokemon/${encodeURIComponent(resourceName)}`
+      return `/pokemon/${encodeURIComponent(endpoint === 'pokemon-species' ? defaultPokemonNameForSpecies(resourceName) : resourceName)}`
     }
     return endpoint && name ? `/explore/${encodeURIComponent(endpoint)}/${encodeURIComponent(name)}` : null
   } catch {
@@ -182,6 +183,12 @@ function RelatedPokemonValues({ values, pokemonGender }: { values: RelatedPokemo
                 </span>
                 <ChevronRight className="related-pokemon-chevron" aria-hidden="true" />
               </Link>
+              {pokemon.extraDetails && (
+                <details className="related-record-details">
+                  <summary>{t('resource.relationshipDetails')}</summary>
+                  <ResourceValue value={pokemon.extraDetails} />
+                </details>
+              )}
             </li>
           )
         })}
@@ -191,30 +198,131 @@ function RelatedPokemonValues({ values, pokemonGender }: { values: RelatedPokemo
   )
 }
 
+function ResourceRecordTable({
+  values,
+  columns,
+  depth,
+  label,
+}: {
+  values: Record<string, unknown>[]
+  columns: string[]
+  depth: number
+  label?: string
+}) {
+  const { language, t } = useLanguage()
+  const pagination = useResourcePagination(values.length)
+  return (
+    <div className="resource-records">
+      <div
+        className="resource-record-scroll"
+        role="region"
+        aria-label={label ?? t('resource.structuredRecords')}
+        tabIndex={0}
+      >
+        <table className="resource-record-table">
+          <caption className="sr-only">{label ?? t('resource.structuredRecords')}</caption>
+          <thead>
+            <tr>
+              {columns.map((key) => (
+                <th scope="col" key={key}>
+                  {resourceFieldLabel(key, language)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {values.slice(pagination.start, pagination.end).map((row, index) => (
+              <tr key={pagination.start + index}>
+                {columns.map((key) => (
+                  <td key={key}>
+                    <ResourceValue value={row[key]} depth={depth + 1} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ResourceValuePagination pagination={pagination} live />
+    </div>
+  )
+}
+
+function ExpandedResourceValue({
+  value,
+  pokemonGender,
+}: {
+  value: Record<string, unknown>
+  pokemonGender?: PokemonGender
+}) {
+  const { language, t } = useLanguage()
+  const [open, setOpen] = useState(false)
+  return (
+    <details className="resource-object-disclosure" onToggle={(event) => setOpen(event.currentTarget.open)}>
+      <summary>{t('resource.expandStructure', { count: formatNumber(Object.keys(value).length, language) })}</summary>
+      {open && <ResourceValue value={value} pokemonGender={pokemonGender} />}
+    </details>
+  )
+}
+
 export function ResourceValue({
   value,
   depth = 0,
   pokemonGender,
+  label,
 }: {
   value: unknown
+  label?: string
   depth?: number
   pokemonGender?: PokemonGender
 }) {
   const { language, t } = useLanguage()
-  if (value === null || value === undefined) return <span className="muted">—</span>
+  if (value === null || value === undefined)
+    return (
+      <span
+        className="muted resource-missing"
+        title={t('resource.notSpecified')}
+        aria-label={t('resource.notSpecified')}
+      >
+        —
+      </span>
+    )
   if (typeof value === 'boolean')
-    return <span className={`boolean ${value}`}>{value ? t('common.yes') : t('common.no')}</span>
+    return (
+      <span className={`boolean ${value}`}>
+        {value ? <Check size={14} aria-hidden="true" /> : <X size={14} aria-hidden="true" />}
+        {value ? t('common.yes') : t('common.no')}
+      </span>
+    )
   if (typeof value === 'string' || typeof value === 'number')
-    return <span>{typeof value === 'string' ? localizedApiTerm(value, language) : formatNumber(value, language)}</span>
+    return (
+      <span>
+        {typeof value === 'string'
+          ? /^[a-z0-9-]+$/.test(value)
+            ? localizedApiTerm(value, language)
+            : value
+          : formatNumber(value, language)}
+      </span>
+    )
   if (Array.isArray(value)) {
     if (!value.length) return <span className="muted">{t('resource.none')}</span>
     const relatedPokemon = parseRelatedPokemonList(value)
     if (relatedPokemon) return <RelatedPokemonValues values={relatedPokemon} pokemonGender={pokemonGender} />
-    if (depth > 1 || value.length > 20)
+    const columns = resourceRecordColumns(value)
+    if (columns)
+      return (
+        <ResourceRecordTable
+          values={value as Record<string, unknown>[]}
+          columns={columns}
+          depth={depth}
+          label={label}
+        />
+      )
+    if (value.length > PAGE_SIZE)
       return <PaginatedResourceValues values={value} depth={depth} pokemonGender={pokemonGender} />
     return (
       <div className="value-list">
-        {value.slice(0, 20).map((item, index) => (
+        {value.map((item, index) => (
           <ResourceValue key={index} value={item} depth={depth + 1} pokemonGender={pokemonGender} />
         ))}
       </div>
@@ -243,18 +351,30 @@ export function ResourceValue({
       <span>{localizedApiTerm(object.name, language)}</span>
     )
   }
-  if (depth > 3) return <span className="muted">{t('resource.related')}</span>
+  if (depth >= 3) return <ExpandedResourceValue value={object} pokemonGender={pokemonGender} />
+  if (!Object.keys(object).filter((key) => !excluded.has(key)).length)
+    return <span className="muted">{t('resource.none')}</span>
   return (
-    <div className="nested-value">
+    <dl className="nested-value">
       {Object.entries(object)
         .filter(([key]) => !excluded.has(key))
-        .slice(0, 16)
         .map(([key, child]) => (
-          <div className="nested-row" key={key}>
-            <small>{resourceFieldLabel(key, language)}</small>
-            <ResourceValue value={child} depth={depth + 1} pokemonGender={pokemonGender} />
+          <div
+            className="nested-row"
+            data-complex={child !== null && typeof child === 'object' && !('name' in child && 'url' in child)}
+            key={key}
+          >
+            <dt>{resourceFieldLabel(key, language)}</dt>
+            <dd>
+              <ResourceValue
+                value={child}
+                depth={depth + 1}
+                pokemonGender={pokemonGender}
+                label={resourceFieldLabel(key, language)}
+              />
+            </dd>
           </div>
         ))}
-    </div>
+    </dl>
   )
 }

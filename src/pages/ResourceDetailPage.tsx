@@ -3,45 +3,20 @@ import { ExperiencePlanner } from '../components/ExperiencePlanner'
 import { ItemPrices } from '../components/ItemPrices'
 import { MoveSupplementalDetails } from '../components/MoveSupplementalDetails'
 import { VersionDescriptions } from '../components/VersionDescriptions'
-import type { LucideIcon } from 'lucide-react'
-import { ArrowLeft, Braces, Dna, ExternalLink, Gamepad2, Gem, MapPin, Tags, Zap } from 'lucide-react'
+import { ArrowLeft, Braces, ExternalLink, Zap } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { ItemImage } from '../components/ItemImage'
-import { ResourceValue, resourceFieldLabel } from '../components/ResourceValue'
+import { ResourceFields } from '../components/ResourceFields'
 import { DamageClassBadge, DamageClassIcon, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
 import { useLanguage } from '../contexts/LanguageContext'
 import { allResources, getResourceLabel, getResourceMeta } from '../data/resources'
 import { useApi } from '../hooks/useApi'
 import { berrySprite, localizedName, localizedTextResult, prettyName } from '../lib/api'
-import { isRelatedPokemonList } from '../lib/related-pokemon'
-
-const hidden = new Set(['id', 'name', 'names', 'flavor_text_entries', 'effect_entries', 'sprites'])
-const summaryFields: Record<string, string[]> = {
-  move: ['type', 'damage_class', 'power', 'accuracy', 'pp', 'priority', 'target'],
-  ability: ['generation', 'is_main_series'],
-  item: ['prices', 'category', 'attributes', 'fling_power', 'fling_effect'],
-  berry: ['size', 'growth_time', 'max_harvest', 'natural_gift_power', 'natural_gift_type'],
-  type: ['generation', 'move_damage_class'],
-  region: ['main_generation', 'locations', 'pokedexes'],
-}
-
-function relatedPokemonGender(resource: string, key: string, name: unknown) {
-  if (resource !== 'gender' || key !== 'required_for_evolution') return undefined
-  return name === 'female' || name === 'male' ? name : undefined
-}
-
-function fieldIcon(key: string): LucideIcon {
-  if (/(type|category|class|attribute|pocket)/.test(key)) return Tags
-  if (/(effect|damage|power|chance|trigger)/.test(key)) return Zap
-  if (/(game|version|generation|pokedex)/.test(key)) return Gamepad2
-  if (/(location|region|area|habitat)/.test(key)) return MapPin
-  if (/(pokemon|species|form|egg)/.test(key)) return Dna
-  if (/(item|berry|machine)/.test(key)) return Gem
-  return Braces
-}
+import { groupResourceEntries } from '../lib/resource-presentation'
+import { formatNumber } from '../lib/api'
 
 export function ResourceDetailPage() {
   const { apiLanguage, language, t } = useLanguage()
@@ -66,10 +41,14 @@ export function ResourceDetailPage() {
   const effectDescription = localizedTextResult(data.effect_entries, undefined, apiLanguage)
   const descriptionResult = localizedDescription.text ? localizedDescription : effectDescription
   const description = descriptionResult.text
-  const entries = Object.entries(data).filter(([key]) => !hidden.has(key))
-  const preferredKeys = summaryFields[resource] ?? entries.slice(0, 4).map(([key]) => key)
-  const summaryEntries = entries.filter(([key]) => preferredKeys.includes(key))
-  const technicalEntries = entries.filter(([key]) => !preferredKeys.includes(key))
+  const fields = groupResourceEntries(resource, data)
+  const pokemonGender =
+    resource === 'gender' && (data.name === 'female' || data.name === 'male') ? data.name : undefined
+  const sections = [
+    { key: 'summary', title: t('resource.summary'), entries: fields.summary },
+    { key: 'details', title: t('resource.detailsAndRules'), entries: fields.details },
+    { key: 'collections', title: t('resource.relationships'), entries: fields.collections },
+  ] as const
   const moveType =
     resource === 'move' && data.type && typeof data.type === 'object'
       ? (data.type as { name?: string }).name
@@ -138,7 +117,7 @@ export function ResourceDetailPage() {
             {getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}
           </span>
           <h1>{prettyName(String(title))}</h1>
-          {description && <p>{description}</p>}
+          {description && <p lang={descriptionResult.language}>{description}</p>}
           {descriptionResult.fallback && language !== 'en' && (
             <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
           )}
@@ -175,56 +154,48 @@ export function ResourceDetailPage() {
           {t('tools.compare')}
         </Link>
       )}
-      <section className="resource-summary" aria-labelledby="resource-summary-title">
-        <h2 id="resource-summary-title">{t('resource.summary')}</h2>
-        <div className="resource-detail-grid">
-          {summaryEntries.map(([key, value]) => {
-            const FieldIcon = fieldIcon(key)
-            return (
-              <article
-                className={`detail-field${isRelatedPokemonList(value) ? ' related-pokemon-field' : ''}`}
-                key={key}
-              >
-                <h3>
-                  <span className="detail-field-icon">
-                    <FieldIcon size={15} />
-                  </span>
-                  {resourceFieldLabel(key, language)}
-                </h3>
-                <ResourceValue value={value} pokemonGender={relatedPokemonGender(resource, key, data.name)} />
-              </article>
-            )
-          })}
-        </div>
-      </section>
-      {technicalEntries.length > 0 && (
+      <nav className="resource-section-nav" aria-label={t('resource.sections')}>
+        {sections
+          .filter(({ entries }) => entries.length > 0)
+          .map(({ key, title, entries }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => {
+                const heading = document.getElementById(`resource-${key}-title`)
+                heading?.scrollIntoView({ block: 'start', behavior: 'auto' })
+                heading?.focus({ preventScroll: true })
+              }}
+            >
+              {title}
+              <span aria-hidden="true">{formatNumber(entries.length, language)}</span>
+            </button>
+          ))}
+      </nav>
+      {sections
+        .filter(({ entries }) => entries.length > 0)
+        .map(({ key, title, entries }) => (
+          <section
+            className={`resource-section resource-${key}`}
+            key={`${resourcePath}:${key}`}
+            aria-labelledby={`resource-${key}-title`}
+          >
+            <h2 id={`resource-${key}-title`} tabIndex={-1}>
+              {title}
+            </h2>
+            <ResourceFields entries={entries} pokemonGender={pokemonGender} />
+          </section>
+        ))}
+      {fields.technical.length > 0 && (
         <details className="technical-details">
           <summary>
             <span>
-              <Braces size={18} />
+              <Braces size={18} aria-hidden="true" />
               {t('resource.technicalData')}
             </span>
             <small>{t('resource.showTechnical')}</small>
           </summary>
-          <div className="resource-detail-grid">
-            {technicalEntries.map(([key, value]) => {
-              const FieldIcon = fieldIcon(key)
-              return (
-                <article
-                  className={`detail-field${isRelatedPokemonList(value) ? ' related-pokemon-field' : ''}`}
-                  key={key}
-                >
-                  <h3>
-                    <span className="detail-field-icon">
-                      <FieldIcon size={15} />
-                    </span>
-                    {resourceFieldLabel(key, language)}
-                  </h3>
-                  <ResourceValue value={value} pokemonGender={relatedPokemonGender(resource, key, data.name)} />
-                </article>
-              )
-            })}
-          </div>
+          <ResourceFields key={resourcePath} entries={fields.technical} pokemonGender={pokemonGender} />
         </details>
       )}
     </section>

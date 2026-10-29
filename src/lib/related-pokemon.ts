@@ -10,6 +10,7 @@ export type RelatedPokemon = {
   id: number
   name: string
   details: RelatedPokemonDatum[]
+  extraDetails?: Record<string, unknown>
 }
 
 const pokemonReferenceKeys = ['pokemon', 'pokemon_species', 'species'] as const
@@ -52,18 +53,21 @@ function relatedPokemon(value: unknown): RelatedPokemon | null {
   const reference = pokemonReference(record[referenceKey])
   if (!reference) return null
 
-  const details = Object.entries(record)
-    .flatMap(([key, detail]) => {
-      if (
-        key === referenceKey ||
-        (typeof detail !== 'string' && typeof detail !== 'number' && typeof detail !== 'boolean')
-      )
-        return []
-      return [{ key, value: detail }]
-    })
-    .slice(0, 4)
+  const details = Object.entries(record).flatMap(([key, detail]) => {
+    if (
+      key === referenceKey ||
+      (typeof detail !== 'string' && typeof detail !== 'number' && typeof detail !== 'boolean')
+    )
+      return []
+    return [{ key, value: detail }]
+  })
 
-  return { ...reference, details }
+  const extraDetails = Object.fromEntries(
+    Object.entries(record).filter(
+      ([key, value]) => key !== referenceKey && (value === null || typeof value === 'object'),
+    ),
+  )
+  return { ...reference, details, ...(Object.keys(extraDetails).length ? { extraDetails } : {}) }
 }
 
 export function parseRelatedPokemonList(value: unknown): RelatedPokemon[] | null {

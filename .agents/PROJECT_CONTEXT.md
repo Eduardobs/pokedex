@@ -4,6 +4,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Definitions
 
+- All interfaces follow a bold, attractive, intuitive, mobile-first design direction developed with Stitch, using strong visual hierarchy and prominent Pokémon artwork.
+
 - The colors and icons associated with Pokémon types must not be changed.
 - The Stellar type uses its seven-facet crystal icon and a green, cyan, blue, violet, and pink gradient wherever a type badge is shown.
 - Tera type references reuse each type's icon and colors inside a crystalline insignia; labeled references use the extended crystalline badge.

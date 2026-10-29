@@ -7,7 +7,7 @@ import { DamageClassIconSet } from '../components/SemanticBadges'
 import { useLanguage } from '../contexts/LanguageContext'
 import { getResourceGroups } from '../data/resources'
 import { useSearchParamUpdater } from '../hooks/useSearchParamUpdater'
-import { normalizeSearchText } from '../lib/api'
+import { normalizeSearchText, formatNumber } from '../lib/api'
 
 export function ExplorePage() {
   const { searchParams, updateSearchParam } = useSearchParamUpdater()
@@ -15,6 +15,10 @@ export function ExplorePage() {
   const { language, t } = useLanguage()
   const resourceGroups = getResourceGroups(language)
   const normalized = normalizeSearchText(query)
+  const selectedGroup = searchParams.get('group') ?? ''
+  const activeGroup = resourceGroups.some((group) => group.resources[0]?.endpoint === selectedGroup)
+    ? selectedGroup
+    : ''
   const groups = resourceGroups
     .map((group) => {
       const groupMatches = [group.title, group.description].some((value) =>
@@ -22,6 +26,7 @@ export function ExplorePage() {
       )
       return {
         ...group,
+        id: group.resources[0]?.endpoint,
         resources:
           groupMatches || !normalized
             ? group.resources
@@ -32,9 +37,9 @@ export function ExplorePage() {
               ),
       }
     })
-    .filter((group) => group.resources.length)
+    .filter((group) => group.resources.length && (!activeGroup || group.id === activeGroup))
   return (
-    <section className="page content-width">
+    <section className="page content-width explore-directory">
       <PageHeader
         className="explore-title"
         eyebrow={t('explore.eyebrow')}
@@ -68,6 +73,32 @@ export function ExplorePage() {
           {t('tools.compare')}
         </Link>
       </nav>
+      <div className="explore-directory-toolbar">
+        <nav className="explore-group-filters" aria-label={t('resource.groupFilter')}>
+          <button type="button" aria-pressed={!activeGroup} onClick={() => updateSearchParam('group', '')}>
+            {t('resource.allGroups')}
+          </button>
+          {resourceGroups.map((group) => (
+            <button
+              type="button"
+              key={group.title}
+              aria-pressed={activeGroup === group.resources[0]?.endpoint}
+              onClick={() => updateSearchParam('group', group.resources[0]?.endpoint ?? '')}
+            >
+              {group.title}
+            </button>
+          ))}
+        </nav>
+        <p role="status">
+          {t('resource.directoryCount', {
+            count: formatNumber(
+              groups.reduce((total, group) => total + group.resources.length, 0),
+              language,
+            ),
+            groups: formatNumber(groups.length, language),
+          })}
+        </p>
+      </div>
       <div className="resource-groups">
         {groups.map((group) => (
           <article
@@ -104,9 +135,19 @@ export function ExplorePage() {
       </div>
       {!groups.length && (
         <EmptyState icon={<Search />} title={t('explore.empty')}>
-          <button className="button secondary" onClick={() => updateSearchParam('q', '')}>
+          <button
+            className="button secondary"
+            onClick={() => {
+              updateSearchParam('q', '')
+            }}
+          >
             {t('ui.clearSearch')}
           </button>
+          {activeGroup && (
+            <button className="button secondary" onClick={() => updateSearchParam('group', '')}>
+              {t('resource.allGroups')}
+            </button>
+          )}
         </EmptyState>
       )}
     </section>

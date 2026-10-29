@@ -81,7 +81,11 @@ function PokemonCardView({
   footer,
 }: PokemonCardViewProps) {
   return (
-    <article ref={cardRef} className={`pokemon-card${category ? ` pokemon-card-${category}` : ''}`}>
+    <article
+      ref={cardRef}
+      data-type={types[0]?.type.name}
+      className={`pokemon-card${category ? ` pokemon-card-${category}` : ''}`}
+    >
       <div className="card-top">
         <span className="pokemon-number">#{String(id).padStart(4, '0')}</span>
         {sortMetric && (

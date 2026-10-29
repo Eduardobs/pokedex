@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom'
 import { FavoritesProvider } from '../contexts/FavoritesContext'
@@ -84,7 +84,9 @@ describe('Layout focus management', () => {
 
     fireEvent.click(pokedexGroup)
     expect(screen.getByRole('link', { name: 'Pokédex' })).toHaveClass('active')
-    expect(screen.getByRole('link', { name: /Favoritos/ })).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('navigation', { name: 'Navegação principal' })).getByRole('link', { name: /Favoritos/ }),
+    ).toBeInTheDocument()
   })
 
   it('closes an open navigation group when clicking outside it', () => {
