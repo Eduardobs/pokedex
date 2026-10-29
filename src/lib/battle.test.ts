@@ -214,7 +214,9 @@ describe('Random Battle engine', () => {
     const inactive = createBattlePokemon(inactiveMember, pokemon, moves)
     const active = createBattlePokemon(activeMember, pokemon, moves)
 
-    expect(active.stats[1]).toBe(Math.floor(inactive.stats[1] * 1.5))
+    expect(currentBattleStats(active)[1]).toBe(currentBattleStats(inactive)[1])
+    active.status = 'burn'
+    expect(currentBattleStats(active)[1]).toBe(Math.floor(inactive.stats[1] * 1.5))
   })
 
   it('calculates the current stats after battle stage and paralysis modifiers', () => {
@@ -248,7 +250,7 @@ describe('Random Battle engine', () => {
 
     const flareBoost = abilityPokemon('flare-boost')
     flareBoost.status = 'burn'
-    expect(currentBattleStats(flareBoost)[3]).toBe(flareBoost.stats[3] * 2)
+    expect(currentBattleStats(flareBoost)[3]).toBe(Math.floor(flareBoost.stats[3] * 1.5))
 
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
@@ -939,7 +941,7 @@ describe('Random Battle engine', () => {
     expect(legalBattleMoveIndexes(pokemon)).toEqual([0, 1])
   })
 
-  it('activates entry abilities on the initial send-out and each return to the field', () => {
+  it('activates Intrepid Sword only on each Pokémon’s first entry', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
     playerTeam.members = playerTeam.members.map((entry) => ({
@@ -973,8 +975,8 @@ describe('Random Battle engine', () => {
       { kind: 'move', index: 2 },
       () => 0.5,
     )
-    expect(returned.state.player.roster[0].stages.attack).toBe(1)
-    expect(returned.events).toContainEqual(
+    expect(returned.state.player.roster[0].stages.attack).toBe(0)
+    expect(returned.events).not.toContainEqual(
       expect.objectContaining({ type: 'ability', pokemon: 'player-0', ability: 'intrepid-sword' }),
     )
   })

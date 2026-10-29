@@ -1,3 +1,4 @@
+import { abilityTypes, visibleBattlePokemon } from './battle-abilities'
 import {
   currentBattleStats,
   battleMoveSlot,
@@ -25,16 +26,16 @@ type ObservedPokemon = {
   stages: BattlePokemon['stages']
   moves: BattleMove[]
 }
-const typesOf = (pokemon: BattlePokemon): BattleType[] =>
-  (pokemon.terastallized ? [pokemon.member.tera] : pokemon.pokemon.types) as BattleType[]
+const typesOf = (pokemon: BattlePokemon): BattleType[] => abilityTypes(pokemon) as BattleType[]
 const multiplier = (type: BattleType, types: BattleType[]) =>
   types.reduce((value, target) => value * getDamageMultiplier(type, target), 1)
 const stage = (value: number) => (value >= 0 ? (2 + value) / 2 : 2 / (2 - value))
 function observe(pokemon: BattlePokemon): ObservedPokemon {
+  const visible = visibleBattlePokemon(pokemon, true)
   return {
-    types: typesOf(pokemon),
+    types: typesOf(visible),
     hp: Math.ceil((pokemon.hp / pokemon.maxHp) * 100) / 100,
-    stats: possibleBattleStats(pokemon.pokemon, pokemon.member.level).map(([min, max]) => (min + max) / 2),
+    stats: possibleBattleStats(visible.pokemon, pokemon.member.level).map(([min, max]) => (min + max) / 2),
     status: pokemon.status,
     stages: { ...pokemon.stages },
     moves: pokemon.moves.filter(({ data }) => pokemon.revealedMoves.includes(data.name)).map(({ data }) => data),
@@ -76,7 +77,7 @@ function damageScore(
           ? 1.5
           : 1
   if (!detailed) return ((move.power ?? 50) * stab * effectiveness) / 2
-  const stats = currentBattleStats(own)
+  const stats = currentBattleStats(own, field)
   const physical = move.damageClass === 'physical'
   const attack = stats[physical ? 1 : 3]
   const defense = foe.stats[physical ? 2 : 4] * stage(foe.stages[physical ? 'defense' : 'specialDefense'])

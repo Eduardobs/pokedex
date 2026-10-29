@@ -1,3 +1,4 @@
+import { abilityTypes, visibleBattlePokemon, battlePokemonName } from '../lib/battle-abilities'
 import { BATTLE_DIFFICULTIES, type BattleDifficulty } from '../lib/battle-ai'
 import { useEffect, useId, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -284,7 +285,7 @@ function HealthBar({ pokemon }: { pokemon: BattlePokemon }) {
                   <TeraTypeBadge type={pokemon.member.tera} iconOnly />
                 </span>
               ) : (
-                pokemon.pokemon.types.map((type) => <TypeBadge key={type} type={type} iconOnly />)
+                abilityTypes(pokemon).map((type) => <TypeBadge key={type} type={type} iconOnly />)
               )}
             </span>
           </span>
@@ -356,7 +357,7 @@ function ActivePokemon({
 }) {
   const tooltipId = useId()
   const { t } = useLanguage()
-  const pokemon = side.roster[side.active]
+  const pokemon = visibleBattlePokemon(side.roster[side.active], opponent)
   const sprite = pokemon.member.shiny
     ? opponent
       ? pokemon.pokemon.showdownFrontShinySprite
@@ -724,7 +725,8 @@ function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: 
         <small>{t('battle.teamStatus', { alive, fainted })}</small>
       </span>
       <ul className="battle-roster-icons" aria-label={t('battle.rosterStatus', { name: side.team.name })}>
-        {side.roster.map((pokemon) => {
+        {side.roster.map((member) => {
+          const pokemon = visibleBattlePokemon(member, opponent)
           const tooltipId = `battle-roster-${side.team.id}-${pokemon.member.id}`
           const faintedPokemon = pokemon.hp === 0
           const homeSprite = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
@@ -1374,7 +1376,7 @@ export function BattlePage() {
         step.events.some(
           (event) =>
             (event.type === 'damage' || event.type === 'substituteDamage') &&
-            event.pokemon === nextDefender.pokemon.name &&
+            event.pokemon === battlePokemonName(nextDefender) &&
             event.amount > 0,
         )
       setMissedSide(step.action?.move && step.events.some((event) => event.type === 'miss') ? defender : null)

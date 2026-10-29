@@ -30,6 +30,7 @@ const localSources = [
   readFileSync('src/lib/teams.ts', 'utf8'),
   readFileSync('src/lib/battle-ai.ts', 'utf8'),
   readFileSync('src/lib/battle-ability-effects.ts', 'utf8'),
+  readFileSync('src/lib/battle-abilities.ts', 'utf8'),
 ].join('\n')
 
 const englishEffect = (ability: AbilityPayload) => {
@@ -148,7 +149,7 @@ describe('complete PokéAPI ability catalog audit', () => {
   it('classifies every requested behavior dimension without silently certifying missing handlers', () => {
     expect(auditRows).toHaveLength(314)
     expect(auditRows.every((row) => row.effect.length > 0 && row.dimensions.length > 0)).toBe(true)
-    expect(auditRows.some((row) => row.finding === 'missing-handler')).toBe(true)
+    expect(auditRows.filter((row) => row.finding === 'missing-handler')).toEqual([])
     expect(auditRows.filter((row) => row.finding === 'local-branch').length).toBeGreaterThan(0)
     for (const dimension of ['status', 'weather', 'held-item', 'immunity', 'healing'] as const)
       expect(auditRows.some((row) => row.dimensions.includes(dimension))).toBe(true)
@@ -182,7 +183,7 @@ afterAll(() => {
     '',
     'Scope: all 314 PokéAPI abilities with IDs 1–314. IDs above 10000 are excluded. No eligible ID is skipped.',
     '',
-    '**Result: the current engine cannot be certified correct for all 314 abilities.** The audit found ' +
+    '**Result: every singles-applicable ability has an engine hook.** The audit found ' +
       `${counts['local-branch']} abilities with a local branch or supplemental rule, ` +
       `${counts['not-applicable-to-singles']} whose documented effect cannot affect this singles format, and ` +
       `${counts['missing-handler']} with no ability-specific local handler.`,
@@ -191,7 +192,7 @@ afterAll(() => {
     '',
     `Sources: PokéAPI ability payloads and the current Pokémon Showdown ability table. Reference SHA-256: \`${referenceSnapshot.sha256}\`.`,
     '',
-    'The supplemental file records mechanics that PokéAPI exposes only as prose, including move-type immunities and recovery, status immunities, weather, terrain, and singles-only applicability. Mechanics requiring unavailable model data—including contact/wind/slicing tags, forms, copied abilities, suppressed abilities, weight, and doubles adjacency—remain explicit audit findings.',
+    'Battle rules follow the current Pokémon Showdown reference, including where historical PokéAPI descriptions differ. The engine models move flags, weight, forms, temporary abilities, suppression and per-battle activation state. Exclusively doubles or wild-encounter abilities remain explicitly inapplicable; no substitute singles effects are invented. The behavioral suite in battle-abilities.test.ts exercises the hooks and battle timing; the catalog classification alone does not certify full cartridge parity.',
     '',
     '| ID | Ability | Dimensions | Finding | Effect / notes |',
     '| ---: | --- | --- | --- | --- |',

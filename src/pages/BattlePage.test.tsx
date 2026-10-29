@@ -816,3 +816,26 @@ describe('BattlePage lobby', () => {
     )
   })
 })
+
+describe('battle ability presentation', () => {
+  it('presents Illusion consistently in the field, images and accessible details', async () => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    opponent.members[0].pokemon = 'zoroark'
+    opponent.members[0].ability = 'illusion'
+    opponent.members[5].pokemon = 'dragonite'
+    opponent.members[5].gender = 'female'
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => battleRoster(team))
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    expect(await screen.findByRole('meter', { name: 'Pontos de vida de Dragonite' })).toBeVisible()
+    expect(screen.queryByText('Zoroark')).not.toBeInTheDocument()
+    expect(
+      screen.getAllByRole('img', { name: 'Dragonite' }).some((image) => image.getAttribute('src')?.includes('/6.gif')),
+    ).toBe(true)
+    expect(screen.getAllByLabelText('Detalhes de Dragonite').length).toBeGreaterThan(0)
+  })
+})

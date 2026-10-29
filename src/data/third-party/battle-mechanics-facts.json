@@ -1,0 +1,9258 @@
+{
+  "source": "https://github.com/smogon/pokemon-showdown/tree/master/data",
+  "abilitiesSha256": "e942ef6a75cdd50095f6b68c27e772ea91f2202714a30b04539ff17b7b93c065",
+  "abilityFlags": {
+    "stench": {},
+    "drizzle": {},
+    "speed-boost": {},
+    "battle-armor": {
+      "breakable": 1
+    },
+    "sturdy": {
+      "breakable": 1
+    },
+    "damp": {
+      "breakable": 1
+    },
+    "limber": {
+      "breakable": 1
+    },
+    "sand-veil": {
+      "breakable": 1
+    },
+    "static": {},
+    "volt-absorb": {
+      "breakable": 1
+    },
+    "water-absorb": {
+      "breakable": 1
+    },
+    "oblivious": {
+      "breakable": 1
+    },
+    "cloud-nine": {},
+    "compound-eyes": {},
+    "insomnia": {
+      "breakable": 1
+    },
+    "color-change": {},
+    "immunity": {
+      "breakable": 1
+    },
+    "flash-fire": {
+      "breakable": 1
+    },
+    "shield-dust": {
+      "breakable": 1
+    },
+    "own-tempo": {
+      "breakable": 1
+    },
+    "suction-cups": {
+      "breakable": 1
+    },
+    "intimidate": {},
+    "shadow-tag": {},
+    "rough-skin": {},
+    "wonder-guard": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "failskillswap": 1,
+      "breakable": 1
+    },
+    "levitate": {
+      "breakable": 1
+    },
+    "effect-spore": {},
+    "synchronize": {},
+    "clear-body": {
+      "breakable": 1
+    },
+    "natural-cure": {},
+    "lightning-rod": {
+      "breakable": 1
+    },
+    "serene-grace": {},
+    "swift-swim": {},
+    "chlorophyll": {},
+    "illuminate": {
+      "breakable": 1
+    },
+    "trace": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1
+    },
+    "huge-power": {},
+    "poison-point": {},
+    "inner-focus": {
+      "breakable": 1
+    },
+    "magma-armor": {
+      "breakable": 1
+    },
+    "water-veil": {
+      "breakable": 1
+    },
+    "magnet-pull": {},
+    "soundproof": {
+      "breakable": 1
+    },
+    "rain-dish": {},
+    "sand-stream": {},
+    "pressure": {},
+    "thick-fat": {
+      "breakable": 1
+    },
+    "early-bird": {},
+    "flame-body": {},
+    "run-away": {},
+    "keen-eye": {
+      "breakable": 1
+    },
+    "hyper-cutter": {
+      "breakable": 1
+    },
+    "pickup": {},
+    "truant": {},
+    "hustle": {},
+    "cute-charm": {},
+    "plus": {},
+    "minus": {},
+    "forecast": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1
+    },
+    "sticky-hold": {
+      "breakable": 1
+    },
+    "shed-skin": {},
+    "guts": {},
+    "marvel-scale": {
+      "breakable": 1
+    },
+    "liquid-ooze": {},
+    "overgrow": {},
+    "blaze": {},
+    "torrent": {},
+    "swarm": {},
+    "rock-head": {},
+    "drought": {},
+    "arena-trap": {},
+    "vital-spirit": {
+      "breakable": 1
+    },
+    "white-smoke": {
+      "breakable": 1
+    },
+    "pure-power": {},
+    "shell-armor": {
+      "breakable": 1
+    },
+    "air-lock": {},
+    "tangled-feet": {
+      "breakable": 1
+    },
+    "motor-drive": {
+      "breakable": 1
+    },
+    "rivalry": {},
+    "steadfast": {},
+    "snow-cloak": {
+      "breakable": 1
+    },
+    "gluttony": {},
+    "anger-point": {},
+    "unburden": {},
+    "heatproof": {
+      "breakable": 1
+    },
+    "simple": {
+      "breakable": 1
+    },
+    "dry-skin": {
+      "breakable": 1
+    },
+    "download": {},
+    "iron-fist": {},
+    "poison-heal": {},
+    "adaptability": {},
+    "skill-link": {},
+    "hydration": {},
+    "solar-power": {},
+    "quick-feet": {},
+    "normalize": {},
+    "sniper": {},
+    "magic-guard": {},
+    "no-guard": {},
+    "stall": {},
+    "technician": {},
+    "leaf-guard": {
+      "breakable": 1
+    },
+    "klutz": {},
+    "mold-breaker": {},
+    "super-luck": {},
+    "aftermath": {},
+    "anticipation": {},
+    "forewarn": {},
+    "unaware": {
+      "breakable": 1
+    },
+    "tinted-lens": {},
+    "filter": {
+      "breakable": 1
+    },
+    "slow-start": {},
+    "scrappy": {},
+    "storm-drain": {
+      "breakable": 1
+    },
+    "ice-body": {},
+    "solid-rock": {
+      "breakable": 1
+    },
+    "snow-warning": {},
+    "honey-gather": {},
+    "frisk": {},
+    "reckless": {},
+    "multitype": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "flower-gift": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "breakable": 1
+    },
+    "bad-dreams": {},
+    "pickpocket": {},
+    "sheer-force": {},
+    "contrary": {
+      "breakable": 1
+    },
+    "unnerve": {},
+    "defiant": {},
+    "defeatist": {},
+    "cursed-body": {},
+    "healer": {},
+    "friend-guard": {
+      "breakable": 1
+    },
+    "weak-armor": {},
+    "heavy-metal": {
+      "breakable": 1
+    },
+    "light-metal": {
+      "breakable": 1
+    },
+    "multiscale": {
+      "breakable": 1
+    },
+    "toxic-boost": {},
+    "flare-boost": {},
+    "harvest": {},
+    "telepathy": {
+      "breakable": 1
+    },
+    "moody": {},
+    "overcoat": {
+      "breakable": 1
+    },
+    "poison-touch": {},
+    "regenerator": {},
+    "big-pecks": {
+      "breakable": 1
+    },
+    "sand-rush": {},
+    "wonder-skin": {
+      "breakable": 1
+    },
+    "analytic": {},
+    "illusion": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1
+    },
+    "imposter": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1
+    },
+    "infiltrator": {},
+    "mummy": {},
+    "moxie": {},
+    "justified": {},
+    "rattled": {},
+    "magic-bounce": {
+      "breakable": 1
+    },
+    "sap-sipper": {
+      "breakable": 1
+    },
+    "prankster": {},
+    "sand-force": {},
+    "iron-barbs": {},
+    "zen-mode": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "victory-star": {},
+    "turboblaze": {},
+    "teravolt": {},
+    "aroma-veil": {
+      "breakable": 1
+    },
+    "flower-veil": {
+      "breakable": 1
+    },
+    "cheek-pouch": {},
+    "protean": {},
+    "fur-coat": {
+      "breakable": 1
+    },
+    "magician": {},
+    "bulletproof": {
+      "breakable": 1
+    },
+    "competitive": {},
+    "strong-jaw": {},
+    "refrigerate": {},
+    "sweet-veil": {
+      "breakable": 1
+    },
+    "stance-change": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "gale-wings": {},
+    "mega-launcher": {},
+    "grass-pelt": {
+      "breakable": 1
+    },
+    "symbiosis": {},
+    "tough-claws": {},
+    "pixilate": {},
+    "gooey": {},
+    "aerilate": {},
+    "parental-bond": {},
+    "dark-aura": {},
+    "fairy-aura": {},
+    "aura-break": {
+      "breakable": 1
+    },
+    "primordial-sea": {},
+    "desolate-land": {},
+    "delta-stream": {},
+    "stamina": {},
+    "wimp-out": {},
+    "emergency-exit": {},
+    "water-compaction": {},
+    "merciless": {},
+    "shields-down": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "stakeout": {},
+    "water-bubble": {
+      "breakable": 1
+    },
+    "steelworker": {},
+    "berserk": {},
+    "slush-rush": {},
+    "long-reach": {},
+    "liquid-voice": {},
+    "triage": {},
+    "galvanize": {},
+    "surge-surfer": {},
+    "schooling": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "disguise": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1,
+      "breakable": 1,
+      "notransform": 1
+    },
+    "battle-bond": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "power-construct": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "corrosion": {},
+    "comatose": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "queenly-majesty": {
+      "breakable": 1
+    },
+    "innards-out": {},
+    "dancer": {},
+    "battery": {},
+    "fluffy": {
+      "breakable": 1
+    },
+    "dazzling": {
+      "breakable": 1
+    },
+    "soul-heart": {},
+    "tangling-hair": {},
+    "receiver": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1
+    },
+    "power-of-alchemy": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1
+    },
+    "beast-boost": {},
+    "rks-system": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "electric-surge": {},
+    "psychic-surge": {},
+    "misty-surge": {},
+    "grassy-surge": {},
+    "full-metal-body": {},
+    "shadow-shield": {},
+    "prism-armor": {},
+    "neuroforce": {},
+    "intrepid-sword": {},
+    "dauntless-shield": {},
+    "libero": {},
+    "ball-fetch": {},
+    "cotton-down": {},
+    "propeller-tail": {},
+    "mirror-armor": {
+      "breakable": 1
+    },
+    "gulp-missile": {
+      "cantsuppress": 1,
+      "notransform": 1
+    },
+    "stalwart": {},
+    "steam-engine": {},
+    "punk-rock": {
+      "breakable": 1
+    },
+    "sand-spit": {},
+    "ice-scales": {
+      "breakable": 1
+    },
+    "ripen": {},
+    "ice-face": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1,
+      "breakable": 1,
+      "notransform": 1
+    },
+    "power-spot": {},
+    "mimicry": {},
+    "screen-cleaner": {},
+    "steely-spirit": {},
+    "perish-body": {},
+    "wandering-spirit": {},
+    "gorilla-tactics": {},
+    "neutralizing-gas": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "notransform": 1
+    },
+    "pastel-veil": {
+      "breakable": 1
+    },
+    "hunger-switch": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "notransform": 1
+    },
+    "quick-draw": {},
+    "unseen-fist": {},
+    "curious-medicine": {},
+    "transistor": {},
+    "dragons-maw": {},
+    "chilling-neigh": {},
+    "grim-neigh": {},
+    "as-one-glastrier": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "as-one-spectrier": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1
+    },
+    "lingering-aroma": {},
+    "seed-sower": {},
+    "thermal-exchange": {
+      "breakable": 1
+    },
+    "anger-shell": {},
+    "purifying-salt": {
+      "breakable": 1
+    },
+    "well-baked-body": {
+      "breakable": 1
+    },
+    "wind-rider": {
+      "breakable": 1
+    },
+    "guard-dog": {
+      "breakable": 1
+    },
+    "rocky-payload": {},
+    "wind-power": {},
+    "zero-to-hero": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1,
+      "notransform": 1
+    },
+    "commander": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1
+    },
+    "electromorphosis": {},
+    "protosynthesis": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "notransform": 1
+    },
+    "quark-drive": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "notransform": 1
+    },
+    "good-as-gold": {
+      "breakable": 1
+    },
+    "vessel-of-ruin": {},
+    "sword-of-ruin": {},
+    "tablets-of-ruin": {},
+    "beads-of-ruin": {},
+    "orichalcum-pulse": {},
+    "hadron-engine": {},
+    "opportunist": {},
+    "cud-chew": {},
+    "sharpness": {},
+    "supreme-overlord": {},
+    "costar": {},
+    "toxic-debris": {},
+    "armor-tail": {
+      "breakable": 1
+    },
+    "earth-eater": {
+      "breakable": 1
+    },
+    "mycelium-might": {},
+    "minds-eye": {
+      "breakable": 1
+    },
+    "supersweet-syrup": {},
+    "hospitality": {},
+    "toxic-chain": {},
+    "embody-aspect": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "notransform": 1
+    },
+    "tera-shift": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "cantsuppress": 1,
+      "notransform": 1
+    },
+    "tera-shell": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1,
+      "breakable": 1
+    },
+    "teraform-zero": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1
+    },
+    "poison-puppeteer": {
+      "failroleplay": 1,
+      "noreceiver": 1,
+      "noentrain": 1,
+      "notrace": 1,
+      "failskillswap": 1
+    },
+    "piercing-drill": {},
+    "dragonize": {},
+    "mega-sol": {},
+    "spicy-spray": {},
+    "eelevate": {
+      "breakable": 1
+    },
+    "fire-mane": {},
+    "aura-guard": {
+      "breakable": 1
+    }
+  },
+  "movesSha256": "43b516fdc01721f53f01de555479dd3d248e5e29d2a6f5072a7bd4a3585a5027",
+  "pokemonSha256": "5e572601f4700f99835845eee5cd3e53362e43d885e2753fcc32418f636b83ed",
+  "moves": {
+    "10000000voltthunderbolt": {
+      "flags": [],
+      "secondary": false
+    },
+    "absorb": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "accelerock": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "acid": {
+      "flags": [],
+      "secondary": true
+    },
+    "acidarmor": {
+      "flags": [],
+      "secondary": false
+    },
+    "aciddownpour": {
+      "flags": [],
+      "secondary": false
+    },
+    "acidspray": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "acrobatics": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "acupressure": {
+      "flags": [],
+      "secondary": false
+    },
+    "aerialace": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "aeroblast": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "afteryou": {
+      "flags": [],
+      "secondary": false
+    },
+    "agility": {
+      "flags": [],
+      "secondary": false
+    },
+    "aircutter": {
+      "flags": ["slicing", "wind"],
+      "secondary": false
+    },
+    "airslash": {
+      "flags": ["slicing"],
+      "secondary": true
+    },
+    "alloutpummeling": {
+      "flags": [],
+      "secondary": false
+    },
+    "alluringvoice": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "allyswitch": {
+      "flags": [],
+      "secondary": false
+    },
+    "amnesia": {
+      "flags": [],
+      "secondary": false
+    },
+    "anchorshot": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "ancientpower": {
+      "flags": [],
+      "secondary": true
+    },
+    "appleacid": {
+      "flags": [],
+      "secondary": true
+    },
+    "aquacutter": {
+      "flags": ["slicing"],
+      "secondary": false
+    },
+    "aquajet": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "aquaring": {
+      "flags": [],
+      "secondary": false
+    },
+    "aquastep": {
+      "flags": ["contact", "dance"],
+      "secondary": true
+    },
+    "aquatail": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "armorcannon": {
+      "flags": [],
+      "secondary": false
+    },
+    "armthrust": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "aromatherapy": {
+      "flags": [],
+      "secondary": false
+    },
+    "aromaticmist": {
+      "flags": [],
+      "secondary": false
+    },
+    "assist": {
+      "flags": [],
+      "secondary": false
+    },
+    "assurance": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "astonish": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "astralbarrage": {
+      "flags": [],
+      "secondary": false
+    },
+    "attackorder": {
+      "flags": [],
+      "secondary": false
+    },
+    "attract": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "aurasphere": {
+      "flags": ["bullet", "pulse"],
+      "secondary": false
+    },
+    "aurawheel": {
+      "flags": [],
+      "secondary": true
+    },
+    "aurorabeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "auroraveil": {
+      "flags": [],
+      "secondary": false
+    },
+    "autotomize": {
+      "flags": [],
+      "secondary": false
+    },
+    "avalanche": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "axekick": {
+      "flags": ["contact"],
+      "crash": true,
+      "secondary": true
+    },
+    "babydolleyes": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "baddybad": {
+      "flags": [],
+      "secondary": false
+    },
+    "banefulbunker": {
+      "flags": [],
+      "secondary": false
+    },
+    "barbbarrage": {
+      "flags": [],
+      "secondary": true
+    },
+    "barrage": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "barrier": {
+      "flags": [],
+      "secondary": false
+    },
+    "batonpass": {
+      "flags": [],
+      "secondary": false
+    },
+    "beakblast": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "beatup": {
+      "flags": [],
+      "secondary": false
+    },
+    "behemothbash": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "behemothblade": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "belch": {
+      "flags": [],
+      "secondary": false
+    },
+    "bellydrum": {
+      "flags": [],
+      "secondary": false
+    },
+    "bestow": {
+      "flags": [],
+      "secondary": false
+    },
+    "bide": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bind": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bite": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "bitterblade": {
+      "flags": ["contact", "heal", "slicing"],
+      "secondary": false
+    },
+    "bittermalice": {
+      "flags": [],
+      "secondary": true
+    },
+    "blackholeeclipse": {
+      "flags": [],
+      "secondary": false
+    },
+    "blastburn": {
+      "flags": [],
+      "secondary": false
+    },
+    "blazekick": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "blazingtorque": {
+      "flags": [],
+      "secondary": true
+    },
+    "bleakwindstorm": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "blizzard": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "block": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "bloodmoon": {
+      "flags": [],
+      "secondary": false
+    },
+    "bloomdoom": {
+      "flags": [],
+      "secondary": false
+    },
+    "blueflare": {
+      "flags": [],
+      "secondary": true
+    },
+    "bodypress": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bodyslam": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "boltbeak": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "boltstrike": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "boneclub": {
+      "flags": [],
+      "secondary": true
+    },
+    "bonemerang": {
+      "flags": [],
+      "secondary": false
+    },
+    "bonerush": {
+      "flags": [],
+      "secondary": false
+    },
+    "boomburst": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "bounce": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "bouncybubble": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "branchpoke": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bravebird": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": false
+    },
+    "breakingswipe": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "breakneckblitz": {
+      "flags": [],
+      "secondary": false
+    },
+    "brickbreak": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "brine": {
+      "flags": [],
+      "secondary": false
+    },
+    "brutalswing": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bubble": {
+      "flags": [],
+      "secondary": true
+    },
+    "bubblebeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "bugbite": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "bugbuzz": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "bulkup": {
+      "flags": [],
+      "secondary": false
+    },
+    "bulldoze": {
+      "flags": [],
+      "secondary": true
+    },
+    "bulletpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "bulletseed": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "burningbulwark": {
+      "flags": [],
+      "secondary": false
+    },
+    "burningjealousy": {
+      "flags": [],
+      "secondary": true
+    },
+    "burnup": {
+      "flags": [],
+      "secondary": false
+    },
+    "buzzybuzz": {
+      "flags": [],
+      "secondary": true
+    },
+    "calmmind": {
+      "flags": [],
+      "secondary": false
+    },
+    "camouflage": {
+      "flags": [],
+      "secondary": false
+    },
+    "captivate": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "catastropika": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "ceaselessedge": {
+      "flags": ["contact", "slicing"],
+      "secondary": true
+    },
+    "celebrate": {
+      "flags": [],
+      "secondary": false
+    },
+    "charge": {
+      "flags": [],
+      "secondary": false
+    },
+    "chargebeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "charm": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "chatter": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "chillingwater": {
+      "flags": [],
+      "secondary": true
+    },
+    "chillyreception": {
+      "flags": [],
+      "secondary": false
+    },
+    "chipaway": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "chloroblast": {
+      "flags": [],
+      "secondary": false
+    },
+    "circlethrow": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "clamp": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "clangingscales": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "clangoroussoul": {
+      "flags": ["sound", "dance"],
+      "secondary": false
+    },
+    "clangoroussoulblaze": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "clearsmog": {
+      "flags": [],
+      "secondary": false
+    },
+    "closecombat": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "coaching": {
+      "flags": [],
+      "secondary": false
+    },
+    "coil": {
+      "flags": [],
+      "secondary": false
+    },
+    "collisioncourse": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "combattorque": {
+      "flags": [],
+      "secondary": true
+    },
+    "cometpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "comeuppance": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "confide": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "confuseray": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "confusion": {
+      "flags": [],
+      "secondary": true
+    },
+    "constrict": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "continentalcrush": {
+      "flags": [],
+      "secondary": false
+    },
+    "conversion": {
+      "flags": [],
+      "secondary": false
+    },
+    "conversion2": {
+      "flags": [],
+      "secondary": false
+    },
+    "copycat": {
+      "flags": [],
+      "secondary": false
+    },
+    "coreenforcer": {
+      "flags": [],
+      "secondary": false
+    },
+    "corkscrewcrash": {
+      "flags": [],
+      "secondary": false
+    },
+    "corrosivegas": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "cosmicpower": {
+      "flags": [],
+      "secondary": false
+    },
+    "cottonguard": {
+      "flags": [],
+      "secondary": false
+    },
+    "cottonspore": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "counter": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "courtchange": {
+      "flags": [],
+      "secondary": false
+    },
+    "covet": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "crabhammer": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "craftyshield": {
+      "flags": [],
+      "secondary": false
+    },
+    "crosschop": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "crosspoison": {
+      "flags": ["contact", "slicing"],
+      "secondary": true
+    },
+    "crunch": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "crushclaw": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "crushgrip": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "curse": {
+      "flags": [],
+      "secondary": false
+    },
+    "cut": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "darkestlariat": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "darkpulse": {
+      "flags": ["pulse"],
+      "secondary": true
+    },
+    "darkvoid": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "dazzlinggleam": {
+      "flags": [],
+      "secondary": false
+    },
+    "decorate": {
+      "flags": [],
+      "secondary": false
+    },
+    "defendorder": {
+      "flags": [],
+      "secondary": false
+    },
+    "defensecurl": {
+      "flags": [],
+      "secondary": false
+    },
+    "defog": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "destinybond": {
+      "flags": [],
+      "secondary": false
+    },
+    "detect": {
+      "flags": [],
+      "secondary": false
+    },
+    "devastatingdrake": {
+      "flags": [],
+      "secondary": false
+    },
+    "diamondstorm": {
+      "flags": [],
+      "secondary": true
+    },
+    "dig": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "direclaw": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "disable": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "disarmingvoice": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "discharge": {
+      "flags": [],
+      "secondary": true
+    },
+    "dive": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dizzypunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "doodle": {
+      "flags": [],
+      "secondary": false
+    },
+    "doomdesire": {
+      "flags": [],
+      "secondary": false
+    },
+    "doubleedge": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": false
+    },
+    "doublehit": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "doubleironbash": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "doublekick": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "doubleshock": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "doubleslap": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "doubleteam": {
+      "flags": [],
+      "secondary": false
+    },
+    "dracometeor": {
+      "flags": [],
+      "secondary": false
+    },
+    "dragonascent": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dragonbreath": {
+      "flags": [],
+      "secondary": true
+    },
+    "dragoncheer": {
+      "flags": [],
+      "secondary": false
+    },
+    "dragonclaw": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dragondance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "dragondarts": {
+      "flags": [],
+      "secondary": false
+    },
+    "dragonenergy": {
+      "flags": [],
+      "secondary": false
+    },
+    "dragonhammer": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dragonpulse": {
+      "flags": ["pulse"],
+      "secondary": false
+    },
+    "dragonrage": {
+      "flags": [],
+      "secondary": false
+    },
+    "dragonrush": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "dragontail": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "drainingkiss": {
+      "flags": ["contact", "heal"],
+      "secondary": false
+    },
+    "drainpunch": {
+      "flags": ["contact", "punch", "heal"],
+      "secondary": false
+    },
+    "dreameater": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "drillpeck": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "drillrun": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "drumbeating": {
+      "flags": [],
+      "secondary": true
+    },
+    "dualchop": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dualwingbeat": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "dynamaxcannon": {
+      "flags": [],
+      "secondary": false
+    },
+    "dynamicpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "earthpower": {
+      "flags": [],
+      "secondary": true
+    },
+    "earthquake": {
+      "flags": [],
+      "secondary": false
+    },
+    "echoedvoice": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "eerieimpulse": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "eeriespell": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "eggbomb": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "electricterrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "electrify": {
+      "flags": [],
+      "secondary": false
+    },
+    "electroball": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "electrodrift": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "electroshot": {
+      "flags": [],
+      "secondary": false
+    },
+    "electroweb": {
+      "flags": [],
+      "secondary": true
+    },
+    "embargo": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "ember": {
+      "flags": [],
+      "secondary": true
+    },
+    "encore": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "endeavor": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "endure": {
+      "flags": [],
+      "secondary": false
+    },
+    "energyball": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "entrainment": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "eruption": {
+      "flags": [],
+      "secondary": false
+    },
+    "esperwing": {
+      "flags": [],
+      "secondary": true
+    },
+    "eternabeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "expandingforce": {
+      "flags": [],
+      "secondary": false
+    },
+    "explosion": {
+      "flags": [],
+      "selfdestruct": "always",
+      "secondary": false
+    },
+    "extrasensory": {
+      "flags": [],
+      "secondary": true
+    },
+    "extremeevoboost": {
+      "flags": [],
+      "secondary": false
+    },
+    "extremespeed": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "facade": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "fairylock": {
+      "flags": [],
+      "secondary": false
+    },
+    "fairywind": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "fakeout": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "faketears": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "falsesurrender": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "falseswipe": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "featherdance": {
+      "flags": ["reflectable", "dance"],
+      "secondary": false
+    },
+    "feint": {
+      "flags": [],
+      "secondary": false
+    },
+    "feintattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "fellstinger": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "ficklebeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "fierydance": {
+      "flags": ["dance"],
+      "secondary": true
+    },
+    "fierywrath": {
+      "flags": [],
+      "secondary": true
+    },
+    "filletaway": {
+      "flags": [],
+      "secondary": false
+    },
+    "finalgambit": {
+      "flags": [],
+      "selfdestruct": "ifHit",
+      "secondary": false
+    },
+    "fireblast": {
+      "flags": [],
+      "secondary": true
+    },
+    "firefang": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "firelash": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "firepledge": {
+      "flags": [],
+      "secondary": false
+    },
+    "firepunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "firespin": {
+      "flags": [],
+      "secondary": false
+    },
+    "firstimpression": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "fishiousrend": {
+      "flags": ["contact", "bite"],
+      "secondary": false
+    },
+    "fissure": {
+      "flags": [],
+      "secondary": false
+    },
+    "flail": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "flameburst": {
+      "flags": [],
+      "secondary": false
+    },
+    "flamecharge": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "flamethrower": {
+      "flags": [],
+      "secondary": true
+    },
+    "flamewheel": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "flareblitz": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": true
+    },
+    "flash": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "flashcannon": {
+      "flags": [],
+      "secondary": true
+    },
+    "flatter": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "fleurcannon": {
+      "flags": [],
+      "secondary": false
+    },
+    "fling": {
+      "flags": [],
+      "secondary": false
+    },
+    "flipturn": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "floatyfall": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "floralhealing": {
+      "flags": ["reflectable", "heal"],
+      "secondary": false
+    },
+    "flowershield": {
+      "flags": [],
+      "secondary": false
+    },
+    "flowertrick": {
+      "flags": [],
+      "secondary": false
+    },
+    "fly": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "flyingpress": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "focusblast": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "focusenergy": {
+      "flags": [],
+      "secondary": false
+    },
+    "focuspunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "followme": {
+      "flags": [],
+      "secondary": false
+    },
+    "forcepalm": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "foresight": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "forestscurse": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "foulplay": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "freezedry": {
+      "flags": [],
+      "secondary": true
+    },
+    "freezeshock": {
+      "flags": [],
+      "secondary": true
+    },
+    "freezingglare": {
+      "flags": [],
+      "secondary": true
+    },
+    "freezyfrost": {
+      "flags": [],
+      "secondary": false
+    },
+    "frenzyplant": {
+      "flags": [],
+      "secondary": false
+    },
+    "frostbreath": {
+      "flags": [],
+      "secondary": false
+    },
+    "frustration": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "furyattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "furycutter": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "furyswipes": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "fusionbolt": {
+      "flags": [],
+      "secondary": false
+    },
+    "fusionflare": {
+      "flags": [],
+      "secondary": false
+    },
+    "futuresight": {
+      "flags": [],
+      "secondary": false
+    },
+    "gastroacid": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "geargrind": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "gearup": {
+      "flags": [],
+      "secondary": false
+    },
+    "genesissupernova": {
+      "flags": [],
+      "secondary": true
+    },
+    "geomancy": {
+      "flags": [],
+      "secondary": false
+    },
+    "gigadrain": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "gigaimpact": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "gigatonhammer": {
+      "flags": [],
+      "secondary": false
+    },
+    "gigavolthavoc": {
+      "flags": [],
+      "secondary": false
+    },
+    "glaciallance": {
+      "flags": [],
+      "secondary": false
+    },
+    "glaciate": {
+      "flags": [],
+      "secondary": true
+    },
+    "glaiverush": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "glare": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "glitzyglow": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxbefuddle": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxcannonade": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxcentiferno": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxchistrike": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxcuddle": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxdepletion": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxdrumsolo": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxfinale": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxfireball": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxfoamburst": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxgoldrush": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxgravitas": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxhydrosnipe": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxmalodor": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxmeltdown": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxoneblow": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxrapidflow": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxreplenish": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxresonance": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxsandblast": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxsmite": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxsnooze": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxsteelsurge": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxstonesurge": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxstunshock": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxsweetness": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxtartness": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxterror": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxvinelash": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxvolcalith": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxvoltcrash": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxwildfire": {
+      "flags": [],
+      "secondary": false
+    },
+    "gmaxwindrage": {
+      "flags": [],
+      "secondary": false
+    },
+    "grassknot": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "grasspledge": {
+      "flags": [],
+      "secondary": false
+    },
+    "grasswhistle": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "grassyglide": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "grassyterrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "gravapple": {
+      "flags": [],
+      "secondary": true
+    },
+    "gravity": {
+      "flags": [],
+      "secondary": false
+    },
+    "growl": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "growth": {
+      "flags": [],
+      "secondary": false
+    },
+    "grudge": {
+      "flags": [],
+      "secondary": false
+    },
+    "guardianofalola": {
+      "flags": [],
+      "secondary": false
+    },
+    "guardsplit": {
+      "flags": [],
+      "secondary": false
+    },
+    "guardswap": {
+      "flags": [],
+      "secondary": false
+    },
+    "guillotine": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "gunkshot": {
+      "flags": [],
+      "secondary": true
+    },
+    "gust": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "gyroball": {
+      "flags": ["contact", "bullet"],
+      "secondary": false
+    },
+    "hail": {
+      "flags": [],
+      "secondary": false
+    },
+    "hammerarm": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "happyhour": {
+      "flags": [],
+      "secondary": false
+    },
+    "harden": {
+      "flags": [],
+      "secondary": false
+    },
+    "hardpress": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "haze": {
+      "flags": [],
+      "secondary": false
+    },
+    "headbutt": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "headcharge": {
+      "flags": ["contact"],
+      "recoil": [1, 4],
+      "secondary": false
+    },
+    "headlongrush": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "headsmash": {
+      "flags": ["contact"],
+      "recoil": [1, 2],
+      "secondary": false
+    },
+    "healbell": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "healblock": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "healingwish": {
+      "flags": ["heal"],
+      "selfdestruct": "ifHit",
+      "secondary": false
+    },
+    "healorder": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "healpulse": {
+      "flags": ["reflectable", "heal", "pulse"],
+      "secondary": false
+    },
+    "heartstamp": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "heartswap": {
+      "flags": [],
+      "secondary": false
+    },
+    "heatcrash": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "heatwave": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "heavyslam": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "helpinghand": {
+      "flags": [],
+      "secondary": false
+    },
+    "hex": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpower": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerbug": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerdark": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerdragon": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerelectric": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerfighting": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerfire": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerflying": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerghost": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowergrass": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerground": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerice": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerpoison": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerpsychic": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerrock": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowersteel": {
+      "flags": [],
+      "secondary": false
+    },
+    "hiddenpowerwater": {
+      "flags": [],
+      "secondary": false
+    },
+    "highhorsepower": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "highjumpkick": {
+      "flags": ["contact"],
+      "crash": true,
+      "secondary": false
+    },
+    "holdback": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "holdhands": {
+      "flags": [],
+      "secondary": false
+    },
+    "honeclaws": {
+      "flags": [],
+      "secondary": false
+    },
+    "hornattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "horndrill": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "hornleech": {
+      "flags": ["contact", "heal"],
+      "secondary": false
+    },
+    "howl": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "hurricane": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "hydrocannon": {
+      "flags": [],
+      "secondary": false
+    },
+    "hydropump": {
+      "flags": [],
+      "secondary": false
+    },
+    "hydrosteam": {
+      "flags": [],
+      "secondary": false
+    },
+    "hydrovortex": {
+      "flags": [],
+      "secondary": false
+    },
+    "hyperbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "hyperdrill": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "hyperfang": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "hyperspacefury": {
+      "flags": [],
+      "secondary": false
+    },
+    "hyperspacehole": {
+      "flags": [],
+      "secondary": false
+    },
+    "hypervoice": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "hypnosis": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "iceball": {
+      "flags": ["contact", "bullet"],
+      "secondary": false
+    },
+    "icebeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "iceburn": {
+      "flags": [],
+      "secondary": true
+    },
+    "icefang": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "icehammer": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "icepunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "iceshard": {
+      "flags": [],
+      "secondary": false
+    },
+    "icespinner": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "iciclecrash": {
+      "flags": [],
+      "secondary": true
+    },
+    "iciclespear": {
+      "flags": [],
+      "secondary": false
+    },
+    "icywind": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "imprison": {
+      "flags": [],
+      "secondary": false
+    },
+    "incinerate": {
+      "flags": [],
+      "secondary": false
+    },
+    "infernalparade": {
+      "flags": [],
+      "secondary": true
+    },
+    "inferno": {
+      "flags": [],
+      "secondary": true
+    },
+    "infernooverdrive": {
+      "flags": [],
+      "secondary": false
+    },
+    "infestation": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "ingrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "instruct": {
+      "flags": [],
+      "secondary": false
+    },
+    "iondeluge": {
+      "flags": [],
+      "secondary": false
+    },
+    "irondefense": {
+      "flags": [],
+      "secondary": false
+    },
+    "ironhead": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "irontail": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "ivycudgel": {
+      "flags": [],
+      "secondary": false
+    },
+    "jawlock": {
+      "flags": ["contact", "bite"],
+      "secondary": false
+    },
+    "jetpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "judgment": {
+      "flags": [],
+      "secondary": false
+    },
+    "jumpkick": {
+      "flags": ["contact"],
+      "crash": true,
+      "secondary": false
+    },
+    "junglehealing": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "karatechop": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "kinesis": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "kingsshield": {
+      "flags": [],
+      "secondary": false
+    },
+    "knockoff": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "kowtowcleave": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "landswrath": {
+      "flags": [],
+      "secondary": false
+    },
+    "laserfocus": {
+      "flags": [],
+      "secondary": false
+    },
+    "lashout": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "lastresort": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "lastrespects": {
+      "flags": [],
+      "secondary": false
+    },
+    "lavaplume": {
+      "flags": [],
+      "secondary": true
+    },
+    "leafage": {
+      "flags": [],
+      "secondary": false
+    },
+    "leafblade": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "leafstorm": {
+      "flags": [],
+      "secondary": false
+    },
+    "leaftornado": {
+      "flags": [],
+      "secondary": true
+    },
+    "leechlife": {
+      "flags": ["contact", "heal"],
+      "secondary": false
+    },
+    "leechseed": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "leer": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "letssnuggleforever": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "lick": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "lifedew": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "lightofruin": {
+      "flags": [],
+      "recoil": [1, 2],
+      "secondary": false
+    },
+    "lightscreen": {
+      "flags": [],
+      "secondary": false
+    },
+    "lightthatburnsthesky": {
+      "flags": [],
+      "secondary": false
+    },
+    "liquidation": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "lockon": {
+      "flags": [],
+      "secondary": false
+    },
+    "lovelykiss": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "lowkick": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "lowsweep": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "luckychant": {
+      "flags": [],
+      "secondary": false
+    },
+    "luminacrash": {
+      "flags": [],
+      "secondary": true
+    },
+    "lunarblessing": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "lunardance": {
+      "flags": ["dance", "heal"],
+      "selfdestruct": "ifHit",
+      "secondary": false
+    },
+    "lunge": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "lusterpurge": {
+      "flags": [],
+      "secondary": true
+    },
+    "machpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "magicalleaf": {
+      "flags": [],
+      "secondary": false
+    },
+    "magicaltorque": {
+      "flags": [],
+      "secondary": true
+    },
+    "magiccoat": {
+      "flags": [],
+      "secondary": false
+    },
+    "magicpowder": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "magicroom": {
+      "flags": [],
+      "secondary": false
+    },
+    "magmastorm": {
+      "flags": [],
+      "secondary": false
+    },
+    "magnetbomb": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "magneticflux": {
+      "flags": [],
+      "secondary": false
+    },
+    "magnetrise": {
+      "flags": [],
+      "secondary": false
+    },
+    "magnitude": {
+      "flags": [],
+      "secondary": false
+    },
+    "makeitrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "maliciousmoonsault": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "malignantchain": {
+      "flags": [],
+      "secondary": true
+    },
+    "matblock": {
+      "flags": [],
+      "secondary": false
+    },
+    "matchagotcha": {
+      "flags": ["heal"],
+      "secondary": true
+    },
+    "maxairstream": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxdarkness": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxflare": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxflutterby": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxgeyser": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxguard": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxhailstorm": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxknuckle": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxlightning": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxmindstorm": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxooze": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxovergrowth": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxphantasm": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxquake": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxrockfall": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxstarfall": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxsteelspike": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxstrike": {
+      "flags": [],
+      "secondary": false
+    },
+    "maxwyrmwind": {
+      "flags": [],
+      "secondary": false
+    },
+    "meanlook": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "meditate": {
+      "flags": [],
+      "secondary": false
+    },
+    "mefirst": {
+      "flags": [],
+      "secondary": false
+    },
+    "megadrain": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "megahorn": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "megakick": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "megapunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "memento": {
+      "flags": [],
+      "selfdestruct": "ifHit",
+      "secondary": false
+    },
+    "menacingmoonrazemaelstrom": {
+      "flags": [],
+      "secondary": false
+    },
+    "metalburst": {
+      "flags": [],
+      "secondary": false
+    },
+    "metalclaw": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "metalsound": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "meteorassault": {
+      "flags": [],
+      "secondary": false
+    },
+    "meteorbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "meteormash": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "metronome": {
+      "flags": [],
+      "secondary": false
+    },
+    "mightycleave": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "milkdrink": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "mimic": {
+      "flags": [],
+      "secondary": false
+    },
+    "mindblown": {
+      "flags": [],
+      "secondary": false
+    },
+    "mindreader": {
+      "flags": [],
+      "secondary": false
+    },
+    "minimize": {
+      "flags": [],
+      "secondary": false
+    },
+    "miracleeye": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "mirrorcoat": {
+      "flags": [],
+      "secondary": false
+    },
+    "mirrormove": {
+      "flags": [],
+      "secondary": false
+    },
+    "mirrorshot": {
+      "flags": [],
+      "secondary": true
+    },
+    "mist": {
+      "flags": [],
+      "secondary": false
+    },
+    "mistball": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "mistyexplosion": {
+      "flags": [],
+      "selfdestruct": "always",
+      "secondary": false
+    },
+    "mistyterrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "moonblast": {
+      "flags": [],
+      "secondary": true
+    },
+    "moongeistbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "moonlight": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "morningsun": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "mortalspin": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "mountaingale": {
+      "flags": [],
+      "secondary": true
+    },
+    "mudbomb": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "muddywater": {
+      "flags": [],
+      "secondary": true
+    },
+    "mudshot": {
+      "flags": [],
+      "secondary": true
+    },
+    "mudslap": {
+      "flags": [],
+      "secondary": true
+    },
+    "mudsport": {
+      "flags": [],
+      "secondary": false
+    },
+    "multiattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "mysticalfire": {
+      "flags": [],
+      "secondary": true
+    },
+    "mysticalpower": {
+      "flags": [],
+      "secondary": true
+    },
+    "nastyplot": {
+      "flags": [],
+      "secondary": false
+    },
+    "naturalgift": {
+      "flags": [],
+      "secondary": false
+    },
+    "naturepower": {
+      "flags": [],
+      "secondary": false
+    },
+    "naturesmadness": {
+      "flags": [],
+      "secondary": false
+    },
+    "needlearm": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "neverendingnightmare": {
+      "flags": [],
+      "secondary": false
+    },
+    "nightdaze": {
+      "flags": [],
+      "secondary": true
+    },
+    "nightmare": {
+      "flags": [],
+      "secondary": false
+    },
+    "nightshade": {
+      "flags": [],
+      "secondary": false
+    },
+    "nightslash": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "nihillight": {
+      "flags": [],
+      "secondary": false
+    },
+    "nobleroar": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "noretreat": {
+      "flags": [],
+      "secondary": false
+    },
+    "noxioustorque": {
+      "flags": [],
+      "secondary": true
+    },
+    "nuzzle": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "oblivionwing": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "obstruct": {
+      "flags": [],
+      "secondary": false
+    },
+    "oceanicoperetta": {
+      "flags": [],
+      "secondary": false
+    },
+    "octazooka": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "octolock": {
+      "flags": [],
+      "secondary": false
+    },
+    "odorsleuth": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "ominouswind": {
+      "flags": [],
+      "secondary": true
+    },
+    "orderup": {
+      "flags": [],
+      "secondary": false
+    },
+    "originpulse": {
+      "flags": ["pulse"],
+      "secondary": false
+    },
+    "outrage": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "overdrive": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "overheat": {
+      "flags": [],
+      "secondary": false
+    },
+    "painsplit": {
+      "flags": [],
+      "secondary": false
+    },
+    "paraboliccharge": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "partingshot": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "payback": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "payday": {
+      "flags": [],
+      "secondary": false
+    },
+    "peck": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "perishsong": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "petalblizzard": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "petaldance": {
+      "flags": ["contact", "dance"],
+      "secondary": false
+    },
+    "phantomforce": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "photongeyser": {
+      "flags": [],
+      "secondary": false
+    },
+    "pikapapow": {
+      "flags": [],
+      "secondary": false
+    },
+    "pinmissile": {
+      "flags": [],
+      "secondary": false
+    },
+    "plasmafists": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "playnice": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "playrough": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "pluck": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "poisonfang": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "poisongas": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "poisonjab": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "poisonpowder": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "poisonsting": {
+      "flags": [],
+      "secondary": true
+    },
+    "poisontail": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "pollenpuff": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "poltergeist": {
+      "flags": [],
+      "secondary": false
+    },
+    "populationbomb": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "pounce": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "pound": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "powder": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "powdersnow": {
+      "flags": [],
+      "secondary": true
+    },
+    "powergem": {
+      "flags": [],
+      "secondary": false
+    },
+    "powershift": {
+      "flags": [],
+      "secondary": false
+    },
+    "powersplit": {
+      "flags": [],
+      "secondary": false
+    },
+    "powerswap": {
+      "flags": [],
+      "secondary": false
+    },
+    "powertrick": {
+      "flags": [],
+      "secondary": false
+    },
+    "powertrip": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "poweruppunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "powerwhip": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "precipiceblades": {
+      "flags": [],
+      "secondary": false
+    },
+    "present": {
+      "flags": [],
+      "secondary": false
+    },
+    "prismaticlaser": {
+      "flags": [],
+      "secondary": false
+    },
+    "protect": {
+      "flags": [],
+      "secondary": false
+    },
+    "psybeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "psyblade": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "psychic": {
+      "flags": [],
+      "secondary": true
+    },
+    "psychicfangs": {
+      "flags": ["contact", "bite"],
+      "secondary": false
+    },
+    "psychicnoise": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "psychicterrain": {
+      "flags": [],
+      "secondary": false
+    },
+    "psychoboost": {
+      "flags": [],
+      "secondary": false
+    },
+    "psychocut": {
+      "flags": ["slicing"],
+      "secondary": false
+    },
+    "psychoshift": {
+      "flags": [],
+      "secondary": false
+    },
+    "psychup": {
+      "flags": [],
+      "secondary": false
+    },
+    "psyshieldbash": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "psyshock": {
+      "flags": [],
+      "secondary": false
+    },
+    "psystrike": {
+      "flags": [],
+      "secondary": false
+    },
+    "psywave": {
+      "flags": [],
+      "secondary": false
+    },
+    "pulverizingpancake": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "punishment": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "purify": {
+      "flags": ["reflectable", "heal"],
+      "secondary": false
+    },
+    "pursuit": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "pyroball": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "quash": {
+      "flags": [],
+      "secondary": false
+    },
+    "quickattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "quickguard": {
+      "flags": [],
+      "secondary": false
+    },
+    "quiverdance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "rage": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "ragefist": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "ragepowder": {
+      "flags": ["powder"],
+      "secondary": false
+    },
+    "ragingbull": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "ragingfury": {
+      "flags": [],
+      "secondary": false
+    },
+    "raindance": {
+      "flags": [],
+      "secondary": false
+    },
+    "rapidspin": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "razorleaf": {
+      "flags": ["slicing"],
+      "secondary": false
+    },
+    "razorshell": {
+      "flags": ["contact", "slicing"],
+      "secondary": true
+    },
+    "razorwind": {
+      "flags": [],
+      "secondary": false
+    },
+    "recover": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "recycle": {
+      "flags": [],
+      "secondary": false
+    },
+    "reflect": {
+      "flags": [],
+      "secondary": false
+    },
+    "reflecttype": {
+      "flags": [],
+      "secondary": false
+    },
+    "refresh": {
+      "flags": [],
+      "secondary": false
+    },
+    "relicsong": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "rest": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "retaliate": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "return": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "revelationdance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "revenge": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "reversal": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "revivalblessing": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "risingvoltage": {
+      "flags": [],
+      "secondary": false
+    },
+    "roar": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "roaroftime": {
+      "flags": [],
+      "secondary": false
+    },
+    "rockblast": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "rockclimb": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "rockpolish": {
+      "flags": [],
+      "secondary": false
+    },
+    "rockslide": {
+      "flags": [],
+      "secondary": true
+    },
+    "rocksmash": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "rockthrow": {
+      "flags": [],
+      "secondary": false
+    },
+    "rocktomb": {
+      "flags": [],
+      "secondary": true
+    },
+    "rockwrecker": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "roleplay": {
+      "flags": [],
+      "secondary": false
+    },
+    "rollingkick": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "rollout": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "roost": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "rototiller": {
+      "flags": [],
+      "secondary": false
+    },
+    "round": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "ruination": {
+      "flags": [],
+      "secondary": false
+    },
+    "sacredfire": {
+      "flags": [],
+      "secondary": true
+    },
+    "sacredsword": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "safeguard": {
+      "flags": [],
+      "secondary": false
+    },
+    "saltcure": {
+      "flags": [],
+      "secondary": true
+    },
+    "sandattack": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "sandsearstorm": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "sandstorm": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "sandtomb": {
+      "flags": [],
+      "secondary": false
+    },
+    "sappyseed": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "savagespinout": {
+      "flags": [],
+      "secondary": false
+    },
+    "scald": {
+      "flags": [],
+      "secondary": true
+    },
+    "scaleshot": {
+      "flags": [],
+      "secondary": false
+    },
+    "scaryface": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "scorchingsands": {
+      "flags": [],
+      "secondary": true
+    },
+    "scratch": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "screech": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "searingshot": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "searingsunrazesmash": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "secretpower": {
+      "flags": [],
+      "secondary": true
+    },
+    "secretsword": {
+      "flags": ["slicing"],
+      "secondary": false
+    },
+    "seedbomb": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "seedflare": {
+      "flags": [],
+      "secondary": true
+    },
+    "seismictoss": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "selfdestruct": {
+      "flags": [],
+      "selfdestruct": "always",
+      "secondary": false
+    },
+    "shadowball": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "shadowbone": {
+      "flags": [],
+      "secondary": true
+    },
+    "shadowclaw": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "shadowforce": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "shadowpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "shadowsneak": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "sharpen": {
+      "flags": [],
+      "secondary": false
+    },
+    "shatteredpsyche": {
+      "flags": [],
+      "secondary": false
+    },
+    "shedtail": {
+      "flags": [],
+      "secondary": false
+    },
+    "sheercold": {
+      "flags": [],
+      "secondary": false
+    },
+    "shellsidearm": {
+      "flags": [],
+      "secondary": true
+    },
+    "shellsmash": {
+      "flags": [],
+      "secondary": false
+    },
+    "shelltrap": {
+      "flags": [],
+      "secondary": false
+    },
+    "shelter": {
+      "flags": [],
+      "secondary": false
+    },
+    "shiftgear": {
+      "flags": [],
+      "secondary": false
+    },
+    "shockwave": {
+      "flags": [],
+      "secondary": false
+    },
+    "shoreup": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "signalbeam": {
+      "flags": [],
+      "secondary": true
+    },
+    "silktrap": {
+      "flags": [],
+      "secondary": false
+    },
+    "silverwind": {
+      "flags": [],
+      "secondary": true
+    },
+    "simplebeam": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "sing": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "sinisterarrowraid": {
+      "flags": [],
+      "secondary": false
+    },
+    "sizzlyslide": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "sketch": {
+      "flags": [],
+      "secondary": false
+    },
+    "skillswap": {
+      "flags": [],
+      "secondary": false
+    },
+    "skittersmack": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "skullbash": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "skyattack": {
+      "flags": [],
+      "secondary": true
+    },
+    "skydrop": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "skyuppercut": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "slackoff": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "slam": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "slash": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "sleeppowder": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "sleeptalk": {
+      "flags": [],
+      "secondary": false
+    },
+    "sludge": {
+      "flags": [],
+      "secondary": true
+    },
+    "sludgebomb": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "sludgewave": {
+      "flags": [],
+      "secondary": true
+    },
+    "smackdown": {
+      "flags": [],
+      "secondary": false
+    },
+    "smartstrike": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "smellingsalts": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "smog": {
+      "flags": [],
+      "secondary": true
+    },
+    "smokescreen": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "snaptrap": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "snarl": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "snatch": {
+      "flags": [],
+      "secondary": false
+    },
+    "snipeshot": {
+      "flags": [],
+      "secondary": false
+    },
+    "snore": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "snowscape": {
+      "flags": [],
+      "secondary": false
+    },
+    "soak": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "softboiled": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "solarbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "solarblade": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "sonicboom": {
+      "flags": [],
+      "secondary": false
+    },
+    "soulstealing7starstrike": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "spacialrend": {
+      "flags": [],
+      "secondary": false
+    },
+    "spark": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "sparklingaria": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "sparklyswirl": {
+      "flags": [],
+      "secondary": false
+    },
+    "spectralthief": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "speedswap": {
+      "flags": [],
+      "secondary": false
+    },
+    "spicyextract": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "spiderweb": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "spikecannon": {
+      "flags": [],
+      "secondary": false
+    },
+    "spikes": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "spikyshield": {
+      "flags": [],
+      "secondary": false
+    },
+    "spinout": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "spiritbreak": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "spiritshackle": {
+      "flags": [],
+      "secondary": true
+    },
+    "spite": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "spitup": {
+      "flags": [],
+      "secondary": false
+    },
+    "splash": {
+      "flags": [],
+      "secondary": false
+    },
+    "splinteredstormshards": {
+      "flags": [],
+      "secondary": false
+    },
+    "splishysplash": {
+      "flags": [],
+      "secondary": true
+    },
+    "spore": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "spotlight": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "springtidestorm": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "stealthrock": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "steameruption": {
+      "flags": [],
+      "secondary": true
+    },
+    "steamroller": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "steelbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "steelroller": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "steelwing": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "stickyweb": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "stockpile": {
+      "flags": [],
+      "secondary": false
+    },
+    "stokedsparksurfer": {
+      "flags": [],
+      "secondary": true
+    },
+    "stomp": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "stompingtantrum": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "stoneaxe": {
+      "flags": ["contact", "slicing"],
+      "secondary": true
+    },
+    "stoneedge": {
+      "flags": [],
+      "secondary": false
+    },
+    "storedpower": {
+      "flags": [],
+      "secondary": false
+    },
+    "stormthrow": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "strangesteam": {
+      "flags": [],
+      "secondary": true
+    },
+    "strength": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "strengthsap": {
+      "flags": ["reflectable", "heal"],
+      "secondary": false
+    },
+    "stringshot": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "struggle": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "strugglebug": {
+      "flags": [],
+      "secondary": true
+    },
+    "stuffcheeks": {
+      "flags": [],
+      "secondary": false
+    },
+    "stunspore": {
+      "flags": ["reflectable", "powder"],
+      "secondary": false
+    },
+    "submission": {
+      "flags": ["contact"],
+      "recoil": [1, 4],
+      "secondary": false
+    },
+    "substitute": {
+      "flags": [],
+      "secondary": false
+    },
+    "subzeroslammer": {
+      "flags": [],
+      "secondary": false
+    },
+    "suckerpunch": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "sunnyday": {
+      "flags": [],
+      "secondary": false
+    },
+    "sunsteelstrike": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "supercellslam": {
+      "flags": ["contact"],
+      "crash": true,
+      "secondary": false
+    },
+    "superfang": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "superpower": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "supersonic": {
+      "flags": ["reflectable", "sound"],
+      "secondary": false
+    },
+    "supersonicskystrike": {
+      "flags": [],
+      "secondary": false
+    },
+    "surf": {
+      "flags": [],
+      "secondary": false
+    },
+    "surgingstrikes": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "swagger": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "swallow": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "sweetkiss": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "sweetscent": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "swift": {
+      "flags": [],
+      "secondary": false
+    },
+    "switcheroo": {
+      "flags": [],
+      "secondary": false
+    },
+    "swordsdance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "synchronoise": {
+      "flags": [],
+      "secondary": false
+    },
+    "synthesis": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "syrupbomb": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "tachyoncutter": {
+      "flags": ["slicing"],
+      "secondary": false
+    },
+    "tackle": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "tailglow": {
+      "flags": [],
+      "secondary": false
+    },
+    "tailslap": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "tailwhip": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "tailwind": {
+      "flags": ["wind"],
+      "secondary": false
+    },
+    "takedown": {
+      "flags": ["contact"],
+      "recoil": [1, 4],
+      "secondary": false
+    },
+    "takeheart": {
+      "flags": [],
+      "secondary": false
+    },
+    "tarshot": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "taunt": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "tearfullook": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "teatime": {
+      "flags": [],
+      "secondary": false
+    },
+    "technoblast": {
+      "flags": [],
+      "secondary": false
+    },
+    "tectonicrage": {
+      "flags": [],
+      "secondary": false
+    },
+    "teeterdance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "telekinesis": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "teleport": {
+      "flags": [],
+      "secondary": false
+    },
+    "temperflare": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "terablast": {
+      "flags": [],
+      "secondary": false
+    },
+    "terastarstorm": {
+      "flags": [],
+      "secondary": false
+    },
+    "terrainpulse": {
+      "flags": ["pulse"],
+      "secondary": false
+    },
+    "thief": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "thousandarrows": {
+      "flags": [],
+      "secondary": false
+    },
+    "thousandwaves": {
+      "flags": [],
+      "secondary": false
+    },
+    "thrash": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "throatchop": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "thunder": {
+      "flags": [],
+      "secondary": true
+    },
+    "thunderbolt": {
+      "flags": [],
+      "secondary": true
+    },
+    "thundercage": {
+      "flags": [],
+      "secondary": false
+    },
+    "thunderclap": {
+      "flags": [],
+      "secondary": false
+    },
+    "thunderfang": {
+      "flags": ["contact", "bite"],
+      "secondary": true
+    },
+    "thunderouskick": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "thunderpunch": {
+      "flags": ["contact", "punch"],
+      "secondary": true
+    },
+    "thundershock": {
+      "flags": [],
+      "secondary": true
+    },
+    "thunderwave": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "tickle": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "tidyup": {
+      "flags": [],
+      "secondary": false
+    },
+    "topsyturvy": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "torchsong": {
+      "flags": ["sound"],
+      "secondary": true
+    },
+    "torment": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "toxic": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "toxicspikes": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "toxicthread": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "trailblaze": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "transform": {
+      "flags": [],
+      "secondary": false
+    },
+    "triattack": {
+      "flags": [],
+      "secondary": true
+    },
+    "trick": {
+      "flags": [],
+      "secondary": false
+    },
+    "trickortreat": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "trickroom": {
+      "flags": [],
+      "secondary": false
+    },
+    "triplearrows": {
+      "flags": [],
+      "secondary": true
+    },
+    "tripleaxel": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "tripledive": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "triplekick": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "tropkick": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "trumpcard": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "twinbeam": {
+      "flags": [],
+      "secondary": false
+    },
+    "twineedle": {
+      "flags": [],
+      "secondary": true
+    },
+    "twinkletackle": {
+      "flags": [],
+      "secondary": false
+    },
+    "twister": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "upperhand": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "uproar": {
+      "flags": ["sound"],
+      "secondary": false
+    },
+    "uturn": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "vacuumwave": {
+      "flags": [],
+      "secondary": false
+    },
+    "vcreate": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "veeveevolley": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "venomdrench": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "venoshock": {
+      "flags": [],
+      "secondary": false
+    },
+    "victorydance": {
+      "flags": ["dance"],
+      "secondary": false
+    },
+    "vinewhip": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "visegrip": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "vitalthrow": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "voltswitch": {
+      "flags": [],
+      "secondary": false
+    },
+    "volttackle": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": true
+    },
+    "wakeupslap": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "waterfall": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "watergun": {
+      "flags": [],
+      "secondary": false
+    },
+    "waterpledge": {
+      "flags": [],
+      "secondary": false
+    },
+    "waterpulse": {
+      "flags": ["pulse"],
+      "secondary": true
+    },
+    "watershuriken": {
+      "flags": [],
+      "secondary": false
+    },
+    "watersport": {
+      "flags": [],
+      "secondary": false
+    },
+    "waterspout": {
+      "flags": [],
+      "secondary": false
+    },
+    "wavecrash": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": false
+    },
+    "weatherball": {
+      "flags": ["bullet"],
+      "secondary": false
+    },
+    "whirlpool": {
+      "flags": [],
+      "secondary": false
+    },
+    "whirlwind": {
+      "flags": ["reflectable", "wind"],
+      "secondary": false
+    },
+    "wickedblow": {
+      "flags": ["contact", "punch"],
+      "secondary": false
+    },
+    "wickedtorque": {
+      "flags": [],
+      "secondary": true
+    },
+    "wideguard": {
+      "flags": [],
+      "secondary": false
+    },
+    "wildboltstorm": {
+      "flags": ["wind"],
+      "secondary": true
+    },
+    "wildcharge": {
+      "flags": ["contact"],
+      "recoil": [1, 4],
+      "secondary": false
+    },
+    "willowisp": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "wingattack": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "wish": {
+      "flags": ["heal"],
+      "secondary": false
+    },
+    "withdraw": {
+      "flags": [],
+      "secondary": false
+    },
+    "wonderroom": {
+      "flags": [],
+      "secondary": false
+    },
+    "woodhammer": {
+      "flags": ["contact"],
+      "recoil": [33, 100],
+      "secondary": false
+    },
+    "workup": {
+      "flags": [],
+      "secondary": false
+    },
+    "worryseed": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "wrap": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "wringout": {
+      "flags": ["contact"],
+      "secondary": false
+    },
+    "xscissor": {
+      "flags": ["contact", "slicing"],
+      "secondary": false
+    },
+    "yawn": {
+      "flags": ["reflectable"],
+      "secondary": false
+    },
+    "zapcannon": {
+      "flags": ["bullet"],
+      "secondary": true
+    },
+    "zenheadbutt": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "zingzap": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "zippyzap": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "paleowave": {
+      "flags": [],
+      "secondary": true
+    },
+    "shadowstrike": {
+      "flags": ["contact"],
+      "secondary": true
+    },
+    "polarflare": {
+      "flags": [],
+      "secondary": true
+    }
+  },
+  "pokemon": {
+    "bulbasaur": {
+      "weight": 6.9
+    },
+    "ivysaur": {
+      "weight": 13
+    },
+    "venusaur": {
+      "weight": 100
+    },
+    "venusaurmega": {
+      "weight": 155.5
+    },
+    "venusaurgmax": {
+      "weight": 0
+    },
+    "charmander": {
+      "weight": 8.5
+    },
+    "charmeleon": {
+      "weight": 19
+    },
+    "charizard": {
+      "weight": 90.5
+    },
+    "charizardmegax": {
+      "weight": 110.5
+    },
+    "charizardmegay": {
+      "weight": 100.5
+    },
+    "charizardgmax": {
+      "weight": 0
+    },
+    "squirtle": {
+      "weight": 9
+    },
+    "wartortle": {
+      "weight": 22.5
+    },
+    "blastoise": {
+      "weight": 85.5
+    },
+    "blastoisemega": {
+      "weight": 101.1
+    },
+    "blastoisegmax": {
+      "weight": 0
+    },
+    "caterpie": {
+      "weight": 2.9
+    },
+    "metapod": {
+      "weight": 9.9
+    },
+    "butterfree": {
+      "weight": 32
+    },
+    "butterfreegmax": {
+      "weight": 0
+    },
+    "weedle": {
+      "weight": 3.2
+    },
+    "kakuna": {
+      "weight": 10
+    },
+    "beedrill": {
+      "weight": 29.5
+    },
+    "beedrillmega": {
+      "weight": 40.5
+    },
+    "pidgey": {
+      "weight": 1.8
+    },
+    "pidgeotto": {
+      "weight": 30
+    },
+    "pidgeot": {
+      "weight": 39.5
+    },
+    "pidgeotmega": {
+      "weight": 50.5
+    },
+    "rattata": {
+      "weight": 3.5
+    },
+    "rattataalola": {
+      "weight": 3.8
+    },
+    "raticate": {
+      "weight": 18.5
+    },
+    "raticatealola": {
+      "weight": 25.5
+    },
+    "raticatealolatotem": {
+      "weight": 105
+    },
+    "spearow": {
+      "weight": 2
+    },
+    "fearow": {
+      "weight": 38
+    },
+    "ekans": {
+      "weight": 6.9
+    },
+    "arbok": {
+      "weight": 65
+    },
+    "pikachu": {
+      "weight": 6
+    },
+    "pikachucosplay": {
+      "weight": 6
+    },
+    "pikachurockstar": {
+      "weight": 6
+    },
+    "pikachubelle": {
+      "weight": 6
+    },
+    "pikachupopstar": {
+      "weight": 6
+    },
+    "pikachuphd": {
+      "weight": 6
+    },
+    "pikachulibre": {
+      "weight": 6
+    },
+    "pikachuoriginal": {
+      "weight": 6
+    },
+    "pikachuhoenn": {
+      "weight": 6
+    },
+    "pikachusinnoh": {
+      "weight": 6
+    },
+    "pikachuunova": {
+      "weight": 6
+    },
+    "pikachukalos": {
+      "weight": 6
+    },
+    "pikachualola": {
+      "weight": 6
+    },
+    "pikachupartner": {
+      "weight": 6
+    },
+    "pikachustarter": {
+      "weight": 6
+    },
+    "pikachugmax": {
+      "weight": 0
+    },
+    "pikachuworld": {
+      "weight": 6
+    },
+    "raichu": {
+      "weight": 30
+    },
+    "raichualola": {
+      "weight": 21
+    },
+    "raichumegax": {
+      "weight": 38
+    },
+    "raichumegay": {
+      "weight": 26
+    },
+    "sandshrew": {
+      "weight": 12
+    },
+    "sandshrewalola": {
+      "weight": 40
+    },
+    "sandslash": {
+      "weight": 29.5
+    },
+    "sandslashalola": {
+      "weight": 55
+    },
+    "nidoranf": {
+      "weight": 7
+    },
+    "nidorina": {
+      "weight": 20
+    },
+    "nidoqueen": {
+      "weight": 60
+    },
+    "nidoranm": {
+      "weight": 9
+    },
+    "nidorino": {
+      "weight": 19.5
+    },
+    "nidoking": {
+      "weight": 62
+    },
+    "clefairy": {
+      "weight": 7.5
+    },
+    "clefable": {
+      "weight": 40
+    },
+    "clefablemega": {
+      "weight": 42.3
+    },
+    "vulpix": {
+      "weight": 9.9
+    },
+    "vulpixalola": {
+      "weight": 9.9
+    },
+    "ninetales": {
+      "weight": 19.9
+    },
+    "ninetalesalola": {
+      "weight": 19.9
+    },
+    "jigglypuff": {
+      "weight": 5.5
+    },
+    "wigglytuff": {
+      "weight": 12
+    },
+    "zubat": {
+      "weight": 7.5
+    },
+    "golbat": {
+      "weight": 55
+    },
+    "oddish": {
+      "weight": 5.4
+    },
+    "gloom": {
+      "weight": 8.6
+    },
+    "vileplume": {
+      "weight": 18.6
+    },
+    "paras": {
+      "weight": 5.4
+    },
+    "parasect": {
+      "weight": 29.5
+    },
+    "venonat": {
+      "weight": 30
+    },
+    "venomoth": {
+      "weight": 12.5
+    },
+    "diglett": {
+      "weight": 0.8
+    },
+    "diglettalola": {
+      "weight": 1
+    },
+    "dugtrio": {
+      "weight": 33.3
+    },
+    "dugtrioalola": {
+      "weight": 66.6
+    },
+    "meowth": {
+      "weight": 4.2
+    },
+    "meowthalola": {
+      "weight": 4.2
+    },
+    "meowthgalar": {
+      "weight": 7.5
+    },
+    "meowthgmax": {
+      "weight": 0
+    },
+    "persian": {
+      "weight": 32
+    },
+    "persianalola": {
+      "weight": 33
+    },
+    "psyduck": {
+      "weight": 19.6
+    },
+    "golduck": {
+      "weight": 76.6
+    },
+    "mankey": {
+      "weight": 28
+    },
+    "primeape": {
+      "weight": 32
+    },
+    "growlithe": {
+      "weight": 19
+    },
+    "growlithehisui": {
+      "weight": 22.7
+    },
+    "arcanine": {
+      "weight": 155
+    },
+    "arcaninehisui": {
+      "weight": 168
+    },
+    "poliwag": {
+      "weight": 12.4
+    },
+    "poliwhirl": {
+      "weight": 20
+    },
+    "poliwrath": {
+      "weight": 54
+    },
+    "abra": {
+      "weight": 19.5
+    },
+    "kadabra": {
+      "weight": 56.5
+    },
+    "alakazam": {
+      "weight": 48
+    },
+    "alakazammega": {
+      "weight": 48
+    },
+    "machop": {
+      "weight": 19.5
+    },
+    "machoke": {
+      "weight": 70.5
+    },
+    "machamp": {
+      "weight": 130
+    },
+    "machampgmax": {
+      "weight": 0
+    },
+    "bellsprout": {
+      "weight": 4
+    },
+    "weepinbell": {
+      "weight": 6.4
+    },
+    "victreebel": {
+      "weight": 15.5
+    },
+    "victreebelmega": {
+      "weight": 125.5
+    },
+    "tentacool": {
+      "weight": 45.5
+    },
+    "tentacruel": {
+      "weight": 55
+    },
+    "geodude": {
+      "weight": 20
+    },
+    "geodudealola": {
+      "weight": 20.3
+    },
+    "graveler": {
+      "weight": 105
+    },
+    "graveleralola": {
+      "weight": 110
+    },
+    "golem": {
+      "weight": 300
+    },
+    "golemalola": {
+      "weight": 316
+    },
+    "ponyta": {
+      "weight": 30
+    },
+    "ponytagalar": {
+      "weight": 24
+    },
+    "rapidash": {
+      "weight": 95
+    },
+    "rapidashgalar": {
+      "weight": 80
+    },
+    "slowpoke": {
+      "weight": 36
+    },
+    "slowpokegalar": {
+      "weight": 36
+    },
+    "slowbro": {
+      "weight": 78.5
+    },
+    "slowbromega": {
+      "weight": 120
+    },
+    "slowbrogalar": {
+      "weight": 70.5
+    },
+    "magnemite": {
+      "weight": 6
+    },
+    "magneton": {
+      "weight": 60
+    },
+    "farfetchd": {
+      "weight": 15
+    },
+    "farfetchdgalar": {
+      "weight": 42
+    },
+    "doduo": {
+      "weight": 39.2
+    },
+    "dodrio": {
+      "weight": 85.2
+    },
+    "seel": {
+      "weight": 90
+    },
+    "dewgong": {
+      "weight": 120
+    },
+    "grimer": {
+      "weight": 30
+    },
+    "grimeralola": {
+      "weight": 42
+    },
+    "muk": {
+      "weight": 30
+    },
+    "mukalola": {
+      "weight": 52
+    },
+    "shellder": {
+      "weight": 4
+    },
+    "cloyster": {
+      "weight": 132.5
+    },
+    "gastly": {
+      "weight": 0.1
+    },
+    "haunter": {
+      "weight": 0.1
+    },
+    "gengar": {
+      "weight": 40.5
+    },
+    "gengarmega": {
+      "weight": 40.5
+    },
+    "gengargmax": {
+      "weight": 0
+    },
+    "onix": {
+      "weight": 210
+    },
+    "drowzee": {
+      "weight": 32.4
+    },
+    "hypno": {
+      "weight": 75.6
+    },
+    "krabby": {
+      "weight": 6.5
+    },
+    "kingler": {
+      "weight": 60
+    },
+    "kinglergmax": {
+      "weight": 0
+    },
+    "voltorb": {
+      "weight": 10.4
+    },
+    "voltorbhisui": {
+      "weight": 13
+    },
+    "electrode": {
+      "weight": 66.6
+    },
+    "electrodehisui": {
+      "weight": 71
+    },
+    "exeggcute": {
+      "weight": 2.5
+    },
+    "exeggutor": {
+      "weight": 120
+    },
+    "exeggutoralola": {
+      "weight": 415.6
+    },
+    "cubone": {
+      "weight": 6.5
+    },
+    "marowak": {
+      "weight": 45
+    },
+    "marowakalola": {
+      "weight": 34
+    },
+    "marowakalolatotem": {
+      "weight": 98
+    },
+    "hitmonlee": {
+      "weight": 49.8
+    },
+    "hitmonchan": {
+      "weight": 50.2
+    },
+    "lickitung": {
+      "weight": 65.5
+    },
+    "koffing": {
+      "weight": 1
+    },
+    "weezing": {
+      "weight": 9.5
+    },
+    "weezinggalar": {
+      "weight": 16
+    },
+    "rhyhorn": {
+      "weight": 115
+    },
+    "rhydon": {
+      "weight": 120
+    },
+    "chansey": {
+      "weight": 34.6
+    },
+    "tangela": {
+      "weight": 35
+    },
+    "kangaskhan": {
+      "weight": 80
+    },
+    "kangaskhanmega": {
+      "weight": 100
+    },
+    "horsea": {
+      "weight": 8
+    },
+    "seadra": {
+      "weight": 25
+    },
+    "goldeen": {
+      "weight": 15
+    },
+    "seaking": {
+      "weight": 39
+    },
+    "staryu": {
+      "weight": 34.5
+    },
+    "starmie": {
+      "weight": 80
+    },
+    "starmiemega": {
+      "weight": 80
+    },
+    "mrmime": {
+      "weight": 54.5
+    },
+    "mrmimegalar": {
+      "weight": 56.8
+    },
+    "scyther": {
+      "weight": 56
+    },
+    "jynx": {
+      "weight": 40.6
+    },
+    "electabuzz": {
+      "weight": 30
+    },
+    "magmar": {
+      "weight": 44.5
+    },
+    "pinsir": {
+      "weight": 55
+    },
+    "pinsirmega": {
+      "weight": 59
+    },
+    "tauros": {
+      "weight": 88.4
+    },
+    "taurospaldeacombat": {
+      "weight": 115
+    },
+    "taurospaldeablaze": {
+      "weight": 85
+    },
+    "taurospaldeaaqua": {
+      "weight": 110
+    },
+    "magikarp": {
+      "weight": 10
+    },
+    "gyarados": {
+      "weight": 235
+    },
+    "gyaradosmega": {
+      "weight": 305
+    },
+    "lapras": {
+      "weight": 220
+    },
+    "laprasgmax": {
+      "weight": 0
+    },
+    "ditto": {
+      "weight": 4
+    },
+    "eevee": {
+      "weight": 6.5
+    },
+    "eeveestarter": {
+      "weight": 6.5
+    },
+    "eeveegmax": {
+      "weight": 0
+    },
+    "vaporeon": {
+      "weight": 29
+    },
+    "jolteon": {
+      "weight": 24.5
+    },
+    "flareon": {
+      "weight": 25
+    },
+    "porygon": {
+      "weight": 36.5
+    },
+    "omanyte": {
+      "weight": 7.5
+    },
+    "omastar": {
+      "weight": 35
+    },
+    "kabuto": {
+      "weight": 11.5
+    },
+    "kabutops": {
+      "weight": 40.5
+    },
+    "aerodactyl": {
+      "weight": 59
+    },
+    "aerodactylmega": {
+      "weight": 79
+    },
+    "snorlax": {
+      "weight": 460
+    },
+    "snorlaxgmax": {
+      "weight": 0
+    },
+    "articuno": {
+      "weight": 55.4
+    },
+    "articunogalar": {
+      "weight": 50.9
+    },
+    "zapdos": {
+      "weight": 52.6
+    },
+    "zapdosgalar": {
+      "weight": 58.2
+    },
+    "moltres": {
+      "weight": 60
+    },
+    "moltresgalar": {
+      "weight": 66
+    },
+    "dratini": {
+      "weight": 3.3
+    },
+    "dragonair": {
+      "weight": 16.5
+    },
+    "dragonite": {
+      "weight": 210
+    },
+    "dragonitemega": {
+      "weight": 290
+    },
+    "mewtwo": {
+      "weight": 122
+    },
+    "mewtwomegax": {
+      "weight": 127
+    },
+    "mewtwomegay": {
+      "weight": 33
+    },
+    "mew": {
+      "weight": 4
+    },
+    "chikorita": {
+      "weight": 6.4
+    },
+    "bayleef": {
+      "weight": 15.8
+    },
+    "meganium": {
+      "weight": 100.5
+    },
+    "meganiummega": {
+      "weight": 201
+    },
+    "cyndaquil": {
+      "weight": 7.9
+    },
+    "quilava": {
+      "weight": 19
+    },
+    "typhlosion": {
+      "weight": 79.5
+    },
+    "typhlosionhisui": {
+      "weight": 69.8
+    },
+    "totodile": {
+      "weight": 9.5
+    },
+    "croconaw": {
+      "weight": 25
+    },
+    "feraligatr": {
+      "weight": 88.8
+    },
+    "feraligatrmega": {
+      "weight": 108.8
+    },
+    "sentret": {
+      "weight": 6
+    },
+    "furret": {
+      "weight": 32.5
+    },
+    "hoothoot": {
+      "weight": 21.2
+    },
+    "noctowl": {
+      "weight": 40.8
+    },
+    "ledyba": {
+      "weight": 10.8
+    },
+    "ledian": {
+      "weight": 35.6
+    },
+    "spinarak": {
+      "weight": 8.5
+    },
+    "ariados": {
+      "weight": 33.5
+    },
+    "crobat": {
+      "weight": 75
+    },
+    "chinchou": {
+      "weight": 12
+    },
+    "lanturn": {
+      "weight": 22.5
+    },
+    "pichu": {
+      "weight": 2
+    },
+    "pichuspikyeared": {
+      "weight": 2
+    },
+    "cleffa": {
+      "weight": 3
+    },
+    "igglybuff": {
+      "weight": 1
+    },
+    "togepi": {
+      "weight": 1.5
+    },
+    "togetic": {
+      "weight": 3.2
+    },
+    "natu": {
+      "weight": 2
+    },
+    "xatu": {
+      "weight": 15
+    },
+    "mareep": {
+      "weight": 7.8
+    },
+    "flaaffy": {
+      "weight": 13.3
+    },
+    "ampharos": {
+      "weight": 61.5
+    },
+    "ampharosmega": {
+      "weight": 61.5
+    },
+    "bellossom": {
+      "weight": 5.8
+    },
+    "marill": {
+      "weight": 8.5
+    },
+    "azumarill": {
+      "weight": 28.5
+    },
+    "sudowoodo": {
+      "weight": 38
+    },
+    "politoed": {
+      "weight": 33.9
+    },
+    "hoppip": {
+      "weight": 0.5
+    },
+    "skiploom": {
+      "weight": 1
+    },
+    "jumpluff": {
+      "weight": 3
+    },
+    "aipom": {
+      "weight": 11.5
+    },
+    "sunkern": {
+      "weight": 1.8
+    },
+    "sunflora": {
+      "weight": 8.5
+    },
+    "yanma": {
+      "weight": 38
+    },
+    "wooper": {
+      "weight": 8.5
+    },
+    "wooperpaldea": {
+      "weight": 11
+    },
+    "quagsire": {
+      "weight": 75
+    },
+    "espeon": {
+      "weight": 26.5
+    },
+    "umbreon": {
+      "weight": 27
+    },
+    "murkrow": {
+      "weight": 2.1
+    },
+    "slowking": {
+      "weight": 79.5
+    },
+    "slowkinggalar": {
+      "weight": 79.5
+    },
+    "misdreavus": {
+      "weight": 1
+    },
+    "unown": {
+      "weight": 5
+    },
+    "wobbuffet": {
+      "weight": 28.5
+    },
+    "girafarig": {
+      "weight": 41.5
+    },
+    "pineco": {
+      "weight": 7.2
+    },
+    "forretress": {
+      "weight": 125.8
+    },
+    "dunsparce": {
+      "weight": 14
+    },
+    "gligar": {
+      "weight": 64.8
+    },
+    "steelix": {
+      "weight": 400
+    },
+    "steelixmega": {
+      "weight": 740
+    },
+    "snubbull": {
+      "weight": 7.8
+    },
+    "granbull": {
+      "weight": 48.7
+    },
+    "qwilfish": {
+      "weight": 3.9
+    },
+    "qwilfishhisui": {
+      "weight": 3.9
+    },
+    "scizor": {
+      "weight": 118
+    },
+    "scizormega": {
+      "weight": 125
+    },
+    "shuckle": {
+      "weight": 20.5
+    },
+    "heracross": {
+      "weight": 54
+    },
+    "heracrossmega": {
+      "weight": 62.5
+    },
+    "sneasel": {
+      "weight": 28
+    },
+    "sneaselhisui": {
+      "weight": 27
+    },
+    "teddiursa": {
+      "weight": 8.8
+    },
+    "ursaring": {
+      "weight": 125.8
+    },
+    "slugma": {
+      "weight": 35
+    },
+    "magcargo": {
+      "weight": 55
+    },
+    "swinub": {
+      "weight": 6.5
+    },
+    "piloswine": {
+      "weight": 55.8
+    },
+    "corsola": {
+      "weight": 5
+    },
+    "corsolagalar": {
+      "weight": 0.5
+    },
+    "remoraid": {
+      "weight": 12
+    },
+    "octillery": {
+      "weight": 28.5
+    },
+    "delibird": {
+      "weight": 16
+    },
+    "mantine": {
+      "weight": 220
+    },
+    "skarmory": {
+      "weight": 50.5
+    },
+    "skarmorymega": {
+      "weight": 40.4
+    },
+    "houndour": {
+      "weight": 10.8
+    },
+    "houndoom": {
+      "weight": 35
+    },
+    "houndoommega": {
+      "weight": 49.5
+    },
+    "kingdra": {
+      "weight": 152
+    },
+    "phanpy": {
+      "weight": 33.5
+    },
+    "donphan": {
+      "weight": 120
+    },
+    "porygon2": {
+      "weight": 32.5
+    },
+    "stantler": {
+      "weight": 71.2
+    },
+    "smeargle": {
+      "weight": 58
+    },
+    "tyrogue": {
+      "weight": 21
+    },
+    "hitmontop": {
+      "weight": 48
+    },
+    "smoochum": {
+      "weight": 6
+    },
+    "elekid": {
+      "weight": 23.5
+    },
+    "magby": {
+      "weight": 21.4
+    },
+    "miltank": {
+      "weight": 75.5
+    },
+    "blissey": {
+      "weight": 46.8
+    },
+    "raikou": {
+      "weight": 178
+    },
+    "entei": {
+      "weight": 198
+    },
+    "suicune": {
+      "weight": 187
+    },
+    "larvitar": {
+      "weight": 72
+    },
+    "pupitar": {
+      "weight": 152
+    },
+    "tyranitar": {
+      "weight": 202
+    },
+    "tyranitarmega": {
+      "weight": 255
+    },
+    "lugia": {
+      "weight": 216
+    },
+    "hooh": {
+      "weight": 199
+    },
+    "celebi": {
+      "weight": 5
+    },
+    "treecko": {
+      "weight": 5
+    },
+    "grovyle": {
+      "weight": 21.6
+    },
+    "sceptile": {
+      "weight": 52.2
+    },
+    "sceptilemega": {
+      "weight": 55.2
+    },
+    "torchic": {
+      "weight": 2.5
+    },
+    "combusken": {
+      "weight": 19.5
+    },
+    "blaziken": {
+      "weight": 52
+    },
+    "blazikenmega": {
+      "weight": 52
+    },
+    "mudkip": {
+      "weight": 7.6
+    },
+    "marshtomp": {
+      "weight": 28
+    },
+    "swampert": {
+      "weight": 81.9
+    },
+    "swampertmega": {
+      "weight": 102
+    },
+    "poochyena": {
+      "weight": 13.6
+    },
+    "mightyena": {
+      "weight": 37
+    },
+    "zigzagoon": {
+      "weight": 17.5
+    },
+    "zigzagoongalar": {
+      "weight": 17.5
+    },
+    "linoone": {
+      "weight": 32.5
+    },
+    "linoonegalar": {
+      "weight": 32.5
+    },
+    "wurmple": {
+      "weight": 3.6
+    },
+    "silcoon": {
+      "weight": 10
+    },
+    "beautifly": {
+      "weight": 28.4
+    },
+    "cascoon": {
+      "weight": 11.5
+    },
+    "dustox": {
+      "weight": 31.6
+    },
+    "lotad": {
+      "weight": 2.6
+    },
+    "lombre": {
+      "weight": 32.5
+    },
+    "ludicolo": {
+      "weight": 55
+    },
+    "seedot": {
+      "weight": 4
+    },
+    "nuzleaf": {
+      "weight": 28
+    },
+    "shiftry": {
+      "weight": 59.6
+    },
+    "taillow": {
+      "weight": 2.3
+    },
+    "swellow": {
+      "weight": 19.8
+    },
+    "wingull": {
+      "weight": 9.5
+    },
+    "pelipper": {
+      "weight": 28
+    },
+    "ralts": {
+      "weight": 6.6
+    },
+    "kirlia": {
+      "weight": 20.2
+    },
+    "gardevoir": {
+      "weight": 48.4
+    },
+    "gardevoirmega": {
+      "weight": 48.4
+    },
+    "surskit": {
+      "weight": 1.7
+    },
+    "masquerain": {
+      "weight": 3.6
+    },
+    "shroomish": {
+      "weight": 4.5
+    },
+    "breloom": {
+      "weight": 39.2
+    },
+    "slakoth": {
+      "weight": 24
+    },
+    "vigoroth": {
+      "weight": 46.5
+    },
+    "slaking": {
+      "weight": 130.5
+    },
+    "nincada": {
+      "weight": 5.5
+    },
+    "ninjask": {
+      "weight": 12
+    },
+    "shedinja": {
+      "weight": 1.2
+    },
+    "whismur": {
+      "weight": 16.3
+    },
+    "loudred": {
+      "weight": 40.5
+    },
+    "exploud": {
+      "weight": 84
+    },
+    "makuhita": {
+      "weight": 86.4
+    },
+    "hariyama": {
+      "weight": 253.8
+    },
+    "azurill": {
+      "weight": 2
+    },
+    "nosepass": {
+      "weight": 97
+    },
+    "skitty": {
+      "weight": 11
+    },
+    "delcatty": {
+      "weight": 32.6
+    },
+    "sableye": {
+      "weight": 11
+    },
+    "sableyemega": {
+      "weight": 161
+    },
+    "mawile": {
+      "weight": 11.5
+    },
+    "mawilemega": {
+      "weight": 23.5
+    },
+    "aron": {
+      "weight": 60
+    },
+    "lairon": {
+      "weight": 120
+    },
+    "aggron": {
+      "weight": 360
+    },
+    "aggronmega": {
+      "weight": 395
+    },
+    "meditite": {
+      "weight": 11.2
+    },
+    "medicham": {
+      "weight": 31.5
+    },
+    "medichammega": {
+      "weight": 31.5
+    },
+    "electrike": {
+      "weight": 15.2
+    },
+    "manectric": {
+      "weight": 40.2
+    },
+    "manectricmega": {
+      "weight": 44
+    },
+    "plusle": {
+      "weight": 4.2
+    },
+    "minun": {
+      "weight": 4.2
+    },
+    "volbeat": {
+      "weight": 17.7
+    },
+    "illumise": {
+      "weight": 17.7
+    },
+    "roselia": {
+      "weight": 2
+    },
+    "gulpin": {
+      "weight": 10.3
+    },
+    "swalot": {
+      "weight": 80
+    },
+    "carvanha": {
+      "weight": 20.8
+    },
+    "sharpedo": {
+      "weight": 88.8
+    },
+    "sharpedomega": {
+      "weight": 130.3
+    },
+    "wailmer": {
+      "weight": 130
+    },
+    "wailord": {
+      "weight": 398
+    },
+    "numel": {
+      "weight": 24
+    },
+    "camerupt": {
+      "weight": 220
+    },
+    "cameruptmega": {
+      "weight": 320.5
+    },
+    "torkoal": {
+      "weight": 80.4
+    },
+    "spoink": {
+      "weight": 30.6
+    },
+    "grumpig": {
+      "weight": 71.5
+    },
+    "spinda": {
+      "weight": 5
+    },
+    "trapinch": {
+      "weight": 15
+    },
+    "vibrava": {
+      "weight": 15.3
+    },
+    "flygon": {
+      "weight": 82
+    },
+    "cacnea": {
+      "weight": 51.3
+    },
+    "cacturne": {
+      "weight": 77.4
+    },
+    "swablu": {
+      "weight": 1.2
+    },
+    "altaria": {
+      "weight": 20.6
+    },
+    "altariamega": {
+      "weight": 20.6
+    },
+    "zangoose": {
+      "weight": 40.3
+    },
+    "seviper": {
+      "weight": 52.5
+    },
+    "lunatone": {
+      "weight": 168
+    },
+    "solrock": {
+      "weight": 154
+    },
+    "barboach": {
+      "weight": 1.9
+    },
+    "whiscash": {
+      "weight": 23.6
+    },
+    "corphish": {
+      "weight": 11.5
+    },
+    "crawdaunt": {
+      "weight": 32.8
+    },
+    "baltoy": {
+      "weight": 21.5
+    },
+    "claydol": {
+      "weight": 108
+    },
+    "lileep": {
+      "weight": 23.8
+    },
+    "cradily": {
+      "weight": 60.4
+    },
+    "anorith": {
+      "weight": 12.5
+    },
+    "armaldo": {
+      "weight": 68.2
+    },
+    "feebas": {
+      "weight": 7.4
+    },
+    "milotic": {
+      "weight": 162
+    },
+    "castform": {
+      "weight": 0.8,
+      "name": "Castform",
+      "types": ["normal"],
+      "stats": [70, 70, 70, 70, 70, 70]
+    },
+    "castformsunny": {
+      "weight": 0.8,
+      "name": "Castform-Sunny",
+      "types": ["fire"],
+      "stats": [70, 70, 70, 70, 70, 70]
+    },
+    "castformrainy": {
+      "weight": 0.8,
+      "name": "Castform-Rainy",
+      "types": ["water"],
+      "stats": [70, 70, 70, 70, 70, 70]
+    },
+    "castformsnowy": {
+      "weight": 0.8,
+      "name": "Castform-Snowy",
+      "types": ["ice"],
+      "stats": [70, 70, 70, 70, 70, 70]
+    },
+    "kecleon": {
+      "weight": 22
+    },
+    "shuppet": {
+      "weight": 2.3
+    },
+    "banette": {
+      "weight": 12.5
+    },
+    "banettemega": {
+      "weight": 13
+    },
+    "duskull": {
+      "weight": 15
+    },
+    "dusclops": {
+      "weight": 30.6
+    },
+    "tropius": {
+      "weight": 100
+    },
+    "chimecho": {
+      "weight": 1
+    },
+    "chimechomega": {
+      "weight": 8
+    },
+    "absol": {
+      "weight": 47
+    },
+    "absolmega": {
+      "weight": 49
+    },
+    "absolmegaz": {
+      "weight": 49
+    },
+    "wynaut": {
+      "weight": 14
+    },
+    "snorunt": {
+      "weight": 16.8
+    },
+    "glalie": {
+      "weight": 256.5
+    },
+    "glaliemega": {
+      "weight": 350.2
+    },
+    "spheal": {
+      "weight": 39.5
+    },
+    "sealeo": {
+      "weight": 87.6
+    },
+    "walrein": {
+      "weight": 150.6
+    },
+    "clamperl": {
+      "weight": 52.5
+    },
+    "huntail": {
+      "weight": 27
+    },
+    "gorebyss": {
+      "weight": 22.6
+    },
+    "relicanth": {
+      "weight": 23.4
+    },
+    "luvdisc": {
+      "weight": 8.7
+    },
+    "bagon": {
+      "weight": 42.1
+    },
+    "shelgon": {
+      "weight": 110.5
+    },
+    "salamence": {
+      "weight": 102.6
+    },
+    "salamencemega": {
+      "weight": 112.6
+    },
+    "beldum": {
+      "weight": 95.2
+    },
+    "metang": {
+      "weight": 202.5
+    },
+    "metagross": {
+      "weight": 550
+    },
+    "metagrossmega": {
+      "weight": 942.9
+    },
+    "regirock": {
+      "weight": 230
+    },
+    "regice": {
+      "weight": 175
+    },
+    "registeel": {
+      "weight": 205
+    },
+    "latias": {
+      "weight": 40
+    },
+    "latiasmega": {
+      "weight": 52
+    },
+    "latios": {
+      "weight": 60
+    },
+    "latiosmega": {
+      "weight": 70
+    },
+    "kyogre": {
+      "weight": 352
+    },
+    "kyogreprimal": {
+      "weight": 430
+    },
+    "groudon": {
+      "weight": 950
+    },
+    "groudonprimal": {
+      "weight": 999.7
+    },
+    "rayquaza": {
+      "weight": 206.5
+    },
+    "rayquazamega": {
+      "weight": 392
+    },
+    "jirachi": {
+      "weight": 1.1
+    },
+    "deoxys": {
+      "weight": 60.8
+    },
+    "deoxysattack": {
+      "weight": 60.8
+    },
+    "deoxysdefense": {
+      "weight": 60.8
+    },
+    "deoxysspeed": {
+      "weight": 60.8
+    },
+    "turtwig": {
+      "weight": 10.2
+    },
+    "grotle": {
+      "weight": 97
+    },
+    "torterra": {
+      "weight": 310
+    },
+    "chimchar": {
+      "weight": 6.2
+    },
+    "monferno": {
+      "weight": 22
+    },
+    "infernape": {
+      "weight": 55
+    },
+    "piplup": {
+      "weight": 5.2
+    },
+    "prinplup": {
+      "weight": 23
+    },
+    "empoleon": {
+      "weight": 84.5
+    },
+    "starly": {
+      "weight": 2
+    },
+    "staravia": {
+      "weight": 15.5
+    },
+    "staraptor": {
+      "weight": 24.9
+    },
+    "staraptormega": {
+      "weight": 50
+    },
+    "bidoof": {
+      "weight": 20
+    },
+    "bibarel": {
+      "weight": 31.5
+    },
+    "kricketot": {
+      "weight": 2.2
+    },
+    "kricketune": {
+      "weight": 25.5
+    },
+    "shinx": {
+      "weight": 9.5
+    },
+    "luxio": {
+      "weight": 30.5
+    },
+    "luxray": {
+      "weight": 42
+    },
+    "budew": {
+      "weight": 1.2
+    },
+    "roserade": {
+      "weight": 14.5
+    },
+    "cranidos": {
+      "weight": 31.5
+    },
+    "rampardos": {
+      "weight": 102.5
+    },
+    "shieldon": {
+      "weight": 57
+    },
+    "bastiodon": {
+      "weight": 149.5
+    },
+    "burmy": {
+      "weight": 3.4
+    },
+    "burmysandy": {},
+    "burmytrash": {},
+    "wormadam": {
+      "weight": 6.5
+    },
+    "wormadamsandy": {
+      "weight": 6.5
+    },
+    "wormadamtrash": {
+      "weight": 6.5
+    },
+    "mothim": {
+      "weight": 23.3
+    },
+    "combee": {
+      "weight": 5.5
+    },
+    "vespiquen": {
+      "weight": 38.5
+    },
+    "pachirisu": {
+      "weight": 3.9
+    },
+    "buizel": {
+      "weight": 29.5
+    },
+    "floatzel": {
+      "weight": 33.5
+    },
+    "cherubi": {
+      "weight": 3.3
+    },
+    "cherrim": {
+      "weight": 9.3,
+      "name": "Cherrim",
+      "types": ["grass"],
+      "stats": [70, 60, 70, 87, 78, 85]
+    },
+    "cherrimsunshine": {
+      "weight": 9.3,
+      "name": "Cherrim-Sunshine",
+      "types": ["grass"],
+      "stats": [70, 60, 70, 87, 78, 85]
+    },
+    "shellos": {
+      "weight": 6.3
+    },
+    "shelloseast": {},
+    "gastrodon": {
+      "weight": 29.9
+    },
+    "gastrodoneast": {},
+    "ambipom": {
+      "weight": 20.3
+    },
+    "drifloon": {
+      "weight": 1.2
+    },
+    "drifblim": {
+      "weight": 15
+    },
+    "buneary": {
+      "weight": 5.5
+    },
+    "lopunny": {
+      "weight": 33.3
+    },
+    "lopunnymega": {
+      "weight": 28.3
+    },
+    "mismagius": {
+      "weight": 4.4
+    },
+    "honchkrow": {
+      "weight": 27.3
+    },
+    "glameow": {
+      "weight": 3.9
+    },
+    "purugly": {
+      "weight": 43.8
+    },
+    "chingling": {
+      "weight": 0.6
+    },
+    "stunky": {
+      "weight": 19.2
+    },
+    "skuntank": {
+      "weight": 38
+    },
+    "bronzor": {
+      "weight": 60.5
+    },
+    "bronzong": {
+      "weight": 187
+    },
+    "bonsly": {
+      "weight": 15
+    },
+    "mimejr": {
+      "weight": 13
+    },
+    "happiny": {
+      "weight": 24.4
+    },
+    "chatot": {
+      "weight": 1.9
+    },
+    "spiritomb": {
+      "weight": 108
+    },
+    "gible": {
+      "weight": 20.5
+    },
+    "gabite": {
+      "weight": 56
+    },
+    "garchomp": {
+      "weight": 95
+    },
+    "garchompmega": {
+      "weight": 95
+    },
+    "garchompmegaz": {
+      "weight": 99
+    },
+    "munchlax": {
+      "weight": 105
+    },
+    "riolu": {
+      "weight": 20.2
+    },
+    "lucario": {
+      "weight": 54
+    },
+    "lucariomega": {
+      "weight": 57.5
+    },
+    "lucariomegaz": {
+      "weight": 49.4
+    },
+    "hippopotas": {
+      "weight": 49.5
+    },
+    "hippowdon": {
+      "weight": 300
+    },
+    "skorupi": {
+      "weight": 12
+    },
+    "drapion": {
+      "weight": 61.5
+    },
+    "croagunk": {
+      "weight": 23
+    },
+    "toxicroak": {
+      "weight": 44.4
+    },
+    "carnivine": {
+      "weight": 27
+    },
+    "finneon": {
+      "weight": 7
+    },
+    "lumineon": {
+      "weight": 24
+    },
+    "mantyke": {
+      "weight": 65
+    },
+    "snover": {
+      "weight": 50.5
+    },
+    "abomasnow": {
+      "weight": 135.5
+    },
+    "abomasnowmega": {
+      "weight": 185
+    },
+    "weavile": {
+      "weight": 34
+    },
+    "magnezone": {
+      "weight": 180
+    },
+    "lickilicky": {
+      "weight": 140
+    },
+    "rhyperior": {
+      "weight": 282.8
+    },
+    "tangrowth": {
+      "weight": 128.6
+    },
+    "electivire": {
+      "weight": 138.6
+    },
+    "magmortar": {
+      "weight": 68
+    },
+    "togekiss": {
+      "weight": 38
+    },
+    "yanmega": {
+      "weight": 51.5
+    },
+    "leafeon": {
+      "weight": 25.5
+    },
+    "glaceon": {
+      "weight": 25.9
+    },
+    "gliscor": {
+      "weight": 42.5
+    },
+    "mamoswine": {
+      "weight": 291
+    },
+    "porygonz": {
+      "weight": 34
+    },
+    "gallade": {
+      "weight": 52
+    },
+    "gallademega": {
+      "weight": 56.4
+    },
+    "probopass": {
+      "weight": 340
+    },
+    "dusknoir": {
+      "weight": 106.6
+    },
+    "froslass": {
+      "weight": 26.6
+    },
+    "froslassmega": {
+      "weight": 29.6
+    },
+    "rotom": {
+      "weight": 0.3
+    },
+    "rotomheat": {
+      "weight": 0.3
+    },
+    "rotomwash": {
+      "weight": 0.3
+    },
+    "rotomfrost": {
+      "weight": 0.3
+    },
+    "rotomfan": {
+      "weight": 0.3
+    },
+    "rotommow": {
+      "weight": 0.3
+    },
+    "uxie": {
+      "weight": 0.3
+    },
+    "mesprit": {
+      "weight": 0.3
+    },
+    "azelf": {
+      "weight": 0.3
+    },
+    "dialga": {
+      "weight": 683
+    },
+    "dialgaorigin": {
+      "weight": 850
+    },
+    "palkia": {
+      "weight": 336
+    },
+    "palkiaorigin": {
+      "weight": 660
+    },
+    "heatran": {
+      "weight": 430
+    },
+    "heatranmega": {
+      "weight": 570
+    },
+    "regigigas": {
+      "weight": 420
+    },
+    "giratina": {
+      "weight": 750
+    },
+    "giratinaorigin": {
+      "weight": 650
+    },
+    "cresselia": {
+      "weight": 85.6
+    },
+    "phione": {
+      "weight": 3.1
+    },
+    "manaphy": {
+      "weight": 1.4
+    },
+    "darkrai": {
+      "weight": 50.5
+    },
+    "darkraimega": {
+      "weight": 240
+    },
+    "shaymin": {
+      "weight": 2.1
+    },
+    "shayminsky": {
+      "weight": 5.2
+    },
+    "arceus": {
+      "weight": 320,
+      "name": "Arceus",
+      "types": ["normal"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusbug": {
+      "weight": 320,
+      "name": "Arceus-Bug",
+      "types": ["bug"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusdark": {
+      "weight": 320,
+      "name": "Arceus-Dark",
+      "types": ["dark"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusdragon": {
+      "weight": 320,
+      "name": "Arceus-Dragon",
+      "types": ["dragon"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceuselectric": {
+      "weight": 320,
+      "name": "Arceus-Electric",
+      "types": ["electric"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusfairy": {
+      "weight": 320,
+      "name": "Arceus-Fairy",
+      "types": ["fairy"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusfighting": {
+      "weight": 320,
+      "name": "Arceus-Fighting",
+      "types": ["fighting"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusfire": {
+      "weight": 320,
+      "name": "Arceus-Fire",
+      "types": ["fire"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusflying": {
+      "weight": 320,
+      "name": "Arceus-Flying",
+      "types": ["flying"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusghost": {
+      "weight": 320,
+      "name": "Arceus-Ghost",
+      "types": ["ghost"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusgrass": {
+      "weight": 320,
+      "name": "Arceus-Grass",
+      "types": ["grass"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusground": {
+      "weight": 320,
+      "name": "Arceus-Ground",
+      "types": ["ground"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusice": {
+      "weight": 320,
+      "name": "Arceus-Ice",
+      "types": ["ice"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceuspoison": {
+      "weight": 320,
+      "name": "Arceus-Poison",
+      "types": ["poison"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceuspsychic": {
+      "weight": 320,
+      "name": "Arceus-Psychic",
+      "types": ["psychic"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceusrock": {
+      "weight": 320,
+      "name": "Arceus-Rock",
+      "types": ["rock"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceussteel": {
+      "weight": 320,
+      "name": "Arceus-Steel",
+      "types": ["steel"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "arceuswater": {
+      "weight": 320,
+      "name": "Arceus-Water",
+      "types": ["water"],
+      "stats": [120, 120, 120, 120, 120, 120]
+    },
+    "victini": {
+      "weight": 4
+    },
+    "snivy": {
+      "weight": 8.1
+    },
+    "servine": {
+      "weight": 16
+    },
+    "serperior": {
+      "weight": 63
+    },
+    "tepig": {
+      "weight": 9.9
+    },
+    "pignite": {
+      "weight": 55.5
+    },
+    "emboar": {
+      "weight": 150
+    },
+    "emboarmega": {
+      "weight": 180.3
+    },
+    "oshawott": {
+      "weight": 5.9
+    },
+    "dewott": {
+      "weight": 24.5
+    },
+    "samurott": {
+      "weight": 94.6
+    },
+    "samurotthisui": {
+      "weight": 58.2
+    },
+    "patrat": {
+      "weight": 11.6
+    },
+    "watchog": {
+      "weight": 27
+    },
+    "lillipup": {
+      "weight": 4.1
+    },
+    "herdier": {
+      "weight": 14.7
+    },
+    "stoutland": {
+      "weight": 61
+    },
+    "purrloin": {
+      "weight": 10.1
+    },
+    "liepard": {
+      "weight": 37.5
+    },
+    "pansage": {
+      "weight": 10.5
+    },
+    "simisage": {
+      "weight": 30.5
+    },
+    "pansear": {
+      "weight": 11
+    },
+    "simisear": {
+      "weight": 28
+    },
+    "panpour": {
+      "weight": 13.5
+    },
+    "simipour": {
+      "weight": 29
+    },
+    "munna": {
+      "weight": 23.3
+    },
+    "musharna": {
+      "weight": 60.5
+    },
+    "pidove": {
+      "weight": 2.1
+    },
+    "tranquill": {
+      "weight": 15
+    },
+    "unfezant": {
+      "weight": 29
+    },
+    "blitzle": {
+      "weight": 29.8
+    },
+    "zebstrika": {
+      "weight": 79.5
+    },
+    "roggenrola": {
+      "weight": 18
+    },
+    "boldore": {
+      "weight": 102
+    },
+    "gigalith": {
+      "weight": 260
+    },
+    "woobat": {
+      "weight": 2.1
+    },
+    "swoobat": {
+      "weight": 10.5
+    },
+    "drilbur": {
+      "weight": 8.5
+    },
+    "excadrill": {
+      "weight": 40.4
+    },
+    "excadrillmega": {
+      "weight": 60
+    },
+    "audino": {
+      "weight": 31
+    },
+    "audinomega": {
+      "weight": 32
+    },
+    "timburr": {
+      "weight": 12.5
+    },
+    "gurdurr": {
+      "weight": 40
+    },
+    "conkeldurr": {
+      "weight": 87
+    },
+    "tympole": {
+      "weight": 4.5
+    },
+    "palpitoad": {
+      "weight": 17
+    },
+    "seismitoad": {
+      "weight": 62
+    },
+    "throh": {
+      "weight": 55.5
+    },
+    "sawk": {
+      "weight": 51
+    },
+    "sewaddle": {
+      "weight": 2.5
+    },
+    "swadloon": {
+      "weight": 7.3
+    },
+    "leavanny": {
+      "weight": 20.5
+    },
+    "venipede": {
+      "weight": 5.3
+    },
+    "whirlipede": {
+      "weight": 58.5
+    },
+    "scolipede": {
+      "weight": 200.5
+    },
+    "scolipedemega": {
+      "weight": 230.5
+    },
+    "cottonee": {
+      "weight": 0.6
+    },
+    "whimsicott": {
+      "weight": 6.6
+    },
+    "petilil": {
+      "weight": 6.6
+    },
+    "lilligant": {
+      "weight": 16.3
+    },
+    "lilliganthisui": {
+      "weight": 19.2
+    },
+    "basculin": {
+      "weight": 18
+    },
+    "basculinbluestriped": {
+      "weight": 18
+    },
+    "basculinwhitestriped": {
+      "weight": 18
+    },
+    "sandile": {
+      "weight": 15.2
+    },
+    "krokorok": {
+      "weight": 33.4
+    },
+    "krookodile": {
+      "weight": 96.3
+    },
+    "darumaka": {
+      "weight": 37.5
+    },
+    "darumakagalar": {
+      "weight": 40
+    },
+    "darmanitan": {
+      "weight": 92.9,
+      "name": "Darmanitan",
+      "types": ["fire"],
+      "stats": [105, 140, 55, 30, 55, 95]
+    },
+    "darmanitanzen": {
+      "weight": 92.9,
+      "name": "Darmanitan-Zen",
+      "types": ["fire", "psychic"],
+      "stats": [105, 30, 105, 140, 105, 55]
+    },
+    "darmanitangalar": {
+      "weight": 120,
+      "name": "Darmanitan-Galar",
+      "types": ["ice"],
+      "stats": [105, 140, 55, 30, 55, 95]
+    },
+    "darmanitangalarzen": {
+      "weight": 120,
+      "name": "Darmanitan-Galar-Zen",
+      "types": ["ice", "fire"],
+      "stats": [105, 160, 55, 30, 55, 135]
+    },
+    "maractus": {
+      "weight": 28
+    },
+    "dwebble": {
+      "weight": 14.5
+    },
+    "crustle": {
+      "weight": 200
+    },
+    "scraggy": {
+      "weight": 11.8
+    },
+    "scrafty": {
+      "weight": 30
+    },
+    "scraftymega": {
+      "weight": 31
+    },
+    "sigilyph": {
+      "weight": 14
+    },
+    "yamask": {
+      "weight": 1.5
+    },
+    "yamaskgalar": {
+      "weight": 1.5
+    },
+    "cofagrigus": {
+      "weight": 76.5
+    },
+    "tirtouga": {
+      "weight": 16.5
+    },
+    "carracosta": {
+      "weight": 81
+    },
+    "archen": {
+      "weight": 9.5
+    },
+    "archeops": {
+      "weight": 32
+    },
+    "trubbish": {
+      "weight": 31
+    },
+    "garbodor": {
+      "weight": 107.3
+    },
+    "garbodorgmax": {
+      "weight": 0
+    },
+    "zorua": {
+      "weight": 12.5
+    },
+    "zoruahisui": {
+      "weight": 12.5
+    },
+    "zoroark": {
+      "weight": 81.1
+    },
+    "zoroarkhisui": {
+      "weight": 73
+    },
+    "minccino": {
+      "weight": 5.8
+    },
+    "cinccino": {
+      "weight": 7.5
+    },
+    "gothita": {
+      "weight": 5.8
+    },
+    "gothorita": {
+      "weight": 18
+    },
+    "gothitelle": {
+      "weight": 44
+    },
+    "solosis": {
+      "weight": 1
+    },
+    "duosion": {
+      "weight": 8
+    },
+    "reuniclus": {
+      "weight": 20.1
+    },
+    "ducklett": {
+      "weight": 5.5
+    },
+    "swanna": {
+      "weight": 24.2
+    },
+    "vanillite": {
+      "weight": 5.7
+    },
+    "vanillish": {
+      "weight": 41
+    },
+    "vanilluxe": {
+      "weight": 57.5
+    },
+    "deerling": {
+      "weight": 19.5
+    },
+    "deerlingsummer": {},
+    "deerlingautumn": {},
+    "deerlingwinter": {},
+    "sawsbuck": {
+      "weight": 92.5
+    },
+    "emolga": {
+      "weight": 5
+    },
+    "karrablast": {
+      "weight": 5.9
+    },
+    "escavalier": {
+      "weight": 33
+    },
+    "foongus": {
+      "weight": 1
+    },
+    "amoonguss": {
+      "weight": 10.5
+    },
+    "frillish": {
+      "weight": 33
+    },
+    "jellicent": {
+      "weight": 135
+    },
+    "alomomola": {
+      "weight": 31.6
+    },
+    "joltik": {
+      "weight": 0.6
+    },
+    "galvantula": {
+      "weight": 14.3
+    },
+    "ferroseed": {
+      "weight": 18.8
+    },
+    "ferrothorn": {
+      "weight": 110
+    },
+    "klink": {
+      "weight": 21
+    },
+    "klang": {
+      "weight": 51
+    },
+    "klinklang": {
+      "weight": 81
+    },
+    "tynamo": {
+      "weight": 0.3
+    },
+    "eelektrik": {
+      "weight": 22
+    },
+    "eelektross": {
+      "weight": 80.5
+    },
+    "eelektrossmega": {
+      "weight": 180
+    },
+    "elgyem": {
+      "weight": 9
+    },
+    "beheeyem": {
+      "weight": 34.5
+    },
+    "litwick": {
+      "weight": 3.1
+    },
+    "lampent": {
+      "weight": 13
+    },
+    "chandelure": {
+      "weight": 34.3
+    },
+    "chandeluremega": {
+      "weight": 69.6
+    },
+    "axew": {
+      "weight": 18
+    },
+    "fraxure": {
+      "weight": 36
+    },
+    "haxorus": {
+      "weight": 105.5
+    },
+    "cubchoo": {
+      "weight": 8.5
+    },
+    "beartic": {
+      "weight": 260
+    },
+    "cryogonal": {
+      "weight": 148
+    },
+    "shelmet": {
+      "weight": 7.7
+    },
+    "accelgor": {
+      "weight": 25.3
+    },
+    "stunfisk": {
+      "weight": 11
+    },
+    "stunfiskgalar": {
+      "weight": 20.5
+    },
+    "mienfoo": {
+      "weight": 20
+    },
+    "mienshao": {
+      "weight": 35.5
+    },
+    "druddigon": {
+      "weight": 139
+    },
+    "golett": {
+      "weight": 92
+    },
+    "golurk": {
+      "weight": 330
+    },
+    "golurkmega": {
+      "weight": 330
+    },
+    "pawniard": {
+      "weight": 10.2
+    },
+    "bisharp": {
+      "weight": 70
+    },
+    "bouffalant": {
+      "weight": 94.6
+    },
+    "rufflet": {
+      "weight": 10.5
+    },
+    "braviary": {
+      "weight": 41
+    },
+    "braviaryhisui": {
+      "weight": 43.4
+    },
+    "vullaby": {
+      "weight": 9
+    },
+    "mandibuzz": {
+      "weight": 39.5
+    },
+    "heatmor": {
+      "weight": 58
+    },
+    "durant": {
+      "weight": 33
+    },
+    "deino": {
+      "weight": 17.3
+    },
+    "zweilous": {
+      "weight": 50
+    },
+    "hydreigon": {
+      "weight": 160
+    },
+    "larvesta": {
+      "weight": 28.8
+    },
+    "volcarona": {
+      "weight": 46
+    },
+    "cobalion": {
+      "weight": 250
+    },
+    "terrakion": {
+      "weight": 260
+    },
+    "virizion": {
+      "weight": 200
+    },
+    "tornadus": {
+      "weight": 63
+    },
+    "tornadustherian": {
+      "weight": 63
+    },
+    "thundurus": {
+      "weight": 61
+    },
+    "thundurustherian": {
+      "weight": 61
+    },
+    "reshiram": {
+      "weight": 330
+    },
+    "zekrom": {
+      "weight": 345
+    },
+    "landorus": {
+      "weight": 68
+    },
+    "landorustherian": {
+      "weight": 68
+    },
+    "kyurem": {
+      "weight": 325
+    },
+    "kyuremblack": {
+      "weight": 325
+    },
+    "kyuremwhite": {
+      "weight": 325
+    },
+    "keldeo": {
+      "weight": 48.5
+    },
+    "keldeoresolute": {
+      "weight": 48.5
+    },
+    "meloetta": {
+      "weight": 6.5
+    },
+    "meloettapirouette": {
+      "weight": 6.5
+    },
+    "genesect": {
+      "weight": 82.5
+    },
+    "genesectdouse": {
+      "weight": 82.5
+    },
+    "genesectshock": {
+      "weight": 82.5
+    },
+    "genesectburn": {
+      "weight": 82.5
+    },
+    "genesectchill": {
+      "weight": 82.5
+    },
+    "chespin": {
+      "weight": 9
+    },
+    "quilladin": {
+      "weight": 29
+    },
+    "chesnaught": {
+      "weight": 90
+    },
+    "chesnaughtmega": {
+      "weight": 90
+    },
+    "fennekin": {
+      "weight": 9.4
+    },
+    "braixen": {
+      "weight": 14.5
+    },
+    "delphox": {
+      "weight": 39
+    },
+    "delphoxmega": {
+      "weight": 39
+    },
+    "froakie": {
+      "weight": 7
+    },
+    "frogadier": {
+      "weight": 10.9
+    },
+    "greninja": {
+      "weight": 40
+    },
+    "greninjabond": {
+      "weight": 40
+    },
+    "greninjaash": {
+      "weight": 40
+    },
+    "greninjamega": {
+      "weight": 40
+    },
+    "bunnelby": {
+      "weight": 5
+    },
+    "diggersby": {
+      "weight": 42.4
+    },
+    "fletchling": {
+      "weight": 1.7
+    },
+    "fletchinder": {
+      "weight": 16
+    },
+    "talonflame": {
+      "weight": 24.5
+    },
+    "scatterbug": {
+      "weight": 2.5
+    },
+    "spewpa": {
+      "weight": 8.4
+    },
+    "vivillon": {
+      "weight": 17
+    },
+    "vivillonicysnow": {},
+    "vivillonpolar": {},
+    "vivillontundra": {},
+    "vivilloncontinental": {},
+    "vivillongarden": {},
+    "vivillonelegant": {},
+    "vivillonmodern": {},
+    "vivillonmarine": {},
+    "vivillonarchipelago": {},
+    "vivillonhighplains": {},
+    "vivillonsandstorm": {},
+    "vivillonriver": {},
+    "vivillonmonsoon": {},
+    "vivillonsavanna": {},
+    "vivillonsun": {},
+    "vivillonocean": {},
+    "vivillonjungle": {},
+    "vivillonfancy": {
+      "weight": 17
+    },
+    "vivillonpokeball": {
+      "weight": 17
+    },
+    "litleo": {
+      "weight": 13.5
+    },
+    "pyroar": {
+      "weight": 81.5
+    },
+    "pyroarmega": {
+      "weight": 93.3
+    },
+    "flabebe": {
+      "weight": 0.1
+    },
+    "floette": {
+      "weight": 0.9
+    },
+    "floetteeternal": {
+      "weight": 0.9
+    },
+    "floettemega": {
+      "weight": 100.8
+    },
+    "florges": {
+      "weight": 10
+    },
+    "skiddo": {
+      "weight": 31
+    },
+    "gogoat": {
+      "weight": 91
+    },
+    "pancham": {
+      "weight": 8
+    },
+    "pangoro": {
+      "weight": 136
+    },
+    "furfrou": {
+      "weight": 28
+    },
+    "espurr": {
+      "weight": 3.5
+    },
+    "meowstic": {
+      "weight": 8.5
+    },
+    "meowsticf": {
+      "weight": 8.5
+    },
+    "meowsticmmega": {
+      "weight": 10.1
+    },
+    "meowsticfmega": {
+      "weight": 10.1
+    },
+    "honedge": {
+      "weight": 2
+    },
+    "doublade": {
+      "weight": 4.5
+    },
+    "aegislash": {
+      "weight": 53,
+      "name": "Aegislash",
+      "types": ["steel", "ghost"],
+      "stats": [60, 50, 140, 50, 140, 60]
+    },
+    "aegislashblade": {
+      "weight": 53,
+      "name": "Aegislash-Blade",
+      "types": ["steel", "ghost"],
+      "stats": [60, 140, 50, 140, 50, 60]
+    },
+    "spritzee": {
+      "weight": 0.5
+    },
+    "aromatisse": {
+      "weight": 15.5
+    },
+    "swirlix": {
+      "weight": 3.5
+    },
+    "slurpuff": {
+      "weight": 5
+    },
+    "inkay": {
+      "weight": 3.5
+    },
+    "malamar": {
+      "weight": 47
+    },
+    "malamarmega": {
+      "weight": 69.8
+    },
+    "binacle": {
+      "weight": 31
+    },
+    "barbaracle": {
+      "weight": 96
+    },
+    "barbaraclemega": {
+      "weight": 100
+    },
+    "skrelp": {
+      "weight": 7.3
+    },
+    "dragalge": {
+      "weight": 81.5
+    },
+    "dragalgemega": {
+      "weight": 100.3
+    },
+    "clauncher": {
+      "weight": 8.3
+    },
+    "clawitzer": {
+      "weight": 35.3
+    },
+    "helioptile": {
+      "weight": 6
+    },
+    "heliolisk": {
+      "weight": 21
+    },
+    "tyrunt": {
+      "weight": 26
+    },
+    "tyrantrum": {
+      "weight": 270
+    },
+    "amaura": {
+      "weight": 25.2
+    },
+    "aurorus": {
+      "weight": 225
+    },
+    "sylveon": {
+      "weight": 23.5
+    },
+    "hawlucha": {
+      "weight": 21.5
+    },
+    "hawluchamega": {
+      "weight": 25
+    },
+    "dedenne": {
+      "weight": 2.2
+    },
+    "carbink": {
+      "weight": 5.7
+    },
+    "goomy": {
+      "weight": 2.8
+    },
+    "sliggoo": {
+      "weight": 17.5
+    },
+    "sliggoohisui": {
+      "weight": 68.5
+    },
+    "goodra": {
+      "weight": 150.5
+    },
+    "goodrahisui": {
+      "weight": 334.1
+    },
+    "klefki": {
+      "weight": 3
+    },
+    "phantump": {
+      "weight": 7
+    },
+    "trevenant": {
+      "weight": 71
+    },
+    "pumpkaboo": {
+      "weight": 5
+    },
+    "pumpkaboosmall": {
+      "weight": 3.5
+    },
+    "pumpkaboolarge": {
+      "weight": 7.5
+    },
+    "pumpkaboosuper": {
+      "weight": 15
+    },
+    "gourgeist": {
+      "weight": 12.5
+    },
+    "gourgeistsmall": {
+      "weight": 9.5
+    },
+    "gourgeistlarge": {
+      "weight": 14
+    },
+    "gourgeistsuper": {
+      "weight": 39
+    },
+    "bergmite": {
+      "weight": 99.5
+    },
+    "avalugg": {
+      "weight": 505
+    },
+    "avalugghisui": {
+      "weight": 262.4
+    },
+    "noibat": {
+      "weight": 8
+    },
+    "noivern": {
+      "weight": 85
+    },
+    "xerneas": {
+      "weight": 215
+    },
+    "xerneasneutral": {
+      "weight": 215
+    },
+    "yveltal": {
+      "weight": 203
+    },
+    "zygarde": {
+      "weight": 305,
+      "name": "Zygarde",
+      "types": ["dragon", "ground"],
+      "stats": [108, 100, 121, 81, 95, 95]
+    },
+    "zygarde10": {
+      "weight": 33.5,
+      "name": "Zygarde-10%",
+      "types": ["dragon", "ground"],
+      "stats": [54, 100, 71, 61, 85, 115]
+    },
+    "zygardecomplete": {
+      "weight": 610,
+      "name": "Zygarde-Complete",
+      "types": ["dragon", "ground"],
+      "stats": [216, 100, 121, 91, 95, 85]
+    },
+    "zygardemega": {
+      "weight": 610,
+      "name": "Zygarde-Mega",
+      "types": ["dragon", "ground"],
+      "stats": [216, 70, 91, 216, 85, 100]
+    },
+    "diancie": {
+      "weight": 8.8
+    },
+    "dianciemega": {
+      "weight": 27.8
+    },
+    "hoopa": {
+      "weight": 9
+    },
+    "hoopaunbound": {
+      "weight": 490
+    },
+    "volcanion": {
+      "weight": 195
+    },
+    "rowlet": {
+      "weight": 1.5
+    },
+    "dartrix": {
+      "weight": 16
+    },
+    "decidueye": {
+      "weight": 36.6
+    },
+    "decidueyehisui": {
+      "weight": 37
+    },
+    "litten": {
+      "weight": 4.3
+    },
+    "torracat": {
+      "weight": 25
+    },
+    "incineroar": {
+      "weight": 83
+    },
+    "popplio": {
+      "weight": 7.5
+    },
+    "brionne": {
+      "weight": 17.5
+    },
+    "primarina": {
+      "weight": 44
+    },
+    "pikipek": {
+      "weight": 1.2
+    },
+    "trumbeak": {
+      "weight": 14.8
+    },
+    "toucannon": {
+      "weight": 26
+    },
+    "yungoos": {
+      "weight": 6
+    },
+    "gumshoos": {
+      "weight": 14.2
+    },
+    "gumshoostotem": {
+      "weight": 60
+    },
+    "grubbin": {
+      "weight": 4.4
+    },
+    "charjabug": {
+      "weight": 10.5
+    },
+    "vikavolt": {
+      "weight": 45
+    },
+    "vikavolttotem": {
+      "weight": 147.5
+    },
+    "crabrawler": {
+      "weight": 7
+    },
+    "crabominable": {
+      "weight": 180
+    },
+    "crabominablemega": {
+      "weight": 252.8
+    },
+    "oricorio": {
+      "weight": 3.4
+    },
+    "oricoriopompom": {
+      "weight": 3.4
+    },
+    "oricoriopau": {
+      "weight": 3.4
+    },
+    "oricoriosensu": {
+      "weight": 3.4
+    },
+    "cutiefly": {
+      "weight": 0.2
+    },
+    "ribombee": {
+      "weight": 0.5
+    },
+    "ribombeetotem": {
+      "weight": 2
+    },
+    "rockruff": {
+      "weight": 9.2
+    },
+    "rockruffdusk": {
+      "weight": 9.2
+    },
+    "lycanroc": {
+      "weight": 25
+    },
+    "lycanrocmidnight": {
+      "weight": 25
+    },
+    "lycanrocdusk": {
+      "weight": 25
+    },
+    "wishiwashi": {
+      "weight": 0.3,
+      "name": "Wishiwashi",
+      "types": ["water"],
+      "stats": [45, 20, 20, 25, 25, 40]
+    },
+    "wishiwashischool": {
+      "weight": 78.6,
+      "name": "Wishiwashi-School",
+      "types": ["water"],
+      "stats": [45, 140, 130, 140, 135, 30]
+    },
+    "mareanie": {
+      "weight": 8
+    },
+    "toxapex": {
+      "weight": 14.5
+    },
+    "mudbray": {
+      "weight": 110
+    },
+    "mudsdale": {
+      "weight": 920
+    },
+    "dewpider": {
+      "weight": 4
+    },
+    "araquanid": {
+      "weight": 82
+    },
+    "araquanidtotem": {
+      "weight": 217.5
+    },
+    "fomantis": {
+      "weight": 1.5
+    },
+    "lurantis": {
+      "weight": 18.5
+    },
+    "lurantistotem": {
+      "weight": 58
+    },
+    "morelull": {
+      "weight": 1.5
+    },
+    "shiinotic": {
+      "weight": 11.5
+    },
+    "salandit": {
+      "weight": 4.8
+    },
+    "salazzle": {
+      "weight": 22.2
+    },
+    "salazzletotem": {
+      "weight": 81
+    },
+    "stufful": {
+      "weight": 6.8
+    },
+    "bewear": {
+      "weight": 135
+    },
+    "bounsweet": {
+      "weight": 3.2
+    },
+    "steenee": {
+      "weight": 8.2
+    },
+    "tsareena": {
+      "weight": 21.4
+    },
+    "comfey": {
+      "weight": 0.3
+    },
+    "oranguru": {
+      "weight": 76
+    },
+    "passimian": {
+      "weight": 82.8
+    },
+    "wimpod": {
+      "weight": 12
+    },
+    "golisopod": {
+      "weight": 108
+    },
+    "golisopodmega": {
+      "weight": 148
+    },
+    "sandygast": {
+      "weight": 70
+    },
+    "palossand": {
+      "weight": 250
+    },
+    "pyukumuku": {
+      "weight": 1.2
+    },
+    "typenull": {
+      "weight": 120.5
+    },
+    "silvally": {
+      "weight": 100.5,
+      "name": "Silvally",
+      "types": ["normal"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallybug": {
+      "weight": 100.5,
+      "name": "Silvally-Bug",
+      "types": ["bug"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallydark": {
+      "weight": 100.5,
+      "name": "Silvally-Dark",
+      "types": ["dark"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallydragon": {
+      "weight": 100.5,
+      "name": "Silvally-Dragon",
+      "types": ["dragon"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyelectric": {
+      "weight": 100.5,
+      "name": "Silvally-Electric",
+      "types": ["electric"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyfairy": {
+      "weight": 100.5,
+      "name": "Silvally-Fairy",
+      "types": ["fairy"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyfighting": {
+      "weight": 100.5,
+      "name": "Silvally-Fighting",
+      "types": ["fighting"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyfire": {
+      "weight": 100.5,
+      "name": "Silvally-Fire",
+      "types": ["fire"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyflying": {
+      "weight": 100.5,
+      "name": "Silvally-Flying",
+      "types": ["flying"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyghost": {
+      "weight": 100.5,
+      "name": "Silvally-Ghost",
+      "types": ["ghost"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallygrass": {
+      "weight": 100.5,
+      "name": "Silvally-Grass",
+      "types": ["grass"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyground": {
+      "weight": 100.5,
+      "name": "Silvally-Ground",
+      "types": ["ground"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyice": {
+      "weight": 100.5,
+      "name": "Silvally-Ice",
+      "types": ["ice"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallypoison": {
+      "weight": 100.5,
+      "name": "Silvally-Poison",
+      "types": ["poison"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallypsychic": {
+      "weight": 100.5,
+      "name": "Silvally-Psychic",
+      "types": ["psychic"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallyrock": {
+      "weight": 100.5,
+      "name": "Silvally-Rock",
+      "types": ["rock"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallysteel": {
+      "weight": 100.5,
+      "name": "Silvally-Steel",
+      "types": ["steel"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "silvallywater": {
+      "weight": 100.5,
+      "name": "Silvally-Water",
+      "types": ["water"],
+      "stats": [95, 95, 95, 95, 95, 95]
+    },
+    "minior": {
+      "weight": 0.3,
+      "name": "Minior",
+      "types": ["rock", "flying"],
+      "stats": [60, 100, 60, 100, 60, 120]
+    },
+    "miniororange": {},
+    "minioryellow": {},
+    "miniorgreen": {},
+    "miniorblue": {},
+    "miniorindigo": {},
+    "miniorviolet": {},
+    "miniormeteor": {
+      "weight": 40,
+      "name": "Minior-Meteor",
+      "types": ["rock", "flying"],
+      "stats": [60, 60, 100, 60, 100, 60]
+    },
+    "komala": {
+      "weight": 19.9
+    },
+    "turtonator": {
+      "weight": 212
+    },
+    "togedemaru": {
+      "weight": 3.3
+    },
+    "togedemarutotem": {
+      "weight": 13
+    },
+    "mimikyu": {
+      "weight": 0.7,
+      "name": "Mimikyu",
+      "types": ["ghost", "fairy"],
+      "stats": [55, 90, 80, 50, 105, 96]
+    },
+    "mimikyubusted": {
+      "weight": 0.7,
+      "name": "Mimikyu-Busted",
+      "types": ["ghost", "fairy"],
+      "stats": [55, 90, 80, 50, 105, 96]
+    },
+    "mimikyutotem": {
+      "weight": 2.8,
+      "name": "Mimikyu-Totem",
+      "types": ["ghost", "fairy"],
+      "stats": [55, 90, 80, 50, 105, 96]
+    },
+    "mimikyubustedtotem": {
+      "weight": 2.8,
+      "name": "Mimikyu-Busted-Totem",
+      "types": ["ghost", "fairy"],
+      "stats": [55, 90, 80, 50, 105, 96]
+    },
+    "bruxish": {
+      "weight": 19
+    },
+    "drampa": {
+      "weight": 185
+    },
+    "drampamega": {
+      "weight": 240.5
+    },
+    "dhelmise": {
+      "weight": 210
+    },
+    "jangmoo": {
+      "weight": 29.7
+    },
+    "hakamoo": {
+      "weight": 47
+    },
+    "kommoo": {
+      "weight": 78.2
+    },
+    "kommoototem": {
+      "weight": 207.5
+    },
+    "tapukoko": {
+      "weight": 20.5
+    },
+    "tapulele": {
+      "weight": 18.6
+    },
+    "tapubulu": {
+      "weight": 45.5
+    },
+    "tapufini": {
+      "weight": 21.2
+    },
+    "cosmog": {
+      "weight": 0.1
+    },
+    "cosmoem": {
+      "weight": 999.9
+    },
+    "solgaleo": {
+      "weight": 230
+    },
+    "lunala": {
+      "weight": 120
+    },
+    "nihilego": {
+      "weight": 55.5
+    },
+    "buzzwole": {
+      "weight": 333.6
+    },
+    "pheromosa": {
+      "weight": 25
+    },
+    "xurkitree": {
+      "weight": 100
+    },
+    "celesteela": {
+      "weight": 999.9
+    },
+    "kartana": {
+      "weight": 0.1
+    },
+    "guzzlord": {
+      "weight": 888
+    },
+    "necrozma": {
+      "weight": 230
+    },
+    "necrozmaduskmane": {
+      "weight": 460
+    },
+    "necrozmadawnwings": {
+      "weight": 350
+    },
+    "necrozmaultra": {
+      "weight": 230
+    },
+    "magearna": {
+      "weight": 80.5
+    },
+    "magearnaoriginal": {
+      "weight": 80.5
+    },
+    "magearnamega": {
+      "weight": 248.1
+    },
+    "magearnaoriginalmega": {
+      "weight": 248.1
+    },
+    "marshadow": {
+      "weight": 22.2
+    },
+    "poipole": {
+      "weight": 1.8
+    },
+    "naganadel": {
+      "weight": 150
+    },
+    "stakataka": {
+      "weight": 820
+    },
+    "blacephalon": {
+      "weight": 13
+    },
+    "zeraora": {
+      "weight": 44.5
+    },
+    "zeraoramega": {
+      "weight": 44.5
+    },
+    "meltan": {
+      "weight": 8
+    },
+    "melmetal": {
+      "weight": 800
+    },
+    "melmetalgmax": {
+      "weight": 0
+    },
+    "grookey": {
+      "weight": 5
+    },
+    "thwackey": {
+      "weight": 14
+    },
+    "rillaboom": {
+      "weight": 90
+    },
+    "rillaboomgmax": {
+      "weight": 0
+    },
+    "scorbunny": {
+      "weight": 4.5
+    },
+    "raboot": {
+      "weight": 9
+    },
+    "cinderace": {
+      "weight": 33
+    },
+    "cinderacegmax": {
+      "weight": 0
+    },
+    "sobble": {
+      "weight": 4
+    },
+    "drizzile": {
+      "weight": 11.5
+    },
+    "inteleon": {
+      "weight": 45.2
+    },
+    "inteleongmax": {
+      "weight": 0
+    },
+    "skwovet": {
+      "weight": 2.5
+    },
+    "greedent": {
+      "weight": 6
+    },
+    "rookidee": {
+      "weight": 1.8
+    },
+    "corvisquire": {
+      "weight": 16
+    },
+    "corviknight": {
+      "weight": 75
+    },
+    "corviknightgmax": {
+      "weight": 0
+    },
+    "blipbug": {
+      "weight": 8
+    },
+    "dottler": {
+      "weight": 19.5
+    },
+    "orbeetle": {
+      "weight": 40.8
+    },
+    "orbeetlegmax": {
+      "weight": 0
+    },
+    "nickit": {
+      "weight": 8.9
+    },
+    "thievul": {
+      "weight": 19.9
+    },
+    "gossifleur": {
+      "weight": 2.2
+    },
+    "eldegoss": {
+      "weight": 2.5
+    },
+    "wooloo": {
+      "weight": 6
+    },
+    "dubwool": {
+      "weight": 43
+    },
+    "chewtle": {
+      "weight": 8.5
+    },
+    "drednaw": {
+      "weight": 115.5
+    },
+    "drednawgmax": {
+      "weight": 0
+    },
+    "yamper": {
+      "weight": 13.5
+    },
+    "boltund": {
+      "weight": 34
+    },
+    "rolycoly": {
+      "weight": 12
+    },
+    "carkol": {
+      "weight": 78
+    },
+    "coalossal": {
+      "weight": 310.5
+    },
+    "coalossalgmax": {
+      "weight": 0
+    },
+    "applin": {
+      "weight": 0.5
+    },
+    "flapple": {
+      "weight": 1
+    },
+    "flapplegmax": {
+      "weight": 0
+    },
+    "appletun": {
+      "weight": 13
+    },
+    "appletungmax": {
+      "weight": 0
+    },
+    "silicobra": {
+      "weight": 7.6
+    },
+    "sandaconda": {
+      "weight": 65.5
+    },
+    "sandacondagmax": {
+      "weight": 0
+    },
+    "cramorant": {
+      "weight": 18,
+      "name": "Cramorant",
+      "types": ["flying", "water"],
+      "stats": [70, 85, 55, 85, 95, 85]
+    },
+    "cramorantgulping": {
+      "weight": 18,
+      "name": "Cramorant-Gulping",
+      "types": ["flying", "water"],
+      "stats": [70, 85, 55, 85, 95, 85]
+    },
+    "cramorantgorging": {
+      "weight": 18,
+      "name": "Cramorant-Gorging",
+      "types": ["flying", "water"],
+      "stats": [70, 85, 55, 85, 95, 85]
+    },
+    "arrokuda": {
+      "weight": 1
+    },
+    "barraskewda": {
+      "weight": 30
+    },
+    "toxel": {
+      "weight": 11
+    },
+    "toxtricity": {
+      "weight": 40
+    },
+    "toxtricitylowkey": {
+      "weight": 40
+    },
+    "toxtricitygmax": {
+      "weight": 0
+    },
+    "toxtricitylowkeygmax": {
+      "weight": 0
+    },
+    "sizzlipede": {
+      "weight": 1
+    },
+    "centiskorch": {
+      "weight": 120
+    },
+    "centiskorchgmax": {
+      "weight": 0
+    },
+    "clobbopus": {
+      "weight": 4
+    },
+    "grapploct": {
+      "weight": 39
+    },
+    "sinistea": {
+      "weight": 0.2
+    },
+    "sinisteaantique": {
+      "weight": 0.2
+    },
+    "polteageist": {
+      "weight": 0.4
+    },
+    "polteageistantique": {
+      "weight": 0.4
+    },
+    "hatenna": {
+      "weight": 3.4
+    },
+    "hattrem": {
+      "weight": 4.8
+    },
+    "hatterene": {
+      "weight": 5.1
+    },
+    "hatterenegmax": {
+      "weight": 0
+    },
+    "impidimp": {
+      "weight": 5.5
+    },
+    "morgrem": {
+      "weight": 12.5
+    },
+    "grimmsnarl": {
+      "weight": 61
+    },
+    "grimmsnarlgmax": {
+      "weight": 0
+    },
+    "obstagoon": {
+      "weight": 46
+    },
+    "perrserker": {
+      "weight": 28
+    },
+    "cursola": {
+      "weight": 0.4
+    },
+    "sirfetchd": {
+      "weight": 117
+    },
+    "mrrime": {
+      "weight": 58.2
+    },
+    "runerigus": {
+      "weight": 66.6
+    },
+    "milcery": {
+      "weight": 0.3
+    },
+    "alcremie": {
+      "weight": 0.5
+    },
+    "alcremierubycream": {},
+    "alcremiematchacream": {},
+    "alcremiemintcream": {},
+    "alcremielemoncream": {},
+    "alcremierubyswirl": {},
+    "alcremiecaramelswirl": {},
+    "alcremierainbowswirl": {},
+    "alcremiegmax": {
+      "weight": 0
+    },
+    "falinks": {
+      "weight": 62
+    },
+    "falinksmega": {
+      "weight": 99
+    },
+    "pincurchin": {
+      "weight": 1
+    },
+    "snom": {
+      "weight": 3.8
+    },
+    "frosmoth": {
+      "weight": 42
+    },
+    "stonjourner": {
+      "weight": 520
+    },
+    "eiscue": {
+      "weight": 89,
+      "name": "Eiscue",
+      "types": ["ice"],
+      "stats": [75, 80, 110, 65, 90, 50]
+    },
+    "eiscuenoice": {
+      "weight": 89,
+      "name": "Eiscue-Noice",
+      "types": ["ice"],
+      "stats": [75, 80, 70, 65, 50, 130]
+    },
+    "indeedee": {
+      "weight": 28
+    },
+    "indeedeef": {
+      "weight": 28
+    },
+    "morpeko": {
+      "weight": 3,
+      "name": "Morpeko",
+      "types": ["electric", "dark"],
+      "stats": [58, 95, 58, 70, 58, 97]
+    },
+    "morpekohangry": {
+      "weight": 3,
+      "name": "Morpeko-Hangry",
+      "types": ["electric", "dark"],
+      "stats": [58, 95, 58, 70, 58, 97]
+    },
+    "cufant": {
+      "weight": 100
+    },
+    "copperajah": {
+      "weight": 650
+    },
+    "copperajahgmax": {
+      "weight": 0
+    },
+    "dracozolt": {
+      "weight": 190
+    },
+    "arctozolt": {
+      "weight": 150
+    },
+    "dracovish": {
+      "weight": 215
+    },
+    "arctovish": {
+      "weight": 175
+    },
+    "duraludon": {
+      "weight": 40
+    },
+    "duraludongmax": {
+      "weight": 0
+    },
+    "dreepy": {
+      "weight": 2
+    },
+    "drakloak": {
+      "weight": 11
+    },
+    "dragapult": {
+      "weight": 50
+    },
+    "zacian": {
+      "weight": 110
+    },
+    "zaciancrowned": {
+      "weight": 355
+    },
+    "zamazenta": {
+      "weight": 210
+    },
+    "zamazentacrowned": {
+      "weight": 785
+    },
+    "eternatus": {
+      "weight": 950
+    },
+    "eternatuseternamax": {
+      "weight": 0
+    },
+    "kubfu": {
+      "weight": 12
+    },
+    "urshifu": {
+      "weight": 105
+    },
+    "urshifurapidstrike": {
+      "weight": 105
+    },
+    "urshifugmax": {
+      "weight": 0
+    },
+    "urshifurapidstrikegmax": {
+      "weight": 0
+    },
+    "zarude": {
+      "weight": 70
+    },
+    "zarudedada": {
+      "weight": 70
+    },
+    "regieleki": {
+      "weight": 145
+    },
+    "regidrago": {
+      "weight": 200
+    },
+    "glastrier": {
+      "weight": 800
+    },
+    "spectrier": {
+      "weight": 44.5
+    },
+    "calyrex": {
+      "weight": 7.7
+    },
+    "calyrexice": {
+      "weight": 809.1
+    },
+    "calyrexshadow": {
+      "weight": 53.6
+    },
+    "wyrdeer": {
+      "weight": 95.1
+    },
+    "kleavor": {
+      "weight": 89
+    },
+    "ursaluna": {
+      "weight": 290
+    },
+    "ursalunabloodmoon": {
+      "weight": 333
+    },
+    "basculegion": {
+      "weight": 110
+    },
+    "basculegionf": {
+      "weight": 110
+    },
+    "sneasler": {
+      "weight": 43
+    },
+    "overqwil": {
+      "weight": 60.5
+    },
+    "enamorus": {
+      "weight": 48
+    },
+    "enamorustherian": {
+      "weight": 48
+    },
+    "sprigatito": {
+      "weight": 4.1
+    },
+    "floragato": {
+      "weight": 12.2
+    },
+    "meowscarada": {
+      "weight": 31.2
+    },
+    "fuecoco": {
+      "weight": 9.8
+    },
+    "crocalor": {
+      "weight": 30.7
+    },
+    "skeledirge": {
+      "weight": 326.5
+    },
+    "quaxly": {
+      "weight": 6.1
+    },
+    "quaxwell": {
+      "weight": 21.5
+    },
+    "quaquaval": {
+      "weight": 61.9
+    },
+    "lechonk": {
+      "weight": 10.2
+    },
+    "oinkologne": {
+      "weight": 120
+    },
+    "oinkolognef": {
+      "weight": 120
+    },
+    "tarountula": {
+      "weight": 4
+    },
+    "spidops": {
+      "weight": 16.5
+    },
+    "nymble": {
+      "weight": 1
+    },
+    "lokix": {
+      "weight": 17.5
+    },
+    "pawmi": {
+      "weight": 2.5
+    },
+    "pawmo": {
+      "weight": 6.5
+    },
+    "pawmot": {
+      "weight": 41
+    },
+    "tandemaus": {
+      "weight": 1.8
+    },
+    "maushold": {
+      "weight": 2.3
+    },
+    "mausholdfour": {
+      "weight": 2.8
+    },
+    "fidough": {
+      "weight": 10.9
+    },
+    "dachsbun": {
+      "weight": 14.9
+    },
+    "smoliv": {
+      "weight": 6.5
+    },
+    "dolliv": {
+      "weight": 11.9
+    },
+    "arboliva": {
+      "weight": 48.2
+    },
+    "squawkabilly": {
+      "weight": 2.4
+    },
+    "squawkabillyblue": {
+      "weight": 2.4
+    },
+    "squawkabillyyellow": {
+      "weight": 2.4
+    },
+    "squawkabillywhite": {
+      "weight": 2.4
+    },
+    "nacli": {
+      "weight": 16
+    },
+    "naclstack": {
+      "weight": 105
+    },
+    "garganacl": {
+      "weight": 240
+    },
+    "charcadet": {
+      "weight": 10.5
+    },
+    "armarouge": {
+      "weight": 85
+    },
+    "ceruledge": {
+      "weight": 62
+    },
+    "tadbulb": {
+      "weight": 0.4
+    },
+    "bellibolt": {
+      "weight": 113
+    },
+    "wattrel": {
+      "weight": 3.6
+    },
+    "kilowattrel": {
+      "weight": 38.6
+    },
+    "maschiff": {
+      "weight": 16
+    },
+    "mabosstiff": {
+      "weight": 61
+    },
+    "shroodle": {
+      "weight": 0.7
+    },
+    "grafaiai": {
+      "weight": 27.2
+    },
+    "bramblin": {
+      "weight": 0.6
+    },
+    "brambleghast": {
+      "weight": 6
+    },
+    "toedscool": {
+      "weight": 33
+    },
+    "toedscruel": {
+      "weight": 58
+    },
+    "klawf": {
+      "weight": 79
+    },
+    "capsakid": {
+      "weight": 3
+    },
+    "scovillain": {
+      "weight": 15
+    },
+    "scovillainmega": {
+      "weight": 22
+    },
+    "rellor": {
+      "weight": 1
+    },
+    "rabsca": {
+      "weight": 3.5
+    },
+    "flittle": {
+      "weight": 1.5
+    },
+    "espathra": {
+      "weight": 90
+    },
+    "tinkatink": {
+      "weight": 8.9
+    },
+    "tinkatuff": {
+      "weight": 59.1
+    },
+    "tinkaton": {
+      "weight": 112.8
+    },
+    "wiglett": {
+      "weight": 1.8
+    },
+    "wugtrio": {
+      "weight": 5.4
+    },
+    "bombirdier": {
+      "weight": 42.9
+    },
+    "finizen": {
+      "weight": 60.2
+    },
+    "palafin": {
+      "weight": 60.2,
+      "name": "Palafin",
+      "types": ["water"],
+      "stats": [100, 70, 72, 53, 62, 100]
+    },
+    "palafinhero": {
+      "weight": 97.4,
+      "name": "Palafin-Hero",
+      "types": ["water"],
+      "stats": [100, 160, 97, 106, 87, 100]
+    },
+    "varoom": {
+      "weight": 35
+    },
+    "revavroom": {
+      "weight": 120
+    },
+    "cyclizar": {
+      "weight": 63
+    },
+    "orthworm": {
+      "weight": 310
+    },
+    "glimmet": {
+      "weight": 8
+    },
+    "glimmora": {
+      "weight": 45
+    },
+    "glimmoramega": {
+      "weight": 77
+    },
+    "greavard": {
+      "weight": 35
+    },
+    "houndstone": {
+      "weight": 15
+    },
+    "flamigo": {
+      "weight": 37
+    },
+    "cetoddle": {
+      "weight": 45
+    },
+    "cetitan": {
+      "weight": 700
+    },
+    "veluza": {
+      "weight": 90
+    },
+    "dondozo": {
+      "weight": 220
+    },
+    "tatsugiri": {
+      "weight": 8
+    },
+    "tatsugiridroopy": {
+      "weight": 8
+    },
+    "tatsugiristretchy": {
+      "weight": 8
+    },
+    "tatsugiricurlymega": {
+      "weight": 24
+    },
+    "tatsugiridroopymega": {
+      "weight": 24
+    },
+    "tatsugiristretchymega": {
+      "weight": 24
+    },
+    "annihilape": {
+      "weight": 56
+    },
+    "clodsire": {
+      "weight": 223
+    },
+    "farigiraf": {
+      "weight": 160
+    },
+    "dudunsparce": {
+      "weight": 39.2
+    },
+    "dudunsparcethreesegment": {
+      "weight": 47.4
+    },
+    "kingambit": {
+      "weight": 120
+    },
+    "greattusk": {
+      "weight": 320
+    },
+    "screamtail": {
+      "weight": 8
+    },
+    "brutebonnet": {
+      "weight": 21
+    },
+    "fluttermane": {
+      "weight": 4
+    },
+    "slitherwing": {
+      "weight": 92
+    },
+    "sandyshocks": {
+      "weight": 60
+    },
+    "irontreads": {
+      "weight": 240
+    },
+    "ironbundle": {
+      "weight": 11
+    },
+    "ironhands": {
+      "weight": 380.7
+    },
+    "ironjugulis": {
+      "weight": 111
+    },
+    "ironmoth": {
+      "weight": 36
+    },
+    "ironthorns": {
+      "weight": 303
+    },
+    "frigibax": {
+      "weight": 17
+    },
+    "arctibax": {
+      "weight": 30
+    },
+    "baxcalibur": {
+      "weight": 210
+    },
+    "baxcaliburmega": {
+      "weight": 315
+    },
+    "gimmighoul": {
+      "weight": 5
+    },
+    "gimmighoulroaming": {
+      "weight": 0.1
+    },
+    "gholdengo": {
+      "weight": 30
+    },
+    "wochien": {
+      "weight": 74.2
+    },
+    "chienpao": {
+      "weight": 152.2
+    },
+    "tinglu": {
+      "weight": 699.7
+    },
+    "chiyu": {
+      "weight": 4.9
+    },
+    "roaringmoon": {
+      "weight": 380
+    },
+    "ironvaliant": {
+      "weight": 35
+    },
+    "koraidon": {
+      "weight": 303
+    },
+    "miraidon": {
+      "weight": 240
+    },
+    "walkingwake": {
+      "weight": 280
+    },
+    "ironleaves": {
+      "weight": 125
+    },
+    "dipplin": {
+      "weight": 4.4
+    },
+    "poltchageist": {
+      "weight": 1.1
+    },
+    "poltchageistartisan": {
+      "weight": 1.1
+    },
+    "sinistcha": {
+      "weight": 2.2
+    },
+    "sinistchamasterpiece": {
+      "weight": 2.2
+    },
+    "okidogi": {
+      "weight": 92
+    },
+    "munkidori": {
+      "weight": 12.2
+    },
+    "fezandipiti": {
+      "weight": 30.1
+    },
+    "ogerpon": {
+      "weight": 39.8,
+      "name": "Ogerpon",
+      "types": ["grass"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponwellspring": {
+      "weight": 39.8,
+      "name": "Ogerpon-Wellspring",
+      "types": ["grass", "water"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponhearthflame": {
+      "weight": 39.8,
+      "name": "Ogerpon-Hearthflame",
+      "types": ["grass", "fire"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponcornerstone": {
+      "weight": 39.8,
+      "name": "Ogerpon-Cornerstone",
+      "types": ["grass", "rock"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerpontealtera": {
+      "weight": 39.8,
+      "name": "Ogerpon-Teal-Tera",
+      "types": ["grass"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponwellspringtera": {
+      "weight": 39.8,
+      "name": "Ogerpon-Wellspring-Tera",
+      "types": ["grass", "water"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponhearthflametera": {
+      "weight": 39.8,
+      "name": "Ogerpon-Hearthflame-Tera",
+      "types": ["grass", "fire"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "ogerponcornerstonetera": {
+      "weight": 39.8,
+      "name": "Ogerpon-Cornerstone-Tera",
+      "types": ["grass", "rock"],
+      "stats": [80, 120, 84, 60, 96, 110]
+    },
+    "archaludon": {
+      "weight": 60
+    },
+    "hydrapple": {
+      "weight": 93
+    },
+    "gougingfire": {
+      "weight": 590
+    },
+    "ragingbolt": {
+      "weight": 480
+    },
+    "ironboulder": {
+      "weight": 162.5
+    },
+    "ironcrown": {
+      "weight": 156
+    },
+    "terapagos": {
+      "weight": 6.5,
+      "name": "Terapagos",
+      "types": ["normal"],
+      "stats": [90, 65, 85, 65, 85, 60]
+    },
+    "terapagosterastal": {
+      "weight": 16,
+      "name": "Terapagos-Terastal",
+      "types": ["normal"],
+      "stats": [95, 95, 110, 105, 110, 85]
+    },
+    "terapagosstellar": {
+      "weight": 77,
+      "name": "Terapagos-Stellar",
+      "types": ["normal"],
+      "stats": [160, 105, 110, 130, 110, 85]
+    },
+    "pecharunt": {
+      "weight": 0.3
+    },
+    "missingno": {
+      "weight": 1590.8
+    },
+    "syclar": {
+      "weight": 4
+    },
+    "syclant": {
+      "weight": 52
+    },
+    "revenankh": {
+      "weight": 44
+    },
+    "embirch": {
+      "weight": 15
+    },
+    "flarelm": {
+      "weight": 73
+    },
+    "pyroak": {
+      "weight": 168
+    },
+    "breezi": {
+      "weight": 0.6
+    },
+    "fidgit": {
+      "weight": 53
+    },
+    "rebble": {
+      "weight": 7
+    },
+    "tactite": {
+      "weight": 16
+    },
+    "stratagem": {
+      "weight": 45
+    },
+    "privatyke": {
+      "weight": 35
+    },
+    "arghonaut": {
+      "weight": 151
+    },
+    "kitsunoh": {
+      "weight": 51
+    },
+    "cyclohm": {
+      "weight": 59
+    },
+    "colossoil": {
+      "weight": 683.6
+    },
+    "krilowatt": {
+      "weight": 10.6
+    },
+    "voodoll": {
+      "weight": 25
+    },
+    "voodoom": {
+      "weight": 75.5
+    },
+    "scratchet": {
+      "weight": 20
+    },
+    "tomohawk": {
+      "weight": 37.2
+    },
+    "necturine": {
+      "weight": 1.8
+    },
+    "necturna": {
+      "weight": 49.6
+    },
+    "mollux": {
+      "weight": 41
+    },
+    "cupra": {
+      "weight": 4.8
+    },
+    "argalis": {
+      "weight": 341.4
+    },
+    "aurumoth": {
+      "weight": 193
+    },
+    "brattler": {
+      "weight": 11.5
+    },
+    "malaconda": {
+      "weight": 108.8
+    },
+    "cawdet": {
+      "weight": 25
+    },
+    "cawmodore": {
+      "weight": 37
+    },
+    "volkritter": {
+      "weight": 15
+    },
+    "volkraken": {
+      "weight": 44.5
+    },
+    "snugglow": {
+      "weight": 6
+    },
+    "plasmanta": {
+      "weight": 460
+    },
+    "floatoy": {
+      "weight": 1.9
+    },
+    "caimanoe": {
+      "weight": 72.5
+    },
+    "naviathan": {
+      "weight": 510
+    },
+    "crucibelle": {
+      "weight": 23.6
+    },
+    "crucibellemega": {
+      "weight": 22.5
+    },
+    "pluffle": {
+      "weight": 1.8
+    },
+    "kerfluffle": {
+      "weight": 24.2
+    },
+    "pajantom": {
+      "weight": 3.1
+    },
+    "mumbao": {
+      "weight": 83
+    },
+    "jumbao": {
+      "weight": 200
+    },
+    "fawnifer": {
+      "weight": 6.9
+    },
+    "electrelk": {
+      "weight": 41.5
+    },
+    "caribolt": {
+      "weight": 140
+    },
+    "smogecko": {
+      "weight": 8.5
+    },
+    "smoguana": {
+      "weight": 22.2
+    },
+    "smokomodo": {
+      "weight": 205
+    },
+    "swirlpool": {
+      "weight": 7
+    },
+    "coribalis": {
+      "weight": 24.5
+    },
+    "snaelstrom": {
+      "weight": 120
+    },
+    "justyke": {
+      "weight": 36.5
+    },
+    "equilibra": {
+      "weight": 51.3
+    },
+    "solotl": {
+      "weight": 11.8
+    },
+    "astrolotl": {
+      "weight": 50
+    },
+    "miasmite": {
+      "weight": 10.1
+    },
+    "miasmaw": {
+      "weight": 57
+    },
+    "chromera": {
+      "weight": 215
+    },
+    "nohface": {
+      "weight": 5.9
+    },
+    "monohm": {
+      "weight": 4.1
+    },
+    "duohm": {
+      "weight": 19.2
+    },
+    "dorsoil": {
+      "weight": 145
+    },
+    "protowatt": {
+      "weight": 0.1
+    },
+    "venomicon": {
+      "weight": 11.5
+    },
+    "venomiconepilogue": {
+      "weight": 12.4
+    },
+    "saharascal": {
+      "weight": 48
+    },
+    "saharaja": {
+      "weight": 303.9
+    },
+    "ababo": {
+      "weight": 3.5
+    },
+    "scattervein": {
+      "weight": 25
+    },
+    "hemogoblin": {
+      "weight": 85
+    },
+    "cresceidon": {
+      "weight": 999.9
+    },
+    "chuggon": {
+      "weight": 50
+    },
+    "draggalong": {
+      "weight": 110
+    },
+    "chuggalong": {
+      "weight": 201.6
+    },
+    "flox": {
+      "weight": 66.6
+    },
+    "shox": {
+      "weight": 99.9
+    },
+    "ramnarok": {
+      "weight": 250
+    },
+    "ramnarokradiant": {
+      "weight": 182
+    },
+    "scraptor": {
+      "weight": 7
+    },
+    "obliteryx": {
+      "weight": 62
+    },
+    "pokestarsmeargle": {
+      "weight": 61
+    },
+    "pokestarufo": {
+      "weight": 61
+    },
+    "pokestarufo2": {
+      "weight": 61
+    },
+    "pokestarbrycenman": {
+      "weight": 61
+    },
+    "pokestarmt": {
+      "weight": 61
+    },
+    "pokestarmt2": {
+      "weight": 61
+    },
+    "pokestartransport": {
+      "weight": 61
+    },
+    "pokestargiant": {
+      "weight": 61
+    },
+    "pokestarhumanoid": {
+      "weight": 61
+    },
+    "pokestarmonster": {
+      "weight": 61
+    },
+    "pokestarf00": {
+      "weight": 61
+    },
+    "pokestarf002": {
+      "weight": 61
+    },
+    "pokestarspirit": {
+      "weight": 61
+    },
+    "pokestarblackdoor": {
+      "weight": 61
+    },
+    "pokestarwhitedoor": {
+      "weight": 61
+    },
+    "pokestarblackbelt": {
+      "weight": 61
+    },
+    "pokestarufopropu2": {
+      "weight": 61
+    }
+  }
+}

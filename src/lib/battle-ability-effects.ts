@@ -19,6 +19,7 @@ export const supplementalAbilityMoveImmunities: Readonly<Record<string, AbilityM
   'dry-skin': { type: 'water', healFraction: 1 / 4 },
   'earth-eater': { type: 'ground', healFraction: 1 / 4 },
   levitate: { type: 'ground' },
+  eelevate: { type: 'ground' },
   'lightning-rod': { type: 'electric', boost: { stat: 'specialAttack', stages: 1 } },
   'motor-drive': { type: 'electric', boost: { stat: 'speed', stages: 1 } },
   'storm-drain': { type: 'water', boost: { stat: 'specialAttack', stages: 1 } },
@@ -33,8 +34,8 @@ export const supplementalAbilityStatusImmunities: Readonly<
   burn: ['water-veil', 'water-bubble', 'thermal-exchange'],
   freeze: ['magma-armor'],
   paralysis: ['limber'],
-  poison: ['immunity', 'poison-heal', 'pastel-veil'],
-  'badly-poisoned': ['immunity', 'poison-heal', 'pastel-veil'],
+  poison: ['immunity', 'pastel-veil'],
+  'badly-poisoned': ['immunity', 'pastel-veil'],
   sleep: ['insomnia', 'vital-spirit', 'sweet-veil'],
 }
 
@@ -85,7 +86,6 @@ export const supplementalAbilityTerrain: Readonly<Record<string, SupplementalAbi
 /** Abilities whose only documented effect cannot affect this local singles format. */
 export const singlesInapplicableAbilities = new Set([
   'run-away',
-  'illuminate',
   'honey-gather',
   'friend-guard',
   'healer',
@@ -98,4 +98,10 @@ export const singlesInapplicableAbilities = new Set([
   'commander',
   'costar',
   'hospitality',
+  'plus',
+  'minus',
+  'power-spot',
+  'curious-medicine',
+  'propeller-tail',
+  'stalwart',
 ])
