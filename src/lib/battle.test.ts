@@ -2433,3 +2433,91 @@ describe('Advanced opponent tactics', () => {
     expect(chooseOpponentAction(state, () => 0.5, 'very-hard')).toMatchObject({ kind: 'move', index: 0 })
   })
 })
+
+describe('Blessings and Pressure', () => {
+  const setup = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    return createBattleState(player, roster(player), opponent, roster(opponent))
+  }
+  const useMove = (state: ReturnType<typeof setup>) =>
+    resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'switch', index: 0 }, () => 0.5)
+
+  it('revives only the first fainted ally at half maximum HP through opposing Protect', () => {
+    const state = setup()
+    state.player.roster[0].moves[0].data = move({
+      name: 'revival-blessing',
+      damageClass: 'status',
+      power: null,
+      target: 'fainting-pokemon',
+      accuracy: null,
+    })
+    state.player.roster[1].hp = state.player.roster[2].hp = 0
+    state.player.roster[1].maxHp = 301
+    state.opponent.roster[0].volatile.protect = 1
+    const result = useMove(state)
+    expect(result.state.player.roster[1].hp).toBe(150)
+    expect(result.state.player.roster[2].hp).toBe(0)
+    expect(result.state.player.roster[0].moves[0].pp).toBe(34)
+  })
+
+  it('fails revival when no ally has fainted', () => {
+    const state = setup()
+    state.player.roster[0].moves[0].data = move({
+      name: 'revival-blessing',
+      damageClass: 'status',
+      power: null,
+      target: 'fainting-pokemon',
+    })
+    expect(useMove(state).events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+  })
+
+  it('heals Lunar Blessing users, cures status and raises evasion through Protect', () => {
+    const state = setup()
+    const user = state.player.roster[0]
+    user.moves[0].data = move({
+      name: 'lunar-blessing',
+      damageClass: 'status',
+      power: null,
+      target: 'user-and-allies',
+      accuracy: null,
+    })
+    user.hp = 50
+    user.maxHp = 300
+    user.status = 'badly-poisoned'
+    user.toxicTurns = 3
+    state.opponent.roster[0].volatile.protect = 1
+    const result = useMove(state).state.player.roster[0]
+    expect(result.hp).toBe(200)
+    expect(result.status).toBeNull()
+    expect(result.toxicTurns).toBe(0)
+    expect(result.stages.evasion).toBe(1)
+  })
+
+  it.each([35, 1])('spends two PP against Pressure without going negative from %i PP', (pp) => {
+    const state = setup()
+    state.opponent.roster[0].ability.name = 'pressure'
+    state.player.roster[0].moves[0].pp = pp
+    expect(useMove(state).state.player.roster[0].moves[0].pp).toBe(Math.max(0, pp - 2))
+  })
+
+  it('spends two PP even when the attack misses', () => {
+    const state = setup()
+    state.opponent.roster[0].ability.name = 'pressure'
+    state.player.roster[0].moves[0].data.accuracy = 0
+    expect(useMove(state).state.player.roster[0].moves[0].pp).toBe(33)
+  })
+
+  it('does not charge extra PP for self healing against Pressure', () => {
+    const state = setup()
+    state.opponent.roster[0].ability.name = 'pressure'
+    state.player.roster[0].moves[0].data = move({
+      name: 'recover',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      healing: 50,
+    })
+    expect(useMove(state).state.player.roster[0].moves[0].pp).toBe(34)
+  })
+})

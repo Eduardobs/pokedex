@@ -16,6 +16,10 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
     value: t('moveSupplemental.turns', { turns }),
   })
   switch (effect.kind) {
+    case 'revive-ally':
+      return [mechanic(t('moveSupplemental.kind.reviveAlly'))]
+    case 'lunar-blessing':
+      return [mechanic(t('moveSupplemental.kind.lunarBlessing'))]
     case 'wish':
       return [mechanic(t('moveSupplemental.kind.wish'))]
     case 'encore':

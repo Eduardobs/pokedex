@@ -1336,6 +1336,9 @@ export const es = {
   'moveSupplemental.kind.taunt': 'Impide que el objetivo use movimientos de estado',
   'moveSupplemental.kind.fixedDamage': 'Inflige daño calculado mediante una regla fija',
   'moveSupplemental.kind.equalizeHp': 'Divide por igual los PS actuales combinados del usuario y el objetivo',
+  'moveSupplemental.kind.reviveAlly': 'Revive al primer miembro debilitado del equipo con la mitad de sus PS máximos.',
+  'moveSupplemental.kind.lunarBlessing':
+    'Cura el estado del usuario, restaura la mitad de sus PS máximos y aumenta la evasión en un nivel.',
   'moveSupplemental.kind.wish':
     'Restaura hasta la mitad de los PS máximos del usuario en el siguiente turno, incluso tras cambiar',
   'moveSupplemental.kind.substitute': 'Gasta un cuarto de los PS máximos para crear un sustituto que absorbe daño',

@@ -1192,7 +1192,18 @@ function applyMove(
   const slot = battleMoveSlot(attacker, moveSlot)
   const releasing = attacker.chargingMoveIndex === moveSlot
   if (!slot || (!releasing && slot.pp <= 0) || attacker.hp <= 0 || defender.hp <= 0) return null
-  if (!releasing && moveSlot !== STRUGGLE_INDEX) slot.pp -= 1
+  if (!releasing && moveSlot !== STRUGGLE_INDEX) {
+    const targetsOpponent = [
+      'selected-pokemon',
+      'all-opponents',
+      'all-other-pokemon',
+      'random-opponent',
+      'all-pokemon',
+    ].includes(slot.data.target)
+    const pressure = targetsOpponent && defender.ability.name === 'pressure'
+    slot.pp = Math.max(0, slot.pp - (pressure ? 2 : 1))
+    if (pressure) events.push({ type: 'ability', pokemon: defender.pokemon.name, ability: 'pressure' })
+  }
   const timing = supplementalMoveTimings[slot.data.name]
   const boost = timing?.chargeBoost
   const move = { ...slot.data, statChanges: boost ? [] : slot.data.statChanges }
@@ -1223,6 +1234,36 @@ function applyMove(
   events.push({ type: 'move', side: 'player', pokemon: attacker.pokemon.name, move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
   if (blockedByRepeat || (releasingCarry && !carriedTargetMatches)) return { hit: true, succeeded: false }
+  const blessing = supplementalMoveEffect(move.name)
+  if (blessing?.kind === 'revive-ally') return { hit: true, succeeded: false }
+  if (blessing?.kind === 'lunar-blessing') {
+    if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
+    let succeeded = false
+    if (attacker.status) {
+      events.push({ type: 'statusCured', pokemon: attacker.pokemon.name, status: attacker.status })
+      attacker.status = null
+      attacker.sleepTurns = 0
+      attacker.toxicTurns = 0
+      succeeded = true
+    }
+    const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 2)))
+    if (amount > 0) {
+      attacker.hp += amount
+      events.push({
+        type: 'heal',
+        pokemon: attacker.pokemon.name,
+        amount,
+        percentage: hpPercentage(amount, attacker.maxHp),
+      })
+      succeeded = true
+    }
+    if (attacker.stages.evasion < 6) {
+      attacker.stages.evasion += 1
+      events.push({ type: 'stage', pokemon: attacker.pokemon.name, stat: 'evasion', change: 1 })
+      succeeded = true
+    }
+    return { hit: true, succeeded }
+  }
   if (!delayed && move.name === 'future-sight') {
     if (defendingSide.futureSight) return { hit: true, succeeded: false }
     defendingSide.futureSight = {
@@ -1936,6 +1977,22 @@ function performChoice(
     if (move.name === 'smack-down' && ['fly', 'bounce'].includes(semiInvulnerableMove(defender) ?? ''))
       delete defender.chargingMoveIndex
     const supplemental = supplementalMoveEffect(move.name)
+    if (supplemental?.kind === 'revive-ally' && !attacker.volatile['heal-block']) {
+      const target = own.roster.find((pokemon) => pokemon.hp === 0)
+      if (target) {
+        target.hp = Math.max(1, Math.floor(target.maxHp / 2))
+        target.status = null
+        target.sleepTurns = 0
+        target.toxicTurns = 0
+        events.push({
+          type: 'heal',
+          pokemon: target.pokemon.name,
+          amount: target.hp,
+          percentage: hpPercentage(target.hp, target.maxHp),
+        })
+        succeeded = true
+      }
+    }
     if (supplemental?.kind === 'encore' && !outcome.hitSubstitute) {
       const repeated = defender.lastMoveIndex
       const repeatedMove = repeated === null ? null : defender.moves[repeated]

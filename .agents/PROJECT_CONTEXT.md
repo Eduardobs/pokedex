@@ -49,6 +49,9 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 - Team member editing offers compatible bundled Showdown sets by role and a repeatable Random option that randomizes all editable build fields, spends all 510 EVs, and respects the available abilities, moves, and genders.
 
+- Random Battle Revival Blessing revives the first fainted party member with half its maximum HP; Lunar Blessing cures the user’s major status, restores half its maximum HP, and raises evasion by one stage.
+- Random Battle Pressure makes moves directed at its holder cost two PP in total, bounded at zero.
+
 ## Maintenance
 
 - Team Pokémon search allows playable battle forms, including Mega Evolutions, Gigantamax, and regional forms, while excluding ride-only forms and unobtainable boss forms.

@@ -1329,6 +1329,9 @@ export const ptBR = {
   'moveSupplemental.kind.taunt': 'Impede o alvo de usar golpes de estado',
   'moveSupplemental.kind.fixedDamage': 'Causa dano calculado por uma regra fixa',
   'moveSupplemental.kind.equalizeHp': 'Divide igualmente o HP atual combinado entre o usuário e o alvo',
+  'moveSupplemental.kind.reviveAlly': 'Revive o primeiro aliado desmaiado da equipe com metade do HP máximo.',
+  'moveSupplemental.kind.lunarBlessing':
+    'Cura o status do usuário, recupera metade do HP máximo e aumenta a evasão em um estágio.',
   'moveSupplemental.kind.wish': 'Restaura até metade do HP máximo do usuário no turno seguinte, mesmo após troca',
   'moveSupplemental.kind.substitute': 'Gasta um quarto do HP máximo para criar um substituto que absorve dano',
   'moveSupplemental.kind.curse':

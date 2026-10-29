@@ -8,9 +8,9 @@
   "source": "https://github.com/smogon/pokemon-showdown/blob/master/data/abilities.ts",
   "sha256": "e942ef6a75cdd50095f6b68c27e772ea91f2202714a30b04539ff17b7b93c065",
   "counts": {
-    "local-branch": 86,
+    "local-branch": 87,
     "not-applicable-to-singles": 14,
-    "missing-handler": 214
+    "missing-handler": 213
   },
   "abilities": [
     {
@@ -378,8 +378,8 @@
       "name": "pressure",
       "effect": "Increases the PP cost of moves targetting the Pokémon by one.",
       "dimensions": ["other-condition"],
-      "finding": "missing-handler",
-      "notes": "No ability-specific handler was detected in the Random Battle engine."
+      "finding": "local-branch",
+      "notes": "A local branch or supplemental rule exists; this is not by itself proof of complete cartridge parity."
     },
     {
       "id": 47,

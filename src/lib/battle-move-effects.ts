@@ -1,6 +1,8 @@
 import type { BattleMove } from './battle'
 
 export type SupplementalMoveEffect =
+  | { kind: 'revive-ally' }
+  | { kind: 'lunar-blessing' }
   | { kind: 'wish' }
   | { kind: 'encore'; minimumTurns: number; maximumTurns: number }
   | { kind: 'taunt'; turns: number }
@@ -46,6 +48,8 @@ export type SupplementalMoveEffect =
 
 /** Structured battle behavior that PokéAPI does not expose in its move payload. */
 const supplementalMoveEffects: Readonly<Record<string, SupplementalMoveEffect>> = {
+  'revival-blessing': { kind: 'revive-ally' },
+  'lunar-blessing': { kind: 'lunar-blessing' },
   wish: { kind: 'wish' },
   encore: { kind: 'encore', minimumTurns: 2, maximumTurns: 6 },
   taunt: { kind: 'taunt', turns: 3 },
