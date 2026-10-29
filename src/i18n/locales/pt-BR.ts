@@ -1,4 +1,12 @@
 export const ptBR = {
+  'seo.homeTitle': 'Pokédex, tipos e equipes',
+  'seo.homeDescription':
+    'Explore a Pokédex completa: Pokémon, evoluções, golpes, habilidades, tipos, mapas e ferramentas para montar sua equipe.',
+  'seo.pokemonTitle': '{name} — Pokédex',
+  'seo.pokemonDescription':
+    'Consulte os tipos, atributos, evoluções, habilidades e golpes de {name} na Pokédex do Atlas Pokémon.',
+  'seo.resourceDescription': 'Explore {resource}: consulte a lista e os detalhes na enciclopédia Atlas Pokémon.',
+  'seo.resourceDetailDescription': 'Consulte informações e dados de {name} em {resource} no Atlas Pokémon.',
   'battle.details': 'Informações',
   'battle.closeDetails': 'Fechar informações',
   'home.workflows': 'O que você quer fazer agora?',

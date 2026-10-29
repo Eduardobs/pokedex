@@ -27,6 +27,7 @@ import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { Logo } from './Logo'
 import { Loading } from './Loading'
 import { ScrollToTop } from './ScrollToTop'
+import { Seo } from './Seo'
 
 export function Layout() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -122,11 +123,6 @@ export function Layout() {
                         : location.pathname === '/'
                           ? t('home.description')
                           : t('error.notFoundDesc')
-
-  useEffect(() => {
-    document.title = routeTitle === 'Atlas Pokémon' ? routeTitle : `${routeTitle} · Atlas Pokémon`
-    document.querySelector('meta[name="description"]')?.setAttribute('content', routeDescription)
-  }, [routeDescription, routeTitle])
 
   useEffect(() => {
     if (previousPathnameRef.current === location.pathname) return
@@ -279,6 +275,7 @@ export function Layout() {
 
   return (
     <div className={`app-shell${searchOpen ? ' search-open' : ''}`}>
+      <Seo title={routeTitle} description={routeDescription} />
       <a className="skip-link" href="#main-content">
         {t('nav.skip')}
       </a>

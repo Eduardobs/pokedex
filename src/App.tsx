@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from 'react'
-import { HashRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { ErrorState } from './components/ErrorState'
 import { FavoritesProvider } from './contexts/FavoritesContext'
@@ -31,8 +31,9 @@ const HisuiMapPage = lazyPage(() => import('./pages/HisuiMapPage'), 'HisuiMapPag
 const LumioseMapPage = lazyPage(() => import('./pages/LumioseMapPage'), 'LumioseMapPage')
 
 export default function App() {
+  const Router = import.meta.env.VITE_ROUTER_MODE === 'history' ? BrowserRouter : HashRouter
   return (
-    <HashRouter>
+    <Router basename={import.meta.env.VITE_ROUTER_MODE === 'history' ? import.meta.env.BASE_URL : undefined}>
       <LanguageProvider>
         <FavoritesProvider>
           <Routes>
@@ -68,6 +69,6 @@ export default function App() {
           </Routes>
         </FavoritesProvider>
       </LanguageProvider>
-    </HashRouter>
+    </Router>
   )
 }

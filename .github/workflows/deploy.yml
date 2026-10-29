@@ -13,6 +13,8 @@ concurrency:
 
 jobs:
   build:
+    env:
+      VITE_SITE_URL: ${{ vars.VITE_SITE_URL }}
     permissions:
       contents: read
     runs-on: ubuntu-latest

@@ -53,6 +53,18 @@ Historical records, prices, translations, and media vary by resource; missing da
 
 The app uses `HashRouter`, which makes the same build work at both a domain root and a GitHub Pages project path without server-side rewrite rules.
 
+## SEO and indexing
+
+Page titles, descriptions, Open Graph, and Twitter metadata follow the current route and language. Pokémon and Explore details identify the selected record. The initial HTML includes Portuguese home metadata for crawlers that do not execute JavaScript; detail previews require JavaScript rendering.
+
+Set `VITE_SITE_URL` to the public production URL, including its project directory and a trailing slash (for example, `https://your-domain.example/pokedex/`). This enables absolute canonical URLs, `og:url`, and build-generated `dist/sitemap.xml`. The build always generates `dist/robots.txt`; it references the sitemap when a public URL is configured. Configure this variable in the deployment build environment as well. The GitHub Pages workflow reads it from the repository Actions variable `VITE_SITE_URL`. See `.env.example`.
+
+Hash routing remains the default for GitHub Pages compatibility. Search engines do not index hash routes as separate pages, so this mode uses the site root as its canonical URL and includes only that URL in the sitemap.
+
+For individual route indexing on a host with SPA fallback support, set `VITE_ROUTER_MODE=history` along with `VITE_SITE_URL`. Configure the server to serve `index.html` for application routes, while serving existing assets normally. The Vite base path follows the public URL's directory. This mode generates clean links and a sitemap of public top-level routes and enabled maps; detail URLs are discovered through page links. Local favorites, teams, and battles are excluded from the sitemap. GitHub Pages does not provide this fallback by default; keep hash mode there. Existing hash bookmarks are intended for hash mode.
+
+Content is still rendered on the client. Server rendering or prerendering would be needed for full content and individual social previews in crawlers that do not execute JavaScript. After deployment, submit the generated sitemap to the search engine's webmaster tools.
+
 ## Requirements
 
 - Node.js **22.22.2 or newer**

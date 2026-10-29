@@ -1,4 +1,12 @@
 export const en = {
+  'seo.homeTitle': 'Pokédex, types and teams',
+  'seo.homeDescription':
+    'Explore the complete Pokédex: Pokémon, evolutions, moves, abilities, types, maps and tools to build your team.',
+  'seo.pokemonTitle': '{name} — Pokédex',
+  'seo.pokemonDescription':
+    'Discover the types, stats, evolutions, abilities and moves of {name} in the Atlas Pokémon Pokédex.',
+  'seo.resourceDescription': 'Explore {resource}: browse the directory and details in the Atlas Pokémon encyclopedia.',
+  'seo.resourceDetailDescription': 'Discover information and data about {name} in {resource} on Atlas Pokémon.',
   'battle.details': 'Details',
   'battle.closeDetails': 'Close details',
   'home.workflows': 'What would you like to do next?',
