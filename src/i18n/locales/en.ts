@@ -1,4 +1,10 @@
 export const en = {
+  'battle.details': 'Details',
+  'battle.closeDetails': 'Close details',
+  'home.workflows': 'What would you like to do next?',
+  'home.planTeam': 'Build and save your team, customize its members, and plan your strategies.',
+  'home.checkTypes': 'Compare type combinations to understand weaknesses, resistances, and immunities.',
+  'home.findPlaces': 'Choose a game and find locations and points of interest on its maps.',
   'battle.struggleDescription':
     'Used when no other move is usable. Deals typeless damage and costs one quarter of the user’s maximum HP in recoil.',
   'battle.difficulty': 'Difficulty',

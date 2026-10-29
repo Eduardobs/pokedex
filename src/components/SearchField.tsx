@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react'
-import type { InputHTMLAttributes } from 'react'
+import { useRef, type InputHTMLAttributes } from 'react'
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> & {
   value: string
@@ -19,15 +19,21 @@ export function SearchField({
   iconSize = 19,
   ...inputProps
 }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null)
   return (
     <div className={`search-field${compact ? ' compact' : ''}`}>
-      <Search size={iconSize} />
-      <input {...inputProps} value={value} onChange={(event) => onChange(event.target.value)} />
+      <Search size={iconSize} aria-hidden="true" />
+      <input ref={inputRef} {...inputProps} value={value} onChange={(event) => onChange(event.target.value)} />
       {value && (
         <button
           className="search-clear"
           type="button"
-          onClick={onClear ?? (() => onChange(''))}
+          disabled={inputProps.disabled || inputProps.readOnly}
+          onClick={() => {
+            inputRef.current?.focus()
+            if (onClear) onClear()
+            else onChange('')
+          }}
           aria-label={clearLabel}
         >
           ×

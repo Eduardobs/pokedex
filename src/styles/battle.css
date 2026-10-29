@@ -1022,8 +1022,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-.battle-moves > button,
-.battle-switches > button {
+.battle-moves .battle-move-button,
+.battle-switches .battle-switch-button {
   min-height: 66px;
   padding: 9px;
   border: 1px solid var(--line);
@@ -1040,7 +1040,7 @@
   align-items: center;
   gap: 5px;
 }
-.battle-moves > button > span:first-child {
+.battle-moves .battle-move-button > span:first-child {
   overflow: hidden;
   font-weight: 800;
   text-overflow: ellipsis;
@@ -1195,7 +1195,7 @@
   gap: 6px;
   margin-top: 8px;
 }
-.battle-switches > button {
+.battle-switches .battle-switch-button {
   min-height: 52px;
   font-weight: 700;
 }
@@ -1673,7 +1673,7 @@
   .battle-move-button {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .battle-moves > button > span:first-child {
+  .battle-moves .battle-move-button > span:first-child {
     white-space: normal;
     overflow-wrap: anywhere;
   }
@@ -1757,4 +1757,163 @@
   .battle-health-level {
     font-size: 10px;
   }
+}
+
+/* Touch details are explicit, separate from actions, and use the full viewport. */
+.battle-action-with-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.battle-action-with-details > .battle-move-button,
+.battle-action-with-details > .battle-switch-button {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0;
+}
+.battle-details-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-size: 12px;
+}
+.battle-details-trigger:hover {
+  color: var(--red);
+}
+.battle-details-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.battle-details-dialog::backdrop {
+  background: #0009;
+}
+.battle-details-sheet {
+  width: min(100%, 520px);
+  margin: auto;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  overflow-wrap: anywhere;
+}
+.battle-details-sheet > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  position: sticky;
+  top: -1px;
+  z-index: 1;
+  padding-block: 4px 12px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.battle-details-sheet h2 {
+  margin: 0;
+  font:
+    700 20px Outfit,
+    sans-serif;
+}
+.battle-details-sheet > header button {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+.battle-details-sheet > span {
+  position: static;
+  display: grid;
+  width: 100%;
+  gap: 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  pointer-events: auto;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.battle-details-sheet
+  :is(
+    small,
+    .battle-resource-empty,
+    .battle-switch-move-name,
+    .battle-resource-detail b,
+    .battle-switch-tooltip-title span
+  ) {
+  font-size: 12px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+.battle-details-sheet :is(.battle-tooltip-stats, .battle-switch-stats) {
+  gap: 2px;
+}
+.battle-details-sheet :is(.battle-tooltip-stats, .battle-switch-stats) :is(small, b) {
+  font-size: 10px;
+}
+.battle-details-sheet :is(.battle-switch-resources, .battle-switch-tooltip-moves > span) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.battle-details-sheet .battle-switch-tooltip-title b {
+  font-size: 16px;
+}
+@media (max-width: 720px), (hover: none) {
+  .battle-sprite-trigger[role='button'],
+  .battle-roster-tooltip-trigger[role='button'],
+  .battle-log-move-trigger[role='button'] {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  .battle-log-move-trigger[role='button'] {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: underline dotted;
+    text-underline-offset: 4px;
+  }
+  .battle-action-with-details .battle-switch-copy b {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+.battle-details-sheet .battle-tooltip-description > span,
+.battle-details-sheet .battle-resource-detail small {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+.battle-action-with-details > button:focus-visible {
+  outline-offset: -3px;
 }

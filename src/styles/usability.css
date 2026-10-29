@@ -787,3 +787,84 @@
     margin-bottom: 0;
   }
 }
+
+/* Keep shared controls legible and reachable in both themes. */
+:where(a, button, select, input, [tabindex]):focus-visible {
+  outline-color: var(--red);
+}
+.search-field:focus-within {
+  border-color: var(--red);
+}
+.search-field:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.catalog-select-options {
+  overscroll-behavior: contain;
+  scroll-padding-block: 6px;
+}
+.catalog-select-options button {
+  min-height: 44px;
+  padding-block: 8px;
+  overflow-wrap: anywhere;
+}
+.catalog-active-filters button {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.catalog-active-filters button > svg {
+  flex-shrink: 0;
+}
+.home-workflows {
+  padding-bottom: 64px;
+}
+.home-workflow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.home-workflow-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.home-workflow-card > svg:first-child {
+  color: var(--red);
+  grid-column: 1 / -1;
+}
+.home-workflow-card h3 {
+  margin: 0;
+  font:
+    700 22px Outfit,
+    sans-serif;
+  grid-column: 1 / -1;
+}
+.home-workflow-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.home-workflow-card > svg:last-child {
+  align-self: end;
+  color: var(--red);
+}
+.home-workflow-card:hover {
+  border-color: var(--red);
+  background: var(--surface-soft);
+}
+@media (max-width: 720px) {
+  .home-workflow-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-workflow-card {
+    padding: 20px;
+  }
+  .search-field input {
+    font-size: 16px;
+  }
+}

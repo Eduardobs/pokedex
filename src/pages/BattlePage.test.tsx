@@ -128,6 +128,8 @@ afterEach(() => {
   clearApiCache()
   vi.restoreAllMocks()
   vi.unstubAllGlobals()
+  Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
+  Reflect.deleteProperty(HTMLDialogElement.prototype, 'close')
 })
 
 describe('BattlePage lobby', () => {
@@ -395,6 +397,43 @@ describe('BattlePage lobby', () => {
     expect(screen.queryByText('Errou')).not.toBeInTheDocument()
   })
 
+  it('opens mobile move details without choosing a move and restores focus on close', async () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })),
+    )
+    Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.setAttribute('open', '')
+      },
+    })
+    Object.defineProperty(HTMLDialogElement.prototype, 'close', {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.removeAttribute('open')
+      },
+    })
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => battleRoster(team))
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    const details = await screen.findByRole('button', { name: 'Detalhes de Tackle' })
+    expect(screen.queryByRole('tooltip')).not.toBeInTheDocument()
+    fireEvent.click(details)
+    const dialog = screen.getByRole('dialog', { name: 'Detalhes de Tackle' })
+    expect(dialog).toHaveTextContent('Poder: 80')
+    expect(dialog).toHaveTextContent('tackle em detalhes.')
+    expect(screen.getByRole('button', { name: 'Tackle' })).toBeEnabled()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Fechar informações' }))
+    expect(details).toHaveFocus()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
   it('starts a battle and supports Terastallization, moves, switching, and returning to the lobby', async () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
@@ -613,6 +652,8 @@ describe('BattlePage lobby', () => {
     fireEvent.blur(tackle)
     measureTooltip.mockRestore()
     vi.unstubAllGlobals()
+    Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
+    Reflect.deleteProperty(HTMLDialogElement.prototype, 'close')
     fireEvent.pointerMove(tackle, { clientX: 120, clientY: 140 })
     expect(moveTooltip).toHaveClass('is-pointer-positioned')
     expect(moveTooltip).toHaveStyle({ left: '130px', top: '150px' })

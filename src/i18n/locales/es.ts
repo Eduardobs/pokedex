@@ -1,4 +1,10 @@
 export const es = {
+  'battle.details': 'Información',
+  'battle.closeDetails': 'Cerrar información',
+  'home.workflows': '¿Qué quieres hacer ahora?',
+  'home.planTeam': 'Crea y guarda tu equipo, personaliza sus miembros y prepara tus estrategias.',
+  'home.checkTypes': 'Compara combinaciones de tipos para entender debilidades, resistencias e inmunidades.',
+  'home.findPlaces': 'Elige un juego y encuentra lugares y puntos de interés en sus mapas.',
   'battle.struggleDescription':
     'Se usa cuando ningún otro movimiento está disponible. Causa daño sin tipo y resta un cuarto de los PS máximos del usuario por retroceso.',
   'battle.difficulty': 'Dificultad',

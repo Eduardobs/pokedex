@@ -261,6 +261,17 @@ export function TeamsPage() {
           aria-labelledby="delete-team-title"
           onKeyDown={(event) => {
             if (event.key === 'Escape') closeDeleteConfirmation()
+            if (event.key !== 'Tab') return
+            const buttons = event.currentTarget.querySelectorAll<HTMLButtonElement>('button')
+            const first = buttons[0]
+            const last = buttons[buttons.length - 1]
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault()
+              last?.focus()
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault()
+              first?.focus()
+            }
           }}
         >
           <div className="team-delete-confirmation-content">

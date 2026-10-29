@@ -30,7 +30,7 @@ type InlineRetryErrorProps = {
 export function InlineRetryError({ message, retryLabel, onRetry }: InlineRetryErrorProps) {
   return (
     <div className="inline-error">
-      <p>{message}</p>
+      <p role="alert">{message}</p>
       <button className="button secondary" type="button" onClick={onRetry}>
         {retryLabel}
       </button>

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../../contexts/LanguageContext'
 import type { Pokemon } from '../../types'
@@ -41,7 +41,9 @@ describe('Pokemon3D tab', () => {
     await waitFor(() => expect(container.querySelector('model-viewer')).toHaveAttribute('src', 'regular.glb'))
     fireEvent(container.querySelector('model-viewer')!, new Event('load'))
     expect(screen.queryByText('Carregando modelo 3D…')).not.toBeInTheDocument()
-    rerender(view(true))
+    await act(async () => {
+      rerender(view(true))
+    })
     await waitFor(() => expect(container.querySelector('model-viewer')).toHaveAttribute('src', 'shiny.glb'))
     fireEvent(container.querySelector('model-viewer')!, new Event('error'))
     expect(screen.getByText('Não foi possível carregar o modelo 3D.')).toBeVisible()

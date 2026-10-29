@@ -23,6 +23,7 @@ describe('feedback states', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
 
     expect(retry).toHaveBeenCalledOnce()
+    expect(screen.getByRole('alert')).toHaveTextContent('Unavailable')
     expect(screen.getByText('Unavailable').closest('.inline-error')).toBeInTheDocument()
   })
 })

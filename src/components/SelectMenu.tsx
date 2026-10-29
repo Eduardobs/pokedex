@@ -1,6 +1,7 @@
 import { Check, ChevronDown } from 'lucide-react'
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import { useLanguage } from '../contexts/LanguageContext'
+import { normalizeSearchText } from '../lib/api'
 import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 
 type SelectOption<T extends string> = {
@@ -40,6 +41,7 @@ export function SelectMenu<T extends string>({
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const selectedRef = useRef<HTMLButtonElement>(null)
+  const typeaheadRef = useRef({ text: '', time: 0 })
   const optionsId = useId()
   const selected = options.find((option) => option.value === value) ?? options[0]
   const hasRichOptions = !renderOption && options.some((option) => option.icon || option.description)
@@ -73,6 +75,7 @@ export function SelectMenu<T extends string>({
   }, [open])
 
   const openAndFocusSelected = () => {
+    typeaheadRef.current = { text: '', time: 0 }
     setOpen(true)
     window.requestAnimationFrame(() => selectedRef.current?.focus())
   }
@@ -86,6 +89,24 @@ export function SelectMenu<T extends string>({
   const handleOptionsKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     const optionButtons = Array.from(rootRef.current?.querySelectorAll<HTMLButtonElement>('[role="option"]') ?? [])
     const currentIndex = optionButtons.indexOf(document.activeElement as HTMLButtonElement)
+    if (!optionButtons.length) return
+    if (event.key.length === 1 && event.key !== ' ' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+      event.preventDefault()
+      const now = Date.now()
+      const previous = typeaheadRef.current
+      const text = (now - previous.time < 700 ? previous.text : '') + normalizeSearchText(event.key)
+      typeaheadRef.current = { text, time: now }
+      const prefix = [...text].every((character) => character === text[0]) ? text[0] : text
+      const start = prefix.length === 1 ? currentIndex + 1 : Math.max(currentIndex, 0)
+      for (let offset = 0; offset < orderedOptions.length; offset += 1) {
+        const index = (start + offset) % orderedOptions.length
+        if (normalizeSearchText(orderedOptions[index].label).startsWith(prefix)) {
+          optionButtons[index]?.focus()
+          break
+        }
+      }
+      return
+    }
     let nextIndex: number
     if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % optionButtons.length
     else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + optionButtons.length) % optionButtons.length

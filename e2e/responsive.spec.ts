@@ -95,3 +95,41 @@ test('supports compact global search and a single keyboard entry into the type m
   await expect(page.getByRole('button', { name: /Normal → Água/ })).not.toBeFocused()
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
 })
+
+test('cycles through visible mobile navigation including newly expanded links', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/#/')
+  const trigger = page.getByRole('button', { name: 'Alternar menu' })
+  await trigger.click()
+  const navigation = page.getByRole('navigation', { name: 'Navegação principal' })
+  const first = navigation.getByRole('button', { name: 'Pokédex' })
+  await expect(first).toBeFocused()
+  await page.keyboard.press('Shift+Tab')
+  await expect(navigation.getByRole('button', { name: 'Batalhas' })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('Tab')
+  await expect(navigation.getByRole('link', { name: 'Criar equipes' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(navigation.getByRole('link', { name: 'Batalhar' })).toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(first).toBeFocused()
+  await page.keyboard.press('Escape')
+  await expect(trigger).toBeFocused()
+})
+
+for (const theme of ['light', 'dark']) {
+  test(`keeps task shortcuts readable on narrow screens in ${theme} theme`, async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 844 })
+    await page.goto('/#/')
+    await page.evaluate((value) => {
+      document.documentElement.dataset.theme = value
+    }, theme)
+    const workflows = page.getByRole('region', { name: 'O que você quer fazer agora?' })
+    await expect(workflows.getByRole('link')).toHaveCount(3)
+    for (const link of await workflows.getByRole('link').all()) {
+      await link.scrollIntoViewIfNeeded()
+      await expect(link).toBeInViewport()
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320)
+  })
+}

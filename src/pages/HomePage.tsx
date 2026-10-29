@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Database, MapPin, Sparkles, Swords } from 'lucide-react'
+import { ArrowRight, BookOpen, Database, MapPin, MapPinned, Grid3X3, UsersRound, Sparkles, Swords } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { RESOURCE_COLLECTION_COUNT } from '../data/resource-summary'
@@ -123,6 +123,30 @@ export function HomePage() {
             </div>
             <ArrowRight />
           </Link>
+        </div>
+      </section>
+      <section className="home-workflows content-width" aria-labelledby="home-workflows-title">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">{t('ui.quickTools')}</span>
+            <h2 id="home-workflows-title">{t('home.workflows')}</h2>
+          </div>
+        </div>
+        <div className="home-workflow-grid">
+          {(
+            [
+              { to: '/teams', icon: UsersRound, title: 'teams.title', description: 'home.planTeam' },
+              { to: '/types-table', icon: Grid3X3, title: 'typesTable.title', description: 'home.checkTypes' },
+              { to: '/maps', icon: MapPinned, title: 'maps.title', description: 'home.findPlaces' },
+            ] as const
+          ).map(({ to, icon: Icon, title, description }) => (
+            <Link key={to} to={to} className="home-workflow-card">
+              <Icon size={24} aria-hidden="true" />
+              <h3>{t(title)}</h3>
+              <p>{t(description)}</p>
+              <ArrowRight size={20} aria-hidden="true" />
+            </Link>
+          ))}
         </div>
       </section>
     </>

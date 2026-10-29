@@ -23,5 +23,8 @@ describe('HomePage localization', () => {
     )
 
     expect(screen.getByText('1,000+ Pokémon')).toBeVisible()
+    for (const path of ['/teams', '/types-table', '/maps']) {
+      expect(screen.getAllByRole('link').some((link) => link.getAttribute('href') === path)).toBe(true)
+    }
   })
 })

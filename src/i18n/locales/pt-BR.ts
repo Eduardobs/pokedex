@@ -1,4 +1,10 @@
 export const ptBR = {
+  'battle.details': 'Informações',
+  'battle.closeDetails': 'Fechar informações',
+  'home.workflows': 'O que você quer fazer agora?',
+  'home.planTeam': 'Monte e salve sua equipe, personalize os membros e prepare suas estratégias.',
+  'home.checkTypes': 'Compare combinações de tipos para entender fraquezas, resistências e imunidades.',
+  'home.findPlaces': 'Escolha um jogo e encontre locais e pontos de interesse nos mapas.',
   'battle.struggleDescription':
     'Usado quando nenhum outro movimento está disponível. Causa dano sem tipo e retira um quarto do HP máximo do usuário por recuo.',
   'battle.difficulty': 'Dificuldade',

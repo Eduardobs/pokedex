@@ -25,6 +25,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
+import { BattleDetails, BattleTooltipContent, usesBattleDetailsPanel } from '../components/BattleDetails'
 import { BattleSprite } from '../components/BattleSprite'
 import { SelectMenu } from '../components/SelectMenu'
 import { ItemImage } from '../components/ItemImage'
@@ -208,6 +209,7 @@ function BattlePokemonDetails({ pokemon }: { pokemon: BattlePokemon }) {
 }
 
 function positionBattleTooltip(event: ReactPointerEvent<HTMLElement>, tooltipId: string) {
+  if (usesBattleDetailsPanel() || event.pointerType === 'touch') return
   const tooltip = document.getElementById(tooltipId)
   if (!tooltip) return
   tooltip.classList.add('is-pointer-positioned')
@@ -235,6 +237,7 @@ function resetBattleTooltip(tooltipId: string) {
 }
 
 function positionBattleTooltipAtTrigger(trigger: HTMLElement, tooltipId: string) {
+  if (usesBattleDetailsPanel()) return
   const tooltip = document.getElementById(tooltipId)
   if (!tooltip) return
   tooltip.classList.add('is-pointer-positioned')
@@ -387,40 +390,51 @@ function ActivePokemon({
             {prettyName(activeMove)}
           </span>
         )}
-        <span
-          className="battle-sprite-trigger"
-          tabIndex={0}
-          aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
-          aria-describedby={tooltipId}
-          onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
-          onBlur={() => resetBattleTooltip(tooltipId)}
-          onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
-          onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
-          onPointerLeave={() => resetBattleTooltip(tooltipId)}
+        <BattleDetails
+          label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+          tooltip={<ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />}
         >
-          <BattleSprite key={pokemon.member.id} attacking={Boolean(activeMove)} hit={hit} fainted={pokemon.hp === 0}>
-            {sprite ? (
-              <img
-                src={sprite}
-                alt={prettyName(pokemon.pokemon.name)}
-                width="180"
-                height="180"
-                onError={({ currentTarget }) => {
-                  if (!fallback || currentTarget.src === fallback) return
-                  currentTarget.onerror = null
-                  currentTarget.src = fallback
-                }}
-              />
-            ) : fallback ? (
-              <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
-            ) : (
-              <Shield aria-hidden="true" />
-            )}
-          </BattleSprite>
-          <span className="battle-active-tooltip-anchor">
-            <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
-          </span>
-        </span>
+          {(detailProps, detailTooltip) => (
+            <span
+              className="battle-sprite-trigger"
+              {...detailProps}
+              tabIndex={0}
+              aria-label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+              aria-describedby={detailTooltip ? tooltipId : undefined}
+              onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+              onBlur={() => resetBattleTooltip(tooltipId)}
+              onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
+              onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+              onPointerLeave={() => resetBattleTooltip(tooltipId)}
+            >
+              <BattleSprite
+                key={pokemon.member.id}
+                attacking={Boolean(activeMove)}
+                hit={hit}
+                fainted={pokemon.hp === 0}
+              >
+                {sprite ? (
+                  <img
+                    src={sprite}
+                    alt={prettyName(pokemon.pokemon.name)}
+                    width="180"
+                    height="180"
+                    onError={({ currentTarget }) => {
+                      if (!fallback || currentTarget.src === fallback) return
+                      currentTarget.onerror = null
+                      currentTarget.src = fallback
+                    }}
+                  />
+                ) : fallback ? (
+                  <img src={fallback} alt={prettyName(pokemon.pokemon.name)} width="180" height="180" />
+                ) : (
+                  <Shield aria-hidden="true" />
+                )}
+              </BattleSprite>
+              <span className="battle-active-tooltip-anchor">{detailTooltip}</span>
+            </span>
+          )}
+        </BattleDetails>
       </div>
     </article>
   )
@@ -464,49 +478,62 @@ function BattleMoveButton({
           ? t('battle.effectiveness.super', { multiplier: formattedMultiplier })
           : t('battle.effectiveness.reduced', { multiplier: formattedMultiplier })
   return (
-    <button
-      className="battle-move-button"
-      disabled={disabled || move.pp <= 0}
-      aria-label={prettyName(move.data.name)}
-      aria-describedby={tooltipId}
-      onClick={onChoose}
-      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
-      onBlur={() => resetBattleTooltip(tooltipId)}
-      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerLeave={() => resetBattleTooltip(tooltipId)}
+    <BattleDetails
+      label={t('battle.activePokemonDetails', { name: prettyName(move.data.name) })}
+      tooltip={
+        <BattleTooltipContent id={tooltipId} className="battle-move-tooltip">
+          <span className="battle-tooltip-damage">
+            <span>{t('move.damageClass')}</span>
+            <DamageClassBadge value={move.data.damageClass} />
+          </span>
+          <span>
+            {t('move.power')}: <b>{number(move.data.power)}</b>
+          </span>
+          <span>
+            {t('move.accuracy')}: <b>{number(move.data.accuracy)}</b>
+          </span>
+          <span>
+            {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
+          </span>
+          <span>
+            {t('battle.effectiveness')}: <b>{effectiveness}</b>
+          </span>
+          <span className="battle-tooltip-description">
+            <b>{t('resource.field.description')}</b>
+            <span>{description || t('battle.moveDescriptionUnavailable')}</span>
+          </span>
+        </BattleTooltipContent>
+      }
+      action={true}
     >
-      <span>{prettyName(move.data.name)}</span>
-      <TypeBadge type={move.data.type} iconOnly />
-      <span className="battle-move-meta">
-        <small>{move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}</small>
-        <small>
-          {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
-        </small>
-      </span>
-      <span id={tooltipId} className="battle-move-tooltip" role="tooltip">
-        <span className="battle-tooltip-damage">
-          <span>{t('move.damageClass')}</span>
-          <DamageClassBadge value={move.data.damageClass} />
-        </span>
-        <span>
-          {t('move.power')}: <b>{number(move.data.power)}</b>
-        </span>
-        <span>
-          {t('move.accuracy')}: <b>{number(move.data.accuracy)}</b>
-        </span>
-        <span>
-          {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
-        </span>
-        <span>
-          {t('battle.effectiveness')}: <b>{effectiveness}</b>
-        </span>
-        <span className="battle-tooltip-description">
-          <b>{t('resource.field.description')}</b>
-          <span>{description || t('battle.moveDescriptionUnavailable')}</span>
-        </span>
-      </span>
-    </button>
+      {(detailProps, detailTooltip) => (
+        <button
+          className="battle-move-button"
+          {...detailProps}
+          disabled={disabled || move.pp <= 0}
+          aria-label={prettyName(move.data.name)}
+          aria-describedby={detailTooltip ? tooltipId : undefined}
+          onClick={onChoose}
+          onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+          onBlur={() => resetBattleTooltip(tooltipId)}
+          onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerLeave={() => resetBattleTooltip(tooltipId)}
+        >
+          <span>{prettyName(move.data.name)}</span>
+          <TypeBadge type={move.data.type} iconOnly />
+          <span className="battle-move-meta">
+            <small>
+              {move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}
+            </small>
+            <small>
+              {t('move.priority')}: <b>{formatNumber(move.data.priority, language)}</b>
+            </small>
+          </span>
+          {detailTooltip}
+        </button>
+      )}
+    </BattleDetails>
   )
 }
 
@@ -623,7 +650,7 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
   const stats = opponent ? possibleBattleStats(pokemon.pokemon, pokemon.member.level) : currentBattleStats(pokemon)
   const itemVisible = !opponent || pokemon.member.itemActive
   return (
-    <span id={id} className="battle-active-tooltip" role="tooltip">
+    <BattleTooltipContent id={id} className="battle-active-tooltip">
       <span className="battle-active-tooltip-heading">
         <span className="battle-active-tooltip-title">
           <b>{prettyName(pokemon.pokemon.name)}</b>
@@ -667,7 +694,7 @@ function ActivePokemonTooltip({ id, pokemon, opponent }: { id: string; pokemon: 
       {opponent && itemVisible && pokemon.item && (
         <span className="battle-item-revealed">{t('battle.itemActivated')}</span>
       )}
-    </span>
+    </BattleTooltipContent>
   )
 }
 
@@ -714,28 +741,34 @@ function TrainerPanel({ side, opponent, sprite }: { side: BattleSide; opponent: 
               key={pokemon.member.id}
               className={`${pokemon.hasEnteredBattle ? 'is-used' : 'is-unused'}${faintedPokemon ? ' is-fainted' : ''}`}
             >
-              <span
-                className={pokemon.hasEnteredBattle ? 'battle-roster-tooltip-trigger' : undefined}
-                tabIndex={pokemon.hasEnteredBattle ? 0 : undefined}
-                aria-label={rosterLabel}
-                aria-describedby={pokemon.hasEnteredBattle ? tooltipId : undefined}
-                onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
-                onBlur={() => resetBattleTooltip(tooltipId)}
-                onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
-                onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
-                onPointerLeave={() => resetBattleTooltip(tooltipId)}
+              <BattleDetails
+                label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+                tooltip={<ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />}
               >
-                {pokemon.hasEnteredBattle && homeSprite ? (
-                  <img src={homeSprite} alt="" width={30} height={30} />
-                ) : pokemon.hasEnteredBattle ? (
-                  <Shield aria-hidden="true" />
-                ) : (
-                  <span className="battle-pokeball" aria-hidden="true" />
+                {(detailProps, detailTooltip) => (
+                  <span
+                    {...(pokemon.hasEnteredBattle ? detailProps : {})}
+                    className={pokemon.hasEnteredBattle ? 'battle-roster-tooltip-trigger' : undefined}
+                    tabIndex={pokemon.hasEnteredBattle ? 0 : undefined}
+                    aria-label={rosterLabel}
+                    aria-describedby={pokemon.hasEnteredBattle && detailTooltip ? tooltipId : undefined}
+                    onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+                    onBlur={() => resetBattleTooltip(tooltipId)}
+                    onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
+                    onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+                    onPointerLeave={() => resetBattleTooltip(tooltipId)}
+                  >
+                    {pokemon.hasEnteredBattle && homeSprite ? (
+                      <img src={homeSprite} alt="" width={30} height={30} />
+                    ) : pokemon.hasEnteredBattle ? (
+                      <Shield aria-hidden="true" />
+                    ) : (
+                      <span className="battle-pokeball" aria-hidden="true" />
+                    )}
+                    {pokemon.hasEnteredBattle && detailTooltip}
+                  </span>
                 )}
-                {pokemon.hasEnteredBattle && (
-                  <ActivePokemonTooltip id={tooltipId} pokemon={pokemon} opponent={opponent} />
-                )}
-              </span>
+              </BattleDetails>
             </li>
           )
         })}
@@ -758,94 +791,105 @@ function BattleSwitchButton({
   const hpPercentage = Math.round((pokemon.hp / pokemon.maxHp) * 100)
   const homeSprite = pokemon.member.shiny ? pokemon.pokemon.homeShinySprite : pokemon.pokemon.homeSprite
   return (
-    <button
-      className="battle-switch-button"
-      disabled={disabled}
-      aria-label={prettyName(pokemon.pokemon.name)}
-      aria-describedby={tooltipId}
-      onClick={onChoose}
-      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
-      onBlur={() => resetBattleTooltip(tooltipId)}
-      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerLeave={() => resetBattleTooltip(tooltipId)}
-    >
-      <span className="battle-switch-summary">
-        <span className="battle-switch-sprite" aria-hidden="true">
-          {homeSprite ? <img src={homeSprite} alt="" /> : <Shield />}
-        </span>
-        <span className="battle-switch-copy">
-          <b>{prettyName(pokemon.pokemon.name)}</b>
-          <small>
-            {t('battle.healthSummary', {
-              current: formatNumber(pokemon.hp, language),
-              total: formatNumber(pokemon.maxHp, language),
-              percentage: formatNumber(hpPercentage, language),
-            })}
-          </small>
-        </span>
-      </span>
-      <span id={tooltipId} className="battle-switch-tooltip" role="tooltip">
-        <span className="battle-switch-tooltip-title">
-          <b>
-            {prettyName(pokemon.pokemon.name)}
-            <GenderIcon gender={pokemon.member.gender} />
-          </b>
-          <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
-        </span>
-        <span className="battle-switch-tooltip-types">
-          <span>{t('resource.field.types')}</span>
-          <span className="battle-switch-type-list">
-            {pokemon.pokemon.types.map((type) => (
-              <TypeBadge key={type} type={type} />
-            ))}
+    <BattleDetails
+      label={t('battle.activePokemonDetails', { name: prettyName(pokemon.pokemon.name) })}
+      tooltip={
+        <BattleTooltipContent id={tooltipId} className="battle-switch-tooltip">
+          <span className="battle-switch-tooltip-title">
+            <b>
+              {prettyName(pokemon.pokemon.name)}
+              <GenderIcon gender={pokemon.member.gender} />
+            </b>
+            <span>{t('battle.level', { level: formatNumber(pokemon.member.level, language) })}</span>
           </span>
-          <span className="battle-switch-tooltip-tera">
-            {t('teams.tera')}: <TeraTypeBadge type={pokemon.member.tera} />
+          <span className="battle-switch-tooltip-types">
+            <span>{t('resource.field.types')}</span>
+            <span className="battle-switch-type-list">
+              {pokemon.pokemon.types.map((type) => (
+                <TypeBadge key={type} type={type} />
+              ))}
+            </span>
+            <span className="battle-switch-tooltip-tera">
+              {t('teams.tera')}: <TeraTypeBadge type={pokemon.member.tera} />
+            </span>
           </span>
-        </span>
-        <span>
-          {t('battle.hpRemaining')}: <b>{formatNumber(hpPercentage, language)}%</b> (
-          {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP)
-        </span>
-        <BattleTooltipStats
-          className="battle-switch-stats"
-          stats={currentBattleStats(pokemon)}
-          originalStats={pokemon.originalStats}
-        />
-        <span className="battle-switch-resources">
-          <span className="battle-resource-section">
-            <b>{t('resource.field.ability')}</b>
-            <ResourceDetails resource={pokemon.ability} />
-          </span>
-          <span className="battle-resource-section">
-            <b>{t('resource.field.item')}</b>
-            {pokemon.item ? (
-              <ResourceDetails resource={pokemon.item} item />
-            ) : (
-              <span className="battle-resource-empty">{t('battle.noItem')}</span>
-            )}
-          </span>
-        </span>
-        <span className="battle-switch-tooltip-moves">
-          <b>{t('battle.availableMoves')}</b>
           <span>
-            {pokemon.moves.map((move, index) => (
-              <span className="battle-switch-move" key={`${move.data.name}-${index}`}>
-                <span className="battle-switch-move-name">{prettyName(move.data.name)}</span>
-                <span className="battle-switch-move-icons">
-                  <DamageClassBadge value={move.data.damageClass} compact />
-                  <TypeBadge type={move.data.type} iconOnly />
-                </span>
-                <small>
-                  {move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}
-                </small>
-              </span>
-            ))}
+            {t('battle.hpRemaining')}: <b>{formatNumber(hpPercentage, language)}%</b> (
+            {formatNumber(pokemon.hp, language)}/{formatNumber(pokemon.maxHp, language)} HP)
           </span>
-        </span>
-      </span>
-    </button>
+          <BattleTooltipStats
+            className="battle-switch-stats"
+            stats={currentBattleStats(pokemon)}
+            originalStats={pokemon.originalStats}
+          />
+          <span className="battle-switch-resources">
+            <span className="battle-resource-section">
+              <b>{t('resource.field.ability')}</b>
+              <ResourceDetails resource={pokemon.ability} />
+            </span>
+            <span className="battle-resource-section">
+              <b>{t('resource.field.item')}</b>
+              {pokemon.item ? (
+                <ResourceDetails resource={pokemon.item} item />
+              ) : (
+                <span className="battle-resource-empty">{t('battle.noItem')}</span>
+              )}
+            </span>
+          </span>
+          <span className="battle-switch-tooltip-moves">
+            <b>{t('battle.availableMoves')}</b>
+            <span>
+              {pokemon.moves.map((move, index) => (
+                <span className="battle-switch-move" key={`${move.data.name}-${index}`}>
+                  <span className="battle-switch-move-name">{prettyName(move.data.name)}</span>
+                  <span className="battle-switch-move-icons">
+                    <DamageClassBadge value={move.data.damageClass} compact />
+                    <TypeBadge type={move.data.type} iconOnly />
+                  </span>
+                  <small>
+                    {move.data.name === 'struggle' ? '—' : t('battle.pp', { current: move.pp, total: move.data.pp })}
+                  </small>
+                </span>
+              ))}
+            </span>
+          </span>
+        </BattleTooltipContent>
+      }
+      action={true}
+    >
+      {(detailProps, detailTooltip) => (
+        <button
+          className="battle-switch-button"
+          {...detailProps}
+          disabled={disabled}
+          aria-label={prettyName(pokemon.pokemon.name)}
+          aria-describedby={detailTooltip ? tooltipId : undefined}
+          onClick={onChoose}
+          onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+          onBlur={() => resetBattleTooltip(tooltipId)}
+          onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerLeave={() => resetBattleTooltip(tooltipId)}
+        >
+          <span className="battle-switch-summary">
+            <span className="battle-switch-sprite" aria-hidden="true">
+              {homeSprite ? <img src={homeSprite} alt="" /> : <Shield />}
+            </span>
+            <span className="battle-switch-copy">
+              <b>{prettyName(pokemon.pokemon.name)}</b>
+              <small>
+                {t('battle.healthSummary', {
+                  current: formatNumber(pokemon.hp, language),
+                  total: formatNumber(pokemon.maxHp, language),
+                  percentage: formatNumber(hpPercentage, language),
+                })}
+              </small>
+            </span>
+          </span>
+          {detailTooltip}
+        </button>
+      )}
+    </BattleDetails>
   )
 }
 
@@ -1006,38 +1050,50 @@ function BattleLogMove({ move, data }: { move: string; data?: BattlePokemon['mov
   const description =
     data?.name === 'struggle' ? t('battle.struggleDescription') : data ? moveDescription(data, apiLanguage) : ''
   return (
-    <span
-      className="battle-log-move-trigger"
-      tabIndex={0}
-      aria-describedby={tooltipId}
-      onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
-      onBlur={() => resetBattleTooltip(tooltipId)}
-      onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
-      onPointerLeave={() => resetBattleTooltip(tooltipId)}
-    >
-      {move}
-      <span id={tooltipId} className="battle-log-move-tooltip" role="tooltip">
-        <span className="battle-log-move-meta">
-          {data && (
-            <span className="battle-log-move-icons">
-              <TypeBadge type={data.type} iconOnly />
-              <DamageClassBadge value={data.damageClass} compact />
+    <BattleDetails
+      label={t('battle.activePokemonDetails', { name: move })}
+      tooltip={
+        <BattleTooltipContent id={tooltipId} className="battle-log-move-tooltip">
+          <span className="battle-log-move-meta">
+            {data && (
+              <span className="battle-log-move-icons">
+                <TypeBadge type={data.type} iconOnly />
+                <DamageClassBadge value={data.damageClass} compact />
+              </span>
+            )}
+            <span className="battle-log-move-priority">
+              {t('move.priority')}: <b>{data ? formatNumber(data.priority, language) : '—'}</b>
             </span>
-          )}
-          <span className="battle-log-move-priority">
-            {t('move.priority')}: <b>{data ? formatNumber(data.priority, language) : '—'}</b>
           </span>
+          <span>
+            {t('move.power')}: <b>{data?.power === null || !data ? '—' : formatNumber(data.power, language)}</b>
+          </span>
+          <span>
+            {t('move.accuracy')}:{' '}
+            <b>{data?.accuracy === null || !data ? '—' : formatNumber(data.accuracy, language)}</b>
+          </span>
+          <span>{description || t('battle.moveDescriptionUnavailable')}</span>
+        </BattleTooltipContent>
+      }
+      action={false}
+    >
+      {(detailProps, detailTooltip) => (
+        <span
+          className="battle-log-move-trigger"
+          {...detailProps}
+          tabIndex={0}
+          aria-describedby={detailTooltip ? tooltipId : undefined}
+          onFocus={(event) => positionBattleTooltipAtTrigger(event.currentTarget, tooltipId)}
+          onBlur={() => resetBattleTooltip(tooltipId)}
+          onPointerEnter={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerMove={(event) => positionBattleTooltip(event, tooltipId)}
+          onPointerLeave={() => resetBattleTooltip(tooltipId)}
+        >
+          {move}
+          {detailTooltip}
         </span>
-        <span>
-          {t('move.power')}: <b>{data?.power === null || !data ? '—' : formatNumber(data.power, language)}</b>
-        </span>
-        <span>
-          {t('move.accuracy')}: <b>{data?.accuracy === null || !data ? '—' : formatNumber(data.accuracy, language)}</b>
-        </span>
-        <span>{description || t('battle.moveDescriptionUnavailable')}</span>
-      </span>
-    </span>
+      )}
+    </BattleDetails>
   )
 }
 

@@ -69,4 +69,20 @@ describe('SelectMenu', () => {
     expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
     expect(onChange).not.toHaveBeenCalled()
   })
+  it('finds options by typing without committing until selection', async () => {
+    const onChange = vi.fn()
+    render(
+      <LanguageProvider>
+        <SelectMenu icon={<span />} label="Type" options={[...options]} value="all" onChange={onChange} />
+      </LanguageProvider>,
+    )
+    fireEvent.click(screen.getByRole('combobox'))
+    await waitFor(() => expect(screen.getByRole('option', { name: 'All types' })).toHaveFocus())
+    fireEvent.keyDown(screen.getByRole('listbox'), { key: 'w' })
+    fireEvent.keyDown(screen.getByRole('listbox'), { key: 'a' })
+    expect(screen.getByRole('option', { name: 'Water' })).toHaveFocus()
+    expect(onChange).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('option', { name: 'Water' }))
+    expect(onChange).toHaveBeenCalledWith('water')
+  })
 })

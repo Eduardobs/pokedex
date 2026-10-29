@@ -140,15 +140,20 @@ export function Layout() {
   useEffect(() => {
     if (!menuOpen) return
     const nav = document.getElementById('main-navigation')
-    const focusable = Array.from(nav?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? [])
-    window.requestAnimationFrame(() => focusable[0]?.focus())
+    const getFocusable = () =>
+      Array.from(nav?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') ?? []).filter(
+        (element) => element.getClientRects().length > 0,
+      )
+    window.requestAnimationFrame(() => getFocusable()[0]?.focus())
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setMenuOpen(false)
         setOpenNavigationGroup(null)
         menuButtonRef.current?.focus()
       }
-      if (event.key !== 'Tab' || !focusable.length) return
+      if (event.key !== 'Tab') return
+      const focusable = getFocusable()
+      if (!focusable.length) return
       const first = focusable[0]
       const last = focusable[focusable.length - 1]
       if (event.shiftKey && document.activeElement === first) {
@@ -319,7 +324,15 @@ export function Layout() {
             enterKeyHint="search"
           />
           {query ? (
-            <button className="search-clear" type="button" onClick={() => setQuery('')} aria-label={t('common.clear')}>
+            <button
+              className="search-clear"
+              type="button"
+              onClick={() => {
+                setQuery('')
+                searchInputRef.current?.focus()
+              }}
+              aria-label={t('common.clear')}
+            >
               <X size={15} />
             </button>
           ) : (
