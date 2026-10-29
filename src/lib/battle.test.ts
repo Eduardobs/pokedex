@@ -1912,6 +1912,61 @@ describe('Random Battle engine', () => {
     expect(changed.state.opponent.hazards).toEqual({ stealthRock: true, spikes: 2, toxicSpikes: 0, stickyWeb: false })
   })
 
+  it.each(['player', 'opponent'] as const)('pauses a fast %s pivot before the remaining attack', (side) => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    const other = side === 'player' ? 'opponent' : 'player'
+    state[side].roster[0].moves[0].data = move({
+      name: 'volt-switch',
+      type: 'electric',
+      damageClass: 'special',
+      power: 70,
+    })
+    state[side].roster[0].stats[5] = 999
+    state[side].roster[0].status = 'poison'
+    const pivot = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(pivot.state.phase).toBe(`${side}-switch`)
+    expect(pivot.state.turn).toBe(state.turn)
+    expect(pivot.state[side].roster[0].hp).toBe(state[side].roster[0].hp)
+    expect(pivot.events.filter((event) => event.type === 'move')).toHaveLength(1)
+    const resumed = resolveBattleTurn(
+      pivot.state,
+      side === 'player' ? { kind: 'switch', index: 1 } : { kind: 'move', index: 3 },
+      side === 'opponent' ? { kind: 'switch', index: 1 } : { kind: 'move', index: 3 },
+      () => 0.5,
+    )
+    expect(resumed.state[side].active).toBe(1)
+    expect(resumed.state[side].roster[1].hp).toBeLessThan(state[side].roster[1].hp)
+    expect(resumed.state[other].roster[0].moves[0].pp).toBe(state[other].roster[0].moves[0].pp - 1)
+    expect(resumed.state.turn).toBe(state.turn + 1)
+    expect(resumed.events.filter((event) => event.type === 'move')).toHaveLength(1)
+  })
+
+  it('resolves the opponent attack before a slower pivot', () => {
+    const playerTeam = team('player')
+    const opponentTeam = team('opponent')
+    const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
+    state.player.roster[0].stats[5] = 1
+    state.player.roster[0].moves[0].data = move({ name: 'volt-switch', type: 'electric', power: 70 })
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.phase).toBe('player-switch')
+    expect(result.state.player.roster[0].hp).toBeLessThan(state.player.roster[0].hp)
+    expect(result.events.filter((event) => event.type === 'move').map((event) => event.side)).toEqual([
+      'opponent',
+      'player',
+    ])
+    const replaced = resolveBattleTurn(
+      result.state,
+      { kind: 'switch', index: 1 },
+      { kind: 'move', index: 0 },
+      () => 0.5,
+    )
+    expect(replaced.state.player.roster[1].hp).toBe(state.player.roster[1].hp)
+    expect(replaced.events.some((event) => event.type === 'move')).toBe(false)
+    expect(replaced.state.turn).toBe(state.turn + 1)
+  })
+
   it('requests a replacement after a pivot move and handles forced switches and hazard removal', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')

@@ -221,6 +221,7 @@ export type BattleState = {
   opponent: BattleSide
   field: BattleField
   phase: BattlePhase
+  pendingTurn?: { side: 'player' | 'opponent'; choice: BattleChoice; memberId: string }[]
 }
 export type BattleChoice = { kind: 'move'; index: number; tera?: boolean } | { kind: 'switch'; index: number }
 export type BattleTurnStep = {
@@ -3022,6 +3023,7 @@ function settlePhase(state: BattleState, events: BattleEvent[]) {
   } else if (playerFainted || state.player.switchRequested) state.phase = 'player-switch'
   else if (opponentFainted || state.opponent.switchRequested) state.phase = 'opponent-switch'
   else state.phase = 'choice'
+  return state.phase
 }
 
 export function chooseOpponentAction(
@@ -3063,91 +3065,92 @@ export function resolveBattleTurnSteps(
       steps.push({ state: cloneState(state), events: events.slice(eventStart), action: { side, move } })
     }
   }
-  if (state.phase === 'player-switch') {
-    performStep(state.player, state.opponent, playerChoice, 'player')
-    if (state.opponent.roster[state.opponent.active].hp === 0)
-      performStep(state.opponent, state.player, opponentChoice, 'opponent')
-    const finalEventStart = events.length
-    settlePhase(state, events)
-    const finalEvents = events.slice(finalEventStart)
+  const finishSteps = (eventStart: number) => {
+    const finalEvents = events.slice(eventStart)
     if (steps.length) {
-      steps[steps.length - 1] = {
-        ...steps[steps.length - 1],
-        state: cloneState(state),
-        events: [...steps[steps.length - 1].events, ...finalEvents],
-      }
-    } else {
-      steps.push({ state: cloneState(state), events: events.slice(1), action: null })
-    }
-    if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
+      const last = steps[steps.length - 1]
+      steps[steps.length - 1] = { ...last, state: cloneState(state), events: [...last.events, ...finalEvents] }
+    } else steps.push({ state: cloneState(state), events: events.slice(1), action: null })
+    if (events[0]?.type === 'turn' && !current.pendingTurn) steps[0].events.unshift(events[0])
     return steps
   }
-  if (state.phase === 'opponent-switch') {
-    performStep(state.opponent, state.player, opponentChoice, 'opponent')
-    const finalEventStart = events.length
-    settlePhase(state, events)
-    const finalEvents = events.slice(finalEventStart)
-    if (steps.length) {
-      steps[steps.length - 1] = {
-        ...steps[steps.length - 1],
-        state: cloneState(state),
-        events: [...steps[steps.length - 1].events, ...finalEvents],
-      }
-    } else {
-      steps.push({ state: cloneState(state), events: events.slice(1), action: null })
-    }
-    if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
-    return steps
+  if (state.phase === 'player-switch' || state.phase === 'opponent-switch') {
+    const side = state.phase === 'player-switch' ? 'player' : 'opponent'
+    const other = side === 'player' ? 'opponent' : 'player'
+    performStep(state[side], state[other], side === 'player' ? playerChoice : opponentChoice, side)
+    if (side === 'player' && state.opponent.roster[state.opponent.active].hp === 0)
+      performStep(state.opponent, state.player, opponentChoice, 'opponent')
+    const eventStart = events.length
+    const phase = settlePhase(state, events)
+    if (!state.pendingTurn || phase !== 'choice') return finishSteps(eventStart)
   }
 
-  const lockedChoice = (side: BattleSide, choice: BattleChoice): BattleChoice => {
-    const pokemon = side.roster[side.active]
-    return pokemon.hp > 0 && !pokemon.skyDropSourceId && (pokemon.recharging || pokemon.chargingMoveIndex !== undefined)
-      ? { kind: 'move', index: pokemon.chargingMoveIndex ?? 0 }
-      : choice
+  let actions = state.pendingTurn
+  delete state.pendingTurn
+  if (!actions) {
+    const lockedChoice = (side: BattleSide, choice: BattleChoice): BattleChoice => {
+      const pokemon = side.roster[side.active]
+      return pokemon.hp > 0 &&
+        !pokemon.skyDropSourceId &&
+        (pokemon.recharging || pokemon.chargingMoveIndex !== undefined)
+        ? { kind: 'move', index: pokemon.chargingMoveIndex ?? 0 }
+        : choice
+    }
+    playerChoice = lockedChoice(state.player, playerChoice)
+    opponentChoice = lockedChoice(state.opponent, opponentChoice)
+    const teraEventStart = events.length
+    applyTurnTerastallization(state.player, playerChoice, 'player', events, state.field)
+    applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events, state.field)
+    if (events.length > teraEventStart) {
+      steps.push({ state: cloneState(state), events: events.slice(0), action: null })
+      events.length = 0
+    }
+    for (const s of [state.player, state.opponent]) {
+      abilityMemory(s.roster[s.active]).moved = false
+      abilityMemory(s.roster[s.active]).harvestedThisTurn = false
+      delete abilityMemory(s.roster[s.active]).lastConsumed
+    }
+    synchronizeAbilities(state.player, state.opponent, state.field, events)
+    const playerPriority = choicePriority(state.player, playerChoice)
+    const opponentPriority = choicePriority(state.opponent, opponentChoice)
+    const actionOrder = (side: BattleSide, choice: BattleChoice) => {
+      const p = side.roster[side.active]
+      const move = choice.kind === 'move' ? battleMoveSlot(p, choice.index)?.data : undefined
+      return move ? abilityMoveOrder(p, move, random) : 0
+    }
+    const playerOrder = actionOrder(state.player, playerChoice)
+    const opponentOrder = actionOrder(state.opponent, opponentChoice)
+    const playerSpeed = speed(state.player, state.field, state.opponent.roster[state.opponent.active])
+    const opponentSpeed = speed(state.opponent, state.field, state.player.roster[state.player.active])
+    const playerWinsSpeed = state.field.trickRoomTurns > 0 ? playerSpeed < opponentSpeed : playerSpeed > opponentSpeed
+    const playerFirst =
+      playerPriority > opponentPriority ||
+      (playerPriority === opponentPriority &&
+        (playerOrder > opponentOrder ||
+          (playerOrder === opponentOrder && (playerWinsSpeed || (playerSpeed === opponentSpeed && random() < 0.5)))))
+    const playerAction = {
+      side: 'player' as const,
+      choice: playerChoice,
+      memberId: state.player.roster[state.player.active].member.id,
+    }
+    const opponentAction = {
+      side: 'opponent' as const,
+      choice: opponentChoice,
+      memberId: state.opponent.roster[state.opponent.active].member.id,
+    }
+    actions = playerFirst ? [playerAction, opponentAction] : [opponentAction, playerAction]
   }
-  playerChoice = lockedChoice(state.player, playerChoice)
-  opponentChoice = lockedChoice(state.opponent, opponentChoice)
-  const teraEventStart = events.length
-  applyTurnTerastallization(state.player, playerChoice, 'player', events, state.field)
-  applyTurnTerastallization(state.opponent, opponentChoice, 'opponent', events, state.field)
-  if (events.length > teraEventStart) {
-    steps.push({ state: cloneState(state), events: events.slice(0), action: null })
-    events.length = 0
+  for (const [index, action] of actions.entries()) {
+    const own = state[action.side]
+    const other = action.side === 'player' ? 'opponent' : 'player'
+    if (own.roster[own.active].member.id === action.memberId) performStep(own, state[other], action.choice, action.side)
+    if (state.player.switchRequested || state.opponent.switchRequested) {
+      const eventStart = events.length
+      state.pendingTurn = actions.slice(index + 1)
+      settlePhase(state, events)
+      return finishSteps(eventStart)
+    }
   }
-  for (const s of [state.player, state.opponent]) {
-    abilityMemory(s.roster[s.active]).moved = false
-    abilityMemory(s.roster[s.active]).harvestedThisTurn = false
-    delete abilityMemory(s.roster[s.active]).lastConsumed
-  }
-  synchronizeAbilities(state.player, state.opponent, state.field, events)
-  const playerPriority = choicePriority(state.player, playerChoice)
-  const opponentPriority = choicePriority(state.opponent, opponentChoice)
-  const actionOrder = (side: BattleSide, choice: BattleChoice) => {
-    const p = side.roster[side.active]
-    const move = choice.kind === 'move' ? battleMoveSlot(p, choice.index)?.data : undefined
-    return move ? abilityMoveOrder(p, move, random) : 0
-  }
-  const playerOrder = actionOrder(state.player, playerChoice)
-  const opponentOrder = actionOrder(state.opponent, opponentChoice)
-  const playerSpeed = speed(state.player, state.field, state.opponent.roster[state.opponent.active])
-  const opponentSpeed = speed(state.opponent, state.field, state.player.roster[state.player.active])
-  const playerWinsSpeed = state.field.trickRoomTurns > 0 ? playerSpeed < opponentSpeed : playerSpeed > opponentSpeed
-  const playerFirst =
-    playerPriority > opponentPriority ||
-    (playerPriority === opponentPriority &&
-      (playerOrder > opponentOrder ||
-        (playerOrder === opponentOrder && (playerWinsSpeed || (playerSpeed === opponentSpeed && random() < 0.5)))))
-  const actions = playerFirst
-    ? [
-        () => performStep(state.player, state.opponent, playerChoice, 'player'),
-        () => performStep(state.opponent, state.player, opponentChoice, 'opponent'),
-      ]
-    : [
-        () => performStep(state.opponent, state.player, opponentChoice, 'opponent'),
-        () => performStep(state.player, state.opponent, playerChoice, 'player'),
-      ]
-  actions.forEach((action) => action())
   const finalEventStart = events.length
   residual(state.player, state.opponent, state.field, random, events)
   residual(state.opponent, state.player, state.field, random, events)
@@ -3175,18 +3178,7 @@ export function resolveBattleTurnSteps(
   tickField(state, events)
   settlePhase(state, events)
   state.turn += 1
-  const finalEvents = events.slice(finalEventStart)
-  if (steps.length) {
-    steps[steps.length - 1] = {
-      ...steps[steps.length - 1],
-      state: cloneState(state),
-      events: [...steps[steps.length - 1].events, ...finalEvents],
-    }
-  } else {
-    steps.push({ state: cloneState(state), events: events.slice(1), action: null })
-  }
-  if (steps.length && events[0]?.type === 'turn') steps[0].events.unshift(events[0])
-  return steps
+  return finishSteps(finalEventStart)
 }
 
 export function resolveBattleTurn(

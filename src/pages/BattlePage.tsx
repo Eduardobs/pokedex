@@ -1348,8 +1348,8 @@ export function BattlePage() {
     const sequence = ++sequenceRef.current
     setResolving(true)
     let steps = resolveBattleTurnSteps(battle, choice, chooseOpponentAction(battle, Math.random, difficulty))
-    const lastState = steps.at(-1)?.state
-    if (lastState?.phase === 'opponent-switch') {
+    let lastState = steps.at(-1)?.state
+    while (lastState?.phase === 'opponent-switch') {
       const automatic = resolveBattleTurnSteps(
         lastState,
         choice,
@@ -1359,6 +1359,7 @@ export function BattlePage() {
         automatic[0] = { ...automatic[0], events: automatic[0].events.filter((event) => event.type !== 'turn') }
       }
       steps = [...steps, ...automatic]
+      lastState = automatic.at(-1)?.state
     }
     let presentedState = battle
     for (const step of steps) {
