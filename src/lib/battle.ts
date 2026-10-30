@@ -1421,357 +1421,422 @@ function applyMove(
   events.push({ type: 'move', side: moveSide, pokemon: battlePokemonName(attacker), move: move.name })
   const abilityMovePower = abilityModifyMove(attacker, defender, move, field, events)
   if (abilityBlocksMove(attacker, defender, move, field, events)) return { hit: false, succeeded: false }
-  if (blockedByRepeat || (releasingCarry && !carriedTargetMatches)) return { hit: true, succeeded: false }
-  const blessing = supplementalMoveEffect(move.name)
-  if (blessing?.kind === 'revive-ally') return { hit: true, succeeded: false }
-  if (blessing?.kind === 'lunar-blessing') {
-    if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
-    let succeeded = false
-    if (attacker.status) {
-      events.push({ type: 'statusCured', pokemon: battlePokemonName(attacker), status: attacker.status })
-      attacker.status = null
-      attacker.sleepTurns = 0
-      attacker.toxicTurns = 0
-      succeeded = true
+  try {
+    if (blockedByRepeat || (releasingCarry && !carriedTargetMatches)) return { hit: true, succeeded: false }
+    const blessing = supplementalMoveEffect(move.name)
+    if (blessing?.kind === 'revive-ally') return { hit: true, succeeded: false }
+    if (blessing?.kind === 'lunar-blessing') {
+      if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
+      let succeeded = false
+      if (attacker.status) {
+        events.push({ type: 'statusCured', pokemon: battlePokemonName(attacker), status: attacker.status })
+        attacker.status = null
+        attacker.sleepTurns = 0
+        attacker.toxicTurns = 0
+        succeeded = true
+      }
+      const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 2)))
+      if (amount > 0) {
+        attacker.hp += amount
+        events.push({
+          type: 'heal',
+          pokemon: battlePokemonName(attacker),
+          amount,
+          percentage: hpPercentage(amount, attacker.maxHp),
+        })
+        succeeded = true
+      }
+      if (abilityStage(attacker, 'evasion', 1, events)) succeeded = true
+      return { hit: true, succeeded }
     }
-    const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 2)))
-    if (amount > 0) {
-      attacker.hp += amount
-      events.push({
-        type: 'heal',
-        pokemon: battlePokemonName(attacker),
-        amount,
-        percentage: hpPercentage(amount, attacker.maxHp),
-      })
-      succeeded = true
+    if (!delayed && move.name === 'future-sight') {
+      if (defendingSide.futureSight) return { hit: true, succeeded: false }
+      defendingSide.futureSight = {
+        turns: 3,
+        attacker: { ...attacker, stages: { ...attacker.stages }, moves: attacker.moves.map((slot) => ({ ...slot })) },
+        move,
+      }
+      events.push({ type: 'futureSight', pokemon: battlePokemonName(defender) })
+      return { hit: false, succeeded: true }
     }
-    if (abilityStage(attacker, 'evasion', 1, events)) succeeded = true
-    return { hit: true, succeeded }
-  }
-  if (!delayed && move.name === 'future-sight') {
-    if (defendingSide.futureSight) return { hit: true, succeeded: false }
-    defendingSide.futureSight = {
-      turns: 3,
-      attacker: { ...attacker, stages: { ...attacker.stages }, moves: attacker.moves.map((slot) => ({ ...slot })) },
-      move,
+    if (!releasing && timing?.chargeTurns && !timing.carriesTarget) {
+      if (boost) {
+        abilityStage(attacker, boost, 1, events)
+      }
+      const naturallyInstant =
+        (timing.instantWeather === 'sun' && solarMoveHasSun(attacker, defender, field)) ||
+        (timing.instantWeather === 'rain' && effectiveWeather(field) === 'rain')
+      const usesPowerHerb = attacker.item?.name === 'power-herb' && !naturallyInstant
+      const instant = usesPowerHerb || naturallyInstant
+      if (usesPowerHerb) activateItem(attacker, events, true)
+      if (!instant) {
+        attacker.chargingMoveIndex = moveSlot
+        events.push({ type: 'charging', pokemon: battlePokemonName(attacker) })
+        return { hit: false, succeeded: true }
+      }
     }
-    events.push({ type: 'futureSight', pokemon: battlePokemonName(defender) })
-    return { hit: false, succeeded: true }
-  }
-  if (!releasing && timing?.chargeTurns && !timing.carriesTarget) {
-    if (boost) {
-      abilityStage(attacker, boost, 1, events)
+    if (sleepUsableMoves.has(move.name) && attacker.status !== 'sleep' && abilityName(attacker) !== 'comatose')
+      return { hit: true, succeeded: false }
+    if (move.name === 'sleep-talk') {
+      const choices = attacker.moves.flatMap((candidate, index) =>
+        index !== moveSlot && candidate.data.name !== 'sleep-talk' && candidate.pp > 0 ? [index] : [],
+      )
+      const selected = choices[Math.floor(random() * choices.length)]
+      return selected === undefined
+        ? { hit: true, succeeded: false }
+        : applyMove(
+            attacker,
+            defender,
+            defendingSide,
+            field,
+            selected,
+            random,
+            events,
+            true,
+            false,
+            false,
+            attackingSide,
+            undefined,
+            moveSide,
+          )
     }
-    const naturallyInstant =
-      (timing.instantWeather === 'sun' && solarMoveHasSun(attacker, defender, field)) ||
-      (timing.instantWeather === 'rain' && effectiveWeather(field) === 'rain')
-    const usesPowerHerb = attacker.item?.name === 'power-herb' && !naturallyInstant
-    const instant = usesPowerHerb || naturallyInstant
-    if (usesPowerHerb) activateItem(attacker, events, true)
-    if (!instant) {
+    if (!['protect', 'detect'].includes(move.name)) attacker.protectStreak = 0
+    if (
+      [
+        'protect',
+        'detect',
+        'kings-shield',
+        'spiky-shield',
+        'baneful-bunker',
+        'silk-trap',
+        'burning-bulwark',
+        'obstruct',
+      ].includes(move.name)
+    ) {
+      const succeeds = random() < 1 / 3 ** attacker.protectStreak
+      if (!succeeds) {
+        attacker.protectStreak = 0
+        return { hit: true, succeeded: false }
+      }
+      attacker.volatile.protect = 1
+      attacker.protectStreak += 1
+      return { hit: true, succeeded: true }
+    }
+    if (move.name === 'ally-switch') {
+      // Random Battle is a singles format, so no adjacent ally can be selected.
+      return { hit: true, succeeded: false }
+    }
+    if (['low-kick', 'grass-knot'].includes(move.name)) {
+      const w = abilityWeight(defender)
+      move.power = w >= 200 ? 120 : w >= 100 ? 100 : w >= 50 ? 80 : w >= 25 ? 60 : w >= 10 ? 40 : 20
+    }
+    if (['heavy-slam', 'heat-crash'].includes(move.name)) {
+      const r = abilityWeight(attacker) / abilityWeight(defender)
+      move.power = r >= 5 ? 120 : r >= 4 ? 100 : r >= 3 ? 80 : r >= 2 ? 60 : 40
+    }
+    if (
+      abilityName(defender) === 'magic-bounce' &&
+      !abilityBypassed(attacker, defender, move) &&
+      moveHasFlag(move, 'reflectable') &&
+      !skipActionCheck
+    ) {
+      revealAbility(defender, events)
+      return applyMove(
+        defender,
+        attacker,
+        attackingSide ?? defendingSide,
+        field,
+        0,
+        random,
+        events,
+        true,
+        false,
+        false,
+        defendingSide,
+        move,
+        moveSide === 'player' ? 'opponent' : 'player',
+      )
+    }
+    if (move.name === 'steel-roller' && !field.terrain) return { hit: true, succeeded: false }
+    if (
+      !delayed &&
+      ['selected-pokemon', 'all-opponents', 'all-other-pokemon', 'random-opponent'].includes(move.target) &&
+      semiInvulnerableMultiplier(defender, move) === 0 &&
+      ![abilityName(attacker), abilityName(defender)].includes('no-guard')
+    ) {
+      events.push({ type: 'miss', pokemon: battlePokemonName(defender) })
+      return { hit: false, succeeded: false }
+    }
+    if (
+      !releasingCarry &&
+      move.accuracy !== null &&
+      !defender.volatile.telekinesis &&
+      random() >= battleHitProbability(move, attacker, defender, field)
+    ) {
+      events.push({ type: 'miss', pokemon: battlePokemonName(defender) })
+      return { hit: false, succeeded: false }
+    }
+
+    if (
+      field.terrain === 'psychic' &&
+      isGrounded(defender) &&
+      abilityMovePriority(attacker, move) > 0 &&
+      move.target !== 'user'
+    ) {
+      events.push({ type: 'fieldBlocked', pokemon: battlePokemonName(defender), field: 'psychic' })
+      return { hit: false, succeeded: false }
+    }
+
+    if (['phantom-force', 'shadow-force'].includes(move.name)) delete defender.volatile.protect
+    const contactBypass =
+      moveMakesContact(move, attacker) && ['unseen-fist', 'piercing-drill'].includes(abilityName(attacker))
+    if (
+      !delayed &&
+      defender.volatile.protect &&
+      !contactBypass &&
+      move.target !== 'user' &&
+      move.name !== 'protect' &&
+      !curse
+    ) {
+      events.push({ type: 'protected', pokemon: battlePokemonName(defender) })
+      return { hit: false, succeeded: false }
+    }
+
+    if (
+      defendingSide.conditions.craftyShield > 0 &&
+      (ghostCurse || (move.damageClass === 'status' && move.target !== 'user'))
+    ) {
+      events.push({ type: 'protected', pokemon: battlePokemonName(attacker) })
+      return { hit: false, succeeded: false }
+    }
+
+    if (move.target !== 'user' && applyAbilityMoveImmunity(attacker, defender, move, events))
+      return { hit: false, succeeded: true }
+
+    const specialAbilityMove = abilitySpecialMove(attacker, defender, move, events)
+    if (specialAbilityMove !== null && move.damageClass === 'status')
+      return { hit: specialAbilityMove, succeeded: specialAbilityMove }
+
+    if (!releasing && timing?.carriesTarget) {
+      if (defender.substituteHp > 0 || battleMoveEffectiveness(move, defender, attacker) === 0)
+        return { hit: true, succeeded: false }
       attacker.chargingMoveIndex = moveSlot
+      attacker.skyDropTargetId = defender.member.id
+      defender.skyDropSourceId = attacker.member.id
       events.push({ type: 'charging', pokemon: battlePokemonName(attacker) })
       return { hit: false, succeeded: true }
     }
-  }
-  if (sleepUsableMoves.has(move.name) && attacker.status !== 'sleep' && abilityName(attacker) !== 'comatose')
-    return { hit: true, succeeded: false }
-  if (move.name === 'sleep-talk') {
-    const choices = attacker.moves.flatMap((candidate, index) =>
-      index !== moveSlot && candidate.data.name !== 'sleep-talk' && candidate.pp > 0 ? [index] : [],
-    )
-    const selected = choices[Math.floor(random() * choices.length)]
-    return selected === undefined
-      ? { hit: true, succeeded: false }
-      : applyMove(
-          attacker,
-          defender,
-          defendingSide,
-          field,
-          selected,
-          random,
-          events,
-          true,
-          false,
-          false,
-          attackingSide,
-          undefined,
-          moveSide,
-        )
-  }
-  if (!['protect', 'detect'].includes(move.name)) attacker.protectStreak = 0
-  if (
-    [
-      'protect',
-      'detect',
-      'kings-shield',
-      'spiky-shield',
-      'baneful-bunker',
-      'silk-trap',
-      'burning-bulwark',
-      'obstruct',
-    ].includes(move.name)
-  ) {
-    const succeeds = random() < 1 / 3 ** attacker.protectStreak
-    if (!succeeds) {
-      attacker.protectStreak = 0
-      return { hit: true, succeeded: false }
+
+    if (defender.status === 'freeze' && (move.type === 'fire' || freezeThawingMoves.has(move.name))) {
+      defender.status = null
+      events.push({ type: 'thaw', pokemon: battlePokemonName(defender) })
     }
-    attacker.volatile.protect = 1
-    attacker.protectStreak += 1
-    return { hit: true, succeeded: true }
-  }
-  if (move.name === 'ally-switch') {
-    // Random Battle is a singles format, so no adjacent ally can be selected.
-    return { hit: true, succeeded: false }
-  }
-  if (['low-kick', 'grass-knot'].includes(move.name)) {
-    const w = abilityWeight(defender)
-    move.power = w >= 200 ? 120 : w >= 100 ? 100 : w >= 50 ? 80 : w >= 25 ? 60 : w >= 10 ? 40 : 20
-  }
-  if (['heavy-slam', 'heat-crash'].includes(move.name)) {
-    const r = abilityWeight(attacker) / abilityWeight(defender)
-    move.power = r >= 5 ? 120 : r >= 4 ? 100 : r >= 3 ? 80 : r >= 2 ? 60 : 40
-  }
-  if (
-    abilityName(defender) === 'magic-bounce' &&
-    !abilityBypassed(attacker, defender, move) &&
-    moveHasFlag(move, 'reflectable') &&
-    !skipActionCheck
-  ) {
-    revealAbility(defender, events)
-    return applyMove(
-      defender,
-      attacker,
-      attackingSide ?? defendingSide,
-      field,
-      0,
-      random,
-      events,
-      true,
-      false,
-      false,
-      defendingSide,
-      move,
-      moveSide === 'player' ? 'opponent' : 'player',
+
+    const supplemental = supplementalMoveEffect(move.name)
+    if (
+      move.damageClass === 'status' &&
+      move.target === 'selected-pokemon' &&
+      defender.substituteHp > 0 &&
+      !move.bypassesSubstitute
     )
-  }
-  if (move.name === 'steel-roller' && !field.terrain) return { hit: true, succeeded: false }
-  if (
-    !delayed &&
-    ['selected-pokemon', 'all-opponents', 'all-other-pokemon', 'random-opponent'].includes(move.target) &&
-    semiInvulnerableMultiplier(defender, move) === 0 &&
-    ![abilityName(attacker), abilityName(defender)].includes('no-guard')
-  ) {
-    events.push({ type: 'miss', pokemon: battlePokemonName(defender) })
-    return { hit: false, succeeded: false }
-  }
-  if (
-    !releasingCarry &&
-    move.accuracy !== null &&
-    !defender.volatile.telekinesis &&
-    random() >= battleHitProbability(move, attacker, defender, field)
-  ) {
-    events.push({ type: 'miss', pokemon: battlePokemonName(defender) })
-    return { hit: false, succeeded: false }
-  }
+      return { hit: true, succeeded: false, hitSubstitute: true }
 
-  if (
-    field.terrain === 'psychic' &&
-    isGrounded(defender) &&
-    abilityMovePriority(attacker, move) > 0 &&
-    move.target !== 'user'
-  ) {
-    events.push({ type: 'fieldBlocked', pokemon: battlePokemonName(defender), field: 'psychic' })
-    return { hit: false, succeeded: false }
-  }
+    if (supplemental?.kind === 'substitute') {
+      const hp = Math.floor(attacker.maxHp / 4)
+      if (attacker.substituteHp > 0 || attacker.hp <= hp) return { hit: true, succeeded: false }
+      attacker.hp -= hp
+      attacker.substituteHp = hp
+      events.push({ type: 'substituteSet', pokemon: battlePokemonName(attacker), hp })
+      return { hit: true, succeeded: true }
+    }
 
-  if (['phantom-force', 'shadow-force'].includes(move.name)) delete defender.volatile.protect
-  const contactBypass =
-    moveMakesContact(move, attacker) && ['unseen-fist', 'piercing-drill'].includes(abilityName(attacker))
-  if (
-    !delayed &&
-    defender.volatile.protect &&
-    !contactBypass &&
-    move.target !== 'user' &&
-    move.name !== 'protect' &&
-    !curse
-  ) {
-    events.push({ type: 'protected', pokemon: battlePokemonName(defender) })
-    return { hit: false, succeeded: false }
-  }
+    if (supplemental?.kind === 'equalize-hp') {
+      const sharedHp = Math.floor((attacker.hp + defender.hp) / 2)
+      const attackerHp = Math.min(attacker.maxHp, sharedHp)
+      const defenderHp = Math.min(defender.maxHp, sharedHp)
+      const changes = [
+        { pokemon: attacker, hp: attackerHp },
+        { pokemon: defender, hp: defenderHp },
+      ]
+      let succeeded = false
+      for (const change of changes) {
+        const amount = Math.abs(change.hp - change.pokemon.hp)
+        if (amount === 0) continue
+        const type = change.hp > change.pokemon.hp ? 'heal' : 'damage'
+        change.pokemon.hp = change.hp
+        succeeded = true
+        if (type === 'heal')
+          events.push({
+            type,
+            pokemon: change.pokemon.pokemon.name,
+            amount,
+            percentage: hpPercentage(amount, change.pokemon.maxHp),
+          })
+        else
+          events.push({
+            type,
+            pokemon: change.pokemon.pokemon.name,
+            amount,
+            effectiveness: 1,
+            critical: false,
+            percentage: hpPercentage(amount, change.pokemon.maxHp),
+          })
+      }
+      return { hit: true, succeeded }
+    }
 
-  if (
-    defendingSide.conditions.craftyShield > 0 &&
-    (ghostCurse || (move.damageClass === 'status' && move.target !== 'user'))
-  ) {
-    events.push({ type: 'protected', pokemon: battlePokemonName(attacker) })
-    return { hit: false, succeeded: false }
-  }
-
-  if (move.target !== 'user' && applyAbilityMoveImmunity(attacker, defender, move, events))
-    return { hit: false, succeeded: true }
-
-  const specialAbilityMove = abilitySpecialMove(attacker, defender, move, events)
-  if (specialAbilityMove !== null && move.damageClass === 'status')
-    return { hit: specialAbilityMove, succeeded: specialAbilityMove }
-
-  if (!releasing && timing?.carriesTarget) {
-    if (defender.substituteHp > 0 || battleMoveEffectiveness(move, defender, attacker) === 0)
-      return { hit: true, succeeded: false }
-    attacker.chargingMoveIndex = moveSlot
-    attacker.skyDropTargetId = defender.member.id
-    defender.skyDropSourceId = attacker.member.id
-    events.push({ type: 'charging', pokemon: battlePokemonName(attacker) })
-    return { hit: false, succeeded: true }
-  }
-
-  if (defender.status === 'freeze' && (move.type === 'fire' || freezeThawingMoves.has(move.name))) {
-    defender.status = null
-    events.push({ type: 'thaw', pokemon: battlePokemonName(defender) })
-  }
-
-  const supplemental = supplementalMoveEffect(move.name)
-  if (
-    move.damageClass === 'status' &&
-    move.target === 'selected-pokemon' &&
-    defender.substituteHp > 0 &&
-    !move.bypassesSubstitute
-  )
-    return { hit: true, succeeded: false, hitSubstitute: true }
-
-  if (supplemental?.kind === 'substitute') {
-    const hp = Math.floor(attacker.maxHp / 4)
-    if (attacker.substituteHp > 0 || attacker.hp <= hp) return { hit: true, succeeded: false }
-    attacker.hp -= hp
-    attacker.substituteHp = hp
-    events.push({ type: 'substituteSet', pokemon: battlePokemonName(attacker), hp })
-    return { hit: true, succeeded: true }
-  }
-
-  if (supplemental?.kind === 'equalize-hp') {
-    const sharedHp = Math.floor((attacker.hp + defender.hp) / 2)
-    const attackerHp = Math.min(attacker.maxHp, sharedHp)
-    const defenderHp = Math.min(defender.maxHp, sharedHp)
-    const changes = [
-      { pokemon: attacker, hp: attackerHp },
-      { pokemon: defender, hp: defenderHp },
-    ]
-    let succeeded = false
-    for (const change of changes) {
-      const amount = Math.abs(change.hp - change.pokemon.hp)
-      if (amount === 0) continue
-      const type = change.hp > change.pokemon.hp ? 'heal' : 'damage'
-      change.pokemon.hp = change.hp
-      succeeded = true
-      if (type === 'heal')
+    if (move.name === 'rest') {
+      if (majorStatusImmune('sleep', attacker, attacker, attackingSide, field)) return { hit: true, succeeded: false }
+      if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
+      const needsRest = attacker.hp < attacker.maxHp || attacker.status !== null
+      if (!needsRest) return { hit: true, succeeded: false }
+      const amount = attacker.maxHp - attacker.hp
+      attacker.hp = attacker.maxHp
+      attacker.status = 'sleep'
+      // The user cannot act on its next two turns, then wakes before acting.
+      attacker.sleepTurns = 2
+      attacker.toxicTurns = 0
+      if (amount > 0)
         events.push({
-          type,
-          pokemon: change.pokemon.pokemon.name,
+          type: 'heal',
+          pokemon: battlePokemonName(attacker),
           amount,
-          percentage: hpPercentage(amount, change.pokemon.maxHp),
+          percentage: hpPercentage(amount, attacker.maxHp),
         })
-      else
+      events.push({ type: 'status', pokemon: battlePokemonName(attacker), status: 'sleep' })
+      return { hit: true, succeeded: true }
+    }
+
+    if (ghostCurse) {
+      if (defender.cursed) return { hit: true, succeeded: false }
+      const amount = Math.min(attacker.hp, Math.floor(attacker.maxHp / 2))
+      if (amount > 0) {
+        attacker.hp -= amount
         events.push({
-          type,
-          pokemon: change.pokemon.pokemon.name,
+          type: 'damage',
+          pokemon: battlePokemonName(attacker),
           amount,
           effectiveness: 1,
           critical: false,
-          percentage: hpPercentage(amount, change.pokemon.maxHp),
+          percentage: hpPercentage(amount, attacker.maxHp),
         })
+      }
+      defender.cursed = true
+      events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'curse' })
+      if (attacker.hp === 0) events.push({ type: 'faint', pokemon: battlePokemonName(attacker) })
+      return { hit: true, succeeded: true }
     }
-    return { hit: true, succeeded }
-  }
 
-  if (move.name === 'rest') {
-    if (majorStatusImmune('sleep', attacker, attacker, attackingSide, field)) return { hit: true, succeeded: false }
-    if (attacker.volatile['heal-block']) return { hit: true, succeeded: false }
-    const needsRest = attacker.hp < attacker.maxHp || attacker.status !== null
-    if (!needsRest) return { hit: true, succeeded: false }
-    const amount = attacker.maxHp - attacker.hp
-    attacker.hp = attacker.maxHp
-    attacker.status = 'sleep'
-    // The user cannot act on its next two turns, then wakes before acting.
-    attacker.sleepTurns = 2
-    attacker.toxicTurns = 0
-    if (amount > 0)
-      events.push({
-        type: 'heal',
-        pokemon: battlePokemonName(attacker),
-        amount,
-        percentage: hpPercentage(amount, attacker.maxHp),
-      })
-    events.push({ type: 'status', pokemon: battlePokemonName(attacker), status: 'sleep' })
-    return { hit: true, succeeded: true }
-  }
+    if (curse) {
+      let succeeded = false
+      for (const [stat, change] of [
+        ['speed', -1],
+        ['attack', 1],
+        ['defense', 1],
+      ] as const) {
+        if (abilityStage(attacker, stat, change, events)) succeeded = true
+      }
+      return { hit: true, succeeded }
+    }
 
-  if (ghostCurse) {
-    if (defender.cursed) return { hit: true, succeeded: false }
-    const amount = Math.min(attacker.hp, Math.floor(attacker.maxHp / 2))
-    if (amount > 0) {
-      attacker.hp -= amount
+    if (move.name === 'fillet-away') {
+      const cost = Math.max(1, Math.floor(attacker.maxHp / 2))
+      if (
+        attacker.hp <= cost ||
+        ['attack', 'specialAttack', 'speed'].every((stat) => attacker.stages[stat as keyof BattleStages] >= 6)
+      )
+        return { hit: true, succeeded: false }
+      attacker.hp -= cost
       events.push({
         type: 'damage',
         pokemon: battlePokemonName(attacker),
+        amount: cost,
+        effectiveness: 1,
+        critical: false,
+      })
+    }
+
+    let succeeded = false
+    let hitSubstitute = false
+    if (supplemental?.kind === 'fixed-damage') {
+      let effectiveness = battleMoveEffectiveness(move, defender, attacker)
+      if (
+        field.primalWeather === 'delta-stream' &&
+        !field.weatherSuppressed &&
+        effectiveTypes(defender).includes('flying') &&
+        getDamageMultiplier(move.type, 'flying') > 1
+      )
+        effectiveness /= 2
+      if (effectiveness === 0) {
+        events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
+        return { hit: false, succeeded: false }
+      }
+      const damage = fixedMoveDamage(attacker, defender, supplemental.amount)
+      if (damage > 0) {
+        const beforeHp = defender.hp
+        if (abilityAbsorbsHit(defender, attacker, move, events)) return { hit: true, succeeded: true }
+        const applied = applyDirectMoveDamage(defender, damage, 1, false, events, attacker, move)
+        if (!applied.hitSubstitute)
+          abilityAfterHit(
+            defender,
+            attacker,
+            move,
+            applied.amount,
+            beforeHp,
+            false,
+            field,
+            attackingSide,
+            defendingSide,
+            random,
+            events,
+          )
+        hitSubstitute = applied.hitSubstitute
+        succeeded = true
+      }
+    }
+    const damageRule = supplementalMoveDamage[move.name]
+    if (damageRule?.ohko) {
+      if (abilityName(defender) === 'sturdy' && !abilityBypassed(attacker, defender, move))
+        return { hit: false, succeeded: false }
+      if (battleMoveEffectiveness(move, defender, attacker) === 0) {
+        events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
+        return { hit: false, succeeded: false }
+      }
+      if (defender.substituteHp > 0) {
+        const applied = applyDirectMoveDamage(defender, defender.substituteHp, 1, false, events)
+        return { hit: true, succeeded: true, hitSubstitute: applied.hitSubstitute }
+      }
+      const amount = defender.hp
+      defender.hp = 0
+      events.push({
+        type: 'damage',
+        pokemon: battlePokemonName(defender),
         amount,
         effectiveness: 1,
         critical: false,
-        percentage: hpPercentage(amount, attacker.maxHp),
+        percentage: hpPercentage(amount, defender.maxHp),
       })
+      abilityAfterHit(
+        defender,
+        attacker,
+        move,
+        amount,
+        amount,
+        false,
+        field,
+        attackingSide,
+        defendingSide,
+        random,
+        events,
+      )
+      return { hit: true, succeeded: true }
     }
-    defender.cursed = true
-    events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'curse' })
-    if (attacker.hp === 0) events.push({ type: 'faint', pokemon: battlePokemonName(attacker) })
-    return { hit: true, succeeded: true }
-  }
-
-  if (curse) {
-    let succeeded = false
-    for (const [stat, change] of [
-      ['speed', -1],
-      ['attack', 1],
-      ['defense', 1],
-    ] as const) {
-      if (abilityStage(attacker, stat, change, events)) succeeded = true
-    }
-    return { hit: true, succeeded }
-  }
-
-  if (move.name === 'fillet-away') {
-    const cost = Math.max(1, Math.floor(attacker.maxHp / 2))
-    if (
-      attacker.hp <= cost ||
-      ['attack', 'specialAttack', 'speed'].every((stat) => attacker.stages[stat as keyof BattleStages] >= 6)
-    )
-      return { hit: true, succeeded: false }
-    attacker.hp -= cost
-    events.push({
-      type: 'damage',
-      pokemon: battlePokemonName(attacker),
-      amount: cost,
-      effectiveness: 1,
-      critical: false,
-    })
-  }
-
-  let succeeded = false
-  let hitSubstitute = false
-  if (supplemental?.kind === 'fixed-damage') {
-    let effectiveness = battleMoveEffectiveness(move, defender, attacker)
-    if (
-      field.primalWeather === 'delta-stream' &&
-      !field.weatherSuppressed &&
-      effectiveTypes(defender).includes('flying') &&
-      getDamageMultiplier(move.type, 'flying') > 1
-    )
-      effectiveness /= 2
-    if (effectiveness === 0) {
-      events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
-      return { hit: false, succeeded: false }
-    }
-    const damage = fixedMoveDamage(attacker, defender, supplemental.amount)
-    if (damage > 0) {
+    if (damageRule?.fixedDamage !== undefined) {
+      if (battleMoveEffectiveness(move, defender, attacker) === 0) {
+        events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
+        return { hit: false, succeeded: false }
+      }
+      const damage = damageRule.fixedDamage === 'user-hp' ? attacker.hp : damageRule.fixedDamage
       const beforeHp = defender.hp
       if (abilityAbsorbsHit(defender, attacker, move, events)) return { hit: true, succeeded: true }
       const applied = applyDirectMoveDamage(defender, damage, 1, false, events, attacker, move)
@@ -1790,296 +1855,269 @@ function applyMove(
           events,
         )
       hitSubstitute = applied.hitSubstitute
-      succeeded = true
+      if (move.name === 'final-gambit') attacker.hp = 0
+      succeeded = applied.amount > 0
     }
-  }
-  const damageRule = supplementalMoveDamage[move.name]
-  if (damageRule?.ohko) {
-    if (abilityName(defender) === 'sturdy' && !abilityBypassed(attacker, defender, move))
-      return { hit: false, succeeded: false }
-    if (battleMoveEffectiveness(move, defender, attacker) === 0) {
-      events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
-      return { hit: false, succeeded: false }
-    }
-    if (defender.substituteHp > 0) {
-      const applied = applyDirectMoveDamage(defender, defender.substituteHp, 1, false, events)
-      return { hit: true, succeeded: true, hitSubstitute: applied.hitSubstitute }
-    }
-    const amount = defender.hp
-    defender.hp = 0
-    events.push({
-      type: 'damage',
-      pokemon: battlePokemonName(defender),
-      amount,
-      effectiveness: 1,
-      critical: false,
-      percentage: hpPercentage(amount, defender.maxHp),
-    })
-    abilityAfterHit(
-      defender,
-      attacker,
-      move,
-      amount,
-      amount,
-      false,
-      field,
-      attackingSide,
-      defendingSide,
-      random,
-      events,
-    )
-    return { hit: true, succeeded: true }
-  }
-  if (damageRule?.fixedDamage !== undefined) {
-    if (battleMoveEffectiveness(move, defender, attacker) === 0) {
-      events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
-      return { hit: false, succeeded: false }
-    }
-    const damage = damageRule.fixedDamage === 'user-hp' ? attacker.hp : damageRule.fixedDamage
-    const beforeHp = defender.hp
-    if (abilityAbsorbsHit(defender, attacker, move, events)) return { hit: true, succeeded: true }
-    const applied = applyDirectMoveDamage(defender, damage, 1, false, events, attacker, move)
-    if (!applied.hitSubstitute)
-      abilityAfterHit(
-        defender,
-        attacker,
-        move,
-        applied.amount,
-        beforeHp,
-        false,
-        field,
-        attackingSide,
-        defendingSide,
-        random,
-        events,
-      )
-    hitSubstitute = applied.hitSubstitute
-    if (move.name === 'final-gambit') attacker.hp = 0
-    succeeded = applied.amount > 0
-  }
-  if (damageRule?.powerRule) {
-    const userSpeed = Math.max(1, currentBattleStats(attacker)[5])
-    const targetSpeed = Math.max(1, currentBattleStats(defender)[5])
-    switch (damageRule.powerRule) {
-      case 'friendship':
-        move.power = Math.max(1, Math.floor(((attacker.member.friendship ?? 255) * 2) / 5))
-        break
-      case 'frustration':
-        move.power = Math.max(1, Math.floor(((255 - (attacker.member.friendship ?? 255)) * 2) / 5))
-        break
-      case 'user-hp':
-        move.power = Math.max(1, Math.floor((150 * attacker.hp) / attacker.maxHp))
-        break
-      case 'target-hp':
-        move.power = Math.max(1, Math.floor(((move.name === 'hard-press' ? 100 : 120) * defender.hp) / defender.maxHp))
-        break
-      case 'positive-stages':
-        move.power = 20 * (1 + Object.values(attacker.stages).reduce((sum, stage) => sum + Math.max(0, stage), 0))
-        break
-      case 'speed-ratio': {
-        const ratio = userSpeed / targetSpeed
-        move.power = ratio >= 4 ? 150 : ratio >= 3 ? 120 : ratio >= 2 ? 80 : ratio >= 1 ? 60 : 40
-        break
+    if (damageRule?.powerRule) {
+      const userSpeed = Math.max(1, currentBattleStats(attacker)[5])
+      const targetSpeed = Math.max(1, currentBattleStats(defender)[5])
+      switch (damageRule.powerRule) {
+        case 'friendship':
+          move.power = Math.max(1, Math.floor(((attacker.member.friendship ?? 255) * 2) / 5))
+          break
+        case 'frustration':
+          move.power = Math.max(1, Math.floor(((255 - (attacker.member.friendship ?? 255)) * 2) / 5))
+          break
+        case 'user-hp':
+          move.power = Math.max(1, Math.floor((150 * attacker.hp) / attacker.maxHp))
+          break
+        case 'target-hp':
+          move.power = Math.max(
+            1,
+            Math.floor(((move.name === 'hard-press' ? 100 : 120) * defender.hp) / defender.maxHp),
+          )
+          break
+        case 'positive-stages':
+          move.power = 20 * (1 + Object.values(attacker.stages).reduce((sum, stage) => sum + Math.max(0, stage), 0))
+          break
+        case 'speed-ratio': {
+          const ratio = userSpeed / targetSpeed
+          move.power = ratio >= 4 ? 150 : ratio >= 3 ? 120 : ratio >= 2 ? 80 : ratio >= 1 ? 60 : 40
+          break
+        }
+        case 'inverse-speed-ratio':
+          move.power = Math.min(150, Math.floor((25 * targetSpeed) / userSpeed) + 1)
+          break
       }
-      case 'inverse-speed-ratio':
-        move.power = Math.min(150, Math.floor((25 * targetSpeed) / userSpeed) + 1)
-        break
-    }
-  }
-  if (
-    move.damageClass !== 'status' &&
-    move.power &&
-    !damageRule?.fixedDamage &&
-    supplemental?.kind !== 'fixed-damage'
-  ) {
-    let effectiveness = battleMoveEffectiveness(move, defender, attacker)
-    if (
-      field.primalWeather === 'delta-stream' &&
-      !field.weatherSuppressed &&
-      effectiveTypes(defender).includes('flying') &&
-      getDamageMultiplier(move.type, 'flying') > 1
-    )
-      effectiveness /= 2
-    if (effectiveness === 0) {
-      events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
-      return { hit: false, succeeded: false }
-    }
-    const heldItem = heldBattleItem(attacker)
-    const minimumHits = move.minHits ?? 1
-    const maximumHits = Math.max(minimumHits, move.maxHits ?? minimumHits)
-    let hits = minimumHits
-    if (maximumHits > minimumHits) {
-      if (abilityName(attacker) === 'skill-link') hits = maximumHits
-      else if (minimumHits === 2 && maximumHits === 5) {
-        const roll = random()
-        hits =
-          attacker.item?.name === 'loaded-dice'
-            ? roll < 0.5
-              ? 4
-              : 5
-            : roll < 0.35
-              ? 2
-              : roll < 0.7
-                ? 3
-                : roll < 0.85
-                  ? 4
-                  : 5
-      } else hits += Math.floor(random() * (maximumHits - minimumHits + 1))
-    }
-    const parentalBond = abilityName(attacker) === 'parental-bond' && hits === 1 && !timing?.chargeTurns
-    if (parentalBond) hits = 2
-    const applied = { amount: 0 }
-    for (let hitIndex = 0; hitIndex < hits && defender.hp > 0 && attacker.hp > 0; hitIndex += 1) {
-      if (
-        hitIndex > 0 &&
-        move.multiAccuracy &&
-        move.accuracy !== null &&
-        random() >= battleHitProbability(move, attacker, defender, field)
-      )
-        break
-      const physical = move.damageClass === 'physical'
-      const attackerStats = currentBattleStats(attacker, field, defender)
-      const defenderStats = currentBattleStats(defender, field, attacker)
-      let attack = attackerStats[physical ? 1 : 3]
-      let defense = defenderStats[physical ? 2 : 4]
-      if (abilityName(defender) === 'unaware' && !abilityBypassed(attacker, defender, move))
-        attack /= stageMultiplier(attacker.stages[physical ? 'attack' : 'specialAttack'])
-      if (abilityName(attacker) === 'unaware')
-        defense /= stageMultiplier(defender.stages[physical ? 'defense' : 'specialDefense'])
-      if (physical && effectiveWeather(field) === 'snow' && effectiveTypes(defender).includes('ice')) defense *= 1.5
-      if (!physical && effectiveWeather(field) === 'sandstorm' && effectiveTypes(defender).includes('rock'))
-        defense *= 1.5
-      const stab = move.name === 'struggle' ? 1 : battleSameTypeAttackBonus(attacker, move.type)
-      const criticalStage = Math.min(
-        3,
-        (move.critRate ?? (['razor-wind', 'sky-attack'].includes(move.name) ? 1 : 0)) +
-          (['scope-lens', 'razor-claw'].includes(attacker.item?.name ?? '') ? 1 : 0) +
-          (abilityName(attacker) === 'super-luck' ? 1 : 0),
-      )
-      const critical =
-        (!['battle-armor', 'shell-armor'].includes(abilityName(defender)) ||
-          abilityBypassed(attacker, defender, move)) &&
-        (damageRule?.alwaysCritical === true ||
-          (abilityName(attacker) === 'merciless' && isPoisoned(defender)) ||
-          random() < [1 / 24, 1 / 8, 1 / 2, 1][criticalStage])
-      if (critical) {
-        const attackStage = attacker.stages[physical ? 'attack' : 'specialAttack']
-        const defenseStage = defender.stages[physical ? 'defense' : 'specialDefense']
-        if (attackStage < 0 && (abilityName(defender) !== 'unaware' || abilityBypassed(attacker, defender, move)))
-          attack /= stageMultiplier(attackStage)
-        if (defenseStage > 0 && abilityName(attacker) !== 'unaware') defense /= stageMultiplier(defenseStage)
-      }
-      const variance = 0.85 + random() * 0.15
-      const conditionalPower =
-        move.power *
-        (move.name === 'facade' && attacker.status ? 2 : 1) *
-        (move.name === 'wake-up-slap' && defender.status === 'sleep' ? 2 : 1) *
-        (move.name === 'smelling-salts' && defender.status === 'paralysis' ? 2 : 1)
-      const base = Math.floor(
-        (((2 * attacker.member.level) / 5 + 2) * conditionalPower * (attack / Math.max(1, defense))) / 50 + 2,
-      )
-      const screen =
-        !critical &&
-        abilityName(attacker) !== 'infiltrator' &&
-        (defendingSide.conditions.auroraVeil > 0 ||
-          (physical ? defendingSide.conditions.reflect > 0 : defendingSide.conditions.lightScreen > 0))
-          ? 0.5
-          : 1
-      const itemModifier = heldItemPowerModifier(attacker, defender, move, effectiveness, events)
-      const damage = Math.max(
-        1,
-        Math.floor(
-          base *
-            stab *
-            effectiveness *
-            (critical ? 1.5 : 1) *
-            variance *
-            (delayed
-              ? fieldPowerModifier(move, attacker, { ...defender, chargingMoveIndex: undefined }, field)
-              : fieldPowerModifier(move, attacker, defender, field)) *
-            itemModifier *
-            abilityMovePower *
-            abilityPowerMultiplier(attacker, defender, move, field, effectiveness, critical, attackingSide) *
-            (hitIndex === 1 && parentalBond ? 0.25 : 1) *
-            (contactBypass && defender.volatile.protect && abilityName(attacker) === 'piercing-drill' ? 0.25 : 1) *
-            screen,
-        ),
-      )
-      const beforeHp = defender.hp
-      if (abilityAbsorbsHit(defender, attacker, move, events)) continue
-      const hit = applyDirectMoveDamage(defender, damage, effectiveness, critical, events, attacker, move)
-      if (!hit.hitSubstitute)
-        abilityAfterHit(
-          defender,
-          attacker,
-          move,
-          hit.amount,
-          beforeHp,
-          critical,
-          field,
-          attackingSide,
-          defendingSide,
-          random,
-          events,
-        )
-      applied.amount += hit.amount
-      hitSubstitute = hit.hitSubstitute
     }
     if (
-      heldItem === 'life-orb' &&
-      attacker.hp > 0 &&
-      abilityName(attacker) !== 'magic-guard' &&
-      !(abilityName(attacker) === 'sheer-force' && moveHasSecondary(slot.data))
+      move.damageClass !== 'status' &&
+      move.power &&
+      !damageRule?.fixedDamage &&
+      supplemental?.kind !== 'fixed-damage'
     ) {
-      activateItem(attacker, events)
-      const amount = Math.min(attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 10)))
-      attacker.hp -= amount
-      events.push({
-        type: 'damage',
-        pokemon: battlePokemonName(attacker),
-        amount,
-        effectiveness: 1,
-        critical: false,
-        percentage: hpPercentage(amount, attacker.maxHp),
-      })
-    }
-    if (heldItem === 'shell-bell' && attacker.hp > 0 && !attacker.volatile['heal-block']) {
-      const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(applied.amount / 8)))
-      if (amount > 0) {
+      let effectiveness = battleMoveEffectiveness(move, defender, attacker)
+      if (
+        field.primalWeather === 'delta-stream' &&
+        !field.weatherSuppressed &&
+        effectiveTypes(defender).includes('flying') &&
+        getDamageMultiplier(move.type, 'flying') > 1
+      )
+        effectiveness /= 2
+      if (effectiveness === 0) {
+        events.push({ type: 'immune', pokemon: battlePokemonName(defender) })
+        return { hit: false, succeeded: false }
+      }
+      const heldItem = heldBattleItem(attacker)
+      const minimumHits = move.minHits ?? 1
+      const maximumHits = Math.max(minimumHits, move.maxHits ?? minimumHits)
+      let hits = minimumHits
+      if (maximumHits > minimumHits) {
+        if (abilityName(attacker) === 'skill-link') hits = maximumHits
+        else if (minimumHits === 2 && maximumHits === 5) {
+          const roll = random()
+          hits =
+            attacker.item?.name === 'loaded-dice'
+              ? roll < 0.5
+                ? 4
+                : 5
+              : roll < 0.35
+                ? 2
+                : roll < 0.7
+                  ? 3
+                  : roll < 0.85
+                    ? 4
+                    : 5
+        } else hits += Math.floor(random() * (maximumHits - minimumHits + 1))
+      }
+      const parentalBond = abilityName(attacker) === 'parental-bond' && hits === 1 && !timing?.chargeTurns
+      if (parentalBond) hits = 2
+      const applied = { amount: 0 }
+      for (let hitIndex = 0; hitIndex < hits && defender.hp > 0 && attacker.hp > 0; hitIndex += 1) {
+        if (
+          hitIndex > 0 &&
+          move.multiAccuracy &&
+          move.accuracy !== null &&
+          random() >= battleHitProbability(move, attacker, defender, field)
+        )
+          break
+        const physical = move.damageClass === 'physical'
+        const attackerStats = currentBattleStats(attacker, field, defender)
+        const defenderStats = currentBattleStats(defender, field, attacker)
+        let attack = attackerStats[physical ? 1 : 3]
+        let defense = defenderStats[physical ? 2 : 4]
+        if (abilityName(defender) === 'unaware' && !abilityBypassed(attacker, defender, move))
+          attack /= stageMultiplier(attacker.stages[physical ? 'attack' : 'specialAttack'])
+        if (abilityName(attacker) === 'unaware')
+          defense /= stageMultiplier(defender.stages[physical ? 'defense' : 'specialDefense'])
+        if (physical && effectiveWeather(field) === 'snow' && effectiveTypes(defender).includes('ice')) defense *= 1.5
+        if (!physical && effectiveWeather(field) === 'sandstorm' && effectiveTypes(defender).includes('rock'))
+          defense *= 1.5
+        const stab = move.name === 'struggle' ? 1 : battleSameTypeAttackBonus(attacker, move.type)
+        const criticalStage = Math.min(
+          3,
+          (move.critRate ?? (['razor-wind', 'sky-attack'].includes(move.name) ? 1 : 0)) +
+            (['scope-lens', 'razor-claw'].includes(attacker.item?.name ?? '') ? 1 : 0) +
+            (abilityName(attacker) === 'super-luck' ? 1 : 0),
+        )
+        const critical =
+          (!['battle-armor', 'shell-armor'].includes(abilityName(defender)) ||
+            abilityBypassed(attacker, defender, move)) &&
+          (damageRule?.alwaysCritical === true ||
+            (abilityName(attacker) === 'merciless' && isPoisoned(defender)) ||
+            random() < [1 / 24, 1 / 8, 1 / 2, 1][criticalStage])
+        if (critical) {
+          const attackStage = attacker.stages[physical ? 'attack' : 'specialAttack']
+          const defenseStage = defender.stages[physical ? 'defense' : 'specialDefense']
+          if (attackStage < 0 && (abilityName(defender) !== 'unaware' || abilityBypassed(attacker, defender, move)))
+            attack /= stageMultiplier(attackStage)
+          if (defenseStage > 0 && abilityName(attacker) !== 'unaware') defense /= stageMultiplier(defenseStage)
+        }
+        const variance = 0.85 + random() * 0.15
+        const conditionalPower =
+          move.power *
+          (move.name === 'facade' && attacker.status ? 2 : 1) *
+          (move.name === 'wake-up-slap' && defender.status === 'sleep' ? 2 : 1) *
+          (move.name === 'smelling-salts' && defender.status === 'paralysis' ? 2 : 1)
+        const base = Math.floor(
+          (((2 * attacker.member.level) / 5 + 2) * conditionalPower * (attack / Math.max(1, defense))) / 50 + 2,
+        )
+        const screen =
+          !critical &&
+          abilityName(attacker) !== 'infiltrator' &&
+          (defendingSide.conditions.auroraVeil > 0 ||
+            (physical ? defendingSide.conditions.reflect > 0 : defendingSide.conditions.lightScreen > 0))
+            ? 0.5
+            : 1
+        const itemModifier = heldItemPowerModifier(attacker, defender, move, effectiveness, events)
+        const damage = Math.max(
+          1,
+          Math.floor(
+            base *
+              stab *
+              effectiveness *
+              (critical ? 1.5 : 1) *
+              variance *
+              (delayed
+                ? fieldPowerModifier(move, attacker, { ...defender, chargingMoveIndex: undefined }, field)
+                : fieldPowerModifier(move, attacker, defender, field)) *
+              itemModifier *
+              abilityMovePower *
+              abilityPowerMultiplier(attacker, defender, move, field, effectiveness, critical, attackingSide) *
+              (hitIndex === 1 && parentalBond ? 0.25 : 1) *
+              (contactBypass && defender.volatile.protect && abilityName(attacker) === 'piercing-drill' ? 0.25 : 1) *
+              screen,
+          ),
+        )
+        const beforeHp = defender.hp
+        if (abilityAbsorbsHit(defender, attacker, move, events)) continue
+        const hit = applyDirectMoveDamage(defender, damage, effectiveness, critical, events, attacker, move)
+        if (!hit.hitSubstitute)
+          abilityAfterHit(
+            defender,
+            attacker,
+            move,
+            hit.amount,
+            beforeHp,
+            critical,
+            field,
+            attackingSide,
+            defendingSide,
+            random,
+            events,
+          )
+        applied.amount += hit.amount
+        hitSubstitute = hit.hitSubstitute
+      }
+      if (
+        heldItem === 'life-orb' &&
+        attacker.hp > 0 &&
+        abilityName(attacker) !== 'magic-guard' &&
+        !(abilityName(attacker) === 'sheer-force' && moveHasSecondary(slot.data))
+      ) {
         activateItem(attacker, events)
-        attacker.hp += amount
+        const amount = Math.min(attacker.hp, Math.max(1, Math.floor(attacker.maxHp / 10)))
+        attacker.hp -= amount
         events.push({
-          type: 'heal',
+          type: 'damage',
           pokemon: battlePokemonName(attacker),
           amount,
+          effectiveness: 1,
+          critical: false,
           percentage: hpPercentage(amount, attacker.maxHp),
         })
       }
+      if (heldItem === 'shell-bell' && attacker.hp > 0 && !attacker.volatile['heal-block']) {
+        const amount = Math.min(attacker.maxHp - attacker.hp, Math.max(1, Math.floor(applied.amount / 8)))
+        if (amount > 0) {
+          activateItem(attacker, events)
+          attacker.hp += amount
+          events.push({
+            type: 'heal',
+            pokemon: battlePokemonName(attacker),
+            amount,
+            percentage: hpPercentage(amount, attacker.maxHp),
+          })
+        }
+      }
+      if (move.name === 'struggle' && applied.amount > 0) {
+        const amount = Math.min(attacker.hp, Math.max(1, Math.round(attacker.maxHp / 4)))
+        attacker.hp -= amount
+        events.push({
+          type: 'damage',
+          pokemon: battlePokemonName(attacker),
+          amount,
+          effectiveness: 1,
+          critical: false,
+          percentage: hpPercentage(amount, attacker.maxHp),
+        })
+      }
+      if (
+        move.drain &&
+        (move.drain < 0 || !attacker.volatile['heal-block']) &&
+        !(move.drain < 0 && ['rock-head', 'magic-guard'].includes(abilityName(attacker)))
+      ) {
+        const amount = Math.min(
+          attacker.maxHp - attacker.hp,
+          Math.max(1, Math.floor((applied.amount * Math.abs(move.drain)) / 100)),
+        )
+        if (move.drain > 0 && abilityName(defender) === 'liquid-ooze')
+          abilityDamage(attacker, Math.max(1, Math.floor((applied.amount * move.drain) / 100)), events)
+        else if (move.drain > 0 && amount > 0) {
+          attacker.hp += amount
+          events.push({
+            type: 'heal',
+            pokemon: battlePokemonName(attacker),
+            amount,
+            percentage: hpPercentage(amount, attacker.maxHp),
+          })
+        } else if (move.drain < 0)
+          attacker.hp = Math.max(
+            0,
+            attacker.hp - Math.max(1, Math.floor((applied.amount * Math.abs(move.drain)) / 100)),
+          )
+      }
+      succeeded = true
     }
-    if (move.name === 'struggle' && applied.amount > 0) {
-      const amount = Math.min(attacker.hp, Math.max(1, Math.round(attacker.maxHp / 4)))
-      attacker.hp -= amount
-      events.push({
-        type: 'damage',
-        pokemon: battlePokemonName(attacker),
-        amount,
-        effectiveness: 1,
-        critical: false,
-        percentage: hpPercentage(amount, attacker.maxHp),
-      })
+
+    if (!hitSubstitute && move.name === 'wake-up-slap' && defender.status === 'sleep') {
+      defender.status = null
+      defender.sleepTurns = 0
+      events.push({ type: 'wake', pokemon: battlePokemonName(defender) })
+      succeeded = true
     }
-    if (
-      move.drain &&
-      (move.drain < 0 || !attacker.volatile['heal-block']) &&
-      !(move.drain < 0 && ['rock-head', 'magic-guard'].includes(abilityName(attacker)))
-    ) {
+    if (!hitSubstitute && move.name === 'smelling-salts' && defender.status === 'paralysis') {
+      defender.status = null
+      events.push({ type: 'statusCured', pokemon: battlePokemonName(defender), status: 'paralysis' })
+      succeeded = true
+    }
+
+    if (move.healing > 0 && !attacker.volatile['heal-block']) {
       const amount = Math.min(
         attacker.maxHp - attacker.hp,
-        Math.max(1, Math.floor((applied.amount * Math.abs(move.drain)) / 100)),
+        Math.max(1, Math.floor((attacker.maxHp * move.healing) / 100)),
       )
-      if (move.drain > 0 && abilityName(defender) === 'liquid-ooze')
-        abilityDamage(attacker, Math.max(1, Math.floor((applied.amount * move.drain) / 100)), events)
-      else if (move.drain > 0 && amount > 0) {
+      if (amount > 0) {
         attacker.hp += amount
         events.push({
           type: 'heal',
@@ -2087,118 +2125,91 @@ function applyMove(
           amount,
           percentage: hpPercentage(amount, attacker.maxHp),
         })
-      } else if (move.drain < 0)
-        attacker.hp = Math.max(0, attacker.hp - Math.max(1, Math.floor((applied.amount * Math.abs(move.drain)) / 100)))
-    }
-    succeeded = true
-  }
-
-  if (!hitSubstitute && move.name === 'wake-up-slap' && defender.status === 'sleep') {
-    defender.status = null
-    defender.sleepTurns = 0
-    events.push({ type: 'wake', pokemon: battlePokemonName(defender) })
-    succeeded = true
-  }
-  if (!hitSubstitute && move.name === 'smelling-salts' && defender.status === 'paralysis') {
-    defender.status = null
-    events.push({ type: 'statusCured', pokemon: battlePokemonName(defender), status: 'paralysis' })
-    succeeded = true
-  }
-
-  if (move.healing > 0 && !attacker.volatile['heal-block']) {
-    const amount = Math.min(
-      attacker.maxHp - attacker.hp,
-      Math.max(1, Math.floor((attacker.maxHp * move.healing) / 100)),
-    )
-    if (amount > 0) {
-      attacker.hp += amount
-      events.push({
-        type: 'heal',
-        pokemon: battlePokemonName(attacker),
-        amount,
-        percentage: hpPercentage(amount, attacker.maxHp),
-      })
-      succeeded = true
-    }
-  }
-
-  if (
-    !hitSubstitute &&
-    defender.hp > 0 &&
-    (move.flinchChance ?? 0) > 0 &&
-    abilityName(defender) !== 'inner-focus' &&
-    random() * 100 < (move.flinchChance ?? 0)
-  ) {
-    defender.volatile.flinch = 1
-    events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'flinch' })
-  }
-
-  const selfTarget = changesApplyToUser(move)
-  const appliesStatChanges =
-    move.statChanges.length > 0 &&
-    ((move.statChance ?? move.effectChance) === null || random() * 100 < (move.statChance ?? move.effectChance ?? 100))
-  if (appliesStatChanges) {
-    for (const change of move.statChanges) {
-      const target = change.target
-        ? change.target === 'user'
-          ? attacker
-          : defender
-        : selfTarget || (change.change > 0 && !changesApplyToTarget(move))
-          ? attacker
-          : defender
-      if (target === defender && hitSubstitute) continue
-      const applied = abilityStage(target, change.stat, change.change, events, attacker, false, move)
-      if (applied) succeeded = true
-    }
-  }
-
-  const statusTarget = selfTarget ? attacker : defender
-  if (
-    move.ailment &&
-    statusTarget.hp > 0 &&
-    (!hitSubstitute || statusTarget === attacker) &&
-    random() * 100 < move.ailmentChance
-  ) {
-    if (move.ailment === 'flinch' && statusTarget === defender && !defender.volatile.flinch) {
-      defender.volatile.flinch = 1
-      events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'flinch' })
-      succeeded = true
-    }
-    const status = (
-      {
-        burn: 'burn',
-        freeze: 'freeze',
-        paralysis: 'paralysis',
-        poison: badlyPoisoningMoves.has(move.name) ? 'badly-poisoned' : 'poison',
-        'badly-poisoned': 'badly-poisoned',
-        sleep: 'sleep',
-      } as const
-    )[move.ailment]
-    const volatileStatus = ({ confusion: 'confusion', infatuation: 'attraction', curse: 'curse' } as const)[
-      move.ailment
-    ]
-    if (
-      status &&
-      !statusTarget.status &&
-      !statusPreventedByTerrain(status, statusTarget, field) &&
-      !majorStatusImmune(status, statusTarget, attacker, defendingSide, field, move)
-    ) {
-      if (abilityStatus(statusTarget, status, attacker, field, events, false, move)) {
-        if (status === 'sleep') statusTarget.sleepTurns = 2 + Math.floor(random() * 3)
         succeeded = true
       }
-    } else if (
-      volatileStatus &&
-      canApplyVolatileStatus(volatileStatus, attacker, statusTarget, defendingSide, field, move)
-    ) {
-      if (volatileStatus === 'confusion') statusTarget.confusionTurns = 1 + Math.floor(random() * 4)
-      if (volatileStatus === 'attraction') statusTarget.attracted = true
-      if (volatileStatus === 'curse') statusTarget.cursed = true
-      events.push({ type: 'status', pokemon: statusTarget.pokemon.name, status: volatileStatus })
-      succeeded = true
     }
+
+    if (
+      !hitSubstitute &&
+      defender.hp > 0 &&
+      (move.flinchChance ?? 0) > 0 &&
+      abilityName(defender) !== 'inner-focus' &&
+      random() * 100 < (move.flinchChance ?? 0)
+    ) {
+      defender.volatile.flinch = 1
+      events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'flinch' })
+    }
+
+    const selfTarget = changesApplyToUser(move)
+    const appliesStatChanges =
+      move.statChanges.length > 0 &&
+      ((move.statChance ?? move.effectChance) === null ||
+        random() * 100 < (move.statChance ?? move.effectChance ?? 100))
+    if (appliesStatChanges) {
+      for (const change of move.statChanges) {
+        const target = change.target
+          ? change.target === 'user'
+            ? attacker
+            : defender
+          : selfTarget || (change.change > 0 && !changesApplyToTarget(move))
+            ? attacker
+            : defender
+        if (target === defender && hitSubstitute) continue
+        const applied = abilityStage(target, change.stat, change.change, events, attacker, false, move)
+        if (applied) succeeded = true
+      }
+    }
+
+    const statusTarget = selfTarget ? attacker : defender
+    if (
+      move.ailment &&
+      statusTarget.hp > 0 &&
+      (!hitSubstitute || statusTarget === attacker) &&
+      random() * 100 < move.ailmentChance
+    ) {
+      if (move.ailment === 'flinch' && statusTarget === defender && !defender.volatile.flinch) {
+        defender.volatile.flinch = 1
+        events.push({ type: 'status', pokemon: battlePokemonName(defender), status: 'flinch' })
+        succeeded = true
+      }
+      const status = (
+        {
+          burn: 'burn',
+          freeze: 'freeze',
+          paralysis: 'paralysis',
+          poison: badlyPoisoningMoves.has(move.name) ? 'badly-poisoned' : 'poison',
+          'badly-poisoned': 'badly-poisoned',
+          sleep: 'sleep',
+        } as const
+      )[move.ailment]
+      const volatileStatus = ({ confusion: 'confusion', infatuation: 'attraction', curse: 'curse' } as const)[
+        move.ailment
+      ]
+      if (
+        status &&
+        !statusTarget.status &&
+        !statusPreventedByTerrain(status, statusTarget, field) &&
+        !majorStatusImmune(status, statusTarget, attacker, defendingSide, field, move)
+      ) {
+        if (abilityStatus(statusTarget, status, attacker, field, events, false, move)) {
+          if (status === 'sleep') statusTarget.sleepTurns = 2 + Math.floor(random() * 3)
+          succeeded = true
+        }
+      } else if (
+        volatileStatus &&
+        canApplyVolatileStatus(volatileStatus, attacker, statusTarget, defendingSide, field, move)
+      ) {
+        if (volatileStatus === 'confusion') statusTarget.confusionTurns = 1 + Math.floor(random() * 4)
+        if (volatileStatus === 'attraction') statusTarget.attracted = true
+        if (volatileStatus === 'curse') statusTarget.cursed = true
+        events.push({ type: 'status', pokemon: statusTarget.pokemon.name, status: volatileStatus })
+        succeeded = true
+      }
+    }
+    return { hit: true, succeeded, hitSubstitute }
+  } finally {
+    if (move.name === 'explosion') attacker.hp = 0
   }
-  return { hit: true, succeeded, hitSubstitute }
 }
 
 function refreshAbilityEffects(

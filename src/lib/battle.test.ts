@@ -80,6 +80,48 @@ const roster = (source: Team, firstTypes = ['normal']) =>
     ]),
   )
 
+describe('Explosion', () => {
+  const setup = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    state.player.roster[0].moves[0].data = move({ name: 'explosion', power: 250 })
+    state.player.roster[0].stats[5] = 500
+    return state
+  }
+
+  it('damages the target, faints the user, and requests a replacement', () => {
+    const state = setup()
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.opponent.roster[0].hp).toBeLessThan(state.opponent.roster[0].hp)
+    expect(result.state.player.roster[0].hp).toBe(0)
+    expect(result.events.filter((event) => event.type === 'faint' && event.pokemon === 'player-0')).toHaveLength(1)
+    expect(result.events.some((event) => event.type === 'move' && event.pokemon === 'opponent-0')).toBe(false)
+    expect(result.state.phase).toBe('player-switch')
+  })
+
+  it.each(['miss', 'protect', 'ghost', 'substitute'])('still faints the user against %s', (condition) => {
+    const state = setup()
+    const target = state.opponent.roster[0]
+    if (condition === 'miss') state.player.roster[0].moves[0].data.accuracy = 0
+    if (condition === 'ghost') target.pokemon.types = ['ghost']
+    if (condition === 'substitute') target.substituteHp = 100
+    if (condition === 'protect')
+      target.moves[0].data = move({ name: 'protect', damageClass: 'status', power: null, target: 'user', priority: 4 })
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(0)
+    expect(result.state.phase).toBe('player-switch')
+  })
+
+  it.each(['damp', 'flinch'])('does not faint the user when prevented by %s', (condition) => {
+    const state = setup()
+    if (condition === 'damp') state.opponent.roster[0].ability.name = 'damp'
+    else state.player.roster[0].volatile.flinch = 1
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'switch', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(state.player.roster[0].hp)
+  })
+})
+
 describe('Struggle fallback', () => {
   const setup = () => {
     const player = team('player')
