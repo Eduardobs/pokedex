@@ -1,4 +1,10 @@
 import type { BattleMove } from './battle'
+import singlesExclusions from '../data/third-party/battle-move-singles-exclusions.json'
+
+/** These moves remain selectable, but cannot resolve an effect in this format. */
+export function moveFailsInSingles(moveName: string) {
+  return Object.hasOwn(singlesExclusions, moveName)
+}
 
 export type SupplementalMoveEffect =
   | { kind: 'revive-ally' }
@@ -51,7 +57,7 @@ const supplementalMoveEffects: Readonly<Record<string, SupplementalMoveEffect>> 
   'revival-blessing': { kind: 'revive-ally' },
   'lunar-blessing': { kind: 'lunar-blessing' },
   wish: { kind: 'wish' },
-  encore: { kind: 'encore', minimumTurns: 2, maximumTurns: 6 },
+  encore: { kind: 'encore', minimumTurns: 3, maximumTurns: 3 },
   taunt: { kind: 'taunt', turns: 3 },
   'seismic-toss': { kind: 'fixed-damage', amount: 'level' },
   'night-shade': { kind: 'fixed-damage', amount: 'level' },

@@ -938,6 +938,8 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
       return t('battle.log.turn', { turn: event.turn })
     case 'move':
       return t('battle.log.move', { name, move: prettyName(event.move) })
+    case 'hit':
+      return t('battle.log.hit', { name, move: prettyName(event.move), hit: event.hit })
     case 'switch':
       return t('battle.log.switch', { name })
     case 'tera':

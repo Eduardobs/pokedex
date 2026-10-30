@@ -1,4 +1,5 @@
 import facts from '../data/third-party/battle-mechanics-facts.json'
+import canonicalMoveFlags from '../data/third-party/battle-move-flags.json'
 import type {
   BattleEvent,
   BattleField,
@@ -65,7 +66,9 @@ const moveFacts: Readonly<Record<string, MoveFacts>> = facts.moves
 const speciesFacts: Readonly<Record<string, { weight?: number; name?: string; types?: string[]; stats?: number[] }>> =
   facts.pokemon
 const abilityFlags: Readonly<Record<string, Readonly<Record<string, number | undefined>>>> = facts.abilityFlags
-export const moveHasFlag = (move: BattleMove, flag: string) => moveFacts[id(move.name)]?.flags.includes(flag) ?? false
+const moveFlags: Readonly<Record<string, readonly string[] | undefined>> = canonicalMoveFlags
+export const moveHasFlag = (move: BattleMove, flag: string) =>
+  (moveFlags[move.name] ?? moveFacts[id(move.name)]?.flags)?.includes(flag) ?? false
 export const moveHasSecondary = (move: BattleMove) =>
   moveFacts[id(move.name)]?.secondary || !!(move.ailmentChance || move.flinchChance || move.statChance)
 export const moveMakesContact = (move: BattleMove, user: BattlePokemon) =>
@@ -656,7 +659,8 @@ export function abilityAccuracy(move: BattleMove, user: BattlePokemon, target: B
     return { always: false, modifier: 1, ignoreEvasion: true }
   const weather = a === 'mega-sol' ? 'sun' : effectiveWeather(field)
   if (
-    (['thunder', 'hurricane'].includes(move.name) && weather === 'rain') ||
+    (['thunder', 'hurricane', 'bleakwind-storm', 'wildbolt-storm', 'sandsear-storm'].includes(move.name) &&
+      weather === 'rain') ||
     (move.name === 'blizzard' && weather === 'snow')
   )
     return { always: true, modifier: 1, ignoreEvasion: true }
@@ -722,15 +726,31 @@ export function abilityModifyMove(
     if (move.damageClass !== 'status') changeForm(p, 'aegislash-blade', events)
     else if (move.name === 'kings-shield') changeForm(p, 'aegislash-shield', events)
   }
-  if (a === 'stench' && move.damageClass !== 'status' && !move.flinchChance && move.ailment !== 'flinch')
-    move.flinchChance = 10
+  if (
+    a === 'stench' &&
+    move.damageClass !== 'status' &&
+    !move.flinchChance &&
+    move.ailment !== 'flinch' &&
+    !move.secondaries?.some((group) => group.effects.some((effect) => effect.flinch))
+  )
+    move.secondaries = [...(move.secondaries ?? []), { chance: 10, effects: [{ target: 'target', flinch: true }] }]
   if (a === 'serene-grace') {
+    if (move.secondaries)
+      move.secondaries = move.secondaries.map((group) => ({ ...group, chance: Math.min(100, group.chance * 2) }))
     move.ailmentChance *= 2
     if (move.flinchChance) move.flinchChance *= 2
     if (move.statChance !== null && move.statChance !== undefined) move.statChance *= 2
     if (move.effectChance !== null) move.effectChance *= 2
   }
   if (a === 'sheer-force' && move.damageClass !== 'status' && moveHasSecondary(move)) power *= 1.3
+  if (a === 'sheer-force' && move.damageClass !== 'status') move.secondaries = []
+  else if (d === 'shield-dust' || heldBattleItem(target) === 'covert-cloak') {
+    if (move.secondaries)
+      move.secondaries = move.secondaries.map((group) => ({
+        ...group,
+        effects: group.effects.filter((effect) => effect.target === 'user'),
+      }))
+  }
   if (
     (d === 'shield-dust' && move.damageClass !== 'status') ||
     (a === 'sheer-force' && move.damageClass !== 'status' && moveHasSecondary(move)) ||
@@ -745,7 +765,8 @@ export function abilityModifyMove(
         (c.change < 0 && ['close-combat', 'overheat', 'draco-meteor', 'leaf-storm', 'superpower'].includes(move.name)),
     )
   }
-  if (a === 'infiltrator' || moveHasFlag(move, 'sound')) move.bypassesSubstitute = true
+  if (a === 'infiltrator' || moveHasFlag(move, 'sound') || moveHasFlag(move, 'bypasssub'))
+    move.bypassesSubstitute = true
   if (d === 'inner-focus') {
     move.flinchChance = 0
     if (move.ailment === 'flinch') move.ailment = null
@@ -907,6 +928,7 @@ export function abilityAfterHit(
   foe: BattleSide,
   random: () => number,
   events: BattleEvent[],
+  deferColorChange = false,
 ) {
   if (!damage) return
   const a = abilityBypassed(user, target, move) ? '' : abilityName(target),
@@ -915,7 +937,7 @@ export function abilityAfterHit(
     m = abilityMemory(target)
   delete m.illusion
   if (target.hp > 0) {
-    if (a === 'color-change') changeTypes(target, [move.type])
+    if (a === 'color-change' && !deferColorChange) changeTypes(target, [move.type])
     if (a === 'stamina') abilityStage(target, 'defense', 1, events)
     if (a === 'water-compaction' && move.type === 'water') abilityStage(target, 'defense', 2, events)
     if (a === 'steam-engine' && ['water', 'fire'].includes(move.type)) abilityStage(target, 'speed', 6, events)
@@ -995,6 +1017,10 @@ export function abilityAfterHit(
   }
   if (a === 'spicy-spray') abilityStatus(user, 'burn', target, field, events)
   if (contact && ['rough-skin', 'iron-barbs'].includes(a)) abilityDamage(user, Math.max(1, user.maxHp / 8), events)
+  if (contact && user.hp > 0 && u !== 'magic-guard' && !m.itemBlocked && heldBattleItem(target) === 'rocky-helmet') {
+    events.push({ type: 'itemActivated', pokemon: battlePokemonName(target), item: 'rocky-helmet', consumed: false })
+    abilityDamage(user, Math.max(1, user.maxHp / 6), events)
+  }
   if (contact && a === 'aftermath' && target.hp === 0 && u !== 'damp') abilityDamage(user, user.maxHp / 4, events)
   if (a === 'innards-out' && target.hp === 0) abilityDamage(user, beforeHp, events)
   if (u === 'poison-touch' && contact && a !== 'shield-dust' && target.item?.name !== 'covert-cloak' && random() < 0.3)
@@ -1031,6 +1057,11 @@ export function abilityAfterHit(
   }
   void foe
 }
+export function abilityAfterHitSequence(target: BattlePokemon, user: BattlePokemon, move: BattleMove) {
+  if (target.hp > 0 && abilityName(target) === 'color-change' && !abilityBypassed(user, target, move))
+    changeTypes(target, [move.type])
+}
+
 export function abilityAfterMove(
   p: BattlePokemon,
   target: BattlePokemon,

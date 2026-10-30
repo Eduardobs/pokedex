@@ -43,17 +43,19 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Resource lists under `/explore` preserve the PokéAPI numeric order.
 
 
-- Random Battle OHKO moves faint a directly hit target immediately, using the regular accuracy check without a level gate; Protect, type immunity, and Substitute interception still prevent a direct hit.
-- Random Battle Sky Drop spends one turn carrying its target and blocking attacks, then releases and deals damage on the next turn; the defender may switch while carried, cancelling the pending damage.
-- Random Battle Gigaton Hammer and Blood Moon fail only when the same move succeeded on the immediately preceding turn; a failed execution permits another attempt and does not force recharge.
-- Random Battle accuracy and evasion use separate stages from -6 to +6 with 3-based multipliers; hit probability is base accuracy times the user's multiplier divided by the target's multiplier, followed by Bright Powder and weather evasion modifiers.
-- Random Battle does not implement Z-Move or Max Move activation.
+- Random Battle OHKO moves follow modern main-series level restrictions and level-based accuracy, ignore accuracy/evasion modifiers, respect Sturdy and Focus Sash, and make Sheer Cold ineffective against Ice types.
+- Random Battle Sky Drop carries targets below 200 kg without a first-turn accuracy check, prevents the carried target from switching, and checks accuracy on release; Flying targets take no release damage.
+- Random Battle Gigaton Hammer and Blood Moon cannot be selected again after being used, including after a miss or Protect; another move or switching clears the restriction, while Encore can force repetition.
+- Random Battle accuracy subtracts evasion from accuracy stages, clamps the result to -6 through +6, applies the 3-based multiplier and truncates the percentage before item/weather modifiers.
+- Random Battle Z-Moves and Max Moves fail explicitly; only singles effects are enabled, moves requiring another active ally fail, and Legends moves use the bundled Showdown main-series versions or adaptations.
 - Random Battle offers Struggle only when no learned move is usable; it has 50 physical power, deals typeless damage without STAB, bypasses accuracy checks and Wonder Guard, respects Protect and Detect, and costs one quarter of maximum HP in recoil regardless of Magic Guard or Rock Head.
 
 - Team member editing offers compatible bundled Showdown sets by role and a repeatable Random option that randomizes all editable build fields, spends all 510 EVs, and respects the available abilities, moves, and genders.
 
-- Random Battle Revival Blessing revives the first fainted party member with half its maximum HP; Lunar Blessing cures the user’s major status, restores half its maximum HP, and raises evasion by one stage.
+- Random Battle Revival Blessing revives the first fainted party member with half its maximum HP; Lunar Blessing cures the user’s major status and restores one quarter of its maximum HP.
 - Random Battle Pressure makes moves directed at its holder cost two PP in total, bounded at zero.
+
+- Random Battle multistrike moves use Scarlet/Violet (Generation IX) turn-based hit counts, escalating power and accuracy rules, including Skill Link, Loaded Dice and Beat Up; the battle log numbers every executed strike.
 
 ## Maintenance
 
@@ -97,7 +99,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Random Battle tracks timed weather, terrain, Trick Room, screens, and Tailwind effects and applies their combat modifiers.
 - Random Battle visibly identifies active field, side, and Pokémon conditions; weather effects display their remaining turns, and Future Sight displays its countdown, while other remaining durations stay hidden.
 - Random Battle uses the supplied color and icon treatment for its six major status conditions and identifies entry hazards on the affected side of the field.
-- Random Battle Encore lasts a randomly selected two to six actions and ends when the affected Pokémon switches or the repeated move runs out of PP.
+- Random Battle Encore forces three actions of repetition, fails against moves flagged as incompatible, and ends on switching or when the repeated move runs out of PP.
 - Move detail pages display the local supplemental battle behavior when the selected move has one.
 - Random Battle resolves combatants' actions sequentially after a configurable presentation delay, announcing each move over its user and completing that combatant's HP and effect presentation before announcing the next action or accepting another choice.
 - Random Battle briefly displays a localized miss announcement over the intended target, fading in and out while respecting reduced motion.

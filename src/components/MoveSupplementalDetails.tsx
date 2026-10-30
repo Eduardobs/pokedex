@@ -27,10 +27,13 @@ function effectDetails(effect: SupplementalMoveEffect, t: Translator): Detail[] 
         mechanic(t('moveSupplemental.kind.encore')),
         {
           label: t('moveSupplemental.duration'),
-          value: t('moveSupplemental.turnRange', {
-            minimum: effect.minimumTurns,
-            maximum: effect.maximumTurns,
-          }),
+          value:
+            effect.minimumTurns === effect.maximumTurns
+              ? t('moveSupplemental.turns', { turns: effect.minimumTurns })
+              : t('moveSupplemental.turnRange', {
+                  minimum: effect.minimumTurns,
+                  maximum: effect.maximumTurns,
+                }),
         },
       ]
     case 'taunt':

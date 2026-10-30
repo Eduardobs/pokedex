@@ -1,5 +1,5 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { BATTLE_TIMING, STORAGE_KEYS } from '../config/app'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -8,7 +8,7 @@ import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/
 import * as battleData from '../lib/battle-data'
 import * as battleEngine from '../lib/battle'
 import * as randomTeam from '../lib/random-team'
-import type { Team } from '../lib/teams'
+import { statNames, type Team } from '../lib/teams'
 import { BattleFieldEffects, BattlePage, BattleSideHazards, MajorStatusBadge } from './BattlePage'
 
 const completeTeam = (id: string, name: string): Team => ({
@@ -121,6 +121,31 @@ const battleRoster = (
       },
     ),
   )
+
+beforeEach(() => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(input instanceof Request ? input.url : String(input))
+      const match = /^\/api\/v2\/pokemon\/([a-z0-9-]+)\/?$/.exec(url.pathname)
+      if (url.origin !== 'https://pokeapi.co' || !match) throw new Error(`Unexpected battle preview request: ${url}`)
+      const name = match[1]
+      const reference = (resource: string, endpoint: string) => ({
+        name: resource,
+        url: `https://pokeapi.co/api/v2/${endpoint}/1/`,
+      })
+      return Response.json({
+        id: 1,
+        name,
+        species: reference(name, 'pokemon-species'),
+        stats: statNames.map((stat) => ({ base_stat: 100, stat: reference(stat, 'stat') })),
+        types: [{ type: reference('normal', 'type') }],
+        abilities: [{ ability: reference('run-away', 'ability') }],
+        moves: [],
+      })
+    }),
+  )
+})
 
 afterEach(() => {
   cleanup()
@@ -394,6 +419,41 @@ describe('BattlePage lobby', () => {
       expect(log).not.toHaveTextContent('Klefki usou Play Rough.')
     },
   )
+
+  it.each([
+    ['pt-BR', 'Iniciar batalha', 'Acerto {hit} de Triple Axel em Eevee.'],
+    ['en', 'Start battle', 'Hit {hit} of Triple Axel on Eevee.'],
+    ['es', 'Iniciar combate', 'Golpe {hit} de Triple Axel contra Eevee.'],
+  ])('logs every executed strike in %s', async (language, startLabel, template) => {
+    const player = completeTeam('player', 'Player')
+    const opponent = completeTeam('opponent', 'Opponent')
+    player.members[0].pokemon = 'pikachu'
+    player.members[0].moves[0] = 'triple-axel'
+    opponent.members[0].pokemon = 'eevee'
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    localStorage.setItem(STORAGE_KEYS.language, language)
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleEngine, 'chooseOpponentAction').mockReturnValue({ kind: 'move', index: 0 })
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
+      const roster = battleRoster(team)
+      roster[0].moves[0].data =
+        team.id === player.id
+          ? testMove('triple-axel', 'ice')
+          : { ...testMove('splash'), damageClass: 'status', power: null, accuracy: null, target: 'user' }
+      return roster
+    })
+    show()
+    fireEvent.click(screen.getByRole('button', { name: startLabel }))
+    const attack = await screen.findByRole('button', { name: 'Triple Axel' })
+    vi.spyOn(Math, 'random').mockReturnValue(0.5)
+    vi.useFakeTimers()
+    fireEvent.click(attack)
+    await act(() => vi.runAllTimersAsync())
+    const log = screen.getByRole('log')
+    for (const hit of [1, 2, 3]) expect(log).toHaveTextContent(template.replace('{hit}', String(hit)))
+    expect(log).not.toHaveTextContent(template.replace('{hit}', '4'))
+  })
 
   it('offers a reusable Struggle button when every learned move has zero PP', async () => {
     const player = completeTeam('player', 'Minha equipe')

@@ -419,7 +419,7 @@ describe('Random Battle engine', () => {
     expect(appliedEffect.state.opponent.roster[0].stages.attack).toBe(-1)
   })
 
-  it('locks an Encored Pokémon into its last move for a random two to six actions and clears it on switch', () => {
+  it('locks an Encored Pokémon into its last move for three actions and clears it on switch', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')
     const state = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
@@ -433,12 +433,12 @@ describe('Random Battle engine', () => {
       type: 'encore',
       pokemon: 'opponent-0',
       move: 'quick-attack',
-      turns: 4,
+      turns: 3,
     })
     expect(encored.events).toContainEqual(
       expect.objectContaining({ type: 'move', side: 'opponent', move: 'quick-attack' }),
     )
-    expect(encored.state.opponent.roster[0]).toMatchObject({ encoreMoveIndex: 1, encoreTurns: 3 })
+    expect(encored.state.opponent.roster[0]).toMatchObject({ encoreMoveIndex: 1, encoreTurns: 2 })
     expect(legalBattleMoveIndexes(encored.state.opponent.roster[0])).toEqual([1])
 
     encored.state.phase = 'opponent-switch'
@@ -455,7 +455,7 @@ describe('Random Battle engine', () => {
     })
   })
 
-  it('selects both inclusive Encore duration boundaries', () => {
+  it('uses a fixed Encore duration regardless of randomness', () => {
     const makeState = () => {
       const playerTeam = team('player')
       const opponentTeam = team('opponent')
@@ -469,8 +469,8 @@ describe('Random Battle engine', () => {
     const minimum = resolveBattleTurn(makeState(), { kind: 'move', index: 0 }, { kind: 'move', index: 1 }, () => 0)
     const maximum = resolveBattleTurn(makeState(), { kind: 'move', index: 0 }, { kind: 'move', index: 1 }, () => 0.999)
 
-    expect(minimum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 2 }))
-    expect(maximum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 6 }))
+    expect(minimum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 3 }))
+    expect(maximum.events).toContainEqual(expect.objectContaining({ type: 'encore', turns: 3 }))
   })
 
   it('sets weather and terrain with timed field state', () => {
@@ -2120,9 +2120,9 @@ describe('Random Battle engine', () => {
     const forced = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     forced.player.roster[0].moves[0].data = move({ name: 'dragon-tail', type: 'dragon', power: 60 })
     forced.player.roster[0].stats[5] = 999
-    expect(
-      resolveBattleTurn(forced, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5).state.phase,
-    ).toBe('opponent-switch')
+    const forcedResult = resolveBattleTurn(forced, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(forcedResult.state.phase).toBe('choice')
+    expect(forcedResult.state.opponent.active).toBeGreaterThan(0)
 
     const cleared = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     cleared.player.hazards.spikes = 2
@@ -2662,7 +2662,7 @@ describe('Blessings and Pressure', () => {
     expect(useMove(state).events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
   })
 
-  it('heals Lunar Blessing users, cures status and raises evasion through Protect', () => {
+  it('heals Lunar Blessing users by a quarter and cures status through Protect', () => {
     const state = setup()
     const user = state.player.roster[0]
     user.moves[0].data = move({
@@ -2678,10 +2678,10 @@ describe('Blessings and Pressure', () => {
     user.toxicTurns = 3
     state.opponent.roster[0].volatile.protect = 1
     const result = useMove(state).state.player.roster[0]
-    expect(result.hp).toBe(200)
+    expect(result.hp).toBe(125)
     expect(result.status).toBeNull()
     expect(result.toxicTurns).toBe(0)
-    expect(result.stages.evasion).toBe(1)
+    expect(result.stages.evasion).toBe(0)
   })
 
   it.each([35, 1])('spends two PP against Pressure without going negative from %i PP', (pp) => {

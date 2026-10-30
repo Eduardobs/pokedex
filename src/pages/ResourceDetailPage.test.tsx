@@ -159,7 +159,7 @@ describe('ResourceDetailPage berry presentation', () => {
 
     const section = screen.getByRole('heading', { name: 'Comportamento suplementar' }).closest('section')
     expect(section).toHaveTextContent('Obriga o alvo a repetir o último golpe usado')
-    expect(section).toHaveTextContent('De 2 a 6 turnos')
+    expect(section).toHaveTextContent('3 turnos')
     expect(section).toHaveTextContent('PokéAPI')
   })
 

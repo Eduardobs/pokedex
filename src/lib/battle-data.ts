@@ -1,4 +1,6 @@
 import { supplementalMoveMetadata } from './battle-move-effects'
+import { multistrikeMoves } from './battle-multistrike'
+import { canonicalMoveSecondaries } from '../data/third-party/battle-move-secondaries'
 import { apiFetch } from './api'
 import { array, record, reference } from './resource-data'
 import { parseTeamPokemon, type Team } from './teams'
@@ -112,6 +114,18 @@ export function parseBattleMove(value: unknown): BattleMove {
     statChance: boundedInteger(meta.stat_chance, 1, 100),
     descriptions,
     ...(data.meta === null ? supplementalMoveMetadata[name] : {}),
+    ...(multistrikeMoves[name]
+      ? {
+          minHits: multistrikeMoves[name].hits[0],
+          maxHits: multistrikeMoves[name].hits[1],
+          multiAccuracy: multistrikeMoves[name].accuracyPerHit ?? false,
+        }
+      : {}),
+    ...(canonicalMoveSecondaries[name]
+      ? {
+          secondaries: canonicalMoveSecondaries[name],
+        }
+      : {}),
   }
 }
 
