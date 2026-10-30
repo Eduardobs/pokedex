@@ -3,10 +3,11 @@ import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import type { Translate, TranslationKey } from '../../contexts/LanguageContext'
 import type { EvolutionDetail, EvolutionNode } from '../../types'
-import { EvolutionTreeNode, evolutionCondition, evolutionConditions } from './EvolutionTree'
+import { EvolutionTree, evolutionCondition, evolutionConditions } from './EvolutionTree'
 
 const labels: Partial<Record<TranslationKey, string>> = {
   'evolution.level': 'Nível {level}',
+  'evolution.knownType': 'Golpe de tipo {type}',
   'evolution.statsEqual': 'Ataque igual à Defesa',
   'evolution.beauty': 'Beleza {value}+',
   'evolution.multiplayer': 'Em sessão multijogador',
@@ -102,16 +103,14 @@ describe('evolutionCondition', () => {
   })
 })
 
-describe('EvolutionTreeNode', () => {
+describe('EvolutionTree', () => {
   it.each([
     ['wormadam', 413, '/pokemon/wormadam-plant'],
     ['meowstic', 678, '/pokemon/meowstic-male'],
   ])('links the %s species to its canonical default variety', (name, id, href) => {
     render(
       <MemoryRouter>
-        <ul>
-          <EvolutionTreeNode node={evolutionNode(name, id)} t={t} language="pt-BR" root />
-        </ul>
+        <EvolutionTree node={evolutionNode(name, id)} t={t} language="pt-BR" />
       </MemoryRouter>,
     )
 
@@ -159,21 +158,60 @@ describe('EvolutionTreeNode', () => {
 
     render(
       <MemoryRouter>
-        <ul className="evolution-tree">
-          <EvolutionTreeNode node={chain} t={t} language="pt-BR" root />
-        </ul>
+        <EvolutionTree node={chain} t={t} language="pt-BR" />
       </MemoryRouter>,
     )
 
     const gloomItem = screen.getByRole('link', { name: /Gloom/ }).closest('li')
-    const branches = gloomItem?.querySelector(':scope > .evolution-children')
+    const branches = gloomItem?.querySelector(':scope > .evolution-flow-descendants')
     const vileplumeItem = screen.getByRole('link', { name: /Vileplume/ }).closest('li')
     const bellossomItem = screen.getByRole('link', { name: /Bellossom/ }).closest('li')
 
-    expect(branches).toHaveClass('is-branching')
+    expect(branches).toHaveAttribute('data-branching', 'true')
     expect(vileplumeItem?.parentElement).toBe(branches)
     expect(bellossomItem?.parentElement).toBe(branches)
     expect(screen.getByText('Usar Leaf Stone')).toBeInTheDocument()
     expect(screen.getByText('Usar Sun Stone')).toBeInTheDocument()
   })
+})
+
+it('marks the current species and distinguishes alternate methods on one destination', () => {
+  const chain = evolutionNode('feebas', 349, [
+    evolutionNode(
+      'milotic',
+      350,
+      [],
+      [
+        evolutionDetail({ min_beauty: 170 }),
+        evolutionDetail({
+          trigger: { name: 'trade', url: 'https://pokeapi.co/api/v2/evolution-trigger/2/' },
+          held_item: { name: 'prism-scale', url: 'https://pokeapi.co/api/v2/item/537/' },
+        }),
+      ],
+    ),
+  ])
+  const { container } = render(
+    <MemoryRouter>
+      <EvolutionTree node={chain} t={t} language="pt-BR" currentSpecies="milotic" />
+    </MemoryRouter>,
+  )
+  expect(screen.getByRole('link', { name: /Milotic/ })).toHaveAttribute('aria-current', 'page')
+  expect(screen.getByRole('link', { name: /Feebas/ })).not.toHaveAttribute('aria-current')
+  const destination = screen.getByRole('link', { name: /Milotic/ }).closest('li')!
+  expect(destination.querySelectorAll('.evolution-flow-method')).toHaveLength(2)
+  expect(destination.querySelector('.evolution-flow-or')).toHaveTextContent('evolution.or')
+  expect(container.querySelectorAll('.evolution-flow-conditions')).toHaveLength(1)
+})
+
+it('localizes time and type requirements instead of showing raw API labels', () => {
+  expect(
+    evolutionCondition(
+      evolutionDetail({
+        time_of_day: 'night',
+        known_move_type: { name: 'fairy', url: 'https://pokeapi.co/api/v2/type/18/' },
+      }),
+      t,
+      'pt-BR',
+    ),
+  ).toBe('Golpe de tipo Fada · À noite')
 })

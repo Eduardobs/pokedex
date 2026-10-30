@@ -1,0 +1,239 @@
+/* A measured flow diagram: Pokemon are nodes and requirements belong to edges. */
+.evolution-flowchart {
+  min-width: 0;
+  margin-top: 22px;
+}
+.evolution-flow-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.evolution-flow-toolbar > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.evolution-flow-toolbar button {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.evolution-flow-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.evolution-flow-toolbar button:not(:disabled):hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+.evolution-flow-toolbar output {
+  min-width: 46px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.evolution-flow-hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 12px 0;
+}
+.evolution-flow-viewport {
+  --flow-line: color-mix(in srgb, var(--ink) 55%, var(--surface));
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: min(620px, 72dvh);
+  min-height: 300px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background-color: var(--surface-soft);
+  background-image: radial-gradient(color-mix(in srgb, var(--muted) 22%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+  scrollbar-width: thin;
+}
+.evolution-flow-viewport:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+.evolution-flow-size {
+  position: relative;
+  min-width: 100%;
+  overflow: hidden;
+}
+.evolution-flow-scene {
+  position: absolute;
+  transform-origin: top left;
+}
+.evolution-flow-lines {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.evolution-flow-lines > path {
+  fill: none;
+  stroke: var(--flow-line);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.evolution-flow-lines marker path {
+  fill: var(--flow-line);
+}
+:root[data-theme] .evolution-flow,
+:root[data-theme] .evolution-flow-descendants,
+:root[data-theme] .evolution-flow-branch {
+  display: contents;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+:root[data-theme] .evolution-flow-node {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 3px 10px #14203908;
+  color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+}
+:root[data-theme] .evolution-flow-node.is-current {
+  border: 2px solid var(--red);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 7%, transparent);
+}
+.evolution-flow-node:hover {
+  border-color: var(--red);
+}
+.evolution-flow-stage {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+}
+.evolution-flow-node img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 2px 0;
+}
+.evolution-flow-node small {
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+.evolution-flow-node strong {
+  font:
+    750 18px/1.25 Outfit,
+    sans-serif;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+.evolution-flow-current {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 8%, var(--surface));
+  border-radius: 6px;
+  padding: 3px 6px;
+  font-size: 9px;
+  font-weight: 750;
+  margin-top: 3px;
+}
+.evolution-flow-conditions {
+  position: absolute;
+  z-index: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.evolution-flow-relation {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.evolution-flow-method p {
+  margin: 0;
+  white-space: normal;
+}
+.evolution-flow-or {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--red);
+  font-size: 9px;
+  font-weight: 800;
+  margin-block: 6px;
+}
+.evolution-flow-or::before,
+.evolution-flow-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.evolution-flow-method .evolution-rules {
+  margin-top: 8px;
+  text-align: left;
+}
+.evolution-flow-method .evolution-rules summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+.evolution-flow-method .evolution-rules code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 720px) {
+  .evolution-flow-toolbar {
+    gap: 6px;
+  }
+  .evolution-flow-toolbar button {
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+  .evolution-flow-viewport {
+    height: min(620px, 74dvh);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evolution-flow-viewport {
+    scroll-behavior: auto;
+  }
+}

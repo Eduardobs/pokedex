@@ -12,7 +12,7 @@ The shared implementation lives in `src/styles/redesign.css`. `PageHeader` provi
 
 - Home: asymmetric navy/crimson stage featuring Charizard, a direct search entry, starter links, numbered task tiles and planning shortcuts.
 - Pokédex, forms and favorites: navy collection headers, a separate filter workspace, and type-tinted artwork cards with prominent names and dex numbers.
-- Pokémon details: a large artwork stage beside the species summary, high-contrast selected tabs, and framed information panels. Evolution branches retain their explicit relationships.
+- Pokémon details: a compact identity and artwork header, a mobile grid of six tabs, and a separate overview with description and physical metrics. The evolution workspace is a connected flowchart designed with Stitch: compact species nodes, measured orthogonal SVG arrows, and requirements on parent-child connections. It flows left to right on desktop and top to bottom on mobile, with a common distribution rail for sibling branches. Zoom, fit and native keyboard scrolling keep larger families explorable without whole-page overflow. Alternative methods stay separated by OR and the current species is highlighted.
 - Explore: colorful category headers, compact directory rows, and a dedicated search and shortcut area.
 - Resource lists and details: a strong record header above neutral, readable reference rows and detail panels.
 - Teams: trainer workspace banner, separate toolbar, prominent roster tabs, and grouped member-editing panels.

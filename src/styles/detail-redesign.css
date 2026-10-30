@@ -1,0 +1,744 @@
+/* Species identity, artwork, and readable evolutionary paths at every width. */
+.pokemon-detail .detail-hero {
+  padding-top: 20px;
+}
+.pokemon-detail .detail-nav {
+  gap: 12px;
+}
+.pokemon-detail .detail-nav a {
+  min-height: 44px;
+}
+.pokemon-detail .detail-nav > div {
+  gap: 16px;
+  min-width: 0;
+}
+.pokemon-detail .detail-nav-pokemon {
+  min-width: 0;
+  max-width: 180px;
+}
+.pokemon-detail .detail-nav-pokemon > span {
+  min-width: 0;
+}
+.pokemon-detail .detail-nav-pokemon strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+:root[data-theme] .pokemon-detail .detail-showcase {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-areas: 'identity artwork';
+  align-items: center;
+  min-height: 0;
+  padding: 32px;
+  margin-block: 16px 24px;
+  gap: 20px 32px;
+  border-radius: 28px;
+  overflow: hidden;
+}
+.pokemon-detail .detail-copy {
+  grid-area: identity;
+  padding: 0 44px 0 0;
+  text-align: left;
+  min-width: 0;
+}
+.pokemon-detail .detail-copy h1 {
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1;
+  letter-spacing: -2px;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.pokemon-detail .detail-copy .pokemon-number {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+.pokemon-detail .detail-copy .genus {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+.pokemon-detail .detail-copy .type-row {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.pokemon-detail .detail-summary {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
+  gap: 24px;
+  align-items: center;
+  min-width: 0;
+  align-self: start;
+}
+.pokemon-detail .detail-summary .description {
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 15px;
+  margin: 0 0 20px;
+  max-width: 60ch;
+}
+:root[data-theme] .pokemon-detail .detail-visual {
+  grid-area: artwork;
+  min-width: 0;
+  min-height: 360px;
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--theme) 18%, var(--line));
+  border-radius: 24px;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-self: stretch;
+  background: color-mix(in srgb, var(--theme) 12%, var(--surface-soft));
+}
+.pokemon-detail .detail-art {
+  height: auto;
+  min-height: 280px;
+  isolation: isolate;
+}
+.pokemon-detail .detail-art img {
+  width: min(100%, 330px);
+  height: 310px;
+  object-fit: contain;
+}
+:root[data-theme] .pokemon-detail .detail-orb {
+  width: 260px;
+  height: 260px;
+  max-width: 85%;
+  aspect-ratio: 1;
+}
+:root[data-theme] .pokemon-detail .giant-number {
+  font-size: 145px;
+  top: 4px;
+  right: 4px;
+  line-height: 1;
+  pointer-events: none;
+}
+.pokemon-detail .shiny-toggle {
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--line);
+  align-items: center;
+}
+.pokemon-detail .shiny-toggle.active {
+  background: var(--midnight);
+  color: #fff;
+}
+:root[data-theme] .pokemon-detail .detail-favorite {
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  z-index: 4;
+}
+.pokemon-detail .physical-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+:root[data-theme] .pokemon-detail .physical-stats > span {
+  min-width: 0;
+  padding: 12px 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+  color: var(--muted);
+  grid-template-columns: 20px minmax(0, 1fr);
+  column-gap: 6px;
+}
+.pokemon-detail .physical-stats b {
+  color: var(--ink);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.pokemon-detail .physical-stats small {
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: normal;
+}
+:root[data-theme] .pokemon-detail .tabs {
+  display: grid;
+  grid-template-columns: repeat(var(--detail-tabs), minmax(0, 1fr));
+  height: auto;
+  min-height: 64px;
+  gap: 4px;
+  padding: 6px;
+  overflow: visible;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 18px;
+  top: calc(var(--topbar-height) + 8px);
+}
+.pokemon-detail .tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  min-height: 48px;
+  height: auto;
+  padding: 10px;
+  white-space: normal;
+  line-height: 1.3;
+  font-size: 13px;
+}
+.pokemon-detail .tabs button span {
+  margin: 0;
+  font-size: 10px;
+}
+.pokemon-detail .about-grid {
+  gap: 16px;
+  align-items: start;
+}
+.pokemon-detail .stats-card > header {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pokemon-detail .stats-card > header h2 {
+  margin: 0;
+}
+.pokemon-detail .stats-card > header > span {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+.pokemon-detail .stat-row {
+  font-variant-numeric: tabular-nums;
+}
+/* An overview entry point keeps the full family one tap away. */
+.evolution-preview-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--red);
+}
+.evolution-preview-title h2 {
+  color: var(--ink);
+  margin: 0;
+}
+.evolution-preview > p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.evolution-preview .button {
+  width: 100%;
+  margin-top: 18px;
+  white-space: normal;
+}
+.evolution-family-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0 0;
+}
+.evolution-family-facts > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-soft);
+}
+.evolution-family-facts dt {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.evolution-family-facts dd {
+  margin: 0;
+  font:
+    800 26px/1 Outfit,
+    sans-serif;
+  color: var(--ink);
+}
+.evolution-workspace {
+  min-width: 0;
+}
+.evolution-workspace-heading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.evolution-workspace-heading > div {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+.evolution-workspace-heading h2 {
+  margin-block: 8px 12px;
+  font-size: 32px;
+}
+.evolution-workspace-heading p {
+  max-width: 65ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14px;
+}
+.evolution-workspace-heading .evolution-family-facts {
+  margin: 0;
+  flex: 0 1 330px;
+  align-self: start;
+}
+/* The DOM remains a nested list: sibling outcomes never become consecutive stages. */
+:root[data-theme] .evolution-lineage,
+:root[data-theme] .evolution-lineage ul {
+  list-style: none;
+  padding: 0;
+  min-width: 0;
+}
+:root[data-theme] .evolution-lineage {
+  display: block;
+  width: 100%;
+  margin: 28px 0 0;
+  overflow: visible;
+}
+:root[data-theme] .evolution-lineage .evolution-node {
+  display: block;
+  min-width: 0;
+  position: relative;
+}
+:root[data-theme] .evolution-lineage .evolution-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  flex-shrink: 1;
+  position: relative;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+:root[data-theme] .evolution-lineage .evolution-entry.is-current {
+  border: 2px solid var(--red);
+}
+.evolution-stage-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 16px 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.5px;
+}
+.evolution-current {
+  color: var(--red);
+  border: 1px solid color-mix(in srgb, var(--red) 30%, var(--line));
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--red) 7%, var(--surface));
+  padding: 4px 6px;
+  letter-spacing: 0;
+}
+.evolution-origin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px 0;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.evolution-origin svg {
+  flex: none;
+}
+:root[data-theme] .evolution-lineage .evolution-pokemon {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  text-align: left;
+  color: var(--ink);
+}
+.evolution-lineage .evolution-pokemon:hover {
+  background: color-mix(in srgb, var(--theme) 7%, var(--surface));
+}
+:root[data-theme] .evolution-lineage .evolution-pokemon img {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  background: var(--surface);
+  padding: 4px;
+  border-radius: 16px;
+  margin: 0;
+}
+.evolution-pokemon-identity {
+  min-width: 0;
+}
+:root[data-theme] .evolution-lineage .evolution-pokemon b {
+  display: block;
+  font:
+    750 21px/1.2 Outfit,
+    sans-serif;
+  overflow-wrap: anywhere;
+}
+:root[data-theme] .evolution-lineage .evolution-pokemon small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.evolution-methods {
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.evolution-methods-label {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+.evolution-method {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.evolution-method p {
+  margin: 0;
+  white-space: normal;
+}
+.evolution-method .evolution-rules {
+  margin-top: 8px;
+}
+.evolution-method .evolution-rules summary {
+  min-height: 44px;
+  cursor: pointer;
+}
+.evolution-method .evolution-rules code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.evolution-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 10px;
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 850;
+}
+.evolution-or::before,
+.evolution-or::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: var(--line);
+}
+:root[data-theme] .evolution-lineage .evolution-children {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+:root[data-theme] .evolution-lineage .evolution-children > .evolution-node {
+  padding-top: 24px;
+}
+:root[data-theme] .evolution-lineage .evolution-children::before,
+:root[data-theme] .evolution-lineage .evolution-children.is-branching > .evolution-node::after {
+  content: none;
+}
+:root[data-theme] .evolution-lineage .evolution-children > .evolution-node::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 24px;
+  border: 0;
+  border-left: 2px solid var(--line);
+}
+:root[data-theme] .evolution-lineage.has-branches .evolution-entry {
+  max-width: 520px;
+  margin-inline: auto;
+}
+:root[data-theme] .evolution-lineage.has-branches .evolution-children.is-branching {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  align-items: start;
+}
+:root[data-theme]
+  .evolution-lineage.has-branches
+  .evolution-children.is-branching
+  > .evolution-node
+  > .evolution-entry {
+  max-width: none;
+}
+.evolution-branch-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 16px 0 0;
+}
+:root[data-theme] .evolution-lineage.is-linear {
+  display: grid;
+  grid-template-columns: repeat(var(--evolution-stages), minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+:root[data-theme] .evolution-lineage.is-linear .evolution-node,
+:root[data-theme] .evolution-lineage.is-linear .evolution-children {
+  display: contents;
+}
+:root[data-theme] .evolution-lineage.is-linear .evolution-node::before {
+  content: none;
+}
+.evolution-empty-note {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+}
+.evolution-workspace .baby-trigger-item {
+  background: var(--surface-soft);
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 24px;
+}
+@media (max-width: 950px) {
+  :root[data-theme] .pokemon-detail .detail-showcase {
+    gap: 18px;
+    padding: 24px;
+  }
+  .pokemon-detail .detail-copy h1 {
+    font-size: 44px;
+  }
+  .pokemon-detail .physical-stats {
+    gap: 6px;
+  }
+  .pokemon-detail .physical-stats b {
+    font-size: 13px;
+  }
+}
+@media (max-width: 720px) {
+  .pokemon-detail .detail-hero {
+    padding-top: 12px;
+  }
+  .pokemon-detail .detail-nav {
+    align-items: center;
+  }
+  .pokemon-detail .detail-nav > div {
+    margin-left: auto;
+    max-width: 70%;
+    gap: 12px;
+  }
+  .pokemon-detail .detail-nav-pokemon {
+    max-width: 120px;
+    gap: 4px;
+  }
+  .pokemon-detail .detail-nav-pokemon strong {
+    font-size: 11px;
+  }
+  :root[data-theme] .pokemon-detail .detail-showcase {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'identity' 'artwork';
+    padding: 20px;
+    gap: 18px;
+    border-radius: 24px;
+    margin-top: 12px;
+  }
+  .pokemon-detail .detail-copy h1 {
+    font-size: clamp(34px, 9vw, 46px);
+    letter-spacing: -1.4px;
+  }
+  .pokemon-detail .detail-copy .genus {
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+  :root[data-theme] .pokemon-detail .detail-visual {
+    min-height: 0;
+    padding: 12px;
+    border-radius: 18px;
+  }
+  .pokemon-detail .detail-art {
+    min-height: 190px;
+  }
+  .pokemon-detail .detail-art img {
+    width: min(100%, 250px);
+    height: 210px;
+  }
+  :root[data-theme] .pokemon-detail .detail-orb {
+    width: 190px;
+    height: 190px;
+  }
+  :root[data-theme] .pokemon-detail .giant-number {
+    font-size: 100px;
+    top: 4px;
+  }
+  .pokemon-detail .detail-summary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .pokemon-detail .detail-summary .description {
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 16px;
+  }
+  :root[data-theme] .pokemon-detail .physical-stats > span {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 10px;
+  }
+  .pokemon-detail .physical-stats svg {
+    width: 16px;
+    height: 16px;
+  }
+  .pokemon-detail .physical-stats small {
+    font-size: 10px;
+  }
+  :root[data-theme] .pokemon-detail .tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-radius: 16px;
+  }
+  .pokemon-detail .tabs button {
+    min-height: 44px;
+    padding: 8px 5px;
+    font-size: 12px;
+  }
+  .pokemon-detail .about-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pokemon-detail .stats-visualization {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pokemon-detail .stats-radar {
+    max-width: 230px;
+    margin-inline: auto;
+  }
+  .pokemon-detail .stats-card {
+    padding: 18px;
+  }
+  :root[data-theme] .evolution-workspace {
+    padding: 16px;
+  }
+  .evolution-workspace-heading {
+    gap: 16px;
+    padding-bottom: 18px;
+  }
+  .evolution-workspace-heading h2 {
+    font-size: 27px;
+  }
+  .evolution-workspace-heading p {
+    font-size: 13px;
+  }
+  .evolution-workspace-heading .evolution-family-facts {
+    flex: 1 1 100%;
+  }
+  .evolution-family-facts > div {
+    padding: 10px;
+  }
+  .evolution-family-facts dd {
+    font-size: 24px;
+  }
+  :root[data-theme] .evolution-lineage.is-linear,
+  :root[data-theme] .evolution-lineage.is-linear .evolution-node,
+  :root[data-theme] .evolution-lineage.is-linear .evolution-children {
+    display: block;
+  }
+  :root[data-theme] .evolution-lineage.is-linear .evolution-children > .evolution-node::before {
+    content: '';
+  }
+  :root[data-theme] .evolution-lineage.has-branches .evolution-children.is-branching {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  :root[data-theme] .evolution-lineage .evolution-pokemon {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+  :root[data-theme] .evolution-lineage .evolution-pokemon img {
+    width: 72px;
+    height: 72px;
+  }
+  :root[data-theme] .evolution-lineage .evolution-pokemon b {
+    font-size: 21px;
+  }
+  .evolution-stage-heading {
+    padding-inline: 14px;
+  }
+  .evolution-origin {
+    padding-inline: 14px;
+  }
+  .evolution-methods {
+    padding: 12px 14px 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .evolution-lineage *,
+  .pokemon-detail .detail-showcase * {
+    scroll-behavior: auto;
+  }
+}
+
+/* Sibling outcomes share a branch group rather than a sequential connector. */
+:root[data-theme] .evolution-lineage .evolution-children.is-branching {
+  margin-top: 16px;
+  padding-top: 18px;
+  border-top: 2px solid var(--line);
+}
+:root[data-theme] .evolution-lineage .evolution-children.is-branching > .evolution-node {
+  padding-top: 0;
+}
+:root[data-theme] .evolution-lineage .evolution-children.is-branching > .evolution-node::before {
+  content: none;
+}
+@media (max-width: 720px) {
+  :root[data-theme] .evolution-lineage.has-branches .evolution-children.is-branching {
+    margin-left: 6px;
+    width: calc(100% - 6px);
+    padding: 0 0 0 16px;
+    border-top: 0;
+    border-left: 2px solid var(--line);
+    gap: 16px;
+  }
+  :root[data-theme] .evolution-lineage .evolution-children.is-branching > .evolution-node::before {
+    content: '';
+    left: -18px;
+    top: 34px;
+    width: 18px;
+    height: 0;
+    border: 0;
+    border-top: 2px solid var(--line);
+  }
+}

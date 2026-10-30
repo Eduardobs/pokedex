@@ -7,7 +7,7 @@ import { InlineRetryError } from '../components/FeedbackState'
 import { Loading } from '../components/Loading'
 import { LocalizedResourceName } from '../components/LocalizedResourceName'
 import { BaseStatsRadar } from '../components/pokemon-detail/BaseStatsRadar'
-import { EvolutionTreeNode } from '../components/pokemon-detail/EvolutionTree'
+import { EvolutionPreview, PokemonEvolution } from '../components/pokemon-detail/PokemonEvolution'
 import { PokemonBiologyCard } from '../components/pokemon-detail/PokemonBiologyCard'
 import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
 import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounters'
@@ -32,15 +32,21 @@ const Pokemon3DTab = lazy(() => import('../components/pokemon-detail/Pokemon3DTa
 export function PokemonDetailPage() {
   const { apiLanguage, language, t } = useLanguage()
   const { name = '' } = useParams()
-  const [tab, setTab] = useState<'about' | 'moves' | 'encounters' | 'data' | '3d'>('about')
+  const [tab, setTab] = useState<'about' | 'evolution' | 'moves' | 'encounters' | 'data' | '3d'>('about')
   const [shiny, setShiny] = useState(false)
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
-  const { data: species, loading: speciesLoading, error: speciesError } = useApi<Species>(pokemon?.species.url ?? null)
+  const {
+    data: species,
+    loading: speciesLoading,
+    error: speciesError,
+    retry: retrySpecies,
+  } = useApi<Species>(pokemon?.species.url ?? null)
   const {
     data: evolution,
     loading: evolutionLoading,
     error: evolutionError,
+    retry: retryEvolution,
   } = useApi<EvolutionChain>(secondaryDataReady ? (species?.evolution_chain?.url ?? null) : null)
   const {
     data: encounters,
@@ -126,7 +132,7 @@ export function PokemonDetailPage() {
     'special-defense': t('stats.specialDefense'),
     speed: t('stats.speed'),
   }
-  const tabOrder = (['about', 'moves', 'encounters', 'data', '3d'] as const).filter(
+  const tabOrder = (['about', 'evolution', 'moves', 'encounters', 'data', '3d'] as const).filter(
     (value) => value !== '3d' || FEATURE_FLAGS.pokemon3D,
   )
   const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, current: (typeof tabOrder)[number]) => {
@@ -187,31 +193,13 @@ export function PokemonDetailPage() {
                 <TypeBadge key={type.name} type={type.name} />
               ))}
             </div>
-            <p className="description">
-              {description || (speciesError ? t('detail.speciesUnavailable') : t('detail.loadingSpecies'))}
-            </p>
-            {descriptionResult.fallback && language !== 'en' && (
-              <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
-            )}
-            <div className="physical-stats">
-              <span>
-                <Ruler /> <b>{formatDecimal(pokemon.height / 10, language)} m</b>
-                <small>{t('detail.height')}</small>
-              </span>
-              <span>
-                <Weight /> <b>{formatDecimal(pokemon.weight / 10, language)} kg</b>
-                <small>{t('detail.weight')}</small>
-              </span>
-              <span>
-                <Sparkles /> <b>{pokemon.base_experience ?? '—'}</b>
-                <small>{t('detail.baseExp')}</small>
-              </span>
-            </div>
           </div>
           <div className="detail-visual">
             <div className="detail-art">
-              <span className="giant-number">{String(pokemon.id).padStart(3, '0')}</span>
-              <span className="detail-orb" />
+              <span className="giant-number" aria-hidden="true">
+                {String(pokemon.id).padStart(3, '0')}
+              </span>
+              <span className="detail-orb" aria-hidden="true" />
               <img
                 src={artwork}
                 alt={`${prettyName(pokemon.name)}${shiny ? ` — ${t('detail.shiny')}` : ''}`}
@@ -233,6 +221,7 @@ export function PokemonDetailPage() {
           <button
             type="button"
             className={`detail-favorite ${isFavorite(pokemon.name) ? 'selected' : ''}`}
+            aria-pressed={isFavorite(pokemon.name)}
             onClick={() => toggle(pokemon.name)}
             aria-label={t(isFavorite(pokemon.name) ? 'favorite.remove' : 'favorite.add', {
               name: prettyName(pokemon.name),
@@ -244,10 +233,16 @@ export function PokemonDetailPage() {
       </div>
 
       <div className="detail-body content-width">
-        <nav className="tabs" role="tablist" aria-label={prettyName(pokemon.name)}>
+        <nav
+          className="tabs"
+          style={{ '--detail-tabs': tabOrder.length } as React.CSSProperties}
+          role="tablist"
+          aria-label={prettyName(pokemon.name)}
+        >
           {(
             [
               ['about', t('detail.overview'), null],
+              ['evolution', t('evolution.tab'), null],
               ['moves', t('detail.moves'), pokemon.moves.length],
               ['encounters', t('detail.encounters'), encounters?.length],
               ['data', t('detail.data'), null],
@@ -274,6 +269,38 @@ export function PokemonDetailPage() {
         </nav>
         {tab === 'about' && (
           <div className="about-grid" role="tabpanel" id="panel-about" aria-labelledby="tab-about">
+            <article className="info-card detail-summary">
+              <div className="detail-summary-intro">
+                <h2>{t('detail.overview')}</h2>
+                <p className="description" lang={descriptionResult.language}>
+                  {description ||
+                    (speciesError
+                      ? t('detail.speciesUnavailable')
+                      : species
+                        ? t('detail.descriptionUnavailable')
+                        : t('detail.loadingSpecies'))}
+                </p>
+                {descriptionResult.fallback && language !== 'en' && (
+                  <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
+                )}
+              </div>
+              <div className="physical-stats">
+                <span>
+                  <Ruler /> <b>{formatDecimal(pokemon.height / 10, language)} m</b>
+                  <small>{t('detail.height')}</small>
+                </span>
+                <span>
+                  <Weight /> <b>{formatDecimal(pokemon.weight / 10, language)} kg</b>
+                  <small>{t('detail.weight')}</small>
+                </span>
+                <span>
+                  <Sparkles />{' '}
+                  <b>{pokemon.base_experience == null ? '—' : formatNumber(pokemon.base_experience, language)}</b>
+                  <small>{t('detail.baseExp')}</small>
+                </span>
+              </div>
+            </article>
+
             <article className="info-card stats-card">
               <header>
                 <h2>{t('detail.baseStats')}</h2>
@@ -321,6 +348,13 @@ export function PokemonDetailPage() {
                 </div>
               </div>
             </article>
+            <EvolutionPreview
+              chain={evolution}
+              onOpen={() => {
+                setTab('evolution')
+                window.requestAnimationFrame(() => document.getElementById('tab-evolution')?.focus())
+              }}
+            />
             {speciesLoading ? (
               <article className="info-card">
                 <h2>{t('detail.biology')}</h2>
@@ -409,31 +443,17 @@ export function PokemonDetailPage() {
                 </>
               )}
             </article>
-            <article className="info-card evolution-card">
-              <h2>{t('detail.evolution')}</h2>
-              {!secondaryDataReady || evolutionLoading ? (
-                <p className="muted">{t('common.loading')}</p>
-              ) : evolutionError ? (
-                <p className="muted">{t('detail.evolutionUnavailable')}</p>
-              ) : evolution ? (
-                <>
-                  <ul className="evolution-tree" tabIndex={0} aria-label={t('detail.evolution')}>
-                    <EvolutionTreeNode node={evolution.chain} t={t} language={language} root />
-                  </ul>
-                  {evolution.baby_trigger_item && (
-                    <p className="baby-trigger-item">
-                      {t('evolution.babyTriggerItem', {
-                        item: prettyName(evolution.baby_trigger_item.name),
-                      })}
-                    </p>
-                  )}
-                </>
-              ) : (
-                <p className="muted">{t('detail.noEvolution')}</p>
-              )}
-            </article>
             {species && <PokemonForms species={species} currentPokemon={pokemon} />}
           </div>
+        )}
+        {tab === 'evolution' && (
+          <PokemonEvolution
+            chain={evolution}
+            loading={!secondaryDataReady || speciesLoading || evolutionLoading}
+            error={Boolean(evolutionError || speciesError)}
+            currentSpecies={species?.name ?? pokemon.species.name}
+            retry={speciesError ? retrySpecies : retryEvolution}
+          />
         )}
         <PokemonMovesTab key={pokemon.name} active={tab === 'moves'} pokemon={pokemon} />
         {tab === 'encounters' && (

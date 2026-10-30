@@ -177,6 +177,10 @@ describe('PokemonDetailPage', () => {
     expect(screen.getByRole('tab', { name: '3D' })).toBeVisible()
     const overview = screen.getByRole('tab', { name: 'Visão geral' })
     fireEvent.keyDown(overview, { key: 'ArrowRight' })
+    const evolutions = screen.getByRole('tab', { name: 'Evoluções' })
+    expect(evolutions).toHaveAttribute('aria-selected', 'true')
+    expect(evolutions).toHaveFocus()
+    fireEvent.keyDown(evolutions, { key: 'ArrowRight' })
     expect(screen.getByRole('tab', { name: 'Golpes 0' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('heading', { name: 'Nenhum Pokémon encontrado' })).toBeVisible()
 
