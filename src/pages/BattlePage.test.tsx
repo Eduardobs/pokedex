@@ -6,6 +6,7 @@ import { LanguageProvider } from '../contexts/LanguageContext'
 import { clearApiCache } from '../lib/api-client'
 import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/battle'
 import * as battleData from '../lib/battle-data'
+import * as battleEngine from '../lib/battle'
 import * as randomTeam from '../lib/random-team'
 import type { Team } from '../lib/teams'
 import { BattleFieldEffects, BattlePage, BattleSideHazards, MajorStatusBadge } from './BattlePage'
@@ -133,6 +134,28 @@ afterEach(() => {
 })
 
 describe('BattlePage lobby', () => {
+  it.each([
+    ['won', 'Você venceu', 'lucide-trophy'],
+    ['lost', 'Você perdeu', 'lucide-skull'],
+  ] as const)('shows the %s result with its icon above the text', async (phase, title, iconClass) => {
+    const player = completeTeam('player', 'Minha equipe')
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    const state = createBattleState(player, battleRoster(player), opponent, battleRoster(opponent))
+    state.phase = phase
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => battleRoster(team))
+    vi.spyOn(battleEngine, 'createBattleState').mockReturnValue(state)
+    show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    const heading = await screen.findByRole('heading', { name: title })
+    const icon = heading.previousElementSibling
+    expect(icon).toHaveClass(iconClass)
+    expect(icon).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByRole('button', { name: 'Batalhar novamente' })).toBeEnabled()
+  })
+
   it.each(['second', 'missing'])('validates the requested team %s before showing difficulty choices', (requested) => {
     localStorage.setItem(
       STORAGE_KEYS.teams,

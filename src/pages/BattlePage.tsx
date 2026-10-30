@@ -7,6 +7,7 @@ import {
   ArrowRightLeft,
   HeartPulse,
   Trophy,
+  Skull,
   Bubbles,
   Check,
   CircleDotDashed,
@@ -1566,6 +1567,11 @@ export function BattlePage() {
           <div className="battle-console">
             {battle.phase === 'won' || battle.phase === 'lost' ? (
               <div className="battle-result" role="status">
+                {battle.phase === 'won' ? (
+                  <Trophy className="battle-result-icon" size={48} aria-hidden="true" />
+                ) : (
+                  <Skull className="battle-result-icon" size={48} aria-hidden="true" />
+                )}
                 <h2>{t(battle.phase === 'won' ? 'battle.victory' : 'battle.defeat')}</h2>
                 <button
                   className="button primary"

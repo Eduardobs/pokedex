@@ -159,7 +159,7 @@ export const ptBR = {
   'battle.terastallize': 'Terastalizar',
   'battle.teraUsed': 'Terastalização usada',
   'battle.switch': 'Trocar Pokémon',
-  'battle.victory': 'Você venceu!',
+  'battle.victory': 'Você venceu',
   'battle.defeat': 'Você perdeu',
   'battle.stat.accuracy': 'Precisão',
   'battle.stat.evasion': 'Evasão',
