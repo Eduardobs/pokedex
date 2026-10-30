@@ -1043,7 +1043,7 @@ describe('Random Battle engine', () => {
 
     const frozen = resolveBattleTurn(frozenState, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
     expect(frozen.state.player.roster[0].status).toBe('freeze')
-    expect(frozen.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+    expect(frozen.events).toContainEqual({ type: 'failed', pokemon: 'player-0', reason: 'freeze', move: 'tackle' })
 
     const thawedState = createBattleState(playerTeam, roster(playerTeam), opponentTeam, roster(opponentTeam))
     thawedState.player.roster[0].status = 'freeze'
@@ -1494,6 +1494,71 @@ describe('Random Battle engine', () => {
     expect(switched.state.player.roster[0].cursed).toBe(false)
     expect(switched.state.player.roster[1].cursed).toBe(true)
   })
+
+  it('logs a sleeping move attempt without claiming the move was used, then logs waking before attacking', () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    const user = state.player.roster[0]
+    user.status = 'sleep'
+    user.sleepTurns = 1
+    user.moves[0].data = move({ name: 'play-rough', type: 'fairy', power: 90 })
+    const targetHp = state.opponent.roster[0].hp
+
+    const sleeping = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    expect(sleeping.events).toContainEqual({ type: 'asleep', pokemon: 'player-0', move: 'play-rough' })
+    expect(sleeping.events).not.toContainEqual(expect.objectContaining({ type: 'move', pokemon: 'player-0' }))
+    expect(sleeping.state.opponent.roster[0].hp).toBe(targetHp)
+
+    const awake = resolveBattleTurn(sleeping.state, { kind: 'move', index: 0 }, { kind: 'move', index: 3 }, () => 0.5)
+    const wakeIndex = awake.events.findIndex((event) => event.type === 'wake' && event.pokemon === 'player-0')
+    const moveIndex = awake.events.findIndex((event) => event.type === 'move' && event.pokemon === 'player-0')
+    expect(wakeIndex).toBeGreaterThanOrEqual(0)
+    expect(moveIndex).toBeGreaterThan(wakeIndex)
+    expect(awake.state.opponent.roster[0].hp).toBeLessThan(targetHp)
+  })
+
+  it.each([
+    { status: 'freeze' as const, blockedRoll: 0.5, allowedRoll: 0 },
+    { status: 'paralysis' as const, blockedRoll: 0, allowedRoll: 0.5 },
+  ])(
+    'explains a move blocked by $status and still permits an unblocked action',
+    ({ status, blockedRoll, allowedRoll }) => {
+      const player = team('player')
+      const opponent = team('opponent')
+      const state = createBattleState(player, roster(player), opponent, roster(opponent))
+      state.player.roster[0].status = status
+      const targetHp = state.opponent.roster[0].hp
+      const blocked = resolveBattleTurn(
+        state,
+        { kind: 'move', index: 0 },
+        { kind: 'move', index: 3 },
+        () => blockedRoll,
+      )
+      expect(blocked.events).toContainEqual({ type: 'failed', pokemon: 'player-0', reason: status, move: 'tackle' })
+      expect(blocked.events).not.toContainEqual(expect.objectContaining({ type: 'move', pokemon: 'player-0' }))
+      expect(blocked.state.opponent.roster[0].hp).toBe(targetHp)
+
+      const allowed = resolveBattleTurn(
+        blocked.state,
+        { kind: 'move', index: 0 },
+        { kind: 'move', index: 3 },
+        () => allowedRoll,
+      )
+      expect(allowed.events).toContainEqual(
+        expect.objectContaining({ type: 'move', pokemon: 'player-0', move: 'tackle' }),
+      )
+      expect(allowed.state.opponent.roster[0].hp).toBeLessThan(targetHp)
+      if (status === 'freeze') {
+        const thawIndex = allowed.events.findIndex((event) => event.type === 'thaw')
+        const moveIndex = allowed.events.findIndex((event) => event.type === 'move' && event.pokemon === 'player-0')
+        expect(thawIndex).toBeGreaterThanOrEqual(0)
+        expect(moveIndex).toBeGreaterThan(thawIndex)
+      } else {
+        expect(allowed.state.player.roster[0].status).toBe('paralysis')
+      }
+    },
+  )
 
   it('handles Rest, thawing moves, status cures on switch, and two layers of Toxic Spikes', () => {
     const playerTeam = team('player')

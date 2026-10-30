@@ -1900,6 +1900,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    border-bottom: 0;
     text-decoration: underline dotted;
     text-underline-offset: 4px;
   }

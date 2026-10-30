@@ -11,6 +11,12 @@ Make new UI feel native to Atlas rather than like an isolated mockup.
 
 Before analyzing or changing the project, read [`../../PROJECT_CONTEXT.md`](../../PROJECT_CONTEXT.md) and treat every definition there as an invariant. When a request establishes a new durable, project-wide definition, add it concisely to that document in the same change. Do not add temporary implementation details or change an existing definition without explicit user instruction.
 
+## Use Stitch for design decisions
+
+- Always invoke the Stitch MCP when making screen, layout, component, or UX design decisions. Discover its available tools and use the appropriate design context or screen-generation capability before settling on a direction.
+- Supply the relevant Atlas visual language, neighboring experience, responsive needs, and interaction states to Stitch, and evaluate its output against the project invariants before implementation.
+- If the Stitch MCP is unavailable or fails, report the blocker and do not present an unconsulted design decision as Stitch-informed.
+
 ## Study the neighboring experience
 
 - Inspect the closest existing page and reusable components before designing. Reuse its information hierarchy and interaction vocabulary where appropriate.

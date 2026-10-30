@@ -264,7 +264,7 @@ export type BattleEvent =
       percentage?: number
     }
   | { type: 'weatherDamage'; pokemon: string; weather: 'sandstorm'; amount: number; percentage?: number }
-  | { type: 'asleep'; pokemon: string }
+  | { type: 'asleep'; pokemon: string; move?: string }
   | { type: 'wake'; pokemon: string }
   | { type: 'thaw'; pokemon: string }
   | { type: 'ability'; pokemon: string; ability: string }
@@ -279,7 +279,7 @@ export type BattleEvent =
   | { type: 'sideConditionEnded'; side: 'player' | 'opponent'; condition: keyof BattleSideConditions }
   | { type: 'fieldBlocked'; pokemon: string; field: BattleTerrain }
   | { type: 'protected'; pokemon: string }
-  | { type: 'failed'; pokemon: string }
+  | { type: 'failed'; pokemon: string; reason?: 'freeze' | 'paralysis'; move?: string }
   | { type: 'faint'; pokemon: string }
   | { type: 'win'; side: 'player' | 'opponent' }
 
@@ -942,8 +942,11 @@ function canAct(pokemon: BattlePokemon, move: BattleMove, random: RandomSource, 
     if (pokemon.sleepTurns > 0) {
       pokemon.sleepTurns = Math.max(0, pokemon.sleepTurns - (abilityName(pokemon) === 'early-bird' ? 2 : 1))
       if (abilityName(pokemon) !== 'early-bird' || pokemon.sleepTurns > 0) {
-        events.push({ type: 'asleep', pokemon: battlePokemonName(pokemon) })
-        if (sleepUsableMoves.has(move.name)) return true
+        if (sleepUsableMoves.has(move.name)) {
+          events.push({ type: 'asleep', pokemon: battlePokemonName(pokemon) })
+          return true
+        }
+        events.push({ type: 'asleep', pokemon: battlePokemonName(pokemon), move: move.name })
         return false
       }
     }
@@ -951,7 +954,7 @@ function canAct(pokemon: BattlePokemon, move: BattleMove, random: RandomSource, 
     events.push({ type: 'wake', pokemon: battlePokemonName(pokemon) })
   }
   if (pokemon.status === 'paralysis' && random() < 0.25) {
-    events.push({ type: 'failed', pokemon: battlePokemonName(pokemon) })
+    events.push({ type: 'failed', pokemon: battlePokemonName(pokemon), reason: 'paralysis', move: move.name })
     return false
   }
   if (pokemon.status === 'freeze') {
@@ -959,7 +962,7 @@ function canAct(pokemon: BattlePokemon, move: BattleMove, random: RandomSource, 
       pokemon.status = null
       events.push({ type: 'thaw', pokemon: battlePokemonName(pokemon) })
     } else if (random() >= 0.2) {
-      events.push({ type: 'failed', pokemon: battlePokemonName(pokemon) })
+      events.push({ type: 'failed', pokemon: battlePokemonName(pokemon), reason: 'freeze', move: move.name })
       return false
     } else {
       pokemon.status = null
@@ -1414,8 +1417,8 @@ function applyMove(
   const curse = supplementalMoveEffect(move.name)?.kind === 'curse'
   const ghostCurse = curse && effectiveTypes(attacker).includes('ghost')
   if (!calledMove && moveSlot !== STRUGGLE_INDEX) attacker.lastMoveIndex = moveSlot
-  events.push({ type: 'move', side: moveSide, pokemon: battlePokemonName(attacker), move: move.name })
   if (!skipActionCheck && !canAct(attacker, move, random, events)) return { hit: false, succeeded: false }
+  events.push({ type: 'move', side: moveSide, pokemon: battlePokemonName(attacker), move: move.name })
   const abilityMovePower = abilityModifyMove(attacker, defender, move, field, events)
   if (abilityBlocksMove(attacker, defender, move, field, events)) return { hit: false, succeeded: false }
   if (blockedByRepeat || (releasingCarry && !carriedTargetMatches)) return { hit: true, succeeded: false }

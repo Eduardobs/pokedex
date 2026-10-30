@@ -991,7 +991,9 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
     case 'statusDamage':
       return withHpPercentage(t('battle.log.statusDamage', { name, damage: event.amount }), event.percentage)
     case 'asleep':
-      return t('battle.log.asleep', { name })
+      return event.move
+        ? t('battle.log.asleepMove', { name, move: prettyName(event.move) })
+        : t('battle.log.asleep', { name })
     case 'wake':
       return t('battle.log.wake', { name })
     case 'thaw':
@@ -1037,7 +1039,9 @@ function eventText(event: BattleEvent, t: ReturnType<typeof useLanguage>['t']) {
         event.percentage,
       )
     case 'failed':
-      return t('battle.log.failed', { name })
+      return event.reason && event.move
+        ? t(`battle.log.blockedMove.${event.reason}`, { name, move: prettyName(event.move) })
+        : t('battle.log.failed', { name })
     case 'faint':
       return t('battle.log.faint', { name })
     case 'win':

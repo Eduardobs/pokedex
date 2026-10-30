@@ -336,6 +336,42 @@ describe('BattlePage lobby', () => {
     expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeEnabled()
   })
 
+  it.each([
+    { status: 'sleep' as const, description: 'dormindo', roll: 0.5 },
+    { status: 'freeze' as const, description: 'congelado', roll: 0.5 },
+    { status: 'paralysis' as const, description: 'paralisado', roll: 0 },
+  ])(
+    'explains that $status prevented the selected move without announcing its use',
+    async ({ status, description, roll }) => {
+      const player = completeTeam('player', 'Minha equipe')
+      const opponent = completeTeam('opponent', 'Equipe adversária')
+      player.members[0].pokemon = 'klefki'
+      player.members[0].moves[0] = 'play-rough'
+      localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+      vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+      vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+      vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
+        const roster = battleRoster(team)
+        if (team.id === player.id) {
+          roster[0].status = status
+          roster[0].sleepTurns = 2
+          roster[0].moves[0].data = testMove('play-rough', 'fairy')
+        }
+        return roster
+      })
+      show()
+      fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+      const attack = await screen.findByRole('button', { name: 'Play Rough' })
+      vi.spyOn(Math, 'random').mockReturnValue(roll)
+      vi.useFakeTimers()
+      fireEvent.click(attack)
+      await act(() => vi.runAllTimersAsync())
+      const log = screen.getByRole('log')
+      expect(log).toHaveTextContent(`Klefki está ${description} e não conseguiu usar Play Rough.`)
+      expect(log).not.toHaveTextContent('Klefki usou Play Rough.')
+    },
+  )
+
   it('offers a reusable Struggle button when every learned move has zero PP', async () => {
     const player = completeTeam('player', 'Minha equipe')
     const opponent = completeTeam('opponent', 'Equipe adversária')
