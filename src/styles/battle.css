@@ -1412,7 +1412,7 @@
     padding: 16px;
   }
   .battle-field {
-    height: 440px;
+    height: 330px;
   }
   .battle-active {
     grid-template-columns: minmax(130px, 0.9fr) minmax(120px, 1fr);
@@ -1462,11 +1462,11 @@
     bottom: 10px;
   }
   .battle-pokemon-visual {
-    min-height: 152px;
+    min-height: 128px;
   }
   .battle-sprite-trigger,
   .battle-pokemon-visual img {
-    max-height: 160px;
+    max-height: 136px;
   }
   .battle-health-copy strong {
     font-size: 15px;
