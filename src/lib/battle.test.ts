@@ -1750,6 +1750,32 @@ describe('Random Battle engine', () => {
     expect(result.state.turn).toBe(2)
   })
 
+  it('uses Sucker Punch only against an opposing attack that has not happened yet', () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    state.player.roster[0].moves[0].data = move({ name: 'sucker-punch', type: 'dark', power: 70, priority: 1 })
+    state.player.roster[0].stats[5] = 1
+    state.opponent.roster[0].stats[5] = 999
+
+    const attack = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(attack.events.filter((event) => event.type === 'move')[0]).toMatchObject({ move: 'sucker-punch' })
+    expect(attack.state.opponent.roster[0].hp).toBeLessThan(state.opponent.roster[0].hp)
+
+    const status = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 2 }, () => 0.5)
+    expect(status.state.opponent.roster[0].hp).toBe(state.opponent.roster[0].hp)
+    expect(status.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+
+    const switched = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'switch', index: 1 }, () => 0.5)
+    expect(switched.state.opponent.roster[1].hp).toBe(state.opponent.roster[1].hp)
+    expect(switched.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+
+    state.opponent.roster[0].moves[0].data.priority = 2
+    const fasterAttack = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(fasterAttack.state.opponent.roster[0].hp).toBe(state.opponent.roster[0].hp)
+    expect(fasterAttack.events).toContainEqual({ type: 'failed', pokemon: 'player-0' })
+  })
+
   it('respects type immunity and supports a voluntary switch without taking damage first', () => {
     const playerTeam = team('player')
     const opponentTeam = team('opponent')

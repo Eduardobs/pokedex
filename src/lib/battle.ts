@@ -2234,6 +2234,7 @@ function performChoice(
   random: RandomSource,
   events: BattleEvent[],
   turn: number,
+  opposingAttackPending = false,
 ) {
   refreshAbilityEffects(own, foe, field, events, side)
   const active = own.roster[own.active]
@@ -2359,7 +2360,7 @@ function performChoice(
     events,
     false,
     false,
-    blockedByRepeat,
+    blockedByRepeat || (selectedMove === 'sucker-punch' && !opposingAttackPending),
     own,
     undefined,
     side,
@@ -3046,7 +3047,13 @@ export function resolveBattleTurnSteps(
   const state = cloneState(current)
   const events: BattleEvent[] = [{ type: 'turn', turn: state.turn }]
   const steps: BattleTurnStep[] = []
-  const performStep = (own: BattleSide, foe: BattleSide, choice: BattleChoice, side: 'player' | 'opponent') => {
+  const performStep = (
+    own: BattleSide,
+    foe: BattleSide,
+    choice: BattleChoice,
+    side: 'player' | 'opponent',
+    opposingAttackPending = false,
+  ) => {
     const eventStart = events.length
     const move =
       choice.kind === 'move' &&
@@ -3056,7 +3063,7 @@ export function resolveBattleTurnSteps(
         ? (battleMoveSlot(own.roster[own.active], selectedBattleMoveIndex(own.roster[own.active], choice.index))?.data
             .name ?? null)
         : null
-    performChoice(own, foe, state.field, choice, side, random, events, state.turn)
+    performChoice(own, foe, state.field, choice, side, random, events, state.turn, opposingAttackPending)
     abilityObserveBoosts(foe.roster[foe.active], own.roster[own.active], events, eventStart)
     if (own.roster[own.active].hp === 0 && !own.roster[own.active].abilityMemory?.faintedNotified)
       own.totalFainted = (own.totalFainted ?? 0) + 1
@@ -3146,7 +3153,22 @@ export function resolveBattleTurnSteps(
   for (const [index, action] of actions.entries()) {
     const own = state[action.side]
     const other = action.side === 'player' ? 'opponent' : 'player'
-    if (own.roster[own.active].member.id === action.memberId) performStep(own, state[other], action.choice, action.side)
+    const opposingAction = actions.slice(index + 1).find((pending) => pending.side === other)
+    const opposingPokemon = state[other].roster[state[other].active]
+    const opposingMove =
+      opposingAction?.choice.kind === 'move' &&
+      opposingAction.memberId === opposingPokemon.member.id &&
+      !opposingPokemon.recharging
+        ? battleMoveSlot(opposingPokemon, selectedBattleMoveIndex(opposingPokemon, opposingAction.choice.index))?.data
+        : undefined
+    if (own.roster[own.active].member.id === action.memberId)
+      performStep(
+        own,
+        state[other],
+        action.choice,
+        action.side,
+        Boolean(opposingMove && opposingMove.damageClass !== 'status'),
+      )
     if (state.player.switchRequested || state.opponent.switchRequested) {
       const eventStart = events.length
       state.pendingTurn = actions.slice(index + 1)
