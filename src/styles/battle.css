@@ -296,7 +296,7 @@
   max-width: 100%;
   max-height: 180px;
 }
-.battle-pokemon-visual img {
+.battle-sprite-scene img {
   width: auto;
   height: auto;
   max-width: 100%;
@@ -613,7 +613,7 @@
   display: grid;
   gap: 5px;
 }
-.battle-roster-icons svg {
+.battle-roster-icons > li > span > svg {
   width: 16px;
   height: 16px;
   color: var(--red);
@@ -641,14 +641,12 @@
   background: var(--surface);
   transform: translate(-50%, -50%);
 }
-.battle-roster-icons img {
+.battle-roster-icons > li > span > img {
   width: 100%;
   height: 26px;
   object-fit: contain;
 }
-.battle-roster-icons .is-fainted img,
-.battle-roster-icons .is-fainted svg,
-.battle-roster-icons .is-fainted .battle-pokeball {
+.battle-roster-icons > li.is-fainted > span > :is(img, svg, .battle-pokeball) {
   filter: grayscale(1) brightness(0.48);
   opacity: 0.75;
 }
@@ -1244,7 +1242,7 @@
     700 12px Outfit,
     sans-serif;
 }
-.battle-switch-tooltip-title span,
+.battle-switch-tooltip-title > span,
 .battle-switch-tooltip-types > span:first-child {
   color: var(--muted);
   font-size: 9px;
@@ -1476,7 +1474,7 @@
     min-height: 128px;
   }
   .battle-sprite-trigger,
-  .battle-pokemon-visual img {
+  .battle-sprite-scene img {
     max-height: 136px;
   }
   .battle-health-copy strong {

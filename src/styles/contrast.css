@@ -1,0 +1,261 @@
+/* Contrast corrections shared by the existing screens; taxonomy colors stay intact. */
+:root {
+  --muted: #475569;
+  --focus: #9f1239;
+  --control-edge: #7b8798;
+  --positive: #17663b;
+  --negative: #a52626;
+  --warning-ink: #785000;
+}
+:root[data-theme='dark'] {
+  --muted: #c1cddd;
+  --focus: #ff9db2;
+  --control-edge: #8292aa;
+  --positive: #80e0a3;
+  --negative: #ffaaa3;
+  --warning-ink: #f5cf82;
+}
+
+/* A text accent and a filled control need different foreground/background pairs. */
+:root[data-theme] :is(.nav-count, .active-filter-count, .scroll-to-top),
+:root[data-theme] .language-options button[aria-selected='true'] .language-code,
+:root[data-theme] .radio-selection label:has(input:checked),
+:root[data-theme] .battle-tera-control .button.is-selected {
+  background: var(--brand);
+  color: #fff;
+}
+:root[data-theme] .team-tabs > button[aria-selected='true'] .team-icon-action {
+  color: #fff;
+}
+:root[data-theme] :is(.global-search, .search-field, .catalog-select-trigger, .language-select-trigger),
+:root[data-theme] :is(.move-select-trigger, .battle-lobby select),
+:root[data-theme] .teams-page :is(input:not([type='checkbox']):not([type='range']), select) {
+  border-color: var(--control-edge);
+}
+:root[data-theme] input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+:root[data-theme] .home-search input::placeholder {
+  color: #475569;
+}
+:root[data-theme] :is(a, button, select, input, summary, [tabindex]):focus-visible,
+:root[data-theme] .radio-selection label:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+}
+:root[data-theme] .item-select-row > .item-image-fallback {
+  color: var(--muted);
+}
+
+/* Metadata must remain readable on cards, tinted sections, and both themes. */
+:root[data-theme]
+  :is(
+    .sort-status,
+    .rarity-filter > span,
+    .end-of-list,
+    .data-index,
+    .data-slug,
+    .resource-links a small,
+    .resource-links a > svg,
+    .data-list > a > svg,
+    .breadcrumbs,
+    .detail-nav,
+    .detail-nav-pokemon small,
+    .radar-legend,
+    .info-card dt,
+    .abilities-card a small,
+    .evolution-step small,
+    .evolution-arrow,
+    .table-heading p,
+    .encounter-heading p,
+    .encounter-location-copy small,
+    .encounter-conditions > small,
+    .cry-list label,
+    .sprite-grid figcaption,
+    .api-source-card p,
+    .history-description,
+    .history-generation > b,
+    .history-stat small,
+    .forms-category-tabs button small,
+    .form-info > p,
+    .form-category,
+    .move-learning > span,
+    .move-numbers span,
+    .type-chart-note,
+    .type-chart-axis span,
+    .type-chart-legend span,
+    .type-chart-corner,
+    .weaknesses-card > p:not(.muted),
+    .effectiveness-groups h3
+  ) {
+  color: var(--muted);
+}
+:root[data-theme] :is(.move-group > header h3, .move-learning > strong, .move-numbers b) {
+  color: var(--ink);
+}
+:root[data-theme] :is(.boolean.true, .effectiveness-item.immunity b) {
+  color: var(--positive);
+}
+:root[data-theme] .boolean.false {
+  color: var(--negative);
+}
+:root[data-theme] :is(.resource-kind-badge, .ability-badge.standard, .rarity-tags span) {
+  color: var(--warning-ink);
+}
+:root[data-theme] :is(.multiplier.super, .type-chart td.super) {
+  background: #13754d;
+  color: #fff;
+}
+:root[data-theme] footer a {
+  color: #ff9db2;
+}
+
+/* Preserve 50% glass around opaque content islands, including over sprites.
+   Blur alone cannot guarantee text contrast on an arbitrary backdrop. */
+:root[data-theme]
+  :is(.battle-active-tooltip, .battle-move-tooltip, .battle-switch-tooltip, .battle-log-move-tooltip)
+  > * {
+  background-color: var(--surface);
+  border-radius: 3px;
+}
+:root[data-theme] :is(.battle-tooltip-stats, .battle-switch-stats) > span {
+  background: var(--surface-soft);
+}
+:root[data-theme] :is(.battle-tooltip-stats, .battle-switch-stats) > .is-increased,
+:root[data-theme] .battle-stat-modifiers .raised,
+:root[data-theme] .battle-log-event.is-healing {
+  color: var(--positive);
+}
+:root[data-theme] :is(.battle-tooltip-stats, .battle-switch-stats) > .is-decreased,
+:root[data-theme] .battle-stat-modifiers .lowered,
+:root[data-theme] .battle-log-event.is-damage {
+  color: var(--negative);
+}
+:root[data-theme] .battle-log-event.is-effect {
+  color: var(--warning-ink);
+}
+:root[data-theme] .battle-health-value {
+  background: var(--surface);
+}
+:root[data-theme] .battle-hazard {
+  background: var(--surface);
+}
+:root[data-theme='dark'] .battle-hazard--stealthRock {
+  color: #dcc3a6;
+}
+:root[data-theme='dark'] .battle-hazard--spikes {
+  color: #f0b48c;
+}
+:root[data-theme='dark'] .battle-hazard--toxicSpikes {
+  color: #ed9bf6;
+}
+:root[data-theme='dark'] .battle-hazard--stickyWeb {
+  color: #b0cbf1;
+}
+:root[data-theme='dark'] .battle-gender-icon.male {
+  color: #82c7ff;
+}
+:root[data-theme='dark'] .battle-gender-icon.female {
+  color: #ffa1c7;
+}
+
+/* Resource accents describe categories, so retain their hue with a readable ink mix. */
+:root[data-theme] :is(.resource-total, .resource-link-icon, .group-icon) {
+  color: color-mix(in srgb, var(--group-color) 40%, var(--ink));
+}
+:root[data-theme] :is(.breadcrumb-group, .data-resource-icon, .detail-field-icon) {
+  color: color-mix(in srgb, var(--resource-color) 40%, var(--ink));
+}
+:root[data-theme] .resource-links a:hover,
+:root[data-theme] .resource-links a:hover > svg {
+  color: color-mix(in srgb, var(--group-color) 40%, var(--ink));
+}
+:root[data-theme] :is(.data-list a:hover, .resource-chip:hover, .resource-value-pagination button) {
+  color: color-mix(in srgb, var(--resource-color) 40%, var(--ink));
+}
+:root[data-theme] .radar-labels text {
+  fill: var(--muted);
+}
+:root[data-theme] .radar-labels .radar-value {
+  fill: var(--ink);
+}
+:root[data-theme] .battle-log-event.is-move,
+:root[data-theme] .battle-move-announcement {
+  color: color-mix(in srgb, var(--battle-blue) 40%, var(--ink));
+}
+/* Keep the supplied condition fills; dark lettering is needed on bright statuses. */
+.battle-major-status--paralysis,
+.battle-major-status--sleep,
+.battle-major-status--freeze {
+  color: #142039;
+  --status-icon: #142039;
+  text-shadow: none;
+}
+:root[data-theme] :is(.inline-card-error, .inline-sort-error) {
+  color: var(--negative);
+}
+:root[data-theme='light'] .multiplier.neutral {
+  color: #475569;
+}
+:root[data-theme] .type-calculator output.result-very-resistant {
+  background: #356b32;
+}
+:root[data-theme] .type-calculator output.result-resistant {
+  background: #596823;
+}
+:root[data-theme] .type-calculator output.result-neutral {
+  background: #805a17;
+}
+:root[data-theme] .type-calculator output.result-effective {
+  background: #aa3d24;
+}
+.type-calculator output > span {
+  opacity: 1;
+}
+:root[data-theme] .forms-category-tabs button i {
+  color: var(--ink);
+}
+:root[data-theme] .gender-male {
+  color: #17649e;
+}
+:root[data-theme] .gender-female {
+  color: #ac2d63;
+}
+:root[data-theme='dark'] .gender-male {
+  color: #82c7ff;
+}
+:root[data-theme='dark'] .gender-female {
+  color: #ffa1c7;
+}
+:root[data-theme] :is(.hero-starters a, .hero-specimen-caption > span) {
+  background: #121e35;
+}
+:root[data-theme] .hero-starters a:hover {
+  background: #243754;
+}
+:root[data-theme] .tabs button span {
+  color: var(--ink);
+  background: var(--surface-soft);
+}
+:root[data-theme] :is(.loading, .state-page) {
+  color: var(--muted);
+}
+:root[data-theme] .map-pin-cluster:hover,
+:root[data-theme] .map-empty button {
+  background: var(--brand);
+}
+:root[data-theme] .quick-card > svg {
+  color: color-mix(in srgb, var(--tile-accent) 40%, var(--ink));
+}
+:root[data-theme] .map-category-icon {
+  color: color-mix(in srgb, var(--pin-color) 35%, var(--ink));
+  opacity: 1;
+}
+:root[data-theme] .map-category-list label:has(input:checked) .map-category-icon,
+:root[data-theme] .map-pin {
+  background: color-mix(in srgb, var(--pin-color) 50%, black);
+  color: #fff;
+}
+:root[data-theme] .map-category-list label:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+}

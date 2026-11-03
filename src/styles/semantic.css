@@ -166,7 +166,7 @@
 }
 .weaknesses-card > p:not(.muted) {
   margin: -10px 0 16px;
-  color: #858e98;
+  color: var(--muted);
   font-size: 12px;
 }
 .effectiveness-groups {
@@ -179,7 +179,7 @@
 }
 .effectiveness-groups h3 {
   margin: 0 0 9px;
-  color: #7b848e;
+  color: var(--muted);
   font: 800 10px Outfit;
   text-transform: uppercase;
   letter-spacing: 0.7px;
@@ -258,7 +258,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  color: #747d86;
+  color: var(--muted);
   font-size: 11px;
 }
 .gender-ratio.genderless > span,
@@ -297,7 +297,7 @@
   margin-bottom: 5px;
 }
 .forms-card > header p {
-  color: #858e98;
+  color: var(--muted);
   font-size: 12px;
   margin: 0;
 }
@@ -379,7 +379,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #7d858e;
+  color: var(--muted);
 }
 .form-info h3 {
   font: 700 16px Outfit;
@@ -387,7 +387,7 @@
 }
 .form-info > p {
   font-size: 9px;
-  color: #a0a6ad;
+  color: var(--muted);
   margin: 0 0 9px;
   white-space: nowrap;
   overflow: hidden;
@@ -427,7 +427,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #8b929a;
+  color: var(--muted);
   font-size: 12px;
 }
 .forms-loading .pokeball-spinner {
@@ -469,7 +469,7 @@
 }
 .forms-section > header p {
   font-size: 10px;
-  color: #8b939c;
+  color: var(--muted);
   margin: 0;
 }
 .forms-section > header small {
@@ -605,7 +605,7 @@
   line-height: 1;
   text-transform: uppercase;
   letter-spacing: 0.45px;
-  color: #8b949d;
+  color: var(--muted);
 }
 .move-learning > strong {
   margin-top: 3px;
@@ -631,7 +631,7 @@
   display: grid;
   gap: 2px;
   font-size: 9px;
-  color: #9299a2;
+  color: var(--muted);
   text-align: center;
 }
 .move-numbers b {

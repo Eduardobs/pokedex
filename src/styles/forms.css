@@ -25,7 +25,7 @@
   align-items: center;
   gap: 7px;
   text-align: left;
-  color: #78818b;
+  color: var(--muted);
 }
 .forms-category-tabs button > svg {
   color: var(--tab-color);
@@ -41,7 +41,7 @@
 }
 .forms-category-tabs button small {
   font-size: 8px;
-  color: #9aa1a9;
+  color: var(--muted);
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
@@ -88,7 +88,7 @@
 }
 .directory-summary p {
   font-size: 11px;
-  color: #9299a2;
+  color: var(--muted);
   margin: 0;
 }
 .forms-directory-grid {

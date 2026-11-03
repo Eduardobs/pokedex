@@ -31,7 +31,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #7a838d;
+  color: var(--muted);
   font-size: 9px;
 }
 .multiplier {
@@ -121,7 +121,7 @@
   z-index: 3 !important;
   background: #f0f1f2 !important;
   text-align: center !important;
-  color: #7e8790;
+  color: var(--muted);
 }
 .type-chart-corner svg {
   vertical-align: middle;
@@ -198,7 +198,7 @@
 }
 .type-chart-note {
   margin: 11px 2px 0;
-  color: #858e98;
+  color: var(--muted);
   font-size: 10px;
   line-height: 1.5;
 }
@@ -210,7 +210,7 @@ footer {
   align-items: center;
   justify-content: space-between;
   padding: 25px max(24px, calc((100vw - 1180px) / 2));
-  color: #8c949d;
+  color: var(--muted);
   font-size: 12px;
 }
 footer p {

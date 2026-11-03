@@ -65,7 +65,7 @@
   align-items: center;
   font-size: 12px;
   font-weight: 700;
-  color: #747d86;
+  color: var(--muted);
 }
 .detail-nav a,
 .detail-nav > div {
@@ -88,7 +88,7 @@
 .detail-nav-pokemon small {
   font-size: 9px;
   font-weight: 700;
-  color: #8e969f;
+  color: var(--muted);
 }
 .detail-nav-pokemon.next {
   text-align: right;
@@ -138,7 +138,7 @@
   padding: 11px;
   display: grid;
   grid-template-columns: 22px 1fr;
-  color: #8b929a;
+  color: var(--muted);
 }
 .physical-stats svg {
   width: 17px;
@@ -233,7 +233,7 @@
   border: 0;
   background: transparent;
   font-weight: 700;
-  color: #838b94;
+  color: var(--muted);
   position: relative;
 }
 .tabs button.active {
@@ -278,7 +278,7 @@
 }
 .stats-card header span {
   font-size: 11px;
-  color: #9299a1;
+  color: var(--muted);
 }
 .stats-visualization {
   display: grid;
@@ -333,7 +333,7 @@
   justify-content: center;
   gap: 14px;
   margin-top: -8px;
-  color: #7d8690;
+  color: var(--muted);
   font-size: 9px;
   font-weight: 700;
 }
@@ -357,7 +357,7 @@
 }
 .stat-list-heading {
   margin-bottom: -7px;
-  color: #9299a1;
+  color: var(--muted);
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.45px;
@@ -370,7 +370,7 @@
   font-size: 12px;
 }
 .stat-row > span {
-  color: #717a84;
+  color: var(--muted);
 }
 .stat-row > b {
   font-family: Outfit;
@@ -395,7 +395,7 @@
 }
 .level-100-note {
   margin: 15px 0 0;
-  color: #858e98;
+  color: var(--muted);
   font-size: 10px;
   line-height: 1.45;
 }
@@ -412,7 +412,7 @@
 }
 .info-card dt {
   font-size: 12px;
-  color: #9299a2;
+  color: var(--muted);
 }
 .info-card dd {
   font-size: 12px;
@@ -447,7 +447,7 @@
   font-size: 13px;
 }
 .abilities-card a small {
-  color: #a0a6ad;
+  color: var(--muted);
   font-size: 10px;
   margin-top: 2px;
 }
@@ -487,14 +487,14 @@
   font: 700 14px Outfit;
 }
 .evolution-step small {
-  color: #9aa1a9;
+  color: var(--muted);
   font-size: 10px;
 }
 .evolution-arrow {
   display: flex;
   align-items: center;
   flex-direction: column;
-  color: #a5abb1;
+  color: var(--muted);
 }
 .evolution-arrow small {
   white-space: nowrap;
@@ -506,7 +506,7 @@
   min-height: 300px;
 }
 .table-heading p {
-  color: #838b94;
+  color: var(--muted);
   font-size: 13px;
 }
 .moves-grid {
@@ -531,7 +531,7 @@
 }
 .moves-grid :where(span):not(.type-badge) {
   font-size: 9px;
-  color: #969da5;
+  color: var(--muted);
 }
 .encounter-heading {
   display: flex;
@@ -545,7 +545,7 @@
 .encounter-heading p {
   max-width: 630px;
   margin: 0;
-  color: #7e8892;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.55;
 }
@@ -619,7 +619,7 @@
   font: 700 12px Outfit;
 }
 .encounter-location-copy small {
-  color: #8b949d;
+  color: var(--muted);
   font-size: 9px;
 }
 .encounter-max-chance {
@@ -684,7 +684,7 @@
   border-top: 1px solid #edf0f2;
 }
 .encounter-conditions > small {
-  color: #929aa3;
+  color: var(--muted);
   font-size: 8px;
   text-transform: uppercase;
   letter-spacing: 0.45px;
@@ -751,7 +751,7 @@
 .cry-list label {
   display: grid;
   gap: 6px;
-  color: #858e98;
+  color: var(--muted);
   font-size: 11px;
 }
 .cry-list audio {
@@ -780,7 +780,7 @@
 }
 .sprite-grid figcaption {
   font-size: 9px;
-  color: #858e98;
+  color: var(--muted);
   text-align: center;
 }
 .api-source-card {
@@ -790,7 +790,7 @@
 }
 .api-source-card p {
   margin: -10px 0 20px;
-  color: #858e98;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -804,7 +804,7 @@
 }
 .history-description {
   margin: -11px 0 20px;
-  color: #7f8993;
+  color: var(--muted);
   font-size: 11px;
   line-height: 1.5;
 }
@@ -840,7 +840,7 @@
   gap: 7px;
 }
 .history-generation > b {
-  color: #7c8690;
+  color: var(--muted);
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.45px;
@@ -862,7 +862,7 @@
   background: white;
 }
 .history-stat small {
-  color: #7e8892;
+  color: var(--muted);
   font-size: 9px;
 }
 .history-stat strong {
@@ -895,7 +895,7 @@
   padding: 6px 8px;
   border-radius: 8px;
   background: #eceff1;
-  color: #76808a;
+  color: var(--muted);
   font-size: 9px;
   font-weight: 700;
 }

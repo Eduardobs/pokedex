@@ -142,7 +142,7 @@ img {
   border: 1px solid #dfe2e6;
   background: #f7f8fa;
   border-radius: 12px;
-  color: #9299a3;
+  color: var(--muted);
   transition: 0.2s;
 }
 .global-search {
@@ -456,7 +456,7 @@ img {
   gap: 38px;
 }
 .hero-stats span {
-  color: #8a929b;
+  color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -611,7 +611,7 @@ img {
   border-color: #d8dbe0;
 }
 .quick-card > svg {
-  color: #adb3bb;
+  color: var(--muted);
 }
 .quick-icon {
   width: 52px;
@@ -642,7 +642,7 @@ img {
 }
 .quick-card p {
   margin: 0;
-  color: #7b838d;
+  color: var(--muted);
   font-size: 13px;
   line-height: 1.45;
 }

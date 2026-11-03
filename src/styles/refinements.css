@@ -285,7 +285,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  color: #7a858f;
+  color: var(--muted);
 }
 .evolution-condition small {
   white-space: nowrap;
@@ -503,7 +503,7 @@
 }
 :root[data-theme='dark'] .filter-footer,
 :root[data-theme='dark'] .resource-page-search > small {
-  color: #aab3bd;
+  color: var(--muted);
 }
 :root[data-theme='dark'] .card-retry,
 :root[data-theme='dark'] .favorite-card-error button {
