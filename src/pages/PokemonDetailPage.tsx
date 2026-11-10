@@ -1,4 +1,4 @@
-import { ArrowLeft, ChevronRight, Heart, Ruler, ShieldAlert, Sparkles, Weight } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Gamepad2, Heart, Ruler, ShieldAlert, Sparkles, Weight } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { FEATURE_FLAGS } from '../config/feature-flags'
@@ -14,6 +14,7 @@ import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounter
 import { PokemonDetailBackLink } from '../components/pokemon-detail/PokemonDetailBackLink'
 import { PokemonForms } from '../components/pokemon-detail/PokemonForms'
 import { PokemonMovesTab } from '../components/pokemon-detail/PokemonMovesTab'
+import { SelectMenu } from '../components/SelectMenu'
 import { ShinyToggle } from '../components/ShinyToggle'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { AbilityBadge } from '../components/SemanticBadges'
@@ -34,6 +35,7 @@ export function PokemonDetailPage() {
   const { name = '' } = useParams()
   const [tab, setTab] = useState<'about' | 'evolution' | 'moves' | 'encounters' | 'data' | '3d'>('about')
   const [shiny, setShiny] = useState(false)
+  const [descriptionSelection, setDescriptionSelection] = useState({ speciesId: 0, version: '' })
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
   const {
@@ -117,8 +119,25 @@ export function PokemonDetailPage() {
     pokemonArtwork(pokemon.id)
   const shinyArtwork = pokemon.sprites.other?.['official-artwork']?.front_shiny ?? pokemon.sprites.front_shiny
   const artwork = shiny && shinyArtwork ? shinyArtwork : normalArtwork
+  const descriptionEntries = species?.flavor_text_entries ?? []
+  const descriptionVersions = [
+    ...new Set(descriptionEntries.flatMap((entry) => (entry.version?.name ? [entry.version.name] : []))),
+  ]
+  const defaultDescription = localizedTextResult(descriptionEntries, undefined, apiLanguage)
+  const defaultVersion = descriptionEntries.find((entry) => entry.language.name === defaultDescription.language)
+    ?.version?.name
+  const descriptionVersion =
+    descriptionSelection.speciesId === species?.id && descriptionVersions.includes(descriptionSelection.version)
+      ? descriptionSelection.version
+      : (defaultVersion ?? descriptionVersions[0] ?? '')
   const descriptionResult = species
-    ? localizedTextResult(species.flavor_text_entries, undefined, apiLanguage)
+    ? localizedTextResult(
+        descriptionVersion
+          ? descriptionEntries.filter((entry) => entry.version?.name === descriptionVersion)
+          : descriptionEntries,
+        undefined,
+        apiLanguage,
+      )
     : { text: '', language: apiLanguage, fallback: false }
   const description = descriptionResult.text
   const localizedGenus = species?.genera.find((entry) => entry.language.name === apiLanguage)
@@ -272,7 +291,17 @@ export function PokemonDetailPage() {
             <article className="info-card detail-summary">
               <div className="detail-summary-intro">
                 <h2>{t('detail.overview')}</h2>
-                <p className="description" lang={descriptionResult.language}>
+                {descriptionVersions.length > 0 && (
+                  <SelectMenu
+                    className="description-version-select"
+                    icon={<Gamepad2 size={18} />}
+                    label={t('detail.gameVersion')}
+                    options={descriptionVersions.map((version) => ({ value: version, label: prettyName(version) }))}
+                    value={descriptionVersion}
+                    onChange={(version) => setDescriptionSelection({ speciesId: species?.id ?? 0, version })}
+                  />
+                )}
+                <p className="description" lang={descriptionResult.language} aria-live="polite">
                   {description ||
                     (speciesError
                       ? t('detail.speciesUnavailable')

@@ -742,3 +742,9 @@
     border-top: 2px solid var(--line);
   }
 }
+
+.pokemon-detail .description-version-select {
+  width: 100%;
+  max-width: 20rem;
+  margin-block: 1rem;
+}

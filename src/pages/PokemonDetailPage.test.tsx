@@ -138,6 +138,83 @@ afterEach(() => {
 })
 
 describe('PokemonDetailPage', () => {
+  it('switches descriptions by game while keeping language fallback within the selected version', () => {
+    const versionedSpecies = {
+      ...species,
+      flavor_text_entries: [
+        {
+          flavor_text: 'Red English entry.',
+          language: resource('language', 9, 'en'),
+          version: resource('version', 1, 'red'),
+        },
+        ...species.flavor_text_entries,
+        {
+          flavor_text: 'Yellow English entry.\nSecond line.',
+          language: resource('language', 9, 'en'),
+          version: resource('version', 3, 'yellow'),
+        },
+      ],
+    }
+    useApiMock.mockImplementation((path: string | null) => ({
+      data: path === 'pokemon/pikachu' ? pokemon : path === pokemon.species.url ? versionedSpecies : null,
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    }))
+    renderPage()
+    expect(screen.getByText(species.flavor_text_entries[0].flavor_text)).toBeVisible()
+    const selector = screen.getByRole('combobox', { name: 'Versão do jogo' })
+    fireEvent.click(selector)
+    expect(screen.getAllByRole('option')).toHaveLength(2)
+    fireEvent.click(screen.getByRole('option', { name: 'Yellow' }))
+    expect(screen.getByText('Yellow English entry. Second line.')).toHaveAttribute('lang', 'en')
+    expect(screen.getByText(/Conteúdo exibido em inglês/)).toBeVisible()
+    expect(screen.queryByText(species.flavor_text_entries[0].flavor_text)).not.toBeInTheDocument()
+    fireEvent.keyDown(selector, { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'Red' }))
+    expect(screen.getByText(species.flavor_text_entries[0].flavor_text)).toHaveAttribute('lang', 'pt-br')
+    expect(screen.queryByText(/Conteúdo exibido em inglês/)).not.toBeInTheDocument()
+  })
+
+  it('preserves descriptions when version metadata is missing', () => {
+    useApiMock.mockImplementation((path: string | null) => ({
+      data:
+        path === 'pokemon/pikachu'
+          ? pokemon
+          : path === pokemon.species.url
+            ? {
+                ...species,
+                flavor_text_entries: [
+                  { flavor_text: 'Unversioned description.', language: resource('language', 9, 'en') },
+                ],
+              }
+            : null,
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    }))
+    renderPage()
+    expect(screen.getByText('Unversioned description.')).toBeVisible()
+    expect(screen.queryByRole('combobox', { name: 'Versão do jogo' })).not.toBeInTheDocument()
+  })
+
+  it('keeps the empty description state when no game entries exist', () => {
+    useApiMock.mockImplementation((path: string | null) => ({
+      data:
+        path === 'pokemon/pikachu'
+          ? pokemon
+          : path === pokemon.species.url
+            ? { ...species, flavor_text_entries: [] }
+            : null,
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    }))
+    renderPage()
+    expect(screen.queryByRole('combobox', { name: 'Versão do jogo' })).not.toBeInTheDocument()
+    expect(screen.getByText('Não há descrição disponível para este Pokémon.')).toBeVisible()
+  })
+
   it('hides 3D and excludes it from keyboard navigation when disabled', () => {
     vi.spyOn(FEATURE_FLAGS, 'pokemon3D', 'get').mockReturnValue(false)
     useApiMock.mockImplementation((path: string | null) => ({
