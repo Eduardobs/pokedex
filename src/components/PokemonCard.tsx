@@ -1,5 +1,5 @@
 import { Globe2, Heart, Maximize2, Shield } from 'lucide-react'
-import type { ReactNode, RefObject } from 'react'
+import type { CSSProperties, ReactNode, RefObject } from 'react'
 import { Link } from 'react-router-dom'
 import { useFavoritesContext } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -80,6 +80,14 @@ function PokemonCardView({
   typeFallback,
   footer,
 }: PokemonCardViewProps) {
+  const orderedTypes = [...types].sort((a, b) => a.slot - b.slot)
+  const primaryType = orderedTypes[0]?.type.name
+  const secondaryType = orderedTypes[1]?.type.name
+  const orbStyle = {
+    '--orb-primary': `var(--pokemon-type-${primaryType}, var(--surface-soft))`,
+    '--orb-secondary': `var(--pokemon-type-${secondaryType ?? primaryType}, var(--surface-soft))`,
+  } as CSSProperties
+
   return (
     <article
       ref={cardRef}
@@ -97,7 +105,12 @@ function PokemonCardView({
       </div>
       <div className="pokemon-image-wrap">
         <Link to={`/pokemon/${name}`} state={linkState} className="pokemon-image-link">
-          <span className="card-orb" />
+          <span
+            className="card-orb"
+            style={orbStyle}
+            data-dual-type={secondaryType ? 'true' : undefined}
+            aria-hidden="true"
+          />
           {artwork}
         </Link>
       </div>

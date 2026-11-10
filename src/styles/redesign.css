@@ -533,7 +533,12 @@ body {
   height: 100%;
   border: 0;
   border-radius: 18px;
-  background: color-mix(in srgb, var(--card-accent) 14%, var(--surface-soft));
+  --orb-start: color-mix(in srgb, var(--orb-primary, var(--surface-soft)) 32%, var(--surface));
+  --orb-end: color-mix(in srgb, var(--orb-secondary, var(--surface-soft)) 32%, var(--surface));
+  background: var(--orb-start);
+}
+:root[data-theme] .card-orb[data-dual-type='true'] {
+  background: linear-gradient(to right, var(--orb-start) 15%, var(--orb-end) 85%);
 }
 .pokemon-image-wrap img {
   width: 175px;
