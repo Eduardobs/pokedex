@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { MemoryRouter } from 'react-router-dom'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -12,7 +13,7 @@ vi.mock('../MoveCard', async (importOriginal) => ({
 
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 
 const move = (id: number, name: string, method: string, level: number) => ({

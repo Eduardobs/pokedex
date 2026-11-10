@@ -1,16 +1,19 @@
+import { API_BASE_PATH, API_BASE_URL, GRAPHQL_API_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
 for (const catalog of ['pokemon', 'forms']) {
   test(`preserves and clears the baby filter with keyboard interaction in ${catalog}`, async ({ page }) => {
-    await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+    await page.route(`${API_BASE_URL}/**`, async (route) => {
       const path = new URL(route.request().url()).pathname
-      if (['/api/v2/pokemon', '/api/v2/pokemon-form', '/api/v2/pokemon-species'].includes(path)) {
+      if (
+        [`${API_BASE_PATH}/pokemon`, `${API_BASE_PATH}/pokemon-form`, `${API_BASE_PATH}/pokemon-species`].includes(path)
+      ) {
         await route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } })
       } else {
         throw new Error(`Unexpected API endpoint: ${path}`)
       }
     })
-    await page.route('https://graphql.pokeapi.co/v1beta2', async (route) => {
+    await page.route(GRAPHQL_API_URL, async (route) => {
       await route.fulfill({
         json: {
           data: {

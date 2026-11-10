@@ -1,7 +1,8 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { matchesResource, parseResourceDirectory } from './resource-search'
 
-const entry = { name: 'thunder-punch', url: 'https://pokeapi.co/api/v2/move/9/' }
+const entry = { name: 'thunder-punch', url: `${API_BASE_URL}/move/9/` }
 describe('resource search', () => {
   it('matches spaced names and padded numbers across a directory', () => {
     expect(matchesResource(entry.name, entry.url, 'THUNDER PUNCH')).toBe(true)

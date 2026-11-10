@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -31,7 +32,7 @@ afterEach(() => {
 it('offers battle forms while excluding ride forms from suggestions and direct searches', async () => {
   const fetchMock = vi.fn().mockResolvedValue(
     Response.json({
-      results: names.map((name, index) => ({ name, url: `https://pokeapi.co/api/v2/pokemon/${index + 1}/` })),
+      results: names.map((name, index) => ({ name, url: `${API_BASE_URL}/pokemon/${index + 1}/` })),
     }),
   )
   vi.stubGlobal('fetch', fetchMock)

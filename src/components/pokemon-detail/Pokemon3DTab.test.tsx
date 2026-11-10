@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../../contexts/LanguageContext'
@@ -14,7 +15,7 @@ const pokemon = {
   id: 25,
   name: 'pikachu',
   is_default: true,
-  species: { url: 'https://pokeapi.co/api/v2/pokemon-species/25/' },
+  species: { url: `${API_BASE_URL}/pokemon-species/25/` },
 } as Pokemon
 const catalog = [
   {

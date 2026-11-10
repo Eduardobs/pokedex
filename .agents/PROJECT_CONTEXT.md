@@ -4,6 +4,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Definitions
 
+- PokéAPI REST and GraphQL endpoints are centrally configurable at build time; alternative APIs must preserve the expected data contracts.
+
 - All interfaces follow a bold, attractive, intuitive, mobile-first design direction developed with Stitch, using strong visual hierarchy and prominent Pokémon artwork.
 
 - The colors and icons associated with Pokémon types must not be changed.

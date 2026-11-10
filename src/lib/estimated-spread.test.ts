@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { estimateSpread, hasEnoughMoves, parseEstimatedMove, type EstimatedMove } from './estimated-spread'
 import { newMember, type TeamPokemon } from './teams'
@@ -29,16 +30,16 @@ describe('Showdown-style estimated spreads', () => {
     expect(
       parseEstimatedMove({
         name: 'recover',
-        damage_class: { name: 'status', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
-        target: { name: 'user', url: 'https://pokeapi.co/api/v2/move-target/1/' },
+        damage_class: { name: 'status', url: `${API_BASE_URL}/move-damage-class/1/` },
+        target: { name: 'user', url: `${API_BASE_URL}/move-target/1/` },
         meta: { healing: 50 },
       }),
     ).toEqual({ name: 'recover', category: 'status', selfTarget: true, healing: true })
     expect(() =>
       parseEstimatedMove({
         name: 'invalid',
-        damage_class: { name: 'unknown', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
-        target: { name: 'user', url: 'https://pokeapi.co/api/v2/move-target/1/' },
+        damage_class: { name: 'unknown', url: `${API_BASE_URL}/move-damage-class/1/` },
+        target: { name: 'user', url: `${API_BASE_URL}/move-target/1/` },
         meta: {},
       }),
     ).toThrow()

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -78,17 +79,17 @@ class IntersectionObserverMock implements IntersectionObserver {
 
 const pokemon = Array.from({ length: 60 }, (_, index) => ({
   name: `pokemon-${index + 1}`,
-  url: `https://pokeapi.co/api/v2/pokemon/${index + 1}/`,
+  url: `${API_BASE_URL}/pokemon/${index + 1}/`,
 }))
 
 const forms = Array.from({ length: 70 }, (_, index) => ({
   name: `pokemon-${index + 1}-alola`,
-  url: `https://pokeapi.co/api/v2/pokemon-form/${index + 1}/`,
+  url: `${API_BASE_URL}/pokemon-form/${index + 1}/`,
 }))
 
 const species = Array.from({ length: 70 }, (_, index) => ({
   name: `pokemon-${index + 1}`,
-  url: `https://pokeapi.co/api/v2/pokemon-species/${index + 1}/`,
+  url: `${API_BASE_URL}/pokemon-species/${index + 1}/`,
 }))
 
 function apiList(results: NamedResource[]): ApiList {
@@ -380,18 +381,18 @@ describe('Forms filters', () => {
   const filteredForms = [
     {
       name: 'charizard-mega-x',
-      url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+      url: `${API_BASE_URL}/pokemon-form/10034/`,
     },
-    { name: 'raichu-alola', url: 'https://pokeapi.co/api/v2/pokemon-form/10091/' },
+    { name: 'raichu-alola', url: `${API_BASE_URL}/pokemon-form/10091/` },
     {
       name: 'butterfree-gmax',
-      url: 'https://pokeapi.co/api/v2/pokemon-form/10202/',
+      url: `${API_BASE_URL}/pokemon-form/10202/`,
     },
   ]
   const filteredSpecies = [
-    { name: 'charizard', url: 'https://pokeapi.co/api/v2/pokemon-species/6/' },
-    { name: 'butterfree', url: 'https://pokeapi.co/api/v2/pokemon-species/12/' },
-    { name: 'raichu', url: 'https://pokeapi.co/api/v2/pokemon-species/26/' },
+    { name: 'charizard', url: `${API_BASE_URL}/pokemon-species/6/` },
+    { name: 'butterfree', url: `${API_BASE_URL}/pokemon-species/12/` },
+    { name: 'raichu', url: `${API_BASE_URL}/pokemon-species/26/` },
   ]
 
   function mockFormsApi(typeNames: string[] = []) {

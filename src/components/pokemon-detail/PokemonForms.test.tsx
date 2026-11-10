@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -12,9 +13,9 @@ vi.mock('../../lib/api', async (importOriginal) => ({
   apiFetch: apiFetchMock,
 }))
 
-const pokemonUrl = 'https://pokeapi.co/api/v2/pokemon/412/'
-const plantFormUrl = 'https://pokeapi.co/api/v2/pokemon-form/412/'
-const sandyFormUrl = 'https://pokeapi.co/api/v2/pokemon-form/10034/'
+const pokemonUrl = `${API_BASE_URL}/pokemon/412/`
+const plantFormUrl = `${API_BASE_URL}/pokemon-form/412/`
+const sandyFormUrl = `${API_BASE_URL}/pokemon-form/10034/`
 const pokemonSprite = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/412.png'
 const officialArtwork =
   'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/412.png'
@@ -27,11 +28,11 @@ const species: Species = {
   name: 'burmy',
   flavor_text_entries: [],
   genera: [],
-  color: { name: 'green', url: 'https://pokeapi.co/api/v2/pokemon-color/5/' },
+  color: { name: 'green', url: `${API_BASE_URL}/pokemon-color/5/` },
   shape: null,
   habitat: null,
-  generation: { name: 'generation-iv', url: 'https://pokeapi.co/api/v2/generation/4/' },
-  growth_rate: { name: 'medium', url: 'https://pokeapi.co/api/v2/growth-rate/2/' },
+  generation: { name: 'generation-iv', url: `${API_BASE_URL}/generation/4/` },
+  growth_rate: { name: 'medium', url: `${API_BASE_URL}/growth-rate/2/` },
   egg_groups: [],
   evolution_chain: null,
   gender_rate: 4,
@@ -54,7 +55,7 @@ const pokemon: Pokemon = {
   base_experience: 45,
   order: 441,
   is_default: true,
-  location_area_encounters: 'https://pokeapi.co/api/v2/pokemon/412/encounters',
+  location_area_encounters: `${API_BASE_URL}/pokemon/412/encounters`,
   sprites: {
     front_default: pokemonSprite,
     front_shiny: null,
@@ -62,11 +63,11 @@ const pokemon: Pokemon = {
       'official-artwork': { front_default: officialArtwork, front_shiny: null },
     },
   },
-  types: [{ slot: 1, type: { name: 'bug', url: 'https://pokeapi.co/api/v2/type/7/' } }],
+  types: [{ slot: 1, type: { name: 'bug', url: `${API_BASE_URL}/type/7/` } }],
   stats: [],
   abilities: [],
   moves: [],
-  species: { name: 'burmy', url: 'https://pokeapi.co/api/v2/pokemon-species/412/' },
+  species: { name: 'burmy', url: `${API_BASE_URL}/pokemon-species/412/` },
   forms: [
     { name: 'burmy-plant', url: plantFormUrl },
     { name: 'burmy-sandy', url: sandyFormUrl },

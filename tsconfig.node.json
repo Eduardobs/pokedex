@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
     "composite": true,
+    "resolveJsonModule": true,
     "noEmit": true,
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "Bundler"
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "src/config/api.ts", "src/config/api-defaults.json"]
 }

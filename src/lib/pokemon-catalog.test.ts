@@ -1,3 +1,4 @@
+import { GRAPHQL_API_URL } from '../config/app'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from './api-client'
 import { parsePokemonRarityDetails, parsePokemonRegionDetails, parsePokemonSortDetails } from './pokemon-catalog'
@@ -103,7 +104,7 @@ describe('Pokédex stat catalog', () => {
     expect(second).toBe(first)
     expect(fetchMock).toHaveBeenCalledTimes(1)
     expect(fetchMock).toHaveBeenCalledWith(
-      'https://graphql.pokeapi.co/v1beta2',
+      GRAPHQL_API_URL,
       expect.objectContaining({
         method: 'POST',
         credentials: 'omit',

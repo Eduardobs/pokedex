@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -26,8 +27,8 @@ describe('ResourceListPage pagination', () => {
       data: {
         count: 2,
         results: [
-          { name: 'zeta-item', url: 'https://pokeapi.co/api/v2/item/1/' },
-          { name: 'alpha-item', url: 'https://pokeapi.co/api/v2/item/2/' },
+          { name: 'zeta-item', url: `${API_BASE_URL}/item/1/` },
+          { name: 'alpha-item', url: `${API_BASE_URL}/item/2/` },
         ],
       },
       loading: false,
@@ -57,7 +58,7 @@ describe('ResourceListPage pagination', () => {
         count: 125,
         results: Array.from({ length: 125 }, (_, index) => ({
           name: `ability-${index + 1}`,
-          url: `https://pokeapi.co/api/v2/ability/${index + 1}/`,
+          url: `${API_BASE_URL}/ability/${index + 1}/`,
         })),
       },
       loading: false,
@@ -111,7 +112,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'stench', url: 'https://pokeapi.co/api/v2/ability/1/' }],
+        results: [{ name: 'stench', url: `${API_BASE_URL}/ability/1/` }],
       },
       loading: false,
       error: null,
@@ -158,7 +159,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'stench', url: 'https://pokeapi.co/api/v2/ability/1/' }],
+        results: [{ name: 'stench', url: `${API_BASE_URL}/ability/1/` }],
       },
       loading: false,
       error: null,
@@ -204,7 +205,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'thunderbolt', url: 'https://pokeapi.co/api/v2/move/85/' }],
+        results: [{ name: 'thunderbolt', url: `${API_BASE_URL}/move/85/` }],
       },
       loading: false,
       error: null,
@@ -254,7 +255,7 @@ describe('ResourceListPage item presentation', () => {
         count: 3,
         previous: null,
         next: null,
-        results: [{ name: 'physical', url: 'https://pokeapi.co/api/v2/move-damage-class/2/' }],
+        results: [{ name: 'physical', url: `${API_BASE_URL}/move-damage-class/2/` }],
       },
       loading: false,
       error: null,
@@ -291,7 +292,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name, url: `https://pokeapi.co/api/v2/pokemon-species/${name}/` }],
+        results: [{ name, url: `${API_BASE_URL}/pokemon-species/${name}/` }],
       },
       loading: false,
       error: null,
@@ -317,7 +318,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }],
+        results: [{ name: 'bulbasaur', url: `${API_BASE_URL}/pokemon/1/` }],
       },
       loading: false,
       error: null,
@@ -353,7 +354,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'master-ball', url: 'https://pokeapi.co/api/v2/item/1/' }],
+        results: [{ name: 'master-ball', url: `${API_BASE_URL}/item/1/` }],
       },
       loading: false,
       error: null,
@@ -388,7 +389,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'axew-scales', url: 'https://pokeapi.co/api/v2/item/2000/' }],
+        results: [{ name: 'axew-scales', url: `${API_BASE_URL}/item/2000/` }],
       },
       loading: false,
       error: null,
@@ -419,7 +420,7 @@ describe('ResourceListPage item presentation', () => {
         count: 1,
         previous: null,
         next: null,
-        results: [{ name: 'cheri', url: 'https://pokeapi.co/api/v2/berry/1/' }],
+        results: [{ name: 'cheri', url: `${API_BASE_URL}/berry/1/` }],
       },
       loading: false,
       error: null,
@@ -453,7 +454,7 @@ describe('ResourceListPage collection search', () => {
   it('finds an item beyond the first page and preserves input focus while searching', async () => {
     const resources = Array.from({ length: 45 }, (_, index) => ({
       name: index === 44 ? 'thunderbolt' : `move-${index}`,
-      url: `https://pokeapi.co/api/v2/move/${index + 1}/`,
+      url: `${API_BASE_URL}/move/${index + 1}/`,
     }))
     useApiMock.mockImplementation((path: string) => ({
       data: {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -29,7 +30,7 @@ const t: Translate = (key, variables) => {
 function evolutionDetail(overrides: Partial<EvolutionDetail> = {}): EvolutionDetail {
   return {
     item: null,
-    trigger: { name: 'level-up', url: 'https://pokeapi.co/api/v2/evolution-trigger/1/' },
+    trigger: { name: 'level-up', url: `${API_BASE_URL}/evolution-trigger/1/` },
     gender: null,
     held_item: null,
     known_move: null,
@@ -59,7 +60,7 @@ function evolutionNode(
 ): EvolutionNode {
   return {
     is_baby: false,
-    species: { name, url: `https://pokeapi.co/api/v2/pokemon-species/${id}/` },
+    species: { name, url: `${API_BASE_URL}/pokemon-species/${id}/` },
     evolves_to: evolvesTo,
     evolution_details: details,
   }
@@ -84,7 +85,7 @@ describe('evolutionCondition', () => {
       evolutionCondition(
         evolutionDetail({
           needs_multiplayer: true,
-          used_move: { name: 'rage-fist', url: 'https://pokeapi.co/api/v2/move/889/' },
+          used_move: { name: 'rage-fist', url: `${API_BASE_URL}/move/889/` },
           min_move_count: 20,
           min_steps: 1_000,
           min_damage_taken: 49,
@@ -131,9 +132,9 @@ describe('EvolutionTree', () => {
               evolutionDetail({
                 trigger: {
                   name: 'use-item',
-                  url: 'https://pokeapi.co/api/v2/evolution-trigger/3/',
+                  url: `${API_BASE_URL}/evolution-trigger/3/`,
                 },
-                item: { name: 'leaf-stone', url: 'https://pokeapi.co/api/v2/item/85/' },
+                item: { name: 'leaf-stone', url: `${API_BASE_URL}/item/85/` },
               }),
             ],
           ),
@@ -145,9 +146,9 @@ describe('EvolutionTree', () => {
               evolutionDetail({
                 trigger: {
                   name: 'use-item',
-                  url: 'https://pokeapi.co/api/v2/evolution-trigger/3/',
+                  url: `${API_BASE_URL}/evolution-trigger/3/`,
                 },
-                item: { name: 'sun-stone', url: 'https://pokeapi.co/api/v2/item/80/' },
+                item: { name: 'sun-stone', url: `${API_BASE_URL}/item/80/` },
               }),
             ],
           ),
@@ -184,8 +185,8 @@ it('marks the current species and distinguishes alternate methods on one destina
       [
         evolutionDetail({ min_beauty: 170 }),
         evolutionDetail({
-          trigger: { name: 'trade', url: 'https://pokeapi.co/api/v2/evolution-trigger/2/' },
-          held_item: { name: 'prism-scale', url: 'https://pokeapi.co/api/v2/item/537/' },
+          trigger: { name: 'trade', url: `${API_BASE_URL}/evolution-trigger/2/` },
+          held_item: { name: 'prism-scale', url: `${API_BASE_URL}/item/537/` },
         }),
       ],
     ),
@@ -208,7 +209,7 @@ it('localizes time and type requirements instead of showing raw API labels', () 
     evolutionCondition(
       evolutionDetail({
         time_of_day: 'night',
-        known_move_type: { name: 'fairy', url: 'https://pokeapi.co/api/v2/type/18/' },
+        known_move_type: { name: 'fairy', url: `${API_BASE_URL}/type/18/` },
       }),
       t,
       'pt-BR',

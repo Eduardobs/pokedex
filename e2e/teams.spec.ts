@@ -1,10 +1,11 @@
+import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
 test('creates multiple teams, edits a member and preserves it after reload', async ({ page }) => {
-  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/1/` })
-  await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+  const ref = (name: string, resource: string) => ({ name, url: `${API_BASE_URL}/${resource}/1/` })
+  await page.route(`${API_BASE_URL}/**`, async (route) => {
     const url = new URL(route.request().url())
-    const path = url.pathname.replace('/api/v2/', '')
+    const path = url.pathname.replace(`${API_BASE_PATH}/`, '')
     const pokemon = {
       name: 'pikachu',
       id: 25,

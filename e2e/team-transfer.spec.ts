@@ -1,5 +1,12 @@
+import { API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 import { STORAGE_KEYS, TEAM_IMPORT_MAX_BYTES } from '../src/config/app'
+
+test.beforeEach(async ({ page }) => {
+  await page.route(`${API_BASE_URL}/**`, (route) =>
+    route.fulfill({ json: { count: 0, results: [], next: null, previous: null } }),
+  )
+})
 
 test('exports, imports and persists a team without overwriting the original', async ({ page }) => {
   await page.goto('/#/teams')

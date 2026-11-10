@@ -1,3 +1,4 @@
+import { API_BASE_PATH, API_BASE_URL } from './api-config'
 import type { Page } from '@playwright/test'
 import sets from '../../src/data/third-party/pokemon-showdown-gen9-random-battle-sets.json' with { type: 'json' }
 import { STORAGE_KEYS } from '../../src/config/app'
@@ -6,7 +7,7 @@ export async function prepareMobileBattle(page: Page) {
   const names = ['venusaur', 'charizard', 'blastoise', 'pikachu', 'snorlax', 'gengar'] as const
   const types = ['grass', 'fire', 'water', 'electric', 'normal', 'ghost']
   const id = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/${name}/` })
+  const ref = (name: string, resource: string) => ({ name, url: `${API_BASE_URL}/${resource}/${name}/` })
   await page.addInitScript(
     ({ key }) =>
       localStorage.setItem(
@@ -38,11 +39,11 @@ export async function prepareMobileBattle(page: Page) {
       ),
     { key: STORAGE_KEYS.teams },
   )
-  await page.route('https://pokeapi.co/**', async (route) => {
-    const [resource, name] = new URL(route.request().url()).pathname.replace('/api/v2/', '').split('/')
+  await page.route(`${API_BASE_URL}/**`, async (route) => {
+    const [resource, name] = new URL(route.request().url()).pathname.replace(`${API_BASE_PATH}/`, '').split('/')
     if (resource === 'pokemon' && !name) {
       await route.fulfill({
-        json: { results: names.map((name, i) => ({ name, url: `https://pokeapi.co/api/v2/pokemon/${i + 1}/` })) },
+        json: { results: names.map((name, i) => ({ name, url: `${API_BASE_URL}/pokemon/${i + 1}/` })) },
       })
     } else if (resource === 'pokemon' && names.includes(name as (typeof names)[number])) {
       const index = names.indexOf(name as (typeof names)[number])

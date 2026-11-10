@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -52,8 +53,8 @@ it('calculates from the current build and applies EVs and Nature together', asyn
     return Promise.resolve(
       Response.json({
         name,
-        damage_class: { name: 'physical', url: 'https://pokeapi.co/api/v2/move-damage-class/1/' },
-        target: { name: 'selected-pokemon', url: 'https://pokeapi.co/api/v2/move-target/1/' },
+        damage_class: { name: 'physical', url: `${API_BASE_URL}/move-damage-class/1/` },
+        target: { name: 'selected-pokemon', url: `${API_BASE_URL}/move-target/1/` },
         meta: { healing: 0 },
       }),
     )

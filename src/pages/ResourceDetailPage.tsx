@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { FormConditions } from '../components/FormConditions'
 import { ExperiencePlanner } from '../components/ExperiencePlanner'
 import { ItemPrices } from '../components/ItemPrices'
@@ -137,7 +138,7 @@ export function ResourceDetailPage() {
         </div>
         <a
           className="button secondary api-link technical-link"
-          href={`https://pokeapi.co/api/v2/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`}
+          href={`${API_BASE_URL}/${encodeURIComponent(resource)}/${encodeURIComponent(name)}`}
           target="_blank"
           rel="noopener noreferrer"
         >

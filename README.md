@@ -179,11 +179,13 @@ The main data flow is intentionally layered:
 
 ## Data, caching, and persistence
 
-Atlas Pokémon reads data from the following fixed endpoints:
+Atlas Pokémon reads data from the following default endpoints:
 
 - REST: `https://pokeapi.co/api/v2`
 - GraphQL: `https://graphql.pokeapi.co/v1beta2`
 - Game map tiles: `https://tiles.mapgenie.io/games`
+
+Set `VITE_POKEAPI_REST_URL` and `VITE_POKEAPI_GRAPHQL_URL` in `.env.local` to use compatible HTTPS APIs. Restart the dev server or rebuild after changing them. REST paths and response shapes, and the GraphQL schema, must remain compatible with PokéAPI. Default endpoints are defined once in `src/config/api-defaults.json`. The Python fixture refresh scripts share these defaults and accept an exported `VITE_POKEAPI_REST_URL` environment variable (they do not load `.env.local`). The build automatically updates CSP connection origins and the REST preconnect from this configuration. REST URLs returned by the alternative API must use its configured origin and base path.
 
 REST responses use an in-memory LRU-style cache with a maximum of 250 entries and a five-minute TTL. Concurrent requests for the same URL share one underlying request, while each consumer retains independent cancellation. Requests time out after 15 seconds.
 REST payloads are limited to 8 MiB and checked for a JSON content type and bounded nesting, collection sizes, object keys, and strings before being cached or rendered.
@@ -192,7 +194,7 @@ The browser's `localStorage` stores favorites, language, and theme preferences. 
 
 ## Security and reliability
 
-- API URLs are restricted to the documented HTTPS PokéAPI origin and API path.
+- API URLs are restricted to the configured HTTPS REST origin and API path.
 - Route parameters are encoded before being used in requests.
 - The Content Security Policy limits scripts, connections, images, media, fonts, and forms to the origins required by the application.
 - Invalid API responses, timeouts, and unavailable resources produce user-facing error states.

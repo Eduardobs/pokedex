@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
@@ -7,7 +8,7 @@ import { PokemonHistoryCard } from './PokemonHistoryCard'
 
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 
 const pokemon = {

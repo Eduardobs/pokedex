@@ -1,3 +1,4 @@
+import { API_BASE_URL, GRAPHQL_API_URL } from '../config/app'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ApiError } from './api-client'
 import { parsePokemonCardDetails } from './pokemon-card-catalog'
@@ -31,7 +32,7 @@ describe('Pokémon card catalog', () => {
   it('loads and caches Pokédex cards through REST without requesting GraphQL', async () => {
     const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
       const url = String(input)
-      expect(url).toMatch(/^https:\/\/pokeapi.co\/api\/v2\/pokemon\//)
+      expect(url.startsWith(`${API_BASE_URL}/pokemon/`)).toBe(true)
       const pokemon = pokemonPayload.data.pokemon.find((entry) => url.endsWith(`/${entry.name}`))!
       return Response.json({ ...pokemon, types: pokemon.pokemontypes })
     })
@@ -46,7 +47,7 @@ describe('Pokémon card catalog', () => {
   it('loads the routable Pokémon for a REST form fallback', async () => {
     vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
       const url = String(input)
-      if (url.includes('graphql.pokeapi.co')) return new Response('{}', { status: 404 })
+      if (url === GRAPHQL_API_URL) return new Response('{}', { status: 404 })
       return Response.json(
         url.includes('pokemon-form/')
           ? { name: 'pikachu-rock-star', is_battle_only: false, pokemon: { name: 'pikachu-rock-star' } }
@@ -63,16 +64,14 @@ describe('Pokémon card catalog', () => {
     const fetchMock = vi
       .spyOn(globalThis, 'fetch')
       .mockImplementation(async (input) =>
-        String(input).includes('graphql.pokeapi.co')
+        String(input) === GRAPHQL_API_URL
           ? new Response('{}', { status: 404 })
           : Response.json({ id: 25, name: 'pikachu', types: [] }),
       )
     const { fetchPokemonCardDetails } = await import('./pokemon-card-catalog')
     await expect(fetchPokemonCardDetails(['pikachu'], 'pokemon')).rejects.toMatchObject({ code: 'invalid-response' })
     await expect(fetchPokemonCardDetails(['pikachu'], 'pokemon')).rejects.toMatchObject({ code: 'invalid-response' })
-    expect(
-      fetchMock.mock.calls.every(([input]) => String(input).startsWith('https://pokeapi.co/api/v2/pokemon/')),
-    ).toBe(true)
+    expect(fetchMock.mock.calls.every(([input]) => String(input).startsWith(`${API_BASE_URL}/pokemon/`))).toBe(true)
   })
 
   it('maps a bounded Pokémon batch to the card model', () => {

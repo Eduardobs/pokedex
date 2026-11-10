@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen, within, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -14,7 +15,7 @@ import type { EvolutionDetail, Species } from '../types'
 
 const ref = (name: string, endpoint = 'version-group', id = 1) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 function show(children: ReactNode) {
   return render(

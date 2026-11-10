@@ -1,9 +1,10 @@
+import { API_BASE_PATH, API_BASE_URL, GRAPHQL_API_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
-const ref = (name: string, endpoint = 'type', id = 1) => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/${id}/` })
+const ref = (name: string, endpoint = 'type', id = 1) => ({ name, url: `${API_BASE_URL}/${endpoint}/${id}/` })
 test('compares moves through Explore and preserves both selections after reload', async ({ page }) => {
   const unexpected: string[] = []
-  await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+  await page.route(`${API_BASE_URL}/**`, async (route) => {
     const name = new URL(route.request().url()).pathname.split('/').filter(Boolean).at(-1)
     if (name === 'move') {
       await route.fulfill({
@@ -32,7 +33,7 @@ test('compares moves through Explore and preserves both selections after reload'
       await route.fulfill({ status: 404, json: {} })
     }
   })
-  await page.route('https://graphql.pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.route(`${GRAPHQL_API_URL}**`, (route) => route.fulfill({ status: 503, json: {} }))
   await page.goto('/#/explore')
   await page.getByRole('link', { name: 'Comparar golpes' }).click()
   await page.getByRole('combobox', { name: 'Primeiro golpe' }).fill('thund')
@@ -54,7 +55,7 @@ test('compares moves through Explore and preserves both selections after reload'
 })
 
 test('shares historical type selection and updates the calculator with the chart', async ({ page }) => {
-  await page.route('https://pokeapi.co/api/v2/type/**', async (route) => {
+  await page.route(`${API_BASE_URL}/type/**`, async (route) => {
     const name = new URL(route.request().url()).pathname.split('/').filter(Boolean).at(-1)!
     const relations = { no_damage_to: [], half_damage_to: [], double_damage_to: [] }
     await route.fulfill({
@@ -90,9 +91,9 @@ test('searches beyond the current resource page without losing the search field'
   const results = Array.from({ length: 45 }, (_, index) =>
     ref(index === 44 ? 'thunderbolt' : `move-${index}`, 'move', index + 1),
   )
-  await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+  await page.route(`${API_BASE_URL}/**`, async (route) => {
     const url = new URL(route.request().url())
-    if (url.pathname === '/api/v2/move') {
+    if (url.pathname === `${API_BASE_PATH}/move`) {
       await route.fulfill({
         json: {
           count: 45,
@@ -103,7 +104,7 @@ test('searches beyond the current resource page without losing the search field'
       })
     } else await route.fulfill({ status: 404, json: {} })
   })
-  await page.route('https://graphql.pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.route(`${GRAPHQL_API_URL}**`, (route) => route.fulfill({ status: 503, json: {} }))
   await page.goto('/#/explore/move')
   const search = page.getByRole('textbox', { name: 'Buscar em toda a coleção…' })
   await expect(page.getByRole('link', { name: /Thunderbolt/ })).toHaveCount(0)

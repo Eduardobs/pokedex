@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   ApiError,
@@ -18,16 +19,16 @@ afterEach(() => {
 })
 
 describe('PokéAPI utilities', () => {
-  it('extracts the ID from a URL', () => expect(idFromUrl('https://pokeapi.co/api/v2/pokemon/25/')).toBe(25))
+  it('extracts the ID from a URL', () => expect(idFromUrl(`${API_BASE_URL}/pokemon/25/`)).toBe(25))
   it('keeps only default varieties in the Pokédex list', () => {
     expect(
       pokemonListItems([
-        { name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon/3/' },
-        { name: 'venusaur-mega', url: 'https://pokeapi.co/api/v2/pokemon/10033/' },
-        { name: 'rattata-alola', url: 'https://pokeapi.co/api/v2/pokemon/10091/' },
-        { name: 'charizard-gmax', url: 'https://pokeapi.co/api/v2/pokemon/10196/' },
+        { name: 'venusaur', url: `${API_BASE_URL}/pokemon/3/` },
+        { name: 'venusaur-mega', url: `${API_BASE_URL}/pokemon/10033/` },
+        { name: 'rattata-alola', url: `${API_BASE_URL}/pokemon/10091/` },
+        { name: 'charizard-gmax', url: `${API_BASE_URL}/pokemon/10196/` },
       ]),
-    ).toEqual([{ id: 3, name: 'venusaur', url: 'https://pokeapi.co/api/v2/pokemon/3/' }])
+    ).toEqual([{ id: 3, name: 'venusaur', url: `${API_BASE_URL}/pokemon/3/` }])
   })
   it('formats technical names', () => expect(prettyName('special-attack')).toBe('Special Attack'))
   it('prioritizes the Portuguese translation', () =>
@@ -82,12 +83,12 @@ describe('PokéAPI utilities', () => {
   })
 
   it('accepts only PokéAPI v2 HTTPS URLs', async () => {
-    expect(resolveApiUrl('pokemon/25')).toBe('https://pokeapi.co/api/v2/pokemon/25')
-    expect(resolveApiUrl('/pokemon/25#sprites')).toBe('https://pokeapi.co/api/v2/pokemon/25')
-    expect(() => resolveApiUrl('https://pokeapi.co/api/v2/pokemon/25/')).not.toThrow()
+    expect(resolveApiUrl('pokemon/25')).toBe(`${API_BASE_URL}/pokemon/25`)
+    expect(resolveApiUrl('/pokemon/25#sprites')).toBe(`${API_BASE_URL}/pokemon/25`)
+    expect(() => resolveApiUrl(`${API_BASE_URL}/pokemon/25/`)).not.toThrow()
     expect(() => resolveApiUrl('https://pokeapi.co.evil.example/api/v2/pokemon/25')).toThrow(ApiError)
     expect(() => resolveApiUrl('http://pokeapi.co/api/v2/pokemon/25')).toThrow(ApiError)
-    expect(() => resolveApiUrl('https://pokeapi.co/api/v20/pokemon/25')).toThrow(ApiError)
+    expect(() => resolveApiUrl(`${API_BASE_URL}0/pokemon/25`)).toThrow(ApiError)
     expect(() => resolveApiUrl('https://user:password@pokeapi.co/api/v2/pokemon/25')).toThrow(ApiError)
     expect(() => resolveApiUrl('   ')).toThrow(ApiError)
     await expect(apiFetch('https://evil.example/collect')).rejects.toMatchObject({

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -32,8 +33,8 @@ describe('FavoritesPage', () => {
         next: null,
         previous: null,
         results: [
-          { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' },
-          { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' },
+          { name: 'bulbasaur', url: `${API_BASE_URL}/pokemon/1/` },
+          { name: 'pikachu', url: `${API_BASE_URL}/pokemon/25/` },
         ],
       },
       loading: false,

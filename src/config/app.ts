@@ -1,6 +1,9 @@
-export const API_BASE_URL = 'https://pokeapi.co/api/v2'
-export const API_ORIGIN = new URL(API_BASE_URL).origin
-export const GRAPHQL_API_URL = 'https://graphql.pokeapi.co/v1beta2'
+import { getApiConfig } from './api'
+
+const api = getApiConfig(import.meta.env ?? {})
+export const API_BASE_URL = api.restUrl
+export const API_ORIGIN = api.restOrigin
+export const GRAPHQL_API_URL = api.graphqlUrl
 
 export const POKEMON_CATALOG_LIMIT = 2_000
 export const POKEAPI_ALTERNATE_POKEMON_ID_START = 10_001

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 import { STORAGE_KEYS } from '../src/config/app'
 import type { Team } from '../src/lib/teams'
@@ -33,7 +34,7 @@ test('selects battle difficulty with the keyboard before starting on mobile', as
       team,
     },
   )
-  await page.route('https://pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.route(`${API_BASE_URL}/**`, (route) => route.fulfill({ status: 503, json: {} }))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/#/battle')
   const teamSelector = page.getByRole('combobox', { name: 'Sua equipe' })
@@ -94,7 +95,7 @@ test('opens battle preparation with the team selected in the editor', async ({ p
       ),
     { key: STORAGE_KEYS.teams },
   )
-  await page.route('https://pokeapi.co/**', (route) => route.fulfill({ status: 503, json: {} }))
+  await page.route(`${API_BASE_URL}/**`, (route) => route.fulfill({ status: 503, json: {} }))
   await page.goto('/#/teams')
   await page.getByRole('combobox', { name: 'Selecionar equipe' }).click()
   await page.getByRole('option', { name: 'second', exact: true }).click()

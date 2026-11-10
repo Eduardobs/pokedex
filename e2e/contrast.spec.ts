@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './fixtures/api-config'
 import { expect, test, type Locator } from '@playwright/test'
 import { prepareMobileBattle } from './fixtures/battle'
 import { mockEvolutionFamilies } from './fixtures/evolution'
@@ -108,8 +109,12 @@ for (const theme of ['light', 'dark']) {
     await page.route('https://raw.githubusercontent.com/**', (route) => route.abort())
     await prepareMobileBattle(page)
     await page.evaluate((theme) => (document.documentElement.dataset.theme = theme), theme)
-    await page.route(/\/api\/v2\/(pokemon-form|pokemon-species|move)\?/, (route) =>
-      route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+    await page.route(
+      (url) =>
+        url.href.startsWith(`${API_BASE_URL}/`) &&
+        /\/(pokemon-form|pokemon-species|move)$/.test(url.pathname) &&
+        Boolean(url.search),
+      (route) => route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
     )
     for (const route of [
       '',

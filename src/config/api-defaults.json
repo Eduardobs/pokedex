@@ -1,0 +1,4 @@
+{
+  "restUrl": "https://pokeapi.co/api/v2",
+  "graphqlUrl": "https://graphql.pokeapi.co/v1beta2"
+}

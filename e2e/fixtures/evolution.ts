@@ -1,7 +1,8 @@
+import { API_BASE_PATH, API_BASE_URL } from './api-config'
 import type { Page } from '@playwright/test'
 import type { EvolutionDetail, EvolutionNode } from '../../src/types'
 
-const api = 'https://pokeapi.co/api/v2'
+const api = API_BASE_URL
 const ref = (endpoint: string, name: string, id: number) => ({ name, url: `${api}/${endpoint}/${id}/` })
 const method = (overrides: Partial<EvolutionDetail> = {}): EvolutionDetail => ({
   trigger: ref('evolution-trigger', 'level-up', 1),
@@ -78,7 +79,7 @@ export async function mockEvolutionFamilies(page: Page) {
   const members = families.flatMap((family, index) => flatten(family).map((entry) => ({ entry, family: index + 1 })))
   await page.route(`${api}/**`, async (route) => {
     const url = new URL(route.request().url())
-    const [endpoint, identifier] = url.pathname.slice('/api/v2/'.length).split('/')
+    const [endpoint, identifier] = url.pathname.slice(`${API_BASE_PATH}/`.length).split('/')
     if (endpoint === 'evolution-chain')
       return route.fulfill({
         json: { id: Number(identifier), baby_trigger_item: null, chain: families[Number(identifier) - 1] },

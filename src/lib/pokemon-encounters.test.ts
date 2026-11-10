@@ -1,10 +1,11 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { ApiError } from './api'
 import { encountersForVersion, encounterVersions, parsePokemonEncounters } from './pokemon-encounters'
 
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 
 const payload = [

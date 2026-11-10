@@ -25,13 +25,13 @@
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://raw.githubusercontent.com https://tiles.mapgenie.io https://play.pokemonshowdown.com; media-src 'self' https://raw.githubusercontent.com; connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co https://pokemon-3d-api.onrender.com https://raw.githubusercontent.com blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
+      content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://raw.githubusercontent.com https://tiles.mapgenie.io https://play.pokemonshowdown.com; media-src 'self' https://raw.githubusercontent.com; connect-src 'self' __API_CONNECT_ORIGINS__ https://pokemon-3d-api.onrender.com https://raw.githubusercontent.com blob:; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <script type="module" src="/src/theme-init.ts"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
-    <link rel="preconnect" href="https://pokeapi.co" crossorigin />
+    <link rel="preconnect" href="__API_REST_ORIGIN__" crossorigin />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"

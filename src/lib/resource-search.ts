@@ -1,7 +1,20 @@
-import { ApiError, normalizeSearchText } from './api'
+import { API_BASE_URL } from '../config/app'
+import { ApiError, normalizeSearchText, resolveApiUrl } from './api'
 import type { ApiList, NamedResource } from '../types'
 
 export const RESOURCE_SEARCH_LIMIT = 10_000
+
+function isResourceUrl(url: string): boolean {
+  try {
+    return (
+      resolveApiUrl(url) === url &&
+      url.startsWith(`${API_BASE_URL}/`) &&
+      /^[a-z-]+\/\d+\/$/.test(url.slice(API_BASE_URL.length + 1))
+    )
+  } catch {
+    return false
+  }
+}
 
 /** A bounded directory contains names and references, never per-entry detail requests. */
 export function parseResourceDirectory(value: unknown): ApiList<NamedResource> {
@@ -25,7 +38,7 @@ export function parseResourceDirectory(value: unknown): ApiList<NamedResource> {
       typeof entry !== 'object' ||
       !('url' in entry) ||
       typeof entry.url !== 'string' ||
-      !/^https:\/\/pokeapi\.co\/api\/v2\/[a-z-]+\/\d+\/$/.test(entry.url)
+      !isResourceUrl(entry.url)
     ) {
       throw new ApiError('Invalid resource reference.', undefined, 'invalid-response')
     }

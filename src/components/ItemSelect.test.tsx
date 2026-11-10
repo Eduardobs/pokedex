@@ -1,10 +1,11 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { useState } from 'react'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { ItemSelect } from './ItemSelect'
 
-const apiBase = 'https://pokeapi.co/api/v2'
+const apiBase = API_BASE_URL
 const ref = (name: string, resource: string) => ({ name, url: `${apiBase}/${resource}/1/` })
 const names = Array.from({ length: 10 }, (_, index) => `test-item-${index}`)
 const item = (name: string) => ({

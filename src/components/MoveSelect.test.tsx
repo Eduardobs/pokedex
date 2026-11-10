@@ -1,10 +1,11 @@
+import { API_BASE_URL } from '../config/app'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { useState } from 'react'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { MoveSelect } from './MoveSelect'
 
-const ref = (name: string, path: string) => ({ name, url: `https://pokeapi.co/api/v2/${path}/1/` })
+const ref = (name: string, path: string) => ({ name, url: `${API_BASE_URL}/${path}/1/` })
 const move = (name: string) => ({
   name,
   names: [],

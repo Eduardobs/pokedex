@@ -1,3 +1,4 @@
+import { API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 import { STORAGE_KEYS } from '../src/config/app'
 
@@ -14,7 +15,7 @@ test('recovers from an unknown route through the home link and browser history',
 for (const path of ['explore/unsupported', 'explore/unsupported/pikachu']) {
   test(`rejects the unknown resource ${path} without requesting it`, async ({ page }) => {
     const requests: string[] = []
-    await page.route('https://pokeapi.co/**', (route) => {
+    await page.route(`${API_BASE_URL}/**`, (route) => {
       requests.push(route.request().url())
       return route.fulfill({ status: 404, json: {} })
     })
@@ -48,7 +49,7 @@ for (const value of ['{broken-json', '{"unexpected":"shape"}']) {
 
 test('renders untrusted API markup as text without executing it', async ({ page }) => {
   const payload = '<img src=x onerror="window.injected=true">'
-  await page.route('https://pokeapi.co/api/v2/**', (route) =>
+  await page.route(`${API_BASE_URL}/**`, (route) =>
     route.fulfill({
       json: { id: 1, name: 'test-ability', names: [], effect_entries: [{ language: { name: 'en' }, effect: payload }] },
     }),

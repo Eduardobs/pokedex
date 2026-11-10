@@ -1,6 +1,7 @@
+import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
-const api = 'https://pokeapi.co/api/v2'
+const api = API_BASE_URL
 const ref = (resource: string, name: string, id: number) => ({ name, url: `${api}/${resource}/${id}/` })
 
 for (const width of [320, 1440]) {
@@ -8,7 +9,7 @@ for (const width of [320, 1440]) {
     await page.setViewportSize({ width, height: 900 })
     await page.route(`${api}/**`, async (route) => {
       const path = new URL(route.request().url()).pathname
-      if (path === '/api/v2/move/thunderbolt') {
+      if (path === `${API_BASE_PATH}/move/thunderbolt`) {
         await route.fulfill({
           json: {
             id: 85,
@@ -28,7 +29,7 @@ for (const width of [320, 1440]) {
             past_values: [{ power: 80 }],
           },
         })
-      } else if (path === '/api/v2/location-area/forest') {
+      } else if (path === `${API_BASE_PATH}/location-area/forest`) {
         await route.fulfill({
           json: {
             id: 1,

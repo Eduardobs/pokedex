@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -24,7 +25,7 @@ describe('MovePicker', () => {
       data: {
         results: ['thunder', 'thunderbolt', 'thunder-punch'].map((name, index) => ({
           name,
-          url: `https://pokeapi.co/api/v2/move/${index + 1}/`,
+          url: `${API_BASE_URL}/move/${index + 1}/`,
         })),
       },
       loading: false,

@@ -1,10 +1,11 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { MoveComparisonPage } from './MoveComparisonPage'
 
-const ref = (name: string, endpoint = 'type') => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/1/` })
+const ref = (name: string, endpoint = 'type') => ({ name, url: `${API_BASE_URL}/${endpoint}/1/` })
 const move = {
   name: 'thunderbolt',
   type: ref('electric'),

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render as renderTestingLibrary, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -20,11 +21,7 @@ afterEach(() => {
 it('creates and renames separate teams and restores saved teams', async () => {
   vi.stubGlobal(
     'fetch',
-    vi
-      .fn()
-      .mockResolvedValue(
-        Response.json({ results: [{ name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' }] }),
-      ),
+    vi.fn().mockResolvedValue(Response.json({ results: [{ name: 'pikachu', url: `${API_BASE_URL}/pokemon/25/` }] })),
   )
   const show = () =>
     render(
@@ -61,11 +58,7 @@ it('creates and renames separate teams and restores saved teams', async () => {
 it('reports storage failure without discarding the current team', () => {
   vi.stubGlobal(
     'fetch',
-    vi
-      .fn()
-      .mockResolvedValue(
-        Response.json({ results: [{ name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' }] }),
-      ),
+    vi.fn().mockResolvedValue(Response.json({ results: [{ name: 'pikachu', url: `${API_BASE_URL}/pokemon/25/` }] })),
   )
   render(
     <LanguageProvider>
@@ -81,7 +74,7 @@ it('reports storage failure without discarding the current team', () => {
 })
 
 it('creates a complete random team only after every selected Pokémon is available', async () => {
-  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/1/` })
+  const ref = (name: string, resource: string) => ({ name, url: `${API_BASE_URL}/${resource}/1/` })
   const names = ['venusaur', 'charizard', 'blastoise', 'arbok', 'pikachu', 'raichu']
   const details: Record<string, { types: string[]; ability: string; moves: string[] }> = {
     venusaur: {
@@ -228,7 +221,7 @@ it('keeps current teams when the imported JSON is invalid', async () => {
 })
 
 it('adds a Pokémon, edits its build, prevents duplicate moves and removes it', async () => {
-  const ref = (name: string, resource: string) => ({ name, url: `https://pokeapi.co/api/v2/${resource}/1/` })
+  const ref = (name: string, resource: string) => ({ name, url: `${API_BASE_URL}/${resource}/1/` })
   vi.stubGlobal(
     'fetch',
     vi.fn().mockImplementation((url: string) => {

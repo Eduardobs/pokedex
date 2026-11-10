@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -40,7 +41,7 @@ describe('PokemonCard with form resources', () => {
           <PokemonCard
             resource={{
               name: 'charizard-mega-x',
-              url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+              url: `${API_BASE_URL}/pokemon-form/10034/`,
             }}
             category="mega"
             loadError
@@ -58,7 +59,7 @@ describe('PokemonCard with form resources', () => {
   it('shows the matching official shiny artwork when requested', () => {
     useApiMock.mockReturnValue({
       data: {
-        pokemon: { name: 'charizard-mega-x', url: 'https://pokeapi.co/api/v2/pokemon/10034/' },
+        pokemon: { name: 'charizard-mega-x', url: `${API_BASE_URL}/pokemon/10034/` },
         sprites: {
           front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/10034.png',
           front_shiny: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/10034.png',
@@ -75,7 +76,7 @@ describe('PokemonCard with form resources', () => {
           <PokemonCard
             resource={{
               name: 'charizard-mega-x',
-              url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+              url: `${API_BASE_URL}/pokemon-form/10034/`,
             }}
             category="mega"
             details={formDetails('charizard-mega-x', 10034)}
@@ -94,7 +95,7 @@ describe('PokemonCard with form resources', () => {
   it('identifies the forms catalog as the detail origin', () => {
     useApiMock.mockReturnValue({
       data: {
-        pokemon: { name: 'charizard-mega-x', url: 'https://pokeapi.co/api/v2/pokemon/10034/' },
+        pokemon: { name: 'charizard-mega-x', url: `${API_BASE_URL}/pokemon/10034/` },
         sprites: { front_default: 'charizard-mega-x.png', front_shiny: null },
         types: [{ type: { name: 'fire', url: 'type/fire' } }],
         is_battle_only: true,
@@ -112,7 +113,7 @@ describe('PokemonCard with form resources', () => {
                 <PokemonCard
                   resource={{
                     name: 'charizard-mega-x',
-                    url: 'https://pokeapi.co/api/v2/pokemon-form/10034/',
+                    url: `${API_BASE_URL}/pokemon-form/10034/`,
                   }}
                   category="mega"
                   details={formDetails('charizard-mega-x', 10034)}
@@ -133,7 +134,7 @@ describe('PokemonCard with form resources', () => {
   it('shows shiny artwork for Zygarde Mega even when form sprites are null', () => {
     useApiMock.mockReturnValue({
       data: {
-        pokemon: { name: 'zygarde-mega', url: 'https://pokeapi.co/api/v2/pokemon/10301/' },
+        pokemon: { name: 'zygarde-mega', url: `${API_BASE_URL}/pokemon/10301/` },
         sprites: {
           front_default: null,
           front_shiny: null,
@@ -152,7 +153,7 @@ describe('PokemonCard with form resources', () => {
           <PokemonCard
             resource={{
               name: 'zygarde-mega',
-              url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
+              url: `${API_BASE_URL}/pokemon-form/10526/`,
             }}
             category="mega"
             details={formDetails('zygarde-mega', 10301)}
@@ -171,7 +172,7 @@ describe('PokemonCard with form resources', () => {
   it('resets the source chain when Zygarde Mega switches between normal and shiny', () => {
     useApiMock.mockReturnValue({
       data: {
-        pokemon: { name: 'zygarde-mega', url: 'https://pokeapi.co/api/v2/pokemon/10301/' },
+        pokemon: { name: 'zygarde-mega', url: `${API_BASE_URL}/pokemon/10301/` },
         sprites: {
           front_default: null,
           front_shiny: null,
@@ -190,7 +191,7 @@ describe('PokemonCard with form resources', () => {
           <PokemonCard
             resource={{
               name: 'zygarde-mega',
-              url: 'https://pokeapi.co/api/v2/pokemon-form/10526/',
+              url: `${API_BASE_URL}/pokemon-form/10526/`,
             }}
             category="mega"
             details={formDetails('zygarde-mega', 10301)}
@@ -222,7 +223,7 @@ describe('PokemonCard with form resources', () => {
     (name, pokemonId, shiny, expectedPath, accessibleName) => {
       useApiMock.mockReturnValue({
         data: {
-          pokemon: { name, url: `https://pokeapi.co/api/v2/pokemon/${pokemonId}/` },
+          pokemon: { name, url: `${API_BASE_URL}/pokemon/${pokemonId}/` },
           sprites: {
             front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png`,
             front_shiny: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/${pokemonId}.png`,
@@ -239,7 +240,7 @@ describe('PokemonCard with form resources', () => {
         <MemoryRouter>
           <LanguageProvider>
             <PokemonCard
-              resource={{ name, url: `https://pokeapi.co/api/v2/pokemon-form/${pokemonId}/` }}
+              resource={{ name, url: `${API_BASE_URL}/pokemon-form/${pokemonId}/` }}
               category="mega"
               details={formDetails(name, pokemonId)}
               shiny={shiny}

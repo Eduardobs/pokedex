@@ -1,9 +1,11 @@
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { loadEnv } from 'vite'
+import { getApiConfig } from './src/config/api'
 
 export default defineConfig(({ mode }) => {
   const env = { ...loadEnv(mode, process.cwd(), 'VITE_'), ...process.env }
+  const api = getApiConfig(env)
   let siteUrl: URL | undefined
   if (env.VITE_SITE_URL) {
     siteUrl = new URL(env.VITE_SITE_URL)
@@ -29,6 +31,14 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      {
+        name: 'api-endpoints',
+        transformIndexHtml(html) {
+          return html
+            .replace('__API_CONNECT_ORIGINS__', [...new Set([api.restOrigin, api.graphqlOrigin])].join(' '))
+            .replace('__API_REST_ORIGIN__', api.restOrigin)
+        },
+      },
       {
         name: 'seo-discovery',
         transformIndexHtml() {
@@ -72,10 +82,7 @@ export default defineConfig(({ mode }) => {
           // React Refresh injects a small inline module only in the local dev server.
           return html
             .replace("script-src 'self'", "script-src 'self' 'unsafe-inline'")
-            .replace(
-              "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co",
-              "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co ws://localhost:* ws://127.0.0.1:*",
-            )
+            .replace("connect-src 'self'", "connect-src 'self' ws://localhost:* ws://127.0.0.1:*")
         },
       },
     ],

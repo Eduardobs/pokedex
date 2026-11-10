@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../../config/app'
 import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -7,7 +8,7 @@ import { PokemonDataTab } from './PokemonDataTab'
 
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 
 const pokemon = {
@@ -69,10 +70,7 @@ describe('PokemonDataTab', () => {
       'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back.png',
     )
     expect(container.querySelector('audio')).toHaveAttribute('src', 'latest.ogg')
-    expect(screen.getByRole('link', { name: /JSON/ })).toHaveAttribute(
-      'href',
-      'https://pokeapi.co/api/v2/pokemon/pikachu',
-    )
+    expect(screen.getByRole('link', { name: /JSON/ })).toHaveAttribute('href', `${API_BASE_URL}/pokemon/pikachu`)
   })
 
   it('distinguishes loading species data from unavailable optional history', () => {

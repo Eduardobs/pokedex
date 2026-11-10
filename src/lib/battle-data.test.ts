@@ -1,7 +1,8 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { parseBattleAbility, parseBattleItem, parseBattleMove } from './battle-data'
 
-const ref = (name: string) => ({ name, url: `https://pokeapi.co/api/v2/${name}/1/` })
+const ref = (name: string) => ({ name, url: `${API_BASE_URL}/${name}/1/` })
 
 describe('battle move parsing', () => {
   it('normalizes the bounded move fields used by the engine', () => {

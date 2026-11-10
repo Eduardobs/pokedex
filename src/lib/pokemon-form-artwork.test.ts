@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import {
   officialArtworkForFormSprite,
@@ -14,8 +15,8 @@ const sandyArtwork =
 
 const pokemon = {
   forms: [
-    { name: 'burmy-plant', url: 'https://pokeapi.co/api/v2/pokemon-form/412/' },
-    { name: 'burmy-sandy', url: 'https://pokeapi.co/api/v2/pokemon-form/10034/' },
+    { name: 'burmy-plant', url: `${API_BASE_URL}/pokemon-form/412/` },
+    { name: 'burmy-sandy', url: `${API_BASE_URL}/pokemon-form/10034/` },
   ],
   sprites: {
     front_default: pokemonSprite,

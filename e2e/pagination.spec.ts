@@ -1,11 +1,12 @@
+import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
 for (const width of [320, 1440]) {
   test(`navigates collection pages with the keyboard at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
-    await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+    await page.route(`${API_BASE_URL}/**`, async (route) => {
       const url = new URL(route.request().url())
-      if (url.pathname.replace(/\/$/, '') !== '/api/v2/pokemon') {
+      if (url.pathname.replace(/\/$/, '') !== `${API_BASE_PATH}/pokemon`) {
         await route.abort()
         return
       }
@@ -13,9 +14,9 @@ for (const width of [320, 1440]) {
       await route.fulfill({
         json: {
           count: 995,
-          next: offset < 960 ? 'https://pokeapi.co/api/v2/pokemon?offset=960' : null,
-          previous: offset > 0 ? 'https://pokeapi.co/api/v2/pokemon?offset=0' : null,
-          results: [{ name: `pokemon-${offset + 1}`, url: `https://pokeapi.co/api/v2/pokemon/${offset + 1}/` }],
+          next: offset < 960 ? `${API_BASE_URL}/pokemon?offset=960` : null,
+          previous: offset > 0 ? `${API_BASE_URL}/pokemon?offset=0` : null,
+          results: [{ name: `pokemon-${offset + 1}`, url: `${API_BASE_URL}/pokemon/${offset + 1}/` }],
         },
       })
     })

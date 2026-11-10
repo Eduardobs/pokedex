@@ -26,7 +26,7 @@ export class ApiError extends Error {
   }
 }
 
-/** Only the documented HTTPS API is a valid data source, including URLs returned by it. */
+/** Only the configured HTTPS API is a valid data source, including URLs returned by it. */
 export function resolveApiUrl(pathOrUrl: string): string {
   const input = pathOrUrl.trim()
   if (!input) throw new ApiError('Invalid API path.', undefined, 'unsafe-url')
@@ -39,7 +39,7 @@ export function resolveApiUrl(pathOrUrl: string): string {
     throw new ApiError('Invalid API URL.', undefined, 'unsafe-url')
   }
 
-  const apiPath = `${new URL(API_BASE_URL).pathname}/`
+  const apiPath = `${new URL(API_BASE_URL).pathname.replace(/\/+$/, '')}/`
   if (
     url.protocol !== 'https:' ||
     url.origin !== API_ORIGIN ||

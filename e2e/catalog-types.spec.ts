@@ -1,12 +1,17 @@
+import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test } from '@playwright/test'
 
 for (const catalog of ['pokemon', 'forms']) {
   test(`preserves ordered type selections across reload and keyboard interaction in ${catalog}`, async ({ page }) => {
-    await page.route('https://pokeapi.co/api/v2/**', async (route) => {
+    await page.route(`${API_BASE_URL}/**`, async (route) => {
       const path = new URL(route.request().url()).pathname
-      if (['/api/v2/pokemon', '/api/v2/pokemon-form', '/api/v2/pokemon-species'].includes(path)) {
+      if (
+        [`${API_BASE_PATH}/pokemon`, `${API_BASE_PATH}/pokemon-form`, `${API_BASE_PATH}/pokemon-species`].includes(path)
+      ) {
         await route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } })
-      } else if (['/api/v2/type/water', '/api/v2/type/ice', '/api/v2/type/psychic'].includes(path)) {
+      } else if (
+        [`${API_BASE_PATH}/type/water`, `${API_BASE_PATH}/type/ice`, `${API_BASE_PATH}/type/psychic`].includes(path)
+      ) {
         await route.fulfill({ json: { pokemon: [] } })
       } else {
         throw new Error(`Unexpected API endpoint: ${path}`)

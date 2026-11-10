@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { MemoryRouter } from 'react-router-dom'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,13 +11,13 @@ function response(name: string) {
   const relations = { no_damage_to: [], half_damage_to: [], double_damage_to: [] }
   return {
     name,
-    generation: { name: 'generation-i', url: `https://pokeapi.co/api/v2/generation/${generation}/` },
+    generation: { name: 'generation-i', url: `${API_BASE_URL}/generation/${generation}/` },
     damage_relations: relations,
     past_damage_relations:
       name === 'ghost'
         ? [
             {
-              generation: { name: 'generation-v', url: 'https://pokeapi.co/api/v2/generation/5/' },
+              generation: { name: 'generation-v', url: `${API_BASE_URL}/generation/5/` },
               damage_relations: { ...relations, half_damage_to: [{ name: 'steel' }] },
             },
           ]

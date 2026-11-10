@@ -1,8 +1,9 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import type { EvolutionNode } from '../types'
 import { layoutEvolutionFlow } from './evolution-flow'
 const node = (name: string, evolves_to: EvolutionNode[] = []): EvolutionNode => ({
-  species: { name, url: `https://pokeapi.co/api/v2/pokemon-species/${name}/` },
+  species: { name, url: `${API_BASE_URL}/pokemon-species/${name}/` },
   evolves_to,
   evolution_details: [],
   is_baby: false,

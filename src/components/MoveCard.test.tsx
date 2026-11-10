@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -62,8 +63,8 @@ describe('MoveCard', () => {
         JSON.stringify({
           name: 'thunder-shock',
           names: [],
-          type: { name: 'electric', url: 'https://pokeapi.co/api/v2/type/13/' },
-          damage_class: { name: 'special', url: 'https://pokeapi.co/api/v2/move-damage-class/3/' },
+          type: { name: 'electric', url: `${API_BASE_URL}/type/13/` },
+          damage_class: { name: 'special', url: `${API_BASE_URL}/move-damage-class/3/` },
           power: 40,
           accuracy: 100,
           pp: 30,
@@ -76,11 +77,7 @@ describe('MoveCard', () => {
     const { container } = render(
       <MemoryRouter>
         <LanguageProvider>
-          <MoveCard
-            move={{ name: 'thunder-shock', url: 'https://pokeapi.co/api/v2/move/84/' }}
-            method="level-up"
-            level={5}
-          />
+          <MoveCard move={{ name: 'thunder-shock', url: `${API_BASE_URL}/move/84/` }} method="level-up" level={5} />
         </LanguageProvider>
       </MemoryRouter>,
     )

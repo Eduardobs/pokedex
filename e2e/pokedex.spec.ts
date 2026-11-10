@@ -1,6 +1,7 @@
+import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test, type Page } from '@playwright/test'
 
-const apiBase = 'https://pokeapi.co/api/v2'
+const apiBase = API_BASE_URL
 
 const pokemon = {
   id: 25,
@@ -43,7 +44,7 @@ async function mockPokeApi(page: Page, options: { failFirstList?: boolean } = {}
   let listRequests = 0
   await page.route(`${apiBase}/**`, async (route) => {
     const url = new URL(route.request().url())
-    if (url.pathname === '/api/v2/pokemon' && url.searchParams.get('limit') === '2000') {
+    if (url.pathname === `${API_BASE_PATH}/pokemon` && url.searchParams.get('limit') === '2000') {
       listRequests += 1
       if (options.failFirstList && listRequests === 1) {
         await route.fulfill({ status: 503, contentType: 'application/json', body: '{}' })
@@ -52,7 +53,7 @@ async function mockPokeApi(page: Page, options: { failFirstList?: boolean } = {}
       await route.fulfill({ status: 200, contentType: 'application/json', json: list })
       return
     }
-    if (url.pathname === '/api/v2/pokemon/pikachu') {
+    if (url.pathname === `${API_BASE_PATH}/pokemon/pikachu`) {
       await route.fulfill({ status: 200, contentType: 'application/json', json: pokemon })
       return
     }

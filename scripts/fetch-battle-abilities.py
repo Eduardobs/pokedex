@@ -5,7 +5,9 @@ from pathlib import Path
 import subprocess
 import time
 
-BASE = 'https://pokeapi.co/api/v2/ability/'
+from api_config import rest_api_url
+
+BASE = f'{rest_api_url()}/ability/'
 CACHE = Path('/tmp/atlas-pokeapi-abilities')
 CACHE.mkdir(exist_ok=True)
 

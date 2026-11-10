@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, expect, it, vi } from 'vitest'
 import { useState } from 'react'
@@ -5,7 +6,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { TeamTabs } from './TeamTabs'
 import { newMember, type Team } from '../lib/teams'
-const ref = (name: string, endpoint: string) => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/1/` })
+const ref = (name: string, endpoint: string) => ({ name, url: `${API_BASE_URL}/${endpoint}/1/` })
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()

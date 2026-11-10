@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { STORAGE_KEYS } from '../config/app'
@@ -20,11 +21,11 @@ describe('LocalizedResourceName', () => {
         names: [
           {
             name: 'Lightning Rod',
-            language: { name: 'en', url: 'https://pokeapi.co/api/v2/language/9/' },
+            language: { name: 'en', url: `${API_BASE_URL}/language/9/` },
           },
           {
             name: 'Pararrayos',
-            language: { name: 'es', url: 'https://pokeapi.co/api/v2/language/7/' },
+            language: { name: 'es', url: `${API_BASE_URL}/language/7/` },
           },
         ],
       },
@@ -32,7 +33,7 @@ describe('LocalizedResourceName', () => {
 
     render(
       <LanguageProvider>
-        <LocalizedResourceName resource={{ name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }} />
+        <LocalizedResourceName resource={{ name: 'lightning-rod', url: `${API_BASE_URL}/ability/31/` }} />
       </LanguageProvider>,
     )
 

@@ -1,7 +1,8 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { groupResourceEntries, resourceRecordColumns } from './resource-presentation'
 
-const ref = (name: string) => ({ name, url: `https://pokeapi.co/api/v2/type/${name}/` })
+const ref = (name: string) => ({ name, url: `${API_BASE_URL}/type/${name}/` })
 
 describe('resource presentation', () => {
   it('separates move metrics, rules, related Pokemon and historical values', () => {
@@ -12,7 +13,7 @@ describe('resource presentation', () => {
       power: 40,
       type: ref('normal'),
       meta: { crit_rate: 0 },
-      learned_by_pokemon: [{ name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' }],
+      learned_by_pokemon: [{ name: 'pikachu', url: `${API_BASE_URL}/pokemon/25/` }],
       past_values: [{ power: 35 }],
       effect_entries: [],
     })

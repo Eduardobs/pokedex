@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
@@ -132,7 +133,7 @@ beforeEach(() => {
       const name = match[1]
       const reference = (resource: string, endpoint: string) => ({
         name: resource,
-        url: `https://pokeapi.co/api/v2/${endpoint}/1/`,
+        url: `${API_BASE_URL}/${endpoint}/1/`,
       })
       return Response.json({
         id: 1,
@@ -215,7 +216,7 @@ describe('BattlePage lobby', () => {
     team.members = team.members.map((member) => ({ ...member, pokemon: 'pikachu' }))
     const otherTeam = { ...team, id: 'other', name: 'Outra equipe' }
     localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([team, otherTeam]))
-    const reference = (name: string, endpoint: string) => ({ name, url: `https://pokeapi.co/api/v2/${endpoint}/1/` })
+    const reference = (name: string, endpoint: string) => ({ name, url: `${API_BASE_URL}/${endpoint}/1/` })
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>

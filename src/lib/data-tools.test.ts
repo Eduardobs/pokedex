@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import { experienceBetween, itemPrices, parseExperience, reference, array } from './resource-data'
 import { formatEvolutionExpression } from './evolution-expression'
@@ -10,7 +11,7 @@ import type { Pokemon } from '../types'
 
 const ref = (name: string, endpoint = 'version-group', id = 1) => ({
   name,
-  url: `https://pokeapi.co/api/v2/${endpoint}/${id}/`,
+  url: `${API_BASE_URL}/${endpoint}/${id}/`,
 })
 const relations = (half: string[] = []) => ({
   no_damage_to: [],

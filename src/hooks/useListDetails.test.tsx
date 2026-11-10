@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useAbilityListDetails } from './useAbilityListDetails'
@@ -11,8 +12,8 @@ const { fetchAbilityListDetailsMock, fetchMoveListDetailsMock } = vi.hoisted(() 
 vi.mock('../lib/ability-catalog', () => ({ fetchAbilityListDetails: fetchAbilityListDetailsMock }))
 vi.mock('../lib/move-catalog', () => ({ fetchMoveListDetails: fetchMoveListDetailsMock }))
 
-const ability = { name: 'lightning-rod', url: 'https://pokeapi.co/api/v2/ability/31/' }
-const move = { name: 'thunderbolt', url: 'https://pokeapi.co/api/v2/move/85/' }
+const ability = { name: 'lightning-rod', url: `${API_BASE_URL}/ability/31/` }
+const move = { name: 'thunderbolt', url: `${API_BASE_URL}/move/85/` }
 
 afterEach(() => {
   cleanup()
@@ -54,9 +55,7 @@ describe('list detail hooks', () => {
   })
 
   it('keeps move loading inactive when no valid IDs exist', () => {
-    const { result } = renderHook(() =>
-      useMoveListDetails([{ url: 'https://pokeapi.co/api/v2/move/not-a-number/' }], 'es'),
-    )
+    const { result } = renderHook(() => useMoveListDetails([{ url: `${API_BASE_URL}/move/not-a-number/` }], 'es'))
 
     expect(result.current).toMatchObject({ data: null, error: null, loading: false })
     expect(fetchMoveListDetailsMock).not.toHaveBeenCalled()

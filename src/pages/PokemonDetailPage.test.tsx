@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config/app'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -22,7 +23,7 @@ vi.mock('../config/feature-flags', async (importOriginal) => {
   }
 })
 
-const apiBase = 'https://pokeapi.co/api/v2'
+const apiBase = API_BASE_URL
 const resource = (endpoint: string, id: number, name: string) => ({
   name,
   url: `${apiBase}/${endpoint}/${id}/`,

@@ -1,9 +1,10 @@
+import { API_BASE_URL } from './config/app'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { STORAGE_KEYS } from './config/app'
 
-const apiBase = 'https://pokeapi.co/api/v2'
+const apiBase = API_BASE_URL
 const pokemon = {
   id: 25,
   name: 'pikachu',
