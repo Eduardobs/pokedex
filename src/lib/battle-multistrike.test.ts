@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import apiMoves from '../data/third-party/pokeapi-battle-moves.json'
+import { apiMoves } from '../test/battle-move-fixtures'
 import { parseBattleMove } from './battle-data'
 import { multistrikeMoves } from './battle-multistrike'
 import { createBattlePokemon, createBattleState, resolveBattleTurn, type BattleMove } from './battle'

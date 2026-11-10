@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { describe, expect, it, afterAll } from 'vitest'
-import apiMoves from '../data/third-party/pokeapi-battle-moves.json'
+import { apiMoves } from '../test/battle-move-fixtures'
 import singlesExclusions from '../data/third-party/battle-move-singles-exclusions.json'
 import moveFlags from '../data/third-party/battle-move-flags.json'
 const referenceSnapshot: {
