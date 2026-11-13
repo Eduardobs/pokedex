@@ -34406,7 +34406,7 @@
     {
       "id": 775,
       "singlesExclusion": null,
-      "verifiedScenarios": ["baseline-state-invariants"],
+      "verifiedScenarios": ["baseline-state-invariants", "maximum-hp-cost-five-stat-boost-and-failure"],
       "multistrike": null,
       "canonicalFlags": ["snatch", "sound", "dance"],
       "name": "clangorous-soul",
@@ -34459,6 +34459,7 @@
         "boosts: {\"atk\":1,\"def\":1,\"spa\":1,\"spd\":1,\"spe\":1}"
       ],
       "findings": [
+        "33% maximum-HP cost rounded down, five-stat boost, Magic Guard bypass and insufficient-HP/maximized-stat failures verified; remaining interactions require coverage",
         "Conditional callbacks require dedicated scenario coverage; presence of a local handler does not prove equivalence"
       ],
       "apiEffectDescriptions": [

@@ -80,6 +80,68 @@ const roster = (source: Team, firstTypes = ['normal']) =>
     ]),
   )
 
+describe('Clangorous Soul', () => {
+  const setup = () => {
+    const player = team('player')
+    const opponent = team('opponent')
+    const state = createBattleState(player, roster(player), opponent, roster(opponent))
+    state.player.roster[0].maxHp = 301
+    state.player.roster[0].hp = 301
+    state.player.roster[0].moves[0].data = move({
+      name: 'clangorous-soul',
+      type: 'dragon',
+      damageClass: 'status',
+      power: null,
+      target: 'user',
+      statChanges: (['attack', 'defense', 'specialAttack', 'specialDefense', 'speed'] as const).map((stat) => ({
+        stat,
+        change: 1,
+      })),
+    })
+    state.opponent.roster[0].moves[0].data = move({ name: 'splash', damageClass: 'status', power: null })
+    return state
+  }
+
+  it('spends 33 percent of maximum HP and raises all five combat stats', () => {
+    const state = setup()
+    state.player.roster[0].hp = 200
+    state.player.roster[0].ability.name = 'magic-guard'
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(101)
+    expect(result.state.player.roster[0].stages).toEqual({
+      attack: 1,
+      defense: 1,
+      specialAttack: 1,
+      specialDefense: 1,
+      speed: 1,
+      accuracy: 0,
+      evasion: 0,
+    })
+    expect(result.events).toContainEqual(expect.objectContaining({ type: 'damage', pokemon: 'player-0', amount: 99 }))
+  })
+
+  it.each([99, 1])('fails without spending HP or boosting when only %i HP remains', (hp) => {
+    const state = setup()
+    state.player.roster[0].hp = hp
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(hp)
+    expect(result.state.player.roster[0].stages.attack).toBe(0)
+  })
+
+  it('does not spend HP when all five combat stats are maximized', () => {
+    const state = setup()
+    Object.assign(state.player.roster[0].stages, {
+      attack: 6,
+      defense: 6,
+      specialAttack: 6,
+      specialDefense: 6,
+      speed: 6,
+    })
+    const result = resolveBattleTurn(state, { kind: 'move', index: 0 }, { kind: 'move', index: 0 }, () => 0.5)
+    expect(result.state.player.roster[0].hp).toBe(301)
+  })
+})
+
 describe('Explosion', () => {
   const setup = () => {
     const player = team('player')

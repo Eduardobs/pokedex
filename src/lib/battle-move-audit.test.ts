@@ -112,6 +112,40 @@ describe('complete PokéAPI move catalog audit', () => {
       expect(result.state.player.roster[0].moves[0].pp).toBe(state.player.roster[0].moves[0].pp - 1)
     },
   )
+  it('Clangorous Soul pays maximum-HP cost and boosts five stats using the catalog payload', () => {
+    const state = setup(load('clangorous-soul'))
+    const user = state.player.roster[0]
+    user.maxHp = 301
+    user.hp = 200
+    user.ability.name = 'magic-guard'
+    const result = executeMove(state)
+    expect(result.state.player.roster[0].hp).toBe(101)
+    expect(result.state.player.roster[0].stages).toEqual({
+      attack: 1,
+      defense: 1,
+      specialAttack: 1,
+      specialDefense: 1,
+      speed: 1,
+      accuracy: 0,
+      evasion: 0,
+    })
+    expect(result.events).toContainEqual(expect.objectContaining({ type: 'damage', pokemon: 'user', amount: 99 }))
+  })
+  it.each(['insufficient-hp', 'maximum-stages', 'one-maximum-hp'])(
+    'Clangorous Soul fails without HP or stage changes for %s',
+    (condition) => {
+      const state = setup(load('clangorous-soul'))
+      const user = state.player.roster[0]
+      user.maxHp = condition === 'one-maximum-hp' ? 1 : 300
+      user.hp = condition === 'insufficient-hp' ? 99 : user.maxHp
+      if (condition === 'maximum-stages')
+        Object.assign(user.stages, { attack: 6, defense: 6, specialAttack: 6, specialDefense: 6, speed: 6 })
+      const result = executeMove(state)
+      expect(result.state.player.roster[0].hp).toBe(user.hp)
+      expect(result.state.player.roster[0].stages).toEqual(user.stages)
+      expect(result.events).toContainEqual({ type: 'failed', pokemon: 'user' })
+    },
+  )
   it('excludes every Z/Max definition and every move requiring an adjacent ally', () => {
     for (const { name, reference } of referenceSnapshot.records) {
       if (reference && (reference.isZ || reference.isMax || reference.target === 'adjacentAlly'))
@@ -848,6 +882,7 @@ afterAll(() => {
     ['calling-zero-pp-without-consuming-called-pp', ['sleep-talk']],
     ['passing-stages-substitute-and-copyable-conditions', ['baton-pass']],
     ['substitute-cost-transfer-and-failure', ['shed-tail']],
+    ['maximum-hp-cost-five-stat-boost-and-failure', ['clangorous-soul']],
     ['independent-paralysis-and-flinch', ['thunder-fang']],
     ['correlated-five-stat-boost', ['ancient-power']],
     ['per-hit-user-secondary-boost-and-suppression', ['power-up-punch']],
@@ -885,6 +920,10 @@ afterAll(() => {
     const gaps: string[] = []
     if (formatExclusion) gaps.push(`Singles restriction verified: ${formatExclusion}; move fails without an effect`)
     if (!reference) gaps.push('Reference ID unavailable')
+    if (move.name === 'clangorous-soul')
+      gaps.push(
+        '33% maximum-HP cost rounded down, five-stat boost, Magic Guard bypass and insufficient-HP/maximized-stat failures verified; remaining interactions require coverage',
+      )
     if (reference && JSON.stringify(reference).includes('callbackSource'))
       gaps.push(
         'Conditional callbacks require dedicated scenario coverage; presence of a local handler does not prove equivalence',
@@ -980,7 +1019,7 @@ afterAll(() => {
       '',
       'Singles scope: one active Pokémon per side. Moves requiring another active ally fail. Follow Me, Rage Powder, After You, Quash and Ally Switch also fail according to the singles reference. Effects usable in singles remain enabled: Wide Guard blocks spread-target moves even with one opponent, and Quick Guard blocks positive-priority attacks. No doubles damage reduction or allied-target effects are applied. The JSON records the format exclusion for every ID. Canonical flags are supplied for all 919 moves, including Protect, Substitute bypass, Encore restrictions and move-calling eligibility. The verifiedScenarios list in each JSON row names only the scenarios exercised; all remaining callbacks and interactions still require individual conformance review.\n\nStructured secondary effects are grouped by their canonical probabilities and applied on each successful hit. Independent groups receive separate rolls; shared multi-stat boosts receive one roll. Serene Grace, Sheer Force, Shield Dust, Substitute and direct-hit eligibility are considered. Callback-defined secondaries still require explicit handlers.\n\nGlobal limitations: complete ability/contact interactions, move-calling restrictions, precise integer rounding and remaining move-specific callbacks are not comprehensively implemented. The verifiedScenarios field is a progress ledger, not an assertion of complete conformance. No row is a claim of full correctness. “0” in the timing columns describes the local engine, not proof that the canonical move has no lockout. See conditional callbacks.',
       '',
-      'Rules with dedicated regressions: OHKO uses a level gate and level-based accuracy, ignores accuracy/evasion modifiers, respects Focus Sash/Sturdy and Sheer Cold Ice immunity; Sky Drop prevents carried switches, checks accuracy on release, and deals no release damage to Flying targets; Gigaton Hammer/Blood Moon cannot be selected again after execution, including a miss or Protect; accuracy combines stages by subtraction and truncates the percentage; Encore has a fixed duration of three actions; Lunar Blessing cures status and restores one quarter of maximum HP without an evasion boost. Explosion, Self-Destruct and Misty Explosion sacrifice their user even against Protect unless Damp prevents execution. Crash moves lose half maximum HP after misses or Protect, respecting Magic Guard. These scenarios do not certify every interaction.',
+      'Rules with dedicated regressions: OHKO uses a level gate and level-based accuracy, ignores accuracy/evasion modifiers, respects Focus Sash/Sturdy and Sheer Cold Ice immunity; Sky Drop prevents carried switches, checks accuracy on release, and deals no release damage to Flying targets; Gigaton Hammer/Blood Moon cannot be selected again after execution, including a miss or Protect; accuracy combines stages by subtraction and truncates the percentage; Encore has a fixed duration of three actions; Lunar Blessing cures status and restores one quarter of maximum HP without an evasion boost. Explosion, Self-Destruct and Misty Explosion sacrifice their user even against Protect unless Damp prevents execution. Crash moves lose half maximum HP after misses or Protect, respecting Magic Guard. Clangorous Soul spends 33% of maximum HP rounded down, raises its five combat stats by one stage, bypasses Magic Guard for its HP cost, and fails with insufficient HP or when no stat can change. These scenarios do not certify every interaction.',
       '',
       'Multistrike scope: all 32 moves in the Bulbapedia list are covered using Scarlet/Violet (Generation IX) rules; Legends: Z-A real-time changes are excluded. Fixed, variable, accuracy-dependent and party-dependent sequences have dedicated tests in battle-multistrike.test.ts. Every executed strike emits a numbered log entry, including Substitute hits; missed or cancelled strikes are not counted. Triple Axel/Kick increase power per strike; Skill Link and Loaded Dice bypass subsequent accuracy checks, Loaded Dice Population Bomb rolls 4–10 strikes, and Beat Up uses eligible party members and their original base Attack. Sequences stop on fainting or newly inflicted sleep. Color Change is deferred until the sequence ends; survival and contact effects resolve per hit. Source: [Bulbapedia multistrike moves](https://bulbapedia.bulbagarden.net/wiki/Multistrike_move), cross-checked with the pinned Showdown reference and its battle action implementation.',
       '',

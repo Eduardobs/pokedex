@@ -1883,6 +1883,20 @@ function applyMove(
       return { hit: true, succeeded }
     }
 
+    if (move.name === 'clangorous-soul') {
+      const cost = (attacker.maxHp * 33) / 100
+      if (attacker.hp <= cost || attacker.maxHp === 1) return { hit: true, succeeded: false }
+      let boosted = false
+      for (const stat of ['attack', 'defense', 'specialAttack', 'specialDefense', 'speed'] as const) {
+        if (abilityStage(attacker, stat, 1, events, attacker, false, move)) boosted = true
+      }
+      if (!boosted) return { hit: true, succeeded: false }
+      const amount = Math.max(1, Math.floor(cost))
+      attacker.hp -= amount
+      events.push({ type: 'damage', pokemon: battlePokemonName(attacker), amount, effectiveness: 1, critical: false })
+      return { hit: true, succeeded: true }
+    }
+
     if (supplemental?.kind === 'substitute') {
       const hp = Math.floor(attacker.maxHp / 4)
       if (attacker.substituteHp > 0 || attacker.hp <= hp) return { hit: true, succeeded: false }
