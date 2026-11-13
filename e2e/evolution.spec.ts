@@ -51,7 +51,7 @@ test('keeps shared ancestors together and preserves default-variety links', asyn
     await expect(family.getByRole('link', { name: new RegExp(name) }).locator('..')).toContainText('A partir de Gloom')
   await page.goto('/#/pokemon/burmy')
   await page.getByRole('tab', { name: 'Evoluções', exact: true }).click()
-  await expect(page.locator('.evolution-flow').getByRole('link', { name: /Wormadam/ })).toHaveAttribute(
+  await expect(page.locator('.evolution-flow').getByRole('link', { name: /Wormadam.*Manto vegetal/ })).toHaveAttribute(
     'href',
     '#/pokemon/wormadam-plant',
   )
@@ -86,4 +86,62 @@ test('zooms and fits the connected diagram without breaking the parent-child pat
   await page.keyboard.press('ArrowDown')
   await expect.poll(async () => diagram.evaluate((element) => element.scrollTop)).toBeGreaterThan(0)
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390)
+})
+
+test('connects regional and gender evolutions only to compatible source nodes', async ({ page }) => {
+  await mockEvolutionFamilies(page)
+  await page.goto('/#/pokemon/mime-jr')
+  await page.getByRole('tab', { name: 'Evoluções', exact: true }).click()
+  const family = page.getByRole('list', { name: 'Linha evolutiva' })
+  const regional = family.locator('a[href="#/pokemon/mr-mime-galar"]')
+  await expect(regional).toContainText('Galar')
+  await expect(regional.locator('img')).toHaveAttribute('src', /10168\.png$/)
+  await expect(regional.locator('..').getByRole('link', { name: /Mr Rime/ })).toHaveCount(1)
+  await expect(
+    family
+      .locator('a[href="#/pokemon/mr-mime"]')
+      .locator('..')
+      .getByRole('link', { name: /Mr Rime/ }),
+  ).toHaveCount(0)
+  await page.goto('/#/pokemon/burmy')
+  await page.getByRole('tab', { name: 'Evoluções', exact: true }).click()
+  const male = family.getByRole('link', { name: /Burmy.*Macho/ }).locator('..')
+  const female = family.getByRole('link', { name: /Burmy.*Fêmea/ }).locator('..')
+  await expect(male.getByRole('link', { name: /Mothim/ })).toHaveCount(1)
+  await expect(male.getByRole('link', { name: /Wormadam/ })).toHaveCount(0)
+  await expect(female.getByRole('link', { name: /Wormadam/ })).toHaveCount(3)
+  await expect(female.getByRole('link', { name: /Mothim/ })).toHaveCount(0)
+  for (const [cloak, label, id] of [
+    ['plant', 'Manto vegetal', 413],
+    ['sandy', 'Manto arenoso', 10004],
+    ['trash', 'Manto de lixo', 10005],
+  ] as const) {
+    const wormadam = female.getByRole('link', { name: new RegExp(`Wormadam.*${label}`) })
+    await expect(wormadam).toHaveAttribute('href', `#/pokemon/wormadam-${cloak}`)
+    await expect(wormadam.locator('img')).toHaveAttribute('src', new RegExp(`${id}\\.png$`))
+    await expect(wormadam.locator('..')).toContainText(`Na forma ${label}`)
+  }
+})
+
+test('shows female White-Striped Basculin evolving into female Basculegion', async ({ page }) => {
+  await mockEvolutionFamilies(page)
+  await page.goto('/#/pokemon/basculin')
+  await page.getByRole('tab', { name: 'Evoluções', exact: true }).click()
+  const family = page.getByRole('list', { name: 'Linha evolutiva' })
+  const female = family.getByRole('link', { name: /Basculin.*Listra branca.*Fêmea/ }).locator('..')
+  const destination = female.getByRole('link', { name: /Basculegion.*Fêmea/ })
+  await expect(destination).toHaveAttribute('href', '#/pokemon/basculegion-female')
+  await expect(destination.locator('img')).toHaveAttribute('src', /10248\.png$/)
+  await expect(female.getByRole('link', { name: /Basculegion.*Macho/ })).toHaveCount(0)
+  const male = family.getByRole('link', { name: /Basculin.*Listra branca.*Macho/ }).locator('..')
+  await expect(male.getByRole('link', { name: /Basculegion.*Macho/ })).toHaveAttribute(
+    'href',
+    '#/pokemon/basculegion-male',
+  )
+  for (const stripe of ['vermelha', 'azul']) {
+    const sources = family.getByRole('link', { name: new RegExp(`Basculin.*Listra ${stripe}`) })
+    await expect(sources).toHaveCount(2)
+    for (const source of await sources.all())
+      await expect(source.locator('..').getByRole('link', { name: /Basculegion/ })).toHaveCount(0)
+  }
 })

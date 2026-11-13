@@ -1,4 +1,10 @@
 export const en = {
+  'evolution.stripe.red': 'Red-Striped',
+  'evolution.stripe.blue': 'Blue-Striped',
+  'evolution.stripe.white': 'White-Striped',
+  'evolution.cloak.plant': 'Plant Cloak',
+  'evolution.cloak.sandy': 'Sandy Cloak',
+  'evolution.cloak.trash': 'Trash Cloak',
   'seo.homeTitle': 'Pokédex, types and teams',
   'seo.homeDescription':
     'Explore the complete Pokédex: Pokémon, evolutions, moves, abilities, types, maps and tools to build your team.',

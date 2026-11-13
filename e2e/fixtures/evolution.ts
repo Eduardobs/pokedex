@@ -70,6 +70,22 @@ const families = [
     node('mothim', 414, [], [method({ min_level: 20, gender: 2 })]),
   ]),
   node('ditto', 132),
+  node('basculin', 550, [
+    node(
+      'basculegion',
+      902,
+      [],
+      [method({ gender: 2, min_damage_taken: 294 }), method({ gender: 1, min_damage_taken: 294 })],
+    ),
+  ]),
+  node('mime-jr', 439, [
+    node(
+      'mr-mime',
+      122,
+      [node('mr-rime', 866, [], [method({ min_level: 42 })])],
+      [method({ known_move: ref('move', 'mimic', 102) })],
+    ),
+  ]),
 ]
 function flatten(root: EvolutionNode): EvolutionNode[] {
   return [root, ...root.evolves_to.flatMap(flatten)]
@@ -96,6 +112,17 @@ export async function mockEvolutionFamilies(page: Page) {
       ({ entry }) => entry.species.name === identifier || entry.species.url.endsWith(`/${identifier}/`),
     )
     if (endpoint === 'pokemon' && !identifier) return route.fulfill({ json: { count: 0, results: [] } })
+    if (endpoint === 'pokemon' && identifier === 'mr-mime-galar')
+      return route.fulfill({ json: { id: 10168, name: identifier } })
+    if (endpoint === 'pokemon' && ['wormadam-sandy', 'wormadam-trash'].includes(identifier))
+      return route.fulfill({ json: { id: identifier === 'wormadam-sandy' ? 10004 : 10005, name: identifier } })
+    const alternateIds: Record<string, number> = {
+      'basculin-blue-striped': 10016,
+      'basculin-white-striped': 10247,
+      'basculegion-female': 10248,
+    }
+    if (endpoint === 'pokemon' && alternateIds[identifier])
+      return route.fulfill({ json: { id: alternateIds[identifier], name: identifier } })
     if (!member) return route.fulfill({ status: 404, json: {} })
     const { entry, family } = member
     const id = Number(entry.species.url.split('/').filter(Boolean).at(-1))

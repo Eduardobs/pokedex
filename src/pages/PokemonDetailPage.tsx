@@ -486,7 +486,7 @@ export function PokemonDetailPage() {
             chain={evolution}
             loading={!secondaryDataReady || speciesLoading || evolutionLoading}
             error={Boolean(evolutionError || speciesError)}
-            currentSpecies={species?.name ?? pokemon.species.name}
+            currentSpecies={pokemon.name}
             retry={speciesError ? retrySpecies : retryEvolution}
           />
         )}

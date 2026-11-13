@@ -12,7 +12,7 @@ The application is a client-side static site: it has no application server or da
 - **Pokémon type chart** with an interactive damage calculator and generation-specific matchups loaded from PokéAPI. The selected generation is shareable in the URL.
 - **Move comparison** with searchable move suggestions, aligned attribute comparisons, explicit difference labels, and expandable effects and historical values. Open it from Explore or an individual move.
 - **Expanded Pokémon data** with game-specific learnsets, regional Pokédex numbers, versioned descriptions, form explanations, historical and female sprites, and opt-in animations.
-- **Evolution and transformation guides** with linked form requirements, readable special evolution expressions, and on-demand variable explanations.
+- **Evolution and transformation guides** with separate regional-form and gender-dependent evolution branches, linked form requirements, readable special evolution expressions, and on-demand variable explanations.
 - **Item and training tools** with versioned item descriptions, purchase/sale prices by game and currency, and an experience planner with a growth chart and accessible level table.
 - **Interactive game maps** for FireRed/LeafGreen's Kanto, Scarlet/Violet's Paldea, Kitakami, and Terarium, and Legends: Arceus's Hisui, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.

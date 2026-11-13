@@ -115,7 +115,7 @@ describe('EvolutionTree', () => {
       </MemoryRouter>,
     )
 
-    expect(screen.getByRole('link', { name: new RegExp(name, 'i') })).toHaveAttribute('href', href)
+    expect(screen.getAllByRole('link', { name: new RegExp(name, 'i') })[0]).toHaveAttribute('href', href)
   })
 
   it('keeps alternate evolutions as sibling branches of the same Pokémon', () => {

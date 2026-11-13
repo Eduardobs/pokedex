@@ -1,4 +1,10 @@
 export const ptBR = {
+  'evolution.stripe.red': 'Listra vermelha',
+  'evolution.stripe.blue': 'Listra azul',
+  'evolution.stripe.white': 'Listra branca',
+  'evolution.cloak.plant': 'Manto vegetal',
+  'evolution.cloak.sandy': 'Manto arenoso',
+  'evolution.cloak.trash': 'Manto de lixo',
   'seo.homeTitle': 'Pokédex, tipos e equipes',
   'seo.homeDescription':
     'Explore a Pokédex completa: Pokémon, evoluções, golpes, habilidades, tipos, mapas e ferramentas para montar sua equipe.',

@@ -1,4 +1,5 @@
 import type { EvolutionNode } from '../types'
+import { evolutionVarietyRoots } from './evolution-varieties'
 
 export type FlowBox = { x: number; y: number; width: number; height: number }
 export type EvolutionFlowNode = {
@@ -10,7 +11,7 @@ export type EvolutionFlowNode = {
   box: FlowBox
   label?: FlowBox
 }
-export type EvolutionFlowEdge = { from: string; to: string; path: string }
+export type EvolutionFlowEdge = { from: string; to: string; path: string; offset?: number }
 export type EvolutionFlowLayout = {
   nodes: EvolutionFlowNode[]
   edges: EvolutionFlowEdge[]
@@ -20,7 +21,7 @@ export type EvolutionFlowLayout = {
 }
 export type FlowMeasurements = Record<string, { node?: number; label?: number }>
 
-export function layoutEvolutionFlow(
+function layoutSingleEvolutionFlow(
   root: EvolutionNode,
   options: { vertical: boolean; width: number; measurements?: FlowMeasurements },
 ): EvolutionFlowLayout {
@@ -50,7 +51,15 @@ export function layoutEvolutionFlow(
         width: nodeWidth,
         height: measured.height,
       }
-      const placed = { key, parentKey: parent?.key, parentName: parent?.node.species.name, depth, node, box, label }
+      const placed = {
+        key,
+        parentKey: parent?.key,
+        parentName: parent?.node.variety ?? parent?.node.species.name,
+        depth,
+        node,
+        box,
+        label,
+      }
       nodes.push(placed)
       if (parent && label) {
         const sx = parent.box.x + parent.box.width / 2,
@@ -100,7 +109,15 @@ export function layoutEvolutionFlow(
     const label = parent
       ? { x: parent.box.x + nodeWidth + 46, y: center - measured.label / 2, width: labelWidth, height: measured.label }
       : undefined
-    const placed = { key, parentKey: parent?.key, parentName: parent?.node.species.name, depth, node, box, label }
+    const placed = {
+      key,
+      parentKey: parent?.key,
+      parentName: parent?.node.variety ?? parent?.node.species.name,
+      depth,
+      node,
+      box,
+      label,
+    }
     nodes.push(placed)
     if (parent) {
       const sx = parent.box.x + parent.box.width,
@@ -123,5 +140,49 @@ export function layoutEvolutionFlow(
     width: Math.max(...nodes.map(({ box }) => box.x + box.width)) + margin,
     height: total + margin * 2,
     vertical,
+  }
+}
+
+export function layoutEvolutionFlow(
+  root: EvolutionNode,
+  options: { vertical: boolean; width: number; measurements?: FlowMeasurements },
+): EvolutionFlowLayout {
+  const roots = evolutionVarietyRoots(root)
+  if (roots.length === 1) return layoutSingleEvolutionFlow(roots[0], options)
+  let height = 0
+  const layouts = roots.map((node, index) => {
+    const prefix = `root${index}.`
+    const measurements = Object.fromEntries(
+      Object.entries(options.measurements ?? {})
+        .filter(([key]) => key.startsWith(prefix))
+        .map(([key, value]) => [key.slice(prefix.length), value]),
+    )
+    const layout = layoutSingleEvolutionFlow(node, { ...options, measurements })
+    const offset = height
+    height += layout.height + 32
+    return {
+      ...layout,
+      nodes: layout.nodes.map((item) => ({
+        ...item,
+        key: prefix + item.key,
+        parentKey: item.parentKey ? prefix + item.parentKey : undefined,
+        box: { ...item.box, y: item.box.y + offset },
+        label: item.label ? { ...item.label, y: item.label.y + offset } : undefined,
+      })),
+      edges: layout.edges.map((edge) => ({
+        ...edge,
+        from: prefix + edge.from,
+        to: prefix + edge.to,
+        path: edge.path,
+        offset,
+      })),
+    }
+  })
+  return {
+    nodes: layouts.flatMap((layout) => layout.nodes),
+    edges: layouts.flatMap((layout) => layout.edges.map((edge) => ({ ...edge, offset: edge.offset }))),
+    width: Math.max(...layouts.map((layout) => layout.width)),
+    height: height - 32,
+    vertical: options.vertical,
   }
 }

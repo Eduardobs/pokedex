@@ -1,4 +1,10 @@
 export const es = {
+  'evolution.stripe.red': 'Raya roja',
+  'evolution.stripe.blue': 'Raya azul',
+  'evolution.stripe.white': 'Raya blanca',
+  'evolution.cloak.plant': 'Tronco planta',
+  'evolution.cloak.sandy': 'Tronco arena',
+  'evolution.cloak.trash': 'Tronco basura',
   'seo.homeTitle': 'Pokédex, tipos y equipos',
   'seo.homeDescription':
     'Explora la Pokédex completa: Pokémon, evoluciones, movimientos, habilidades, tipos, mapas y herramientas para crear tu equipo.',

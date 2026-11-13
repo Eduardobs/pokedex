@@ -112,6 +112,8 @@ export interface EvolutionChain {
   chain: EvolutionNode
 }
 export interface EvolutionNode {
+  variety?: string
+  evolution_gender?: 1 | 2
   is_baby: boolean
   species: NamedResource
   evolves_to: EvolutionNode[]

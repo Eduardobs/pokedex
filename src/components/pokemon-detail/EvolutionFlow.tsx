@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import type { Language, Translate } from '../../contexts/LanguageContext'
 import type { EvolutionNode } from '../../types'
 import { formatNumber, idFromUrl, pokemonArtwork, prettyName } from '../../lib/api'
+import { useApi } from '../../hooks/useApi'
+import { formLabels, formCategory } from '../../lib/pokemon-forms'
+import { pokemonVariantForSpeciesGender } from '../../lib/pokemon-species'
 import { defaultPokemonNameForSpecies } from '../../lib/pokemon-species'
 import {
   layoutEvolutionFlow,
@@ -31,12 +34,56 @@ function FlowBranch({
   language: Language
 }) {
   const { node, box, label, key } = item
+  const route = node.variety ?? defaultPokemonNameForSpecies(node.species.name)
+  const isAlternate = route !== defaultPokemonNameForSpecies(node.species.name)
+  const { data: variant } = useApi(isAlternate ? `pokemon/${encodeURIComponent(route)}` : null, (value) => {
+    if (
+      !value ||
+      typeof value !== 'object' ||
+      !('id' in value) ||
+      typeof value.id !== 'number' ||
+      !Number.isSafeInteger(value.id) ||
+      value.id <= 0
+    )
+      throw new Error('Invalid Pokémon artwork identifier')
+    return { id: value.id }
+  })
+  const category = formCategory(route)
+  const cloak = route.match(/^wormadam-(plant|sandy|trash)$/)?.[1]
+  const cloakLabel =
+    cloak === 'plant'
+      ? t('evolution.cloak.plant')
+      : cloak === 'sandy'
+        ? t('evolution.cloak.sandy')
+        : cloak === 'trash'
+          ? t('evolution.cloak.trash')
+          : undefined
+  const stripeLabel =
+    route === 'basculin-red-striped'
+      ? t('evolution.stripe.red')
+      : route === 'basculin-blue-striped'
+        ? t('evolution.stripe.blue')
+        : route === 'basculin-white-striped'
+          ? t('evolution.stripe.white')
+          : undefined
+  const variation =
+    stripeLabel ??
+    cloakLabel ??
+    (category
+      ? formLabels(route, category, t).variation
+      : node.evolution_gender
+        ? t(node.evolution_gender === 1 ? 'evolution.female' : 'evolution.male')
+        : isAlternate
+          ? prettyName(route)
+          : undefined)
   const id = idFromUrl(node.species.url),
-    current = currentSpecies === node.species.name
+    current = currentSpecies === route
   const methods = [
     ...new Map(
       node.evolution_details.map((detail) => {
-        const condition = evolutionCondition(detail, t, language)
+        const condition =
+          evolutionCondition(cloakLabel ? { ...detail, required_pokemon_form: null } : detail, t, language) +
+          (cloakLabel ? ` · ${t('evolution.requiredForm', { form: cloakLabel })}` : '')
         return [`${condition}:${detail.condition_expression?.expression ?? ''}`, { detail, condition }]
       }),
     ).values(),
@@ -49,14 +96,18 @@ function FlowBranch({
         data-flow-key={key}
         data-flow-part="node"
         style={position(box)}
-        to={`/pokemon/${encodeURIComponent(defaultPokemonNameForSpecies(node.species.name))}`}
+        to={`/pokemon/${encodeURIComponent(route)}`}
         aria-current={current ? 'page' : undefined}
       >
         <span className="evolution-flow-stage">
           {t('evolution.stage', { stage: formatNumber(item.depth + 1, language) })}
         </span>
         <img
-          src={pokemonArtwork(id)}
+          src={pokemonArtwork(
+            variant?.id ??
+              pokemonVariantForSpeciesGender(node.species.name, id, node.evolution_gender === 1 ? 'female' : 'male')
+                .artworkId,
+          )}
           alt={prettyName(node.species.name)}
           width="80"
           height="80"
@@ -65,6 +116,10 @@ function FlowBranch({
         />
         <small>#{String(id).padStart(4, '0')}</small>
         <strong>{prettyName(node.species.name)}</strong>
+        {variation && <span>{variation}</span>}
+        {node.evolution_gender && (stripeLabel || cloakLabel || category) && (
+          <span>{t(node.evolution_gender === 1 ? 'evolution.female' : 'evolution.male')}</span>
+        )}
         {current && <span className="evolution-flow-current">{t('evolution.viewing')}</span>}
       </Link>
       {label && (
@@ -258,18 +313,24 @@ export function EvolutionFlow({ node, t, language, currentSpecies }: Props) {
                   data-flow-from={edge.from}
                   data-flow-to={edge.to}
                   d={edge.path}
+                  transform={edge.offset ? `translate(0 ${edge.offset})` : undefined}
                   markerEnd={`url(#${marker})`}
                 />
               ))}
             </svg>
             <ul className="evolution-flow" aria-label={t('detail.evolution')}>
-              <FlowBranch
-                item={layout.nodes[0]}
-                items={layout.nodes}
-                currentSpecies={currentSpecies}
-                t={t}
-                language={language}
-              />
+              {layout.nodes
+                .filter((item) => !item.parentKey)
+                .map((root) => (
+                  <FlowBranch
+                    key={root.key}
+                    item={root}
+                    items={layout.nodes}
+                    currentSpecies={currentSpecies}
+                    t={t}
+                    language={language}
+                  />
+                ))}
             </ul>
           </div>
         </div>

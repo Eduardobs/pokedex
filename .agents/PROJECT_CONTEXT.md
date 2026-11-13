@@ -19,6 +19,7 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 - Tera type references reuse each type's icon and colors inside a crystalline insignia; labeled references use the extended crystalline badge.
 - The Mega Evolution icon must not be changed.
 - The evolution tree must preserve and make the branches and conditions of every alternative evolution visually unambiguous.
+- Evolution flows show separate nodes for regional forms and gender-dependent branches, connecting each evolution only to compatible source forms and genders.
 - Evolution lines use a connected flowchart, with species as nodes and evolution requirements on the parent-child arrows.
 - Evolution tree links must open the default variety of each species when the species name and the routable Pokémon name differ.
 - Species list links must open each Pokémon's routable default variety.
