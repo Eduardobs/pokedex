@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { filterPokemonCatalogMetadata, pokemonSearchSuggestions } from './pokemon-directory'
 
 const pokemon = [
@@ -73,6 +73,22 @@ describe('pokemonSearchSuggestions', () => {
         2,
       ).map(({ name }) => name),
     ).toEqual(['raichu-alola', 'charizard-mega-x'])
+  })
+
+  it('normalizes names a bounded number of times while ranking a large directory', () => {
+    const entries = Array.from({ length: 1350 }, (_, index) => ({
+      id: (index * 719) % 1350,
+      name: `${index % 3 ? 'mega-pokemon' : 'pokemon'}-${index}`,
+    }))
+    const normalize = vi.spyOn(String.prototype, 'normalize')
+    try {
+      const suggestions = pokemonSearchSuggestions(entries, 'pokemon')
+      expect(suggestions.map(({ id }) => id)).toEqual([0, 3, 6, 9, 12, 15, 18])
+      expect(suggestions.every((entry) => entries.includes(entry))).toBe(true)
+      expect(normalize.mock.calls.length).toBeLessThanOrEqual(entries.length * 2 + 1)
+    } finally {
+      normalize.mockRestore()
+    }
   })
 
   it('does not suggest entries for empty or numeric-only queries', () => {

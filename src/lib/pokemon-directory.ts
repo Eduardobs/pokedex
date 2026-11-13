@@ -90,14 +90,16 @@ export function pokemonSearchSuggestions<T extends { id: number; name: string }>
   if (!normalizedQuery || !/[a-z]/.test(normalizedQuery)) return []
 
   return pokemon
-    .filter((entry) => searchValues(entry).some((value) => normalizeSearchText(value).includes(normalizedQuery)))
+    .flatMap((entry) => {
+      const matches = searchValues(entry).some((value) => normalizeSearchText(value).includes(normalizedQuery))
+      return matches ? [{ entry, startsWith: normalizeSearchText(entry.name).startsWith(normalizedQuery) }] : []
+    })
     .sort((left, right) => {
-      const leftStartsWith = normalizeSearchText(left.name).startsWith(normalizedQuery)
-      const rightStartsWith = normalizeSearchText(right.name).startsWith(normalizedQuery)
-      if (leftStartsWith !== rightStartsWith) return leftStartsWith ? -1 : 1
-      return left.id - right.id || left.name.localeCompare(right.name)
+      if (left.startsWith !== right.startsWith) return left.startsWith ? -1 : 1
+      return left.entry.id - right.entry.id || left.entry.name.localeCompare(right.entry.name)
     })
     .slice(0, limit)
+    .map(({ entry }) => entry)
 }
 
 export function pokemonSortOptions(t: Translate): { value: PokemonSortKey; label: string; metric?: string }[] {
