@@ -9,6 +9,9 @@ for (const width of [320, 390, 1440]) {
     await expect(page.getByRole('heading', { level: 1, name: 'Eevee' })).toBeVisible()
     await page.evaluate(() => document.fonts.ready)
     if (width <= 390) {
+      await page
+        .getByRole('tablist')
+        .evaluate((element) => element.scrollIntoView({ block: 'center', behavior: 'instant' }))
       const tabsBox = await page.getByRole('tablist').boundingBox()
       const shortcutsBox = await page.getByRole('navigation', { name: 'Navegação rápida' }).boundingBox()
       expect(tabsBox!.y + tabsBox!.height).toBeLessThanOrEqual(shortcutsBox!.y)
