@@ -1,4 +1,5 @@
 export const ptBR = {
+  'evolution.typesUnavailable': 'Tipos indisponíveis',
   'evolution.stripe.red': 'Listra vermelha',
   'evolution.stripe.blue': 'Listra azul',
   'evolution.stripe.white': 'Listra branca',

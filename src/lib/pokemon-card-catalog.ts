@@ -46,7 +46,7 @@ function validateNames(rawNames: string[]) {
   return names
 }
 
-function parseTypes(value: unknown) {
+export function parsePokemonTypes(value: unknown) {
   if (!Array.isArray(value) || value.length === 0 || value.length > 2) {
     throw new ApiError('PokéAPI returned invalid card types.', undefined, 'invalid-response')
   }
@@ -108,7 +108,7 @@ export function parsePokemonCardDetails(
     details[rawEntry.name] = {
       id: Number(pokemon.id),
       name: pokemon.name,
-      types: parseTypes(pokemon.pokemontypes),
+      types: parsePokemonTypes(pokemon.pokemontypes),
       isBattleOnly: kind === 'form' ? Boolean(rawEntry.is_battle_only) : false,
     }
   }

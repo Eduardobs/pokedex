@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import type { Language, Translate } from '../../contexts/LanguageContext'
 import type { EvolutionNode } from '../../types'
 import { formatNumber, idFromUrl, pokemonArtwork, prettyName } from '../../lib/api'
+import { TypeBadge } from '../TypeBadge'
+import { parseEvolutionPokemon } from '../../lib/evolution-pokemon'
 import { useApi } from '../../hooks/useApi'
 import { formLabels, formCategory } from '../../lib/pokemon-forms'
 import { pokemonVariantForSpeciesGender } from '../../lib/pokemon-species'
@@ -36,18 +38,7 @@ function FlowBranch({
   const { node, box, label, key } = item
   const route = node.variety ?? defaultPokemonNameForSpecies(node.species.name)
   const isAlternate = route !== defaultPokemonNameForSpecies(node.species.name)
-  const { data: variant } = useApi(isAlternate ? `pokemon/${encodeURIComponent(route)}` : null, (value) => {
-    if (
-      !value ||
-      typeof value !== 'object' ||
-      !('id' in value) ||
-      typeof value.id !== 'number' ||
-      !Number.isSafeInteger(value.id) ||
-      value.id <= 0
-    )
-      throw new Error('Invalid Pokémon artwork identifier')
-    return { id: value.id }
-  })
+  const { data: variant, loading: typesLoading } = useApi(`pokemon/${encodeURIComponent(route)}`, parseEvolutionPokemon)
   const category = formCategory(route)
   const cloak = route.match(/^wormadam-(plant|sandy|trash)$/)?.[1]
   const cloakLabel =
@@ -120,6 +111,20 @@ function FlowBranch({
         {node.evolution_gender && (stripeLabel || cloakLabel || category) && (
           <span>{t(node.evolution_gender === 1 ? 'evolution.female' : 'evolution.male')}</span>
         )}
+        <span
+          className="evolution-flow-types"
+          role="group"
+          aria-label={t('resource.field.types')}
+          aria-busy={typesLoading}
+        >
+          {variant ? (
+            variant.types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />)
+          ) : (
+            <span className="evolution-flow-types-status">
+              {t(typesLoading ? 'common.loadingShort' : 'evolution.typesUnavailable')}
+            </span>
+          )}
+        </span>
         {current && <span className="evolution-flow-current">{t('evolution.viewing')}</span>}
       </Link>
       {label && (

@@ -29,7 +29,7 @@ function layoutSingleEvolutionFlow(
   const nodes: EvolutionFlowNode[] = [],
     edges: EvolutionFlowEdge[] = []
   const margin = 24
-  const nodeWidth = vertical ? Math.min(156, options.width - 64) : 166
+  const nodeWidth = vertical ? Math.min(184, options.width - 48) : 184
   const labelWidth = vertical ? Math.min(220, options.width - 56) : 174
   const size = (key: string) => ({ height: measurements[key]?.node || 150, label: measurements[key]?.label || 84 })
   if (vertical) {

@@ -1,4 +1,5 @@
 export const es = {
+  'evolution.typesUnavailable': 'Tipos no disponibles',
   'evolution.stripe.red': 'Raya roja',
   'evolution.stripe.blue': 'Raya azul',
   'evolution.stripe.white': 'Raya blanca',

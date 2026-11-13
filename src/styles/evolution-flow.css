@@ -237,3 +237,25 @@
     scroll-behavior: auto;
   }
 }
+
+.evolution-flow-types {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 28px;
+  margin-top: 4px;
+}
+.evolution-flow-types .type-badge {
+  flex-shrink: 0;
+  white-space: nowrap;
+  gap: 4px;
+  padding: 4px 6px;
+  font-size: 10px;
+}
+.evolution-flow-types-status {
+  color: var(--muted);
+  font-size: 10px;
+}

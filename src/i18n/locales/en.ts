@@ -1,4 +1,5 @@
 export const en = {
+  'evolution.typesUnavailable': 'Types unavailable',
   'evolution.stripe.red': 'Red-Striped',
   'evolution.stripe.blue': 'Blue-Striped',
   'evolution.stripe.white': 'White-Striped',

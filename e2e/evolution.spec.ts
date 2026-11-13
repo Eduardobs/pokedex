@@ -95,6 +95,11 @@ test('connects regional and gender evolutions only to compatible source nodes', 
   const family = page.getByRole('list', { name: 'Linha evolutiva' })
   const regional = family.locator('a[href="#/pokemon/mr-mime-galar"]')
   await expect(regional).toContainText('Galar')
+  await expect(regional.getByRole('group', { name: 'Tipos' })).toContainText('Gelo')
+  await expect(regional.getByRole('group', { name: 'Tipos' })).toContainText('Psíquico')
+  await expect(family.locator('a[href="#/pokemon/mr-mime"]').getByRole('group', { name: 'Tipos' })).toContainText(
+    'Fada',
+  )
   await expect(regional.locator('img')).toHaveAttribute('src', /10168\.png$/)
   await expect(regional.locator('..').getByRole('link', { name: /Mr Rime/ })).toHaveCount(1)
   await expect(
@@ -145,3 +150,38 @@ test('shows female White-Striped Basculin evolving into female Basculegion', asy
       await expect(source.locator('..').getByRole('link', { name: /Basculegion/ })).toHaveCount(0)
   }
 })
+
+for (const width of [320, 390, 1440]) {
+  for (const language of ['pt-BR', 'en', 'es']) {
+    test(`keeps Decidueye type badges on one line at ${width}px in ${language}`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await page.addInitScript((locale) => localStorage.setItem('atlas-language', locale), language)
+      await mockEvolutionFamilies(page)
+      await page.goto('/#/pokemon/rowlet')
+      await page.locator('#tab-evolution').click()
+      const nodes = page.locator('.evolution-flow-node')
+      await expect(nodes).toHaveCount(4)
+      await page.evaluate(() => document.fonts.ready)
+      for (const node of await nodes.all()) {
+        const badges = node.locator('.type-badge')
+        await expect(badges).toHaveCount(2)
+        await expect
+          .poll(() =>
+            node.evaluate((element) => {
+              const types = Array.from(element.querySelectorAll('.type-badge')).map((badge) =>
+                badge.getBoundingClientRect(),
+              )
+              const card = element.getBoundingClientRect()
+              return (
+                types.length === 2 &&
+                Math.abs(types[0].top - types[1].top) < 1 &&
+                types.every((type) => type.left >= card.left && type.right <= card.right)
+              )
+            }),
+          )
+          .toBe(true)
+      }
+      expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width)
+    })
+  }
+}

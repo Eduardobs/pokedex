@@ -1,10 +1,15 @@
 import { API_BASE_URL } from '../../config/app'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { Translate, TranslationKey } from '../../contexts/LanguageContext'
 import type { EvolutionDetail, EvolutionNode } from '../../types'
 import { EvolutionTree, evolutionCondition, evolutionConditions } from './EvolutionTree'
+
+vi.mock('../../lib/api', async (original) => ({
+  ...(await original<typeof import('../../lib/api')>()),
+  apiFetch: vi.fn(() => new Promise(() => {})),
+}))
 
 const labels: Partial<Record<TranslationKey, string>> = {
   'evolution.level': 'Nível {level}',

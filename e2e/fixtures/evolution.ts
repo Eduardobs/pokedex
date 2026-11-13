@@ -1,4 +1,5 @@
 import { API_BASE_PATH, API_BASE_URL } from './api-config'
+import { defaultPokemonNameForSpecies } from '../../src/lib/pokemon-species'
 import type { Page } from '@playwright/test'
 import type { EvolutionDetail, EvolutionNode } from '../../src/types'
 
@@ -70,6 +71,7 @@ const families = [
     node('mothim', 414, [], [method({ min_level: 20, gender: 2 })]),
   ]),
   node('ditto', 132),
+  node('rowlet', 722, [node('dartrix', 723, [node('decidueye', 724)])]),
   node('basculin', 550, [
     node(
       'basculegion',
@@ -109,20 +111,67 @@ export async function mockEvolutionFamilies(page: Page) {
         },
       })
     const member = members.find(
-      ({ entry }) => entry.species.name === identifier || entry.species.url.endsWith(`/${identifier}/`),
+      ({ entry }) =>
+        entry.species.name === identifier ||
+        defaultPokemonNameForSpecies(entry.species.name) === identifier ||
+        entry.species.url.endsWith(`/${identifier}/`),
     )
     if (endpoint === 'pokemon' && !identifier) return route.fulfill({ json: { count: 0, results: [] } })
     if (endpoint === 'pokemon' && identifier === 'mr-mime-galar')
-      return route.fulfill({ json: { id: 10168, name: identifier } })
+      return route.fulfill({
+        json: {
+          id: 10168,
+          name: identifier,
+          types: [
+            { slot: 1, type: ref('type', 'ice', 15) },
+            { slot: 2, type: ref('type', 'psychic', 14) },
+          ],
+        },
+      })
     if (endpoint === 'pokemon' && ['wormadam-sandy', 'wormadam-trash'].includes(identifier))
-      return route.fulfill({ json: { id: identifier === 'wormadam-sandy' ? 10004 : 10005, name: identifier } })
+      return route.fulfill({
+        json: {
+          id: identifier === 'wormadam-sandy' ? 10004 : 10005,
+          name: identifier,
+          types: [
+            { slot: 1, type: ref('type', 'bug', 7) },
+            {
+              slot: 2,
+              type: ref(
+                'type',
+                identifier === 'wormadam-sandy' ? 'ground' : 'steel',
+                identifier === 'wormadam-sandy' ? 5 : 9,
+              ),
+            },
+          ],
+        },
+      })
     const alternateIds: Record<string, number> = {
       'basculin-blue-striped': 10016,
       'basculin-white-striped': 10247,
       'basculegion-female': 10248,
     }
     if (endpoint === 'pokemon' && alternateIds[identifier])
-      return route.fulfill({ json: { id: alternateIds[identifier], name: identifier } })
+      return route.fulfill({
+        json: {
+          id: alternateIds[identifier],
+          name: identifier,
+          types: [
+            { slot: 1, type: ref('type', 'water', 11) },
+            ...(identifier === 'basculegion-female' ? [{ slot: 2, type: ref('type', 'ghost', 8) }] : []),
+          ],
+        },
+      })
+    if (endpoint === 'pokemon' && identifier === 'decidueye-hisui')
+      return route.fulfill({
+        json: {
+          id: 10244,
+          types: [
+            { slot: 1, type: ref('type', 'grass', 12) },
+            { slot: 2, type: ref('type', 'fighting', 2) },
+          ],
+        },
+      })
     if (!member) return route.fulfill({ status: 404, json: {} })
     const { entry, family } = member
     const id = Number(entry.species.url.split('/').filter(Boolean).at(-1))
@@ -165,7 +214,24 @@ export async function mockEvolutionFamilies(page: Page) {
             front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
             front_shiny: null,
           },
-          types: [{ slot: 1, type: ref('type', 'normal', 1) }],
+          types: ['rowlet', 'dartrix', 'decidueye'].includes(entry.species.name)
+            ? [
+                { slot: 1, type: ref('type', 'grass', 12) },
+                {
+                  slot: 2,
+                  type: ref(
+                    'type',
+                    entry.species.name === 'decidueye' ? 'ghost' : 'flying',
+                    entry.species.name === 'decidueye' ? 8 : 3,
+                  ),
+                },
+              ]
+            : entry.species.name === 'mr-mime' || entry.species.name === 'mime-jr'
+              ? [
+                  { slot: 1, type: ref('type', 'psychic', 14) },
+                  { slot: 2, type: ref('type', 'fairy', 18) },
+                ]
+              : [{ slot: 1, type: ref('type', 'normal', 1) }],
           stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name, i) => ({
             base_stat: 50 + i * 5,
             effort: 0,
