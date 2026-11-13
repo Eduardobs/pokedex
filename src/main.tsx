@@ -7,10 +7,13 @@ import './styles.css'
 const root = document.getElementById('root')
 if (!root) throw new Error('Application root element not found')
 
-createRoot(root).render(
-  <StrictMode>
-    <AppErrorBoundary>
-      <App />
-    </AppErrorBoundary>
-  </StrictMode>,
-)
+if (window.self !== window.top) {
+  root.remove()
+} else
+  createRoot(root).render(
+    <StrictMode>
+      <AppErrorBoundary>
+        <App />
+      </AppErrorBoundary>
+    </StrictMode>,
+  )

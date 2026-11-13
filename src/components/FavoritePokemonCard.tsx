@@ -1,3 +1,4 @@
+import { parsePokemon } from '../lib/rest-validation'
 import { useApi } from '../hooks/useApi'
 import type { Pokemon } from '../types'
 import { Loading } from './Loading'
@@ -13,7 +14,7 @@ type FavoritePokemonCardProps = {
 }
 
 export function FavoritePokemonCard({ name, shiny, sortMetric }: FavoritePokemonCardProps) {
-  const { data, loading, error, retry } = useApi<Pokemon>(`pokemon/${name}`)
+  const { data, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`, parsePokemon)
   const { toggle } = useFavoritesContext()
   const { t } = useLanguage()
   if (loading)

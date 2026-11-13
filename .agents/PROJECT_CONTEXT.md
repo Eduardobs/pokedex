@@ -69,6 +69,8 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Maintenance
 
+- The application must refuse to render its interactive interface inside embedded frames.
+
 - Random Battle results show a trophy above the victory text and a skull above the defeat text.
 
 - Team Pokémon search allows playable battle forms, including Mega Evolutions, Gigantamax, and regional forms, while excluding ride-only forms and unobtainable boss forms.

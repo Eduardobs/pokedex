@@ -1,3 +1,4 @@
+import { parsePokemon, parseSpecies, parseEvolutionChain, parsePokemonType, parseApiList } from '../lib/rest-validation'
 import { ArrowLeft, ChevronRight, Gamepad2, Heart, Ruler, ShieldAlert, Sparkles, Weight } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
@@ -48,19 +49,24 @@ export function PokemonDetailPage() {
   }, [tab, name])
   const [descriptionSelection, setDescriptionSelection] = useState({ speciesId: 0, version: '' })
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
-  const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
+  const {
+    data: pokemon,
+    loading,
+    error,
+    retry,
+  } = useApi<Pokemon>(/^[a-z0-9-]{1,100}$/.test(name) ? `pokemon/${encodeURIComponent(name)}` : null, parsePokemon)
   const {
     data: species,
     loading: speciesLoading,
     error: speciesError,
     retry: retrySpecies,
-  } = useApi<Species>(pokemon?.species.url ?? null)
+  } = useApi<Species>(pokemon?.species.url ?? null, parseSpecies)
   const {
     data: evolution,
     loading: evolutionLoading,
     error: evolutionError,
     retry: retryEvolution,
-  } = useApi<EvolutionChain>(secondaryDataReady ? (species?.evolution_chain?.url ?? null) : null)
+  } = useApi<EvolutionChain>(secondaryDataReady ? (species?.evolution_chain?.url ?? null) : null, parseEvolutionChain)
   const {
     data: encounters,
     loading: encountersLoading,
@@ -75,6 +81,7 @@ export function PokemonDetailPage() {
   const neighborOffset = Math.max(0, (pokemon?.id ?? 1) - 2)
   const { data: neighbors } = useApi<ApiList>(
     secondaryDataReady && pokemon ? `pokemon?limit=3&offset=${neighborOffset}` : null,
+    parseApiList,
   )
   const previousResource = previousId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === previousId) : null
   const nextResource = nextId ? neighbors?.results.find((entry) => idFromUrl(entry.url) === nextId) : null
@@ -82,9 +89,11 @@ export function PokemonDetailPage() {
   const nextPokemon = nextResource && nextId ? { ...nextResource, id: nextId } : null
   const { data: primaryType, error: primaryTypeError } = useApi<PokemonType>(
     secondaryDataReady && pokemon?.types[0] ? `type/${encodeURIComponent(pokemon.types[0].type.name)}` : null,
+    parsePokemonType,
   )
   const { data: secondaryType, error: secondaryTypeError } = useApi<PokemonType>(
     secondaryDataReady && pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null,
+    parsePokemonType,
   )
   const { isFavorite, toggle } = useFavoritesContext()
 
@@ -477,7 +486,7 @@ export function PokemonDetailPage() {
               <article className="info-card abilities-card">
                 <h2>{t('detail.abilities')}</h2>
                 {pokemon.abilities.map(({ ability, is_hidden }) => (
-                  <Link key={ability.name} to={`/explore/ability/${ability.name}`}>
+                  <Link key={ability.name} to={`/explore/ability/${encodeURIComponent(ability.name)}`}>
                     <div>
                       <b>
                         <LocalizedResourceName resource={ability} />

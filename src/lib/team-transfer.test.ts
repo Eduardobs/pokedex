@@ -48,3 +48,20 @@ describe('team transfer', () => {
     ).toBeNull()
   })
 })
+
+it('drops unrecognized fields from imported teams and members', () => {
+  const member = { ...newMember(pokemon), padding: 'x'.repeat(90000) }
+  const team = { id: 'team-1', name: 'Kanto', members: [member], padding: 'untrusted' }
+  const parsed = parseTeamExport(createTeamExport(team))!
+  expect(parsed).not.toHaveProperty('padding')
+  expect(parsed.members[0]).not.toHaveProperty('padding')
+  expect(importTeam(team)).not.toHaveProperty('padding')
+})
+
+it('rejects array values that stringify to valid nature or Tera names', () => {
+  for (const field of ['nature', 'tera']) {
+    const member = newMember(pokemon)
+    Object.assign(member, { [field]: [member[field as 'nature' | 'tera']] })
+    expect(parseTeamExport(createTeamExport({ id: 'team-1', name: 'Kanto', members: [member] }))).toBeNull()
+  }
+})

@@ -1,3 +1,4 @@
+import { triangleModel } from './fixtures/model'
 import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
 import { expect, test, type Page } from '@playwright/test'
 
@@ -25,7 +26,11 @@ const pokemon = {
     },
   },
   types: [{ slot: 1, type: { name: 'electric', url: `${apiBase}/type/13/` } }],
-  stats: [],
+  stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name, index) => ({
+    base_stat: 50,
+    effort: 0,
+    stat: { name, url: `${apiBase}/stat/${index + 1}/` },
+  })),
   abilities: [],
   moves: [],
   species: { name: 'pikachu', url: `${apiBase}/pokemon-species/25/` },
@@ -166,22 +171,26 @@ test('loads the 3D tab on demand and shares the shiny toggle', async ({ page }) 
       ],
     })
   })
-  await page.route('**/Pokemon-3D-api/assets/**/*.glb', (route) => route.fulfill({ status: 404 }))
+  const models: string[] = []
+  await page.route('**/Pokemon-3D-api/assets/**/*.glb', (route) => {
+    models.push(route.request().url())
+    return route.request().url().includes('/shiny/')
+      ? route.fulfill({ status: 404 })
+      : route.fulfill({ contentType: 'model/gltf-binary', body: triangleModel() })
+  })
   await page.goto('/#/pokemon/pikachu')
   const tab = page.getByRole('tab', { name: '3D', exact: true })
   await expect(tab).toBeVisible()
   expect(requests).toBe(0)
   await tab.click()
-  await expect(page.locator('model-viewer')).toHaveJSProperty(
-    'src',
-    'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/regular/25.glb',
-  )
+  await expect(page.locator('model-viewer')).toHaveJSProperty('loaded', true)
+  expect(
+    await page.locator('model-viewer').evaluate((element) => (element as HTMLElement & { src: string }).src),
+  ).toMatch(/^blob:/)
+  expect(models[0]).toContain('/regular/25.glb')
   const loadedRequests = requests
   await page.getByRole('button', { name: 'Ver shiny' }).click()
-  await expect(page.locator('model-viewer')).toHaveJSProperty(
-    'src',
-    'https://raw.githubusercontent.com/Pokemon-3D-api/assets/main/models/opt/shiny/25.glb',
-  )
+  await expect.poll(() => models.at(-1)).toContain('/shiny/25.glb')
   await expect(page.getByText('Não foi possível carregar o modelo 3D.')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Tentar novamente' })).toBeVisible()
   expect(requests).toBe(loadedRequests)

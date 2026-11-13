@@ -50,6 +50,7 @@ export function TeamsPage() {
   }
   const change = (next: Team) => update(teams.map((v) => (v.id === next.id ? next : v)))
   const create = () => {
+    if (teams.length >= TEAM_LIMITS.teams) return
     const next: Team = {
       id: crypto.randomUUID(),
       name: t('teams.defaultName', { number: teams.length + 1 }),
@@ -122,7 +123,12 @@ export function TeamsPage() {
         const parsed = parseTeamExport(JSON.parse(String(reader.result)))
         if (!parsed) throw new Error('Invalid team export')
         const next = importTeam(parsed)
-        update([...teams, next])
+        const current = teamsRef.current
+        if (current.length >= TEAM_LIMITS.teams) {
+          setTransferMessage('importLimit')
+          return
+        }
+        update([...current, next])
         setSelected(next.id)
         setTransferMessage('imported')
       } catch {

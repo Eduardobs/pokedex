@@ -1,3 +1,4 @@
+import { evictApiCache } from '../lib/api-client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiFetch } from '../lib/api'
 
@@ -31,7 +32,13 @@ export function useApi<T>(pathOrUrl: string | null, parse?: (value: unknown) => 
     setState({ pathOrUrl, data: null, error: null, loading: true })
     apiFetch<unknown>(pathOrUrl, controller.signal)
       .then((value) => {
-        const data = parseRef.current ? parseRef.current(value) : (value as T)
+        let data: T
+        try {
+          data = parseRef.current ? parseRef.current(value) : (value as T)
+        } catch (error) {
+          evictApiCache(pathOrUrl)
+          throw error
+        }
         if (!controller.signal.aborted) setState({ pathOrUrl, data, error: null, loading: false })
       })
       .catch((reason: unknown) => {

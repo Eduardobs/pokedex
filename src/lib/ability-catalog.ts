@@ -136,10 +136,14 @@ async function requestAbilityListDetails(
         operationName: 'AbilityListDetails',
       }),
       credentials: 'omit',
+      redirect: 'error',
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
-    if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
+    if (!response.ok) {
+      await response.body?.cancel()
+      throw new ApiError('PokéAPI did not respond as expected.', response.status)
+    }
     return parseAbilityListDetails(await readBoundedJsonResponse(response), ids)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')

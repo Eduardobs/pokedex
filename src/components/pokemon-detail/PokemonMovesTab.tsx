@@ -1,3 +1,4 @@
+import { parsePokemonType } from '../../lib/rest-validation'
 import { useSearchParamUpdater } from '../../hooks/useSearchParamUpdater'
 import { GraduationCap, Search, Shapes } from 'lucide-react'
 import { useDeferredValue, useMemo, useState } from 'react'
@@ -36,7 +37,10 @@ export function PokemonMovesTab({ active, pokemon }: PokemonMovesTabProps) {
     loading: typeLoading,
     error: typeError,
     retry: retryType,
-  } = useApi<PokemonType & { moves: Array<{ name: string }> }>(active && type !== 'all' ? `type/${type}` : null)
+  } = useApi<PokemonType & { moves: Array<{ name: string }> }>(
+    active && type !== 'all' ? `type/${type}` : null,
+    parsePokemonType,
+  )
   const groups = useMemo(() => groupMovesByLearningMethod(pokemon.moves, version), [pokemon.moves, version])
   const methods = useMemo(() => groups.map((group) => group.method), [groups])
   const moveNamesForType = useMemo(

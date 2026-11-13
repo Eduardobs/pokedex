@@ -1,3 +1,4 @@
+import { parseApiList } from '../lib/rest-validation'
 import { Globe2, Layers3, Maximize2, Search, Sparkles } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { ErrorState } from '../components/ErrorState'
@@ -64,13 +65,13 @@ export function FormsPage() {
   const sortError = sorting.error
   const rarityError = rarity.error
   const regionError = regions.error
-  const { data, loading, error, retry } = useApi<ApiList>('pokemon-form?limit=2000&offset=0')
+  const { data, loading, error, retry } = useApi<ApiList>('pokemon-form?limit=2000&offset=0', parseApiList)
   const {
     data: speciesData,
     loading: speciesLoading,
     error: speciesError,
     retry: retrySpecies,
-  } = useApi<ApiList>('pokemon-species?limit=2000&offset=0')
+  } = useApi<ApiList>('pokemon-species?limit=2000&offset=0', parseApiList)
   const { data: typeData, loading: typeLoading, error: typeError, retry: retryType } = usePokemonTypeFilter(types)
 
   const categories: {

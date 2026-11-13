@@ -64,7 +64,11 @@ const pokemon: Pokemon = {
     },
   },
   types: [{ slot: 1, type: { name: 'bug', url: `${API_BASE_URL}/type/7/` } }],
-  stats: [],
+  stats: ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'].map((name, index) => ({
+    base_stat: 50,
+    effort: 0,
+    stat: { name, url: `${API_BASE_URL}/stat/${index + 1}/` },
+  })),
   abilities: [],
   moves: [],
   species: { name: 'burmy', url: `${API_BASE_URL}/pokemon-species/412/` },

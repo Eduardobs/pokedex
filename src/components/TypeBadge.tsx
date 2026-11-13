@@ -6,7 +6,7 @@ import type { Language } from '../contexts/LanguageContext'
 
 export const typeLabel = (type: string, language: Language) => {
   const labels = typeLabelMessages[language] as Readonly<Record<string, string>>
-  return labels[type] ?? prettyName(type)
+  return Object.hasOwn(labels, type) ? labels[type] : prettyName(type)
 }
 
 export function TypeBadge({ type, iconOnly = false }: { type: string; iconOnly?: boolean }) {

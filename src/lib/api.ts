@@ -74,7 +74,7 @@ export const normalizeSearchText = (value: string) =>
 
 export const localizedApiTerm = (value: string, language: Language) => {
   const terms = apiTermMessages[language] as Readonly<Record<string, string>>
-  return terms[value] ?? prettyName(value)
+  return Object.hasOwn(terms, value) ? terms[value] : prettyName(value)
 }
 
 export type LocalizedTextResult = { text: string; language: string; fallback: boolean }
@@ -87,10 +87,10 @@ export function localizedTextResult(
   if (!Array.isArray(entries)) return { text: '', language, fallback: false }
   const candidates = entries as Array<Record<string, unknown>>
   const selected =
-    candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === language) ??
-    candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === 'en') ??
-    candidates.find((entry) => (entry.language as NamedResource | undefined)?.name === 'pt-br') ??
-    candidates[0]
+    candidates.find((entry) => (entry?.language as NamedResource | undefined)?.name === language) ??
+    candidates.find((entry) => (entry?.language as NamedResource | undefined)?.name === 'en') ??
+    candidates.find((entry) => (entry?.language as NamedResource | undefined)?.name === 'pt-br') ??
+    candidates.find((entry) => entry !== null && typeof entry === 'object')
   if (!selected) return { text: '', language, fallback: false }
   const key = keys.find((item) => typeof selected[item] === 'string')
   const selectedLanguage = (selected.language as NamedResource | undefined)?.name ?? language
@@ -113,8 +113,8 @@ export function localizedName(entries: unknown, language = 'pt-br'): string {
   if (!Array.isArray(entries)) return ''
   const candidates = entries as Array<{ name?: unknown; language?: NamedResource }>
   const selected =
-    candidates.find((entry) => entry.language?.name === language) ??
-    candidates.find((entry) => entry.language?.name === 'en') ??
-    candidates.find((entry) => entry.language?.name === 'pt-br')
+    candidates.find((entry) => entry?.language?.name === language) ??
+    candidates.find((entry) => entry?.language?.name === 'en') ??
+    candidates.find((entry) => entry?.language?.name === 'pt-br')
   return typeof selected?.name === 'string' ? selected.name : ''
 }

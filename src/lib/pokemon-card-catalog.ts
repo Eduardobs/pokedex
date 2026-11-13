@@ -168,13 +168,17 @@ async function requestCardDetails(kind: CardKind, names: string[], controller: A
         operationName: 'PokemonFormCardDetails',
       }),
       credentials: 'omit',
+      redirect: 'error',
       referrerPolicy: 'no-referrer',
       signal: controller.signal,
     })
     if (response.status === 404 || response.status >= 500) {
       return await requestRestCardDetails(kind, names, controller.signal)
     }
-    if (!response.ok) throw new ApiError('PokéAPI did not respond as expected.', response.status)
+    if (!response.ok) {
+      await response.body?.cancel()
+      throw new ApiError('PokéAPI did not respond as expected.', response.status)
+    }
     return parsePokemonCardDetails(await readBoundedJsonResponse(response), names, kind)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')

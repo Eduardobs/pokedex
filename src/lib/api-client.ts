@@ -1,6 +1,7 @@
+import { withNetworkSlot } from './network-limits'
 import { API_BASE_URL, API_ORIGIN, NETWORK } from '../config/app'
 
-type CacheEntry = { data: unknown; expiresAt: number }
+type CacheEntry = { data: unknown; expiresAt: number; bytes: number }
 type PendingRequest = {
   promise: Promise<unknown>
   controller: AbortController
@@ -29,7 +30,7 @@ export class ApiError extends Error {
 /** Only the configured HTTPS API is a valid data source, including URLs returned by it. */
 export function resolveApiUrl(pathOrUrl: string): string {
   const input = pathOrUrl.trim()
-  if (!input) throw new ApiError('Invalid API path.', undefined, 'unsafe-url')
+  if (!input || input.length > 2048) throw new ApiError('Invalid API path.', undefined, 'unsafe-url')
 
   let url: URL
   try {
@@ -45,7 +46,8 @@ export function resolveApiUrl(pathOrUrl: string): string {
     url.origin !== API_ORIGIN ||
     !url.pathname.startsWith(apiPath) ||
     url.username ||
-    url.password
+    url.password ||
+    /%(?:2f|5c|00)/i.test(url.pathname)
   ) {
     throw new ApiError('API origin is not allowed.', undefined, 'unsafe-url')
   }
@@ -53,9 +55,23 @@ export function resolveApiUrl(pathOrUrl: string): string {
   return url.toString()
 }
 
+export function evictApiCache(pathOrUrl: string) {
+  cache.delete(resolveApiUrl(pathOrUrl))
+}
+
 function cacheResponse(url: string, data: unknown) {
-  if (cache.size >= NETWORK.cacheMaxEntries) cache.delete(cache.keys().next().value as string)
-  cache.set(url, { data, expiresAt: Date.now() + NETWORK.cacheTtlMs })
+  const now = Date.now()
+  for (const [key, entry] of cache) if (entry.expiresAt <= now) cache.delete(key)
+  const bytes = new TextEncoder().encode(JSON.stringify(data)).byteLength
+  if (bytes > NETWORK.cacheMaxBytes) return
+  cache.delete(url)
+  let total = [...cache.values()].reduce((sum, entry) => sum + entry.bytes, 0)
+  while (cache.size && (cache.size >= NETWORK.cacheMaxEntries || total + bytes > NETWORK.cacheMaxBytes)) {
+    const key = cache.keys().next().value!
+    total -= cache.get(key)!.bytes
+    cache.delete(key)
+  }
+  cache.set(url, { data, bytes, expiresAt: now + NETWORK.cacheTtlMs })
 }
 
 function readCache<T>(url: string): T | undefined {
@@ -85,18 +101,26 @@ function validateJsonBounds(value: unknown) {
     const entries = Object.entries(current)
     if (entries.length > NETWORK.maxObjectKeys)
       throw new ApiError('PokéAPI returned an object that is too large.', undefined, 'invalid-response')
-    entries.forEach(([, item]) => visit(item, depth + 1))
+    entries.forEach(([key, item]) => {
+      if (key.length > NETWORK.maxStringLength) throw new ApiError('Invalid JSON key.', undefined, 'invalid-response')
+      visit(item, depth + 1)
+    })
   }
   visit(value, 0)
 }
 
-export async function readBoundedJsonResponse(response: Response): Promise<unknown> {
+export async function readBoundedJsonResponse(
+  response: Response,
+  maximumBytes: number = NETWORK.maxResponseBytes,
+): Promise<unknown> {
   const contentType = response.headers.get('content-type')
   if (contentType && !/\b(?:application|text)\/[\w.+-]*json\b/i.test(contentType)) {
+    await response.body?.cancel()
     throw new ApiError('PokéAPI returned an unexpected format.', response.status, 'invalid-response')
   }
   const declaredLength = Number(response.headers.get('content-length'))
-  if (Number.isFinite(declaredLength) && declaredLength > NETWORK.maxResponseBytes) {
+  if (Number.isFinite(declaredLength) && declaredLength > maximumBytes) {
+    await response.body?.cancel()
     throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
   }
 
@@ -109,7 +133,7 @@ export async function readBoundedJsonResponse(response: Response): Promise<unkno
       const { done, value } = await reader.read()
       if (done) break
       received += value.byteLength
-      if (received > NETWORK.maxResponseBytes) {
+      if (received > maximumBytes) {
         await reader.cancel()
         throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
       }
@@ -118,7 +142,7 @@ export async function readBoundedJsonResponse(response: Response): Promise<unkno
     text += decoder.decode()
   } else {
     text = await response.text()
-    if (new TextEncoder().encode(text).byteLength > NETWORK.maxResponseBytes) {
+    if (new TextEncoder().encode(text).byteLength > maximumBytes) {
       throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
     }
   }
@@ -184,7 +208,7 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
   if (cached !== undefined) return observeWithSignal(Promise.resolve(cached), signal)
 
   let pending = pendingRequests.get(url)
-  if (!pending) {
+  if (!pending || pending.controller.signal.aborted) {
     const controller = new AbortController()
     let timedOut = false
     const timeout = window.setTimeout(() => {
@@ -192,22 +216,29 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
       controller.abort()
     }, NETWORK.requestTimeoutMs)
     pending = { promise: Promise.resolve(), controller, consumers: 0, settled: false }
-    pending.promise = fetch(url, {
-      headers: { Accept: 'application/json' },
-      credentials: 'omit',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok)
-          throw new ApiError(
-            response.status === 404 ? 'Content not found.' : 'PokéAPI did not respond as expected.',
-            response.status,
-          )
-        const data = await readBoundedJsonResponse(response)
-        cacheResponse(url, data)
-        return data
-      })
+    pending.promise = withNetworkSlot(
+      () =>
+        fetch(url, {
+          redirect: 'error',
+          headers: { Accept: 'application/json' },
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer',
+          signal: controller.signal,
+        }).then(async (response) => {
+          if (!response.ok) {
+            await response.body?.cancel()
+            throw new ApiError(
+              response.status === 404 ? 'Content not found.' : 'PokéAPI did not respond as expected.',
+              response.status,
+            )
+          }
+          const data = await readBoundedJsonResponse(response, NETWORK.maxRestResponseBytes)
+          controller.signal.throwIfAborted()
+          cacheResponse(url, data)
+          return data
+        }),
+      controller.signal,
+    )
       .catch((error: unknown) => {
         if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
         throw error

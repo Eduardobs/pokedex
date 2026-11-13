@@ -1,3 +1,4 @@
+import { parsePokemon, parsePokemonForm } from '../../lib/rest-validation'
 import { FormConditions } from '../FormConditions'
 import { Globe2, Maximize2, Shield, Sparkles } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -149,9 +150,13 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
     setError(false)
     Promise.all(
       species.varieties.map(async (variety) => {
-        const pokemon = await apiFetch<Pokemon>(variety.pokemon.url, controller.signal)
+        const pokemon = parsePokemon(await apiFetch<unknown>(variety.pokemon.url, controller.signal))
         const forms = await Promise.all(
-          pokemon.forms.map((resource) => apiFetch<PokemonForm>(resource.url, controller.signal).catch(() => null)),
+          pokemon.forms.map((resource) =>
+            apiFetch<unknown>(resource.url, controller.signal)
+              .then(parsePokemonForm)
+              .catch(() => null),
+          ),
         )
         const availableForms = forms.filter((form): form is PokemonForm => form !== null)
         if (!availableForms.length) return [{ pokemon, form: null, isDefaultVariety: variety.is_default }]
@@ -162,9 +167,12 @@ export function PokemonForms({ species, currentPokemon }: { species: Species; cu
         }))
       }),
     )
-      .then((groups) => setEntries(groups.flat().sort((a, b) => (a.form?.form_order ?? 0) - (b.form?.form_order ?? 0))))
+      .then((groups) => {
+        if (!controller.signal.aborted)
+          setEntries(groups.flat().sort((a, b) => (a.form?.form_order ?? 0) - (b.form?.form_order ?? 0)))
+      })
       .catch((reason: unknown) => {
-        if (!(reason instanceof Error) || reason.name !== 'AbortError') {
+        if (!controller.signal.aborted && (!(reason instanceof Error) || reason.name !== 'AbortError')) {
           setEntries([])
           setError(true)
         }

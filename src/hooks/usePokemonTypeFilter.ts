@@ -1,3 +1,4 @@
+import { parseTypePokemon } from '../lib/rest-validation'
 import { useMemo } from 'react'
 import { intersectPokemonTypes, type PokemonType } from '../lib/pokemon-directory'
 import type { NamedResource } from '../types'
@@ -6,8 +7,8 @@ import { useApi } from './useApi'
 type PokemonTypeResponse = { pokemon: { pokemon: NamedResource }[] }
 
 export function usePokemonTypeFilter(types: readonly PokemonType[]) {
-  const first = useApi<PokemonTypeResponse>(types[0] ? `type/${types[0]}` : null)
-  const second = useApi<PokemonTypeResponse>(types[1] ? `type/${types[1]}` : null)
+  const first = useApi<PokemonTypeResponse>(types[0] ? `type/${types[0]}` : null, parseTypePokemon)
+  const second = useApi<PokemonTypeResponse>(types[1] ? `type/${types[1]}` : null, parseTypePokemon)
   const hasTypes = types.length > 0
   const hasSecondType = types.length > 1
   const data = useMemo(() => {

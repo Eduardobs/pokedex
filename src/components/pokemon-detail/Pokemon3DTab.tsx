@@ -1,4 +1,5 @@
-import { createElement, useEffect, useRef, useState } from 'react'
+import { fetchPokemonModel } from '../../lib/pokemon-model'
+import { useEffect, useRef, useState } from 'react'
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { fetchPokemon3D, selectPokemon3D } from '../../lib/pokemon-3d'
@@ -12,6 +13,26 @@ function Model({ src, label }: { src: string; label: string }) {
   const { t } = useLanguage()
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [attempt, setAttempt] = useState(0)
+  const [modelUrl, setModelUrl] = useState<string | null>(null)
+  useEffect(() => {
+    const controller = new AbortController()
+    let objectUrl: string | undefined
+    setModelUrl(null)
+    setStatus('loading')
+    fetchPokemonModel(src, controller.signal)
+      .then((blob) => {
+        if (controller.signal.aborted) return
+        objectUrl = URL.createObjectURL(blob)
+        setModelUrl(objectUrl)
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setStatus('error')
+      })
+    return () => {
+      controller.abort()
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
+  }, [src, attempt])
   useEffect(() => {
     const viewer = ref.current
     if (!viewer) return
@@ -23,6 +44,7 @@ function Model({ src, label }: { src: string; label: string }) {
     const failed = () => {
       clearTimeout(timeout)
       setStatus('error')
+      setModelUrl(null)
     }
     viewer.addEventListener('load', loaded)
     viewer.addEventListener('error', failed)
@@ -32,7 +54,7 @@ function Model({ src, label }: { src: string; label: string }) {
       viewer.removeEventListener('load', loaded)
       viewer.removeEventListener('error', failed)
     }
-  }, [attempt])
+  }, [attempt, modelUrl])
   return (
     <>
       {status === 'loading' && <Loading label={t('detail.modelLoading')} />}
@@ -43,18 +65,19 @@ function Model({ src, label }: { src: string; label: string }) {
           onRetry={() => setAttempt((value) => value + 1)}
         />
       )}
-      {createElement('model-viewer', {
-        key: attempt,
-        ref,
-        src,
-        alt: label,
-        'camera-controls': true,
-        loading: 'eager',
-        'touch-action': 'pan-y',
-        'interaction-prompt': 'none',
-        className: 'pokemon-model',
-        style: { display: status === 'error' ? 'none' : 'block' },
-      })}
+      {modelUrl && (
+        <model-viewer
+          key={attempt}
+          ref={ref}
+          src={modelUrl}
+          alt={label}
+          camera-controls
+          loading="eager"
+          touch-action="pan-y"
+          interaction-prompt="none"
+          className="pokemon-model"
+        />
+      )}
       <p className="muted">{t('detail.modelControls')}</p>
     </>
   )

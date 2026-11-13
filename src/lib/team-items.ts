@@ -1,3 +1,4 @@
+import { safePokemonMediaUrl } from './media-url'
 import { array, invalidData, record } from './resource-data'
 
 const identifier = (value: unknown): value is string => typeof value === 'string' && /^[a-z0-9-]{1,100}$/.test(value)
@@ -13,12 +14,7 @@ export function parseItemDirectory(value: unknown): string[] {
 function optionalHttpsUrl(value: unknown): string | null {
   if (value === null || value === undefined) return null
   if (typeof value !== 'string' || value.length > 2_000) return invalidData()
-  try {
-    const url = new URL(value)
-    return url.protocol === 'https:' && url.hostname === 'raw.githubusercontent.com' ? url.toString() : invalidData()
-  } catch {
-    return invalidData()
-  }
+  return safePokemonMediaUrl(value) ?? invalidData()
 }
 
 export function parseTeamItem(value: unknown) {

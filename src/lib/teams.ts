@@ -1,3 +1,4 @@
+import { safePokemonMediaUrl } from './media-url'
 import { TEAM_LIMITS } from '../config/app'
 import { record, reference, invalidData, array } from './resource-data'
 
@@ -120,9 +121,11 @@ export function validTeams(value: unknown): value is Team[] {
             (m.friendship === undefined || integer(m.friendship, 0, 255)) &&
             typeof m.shiny === 'boolean' &&
             pokemonGenders.includes(m.gender as PokemonGender) &&
-            teraTypes.includes(String(m.tera)) &&
+            typeof m.tera === 'string' &&
+            teraTypes.includes(m.tera) &&
             optionalIdentifier(m.ability) &&
-            natureNames.includes(String(m.nature)) &&
+            typeof m.nature === 'string' &&
+            natureNames.includes(m.nature) &&
             optionalIdentifier(m.item) &&
             Array.isArray(m.moves) &&
             m.moves.length === 4 &&
@@ -138,6 +141,31 @@ export function validTeams(value: unknown): value is Team[] {
       )
     })
   )
+}
+/** Rebuild validated records so unknown imported/storage fields never persist. */
+export function sanitizeTeam(team: Team): Team {
+  return {
+    id: team.id,
+    name: team.name,
+    ...(team.competitiveFormat === undefined ? {} : { competitiveFormat: team.competitiveFormat }),
+    members: team.members.map((m) => ({
+      id: m.id,
+      pokemon: m.pokemon,
+      level: m.level,
+      ...(m.friendship === undefined ? {} : { friendship: m.friendship }),
+      shiny: m.shiny,
+      gender: m.gender,
+      tera: m.tera,
+      ability: m.ability,
+      nature: m.nature,
+      item: m.item,
+      moves: [...m.moves],
+      evs: [...m.evs] as Stats,
+      ivs: [...m.ivs] as Stats,
+      abilityActive: m.abilityActive,
+      itemActive: m.itemActive,
+    })),
+  }
 }
 export function parseTeamPokemon(value: unknown): TeamPokemon {
   const data = record(value)
@@ -162,15 +190,6 @@ export function parseTeamPokemon(value: unknown): TeamPokemon {
   if (!types.length || !abilities.length) return invalidData()
   const home = record(record(record(data.sprites).other).home)
   const showdown = record(record(record(data.sprites).other).showdown)
-  const safeHomeSprite = (value: unknown) => {
-    if (typeof value !== 'string') return null
-    try {
-      const url = new URL(value)
-      return url.protocol === 'https:' && url.hostname === 'raw.githubusercontent.com' ? url.toString() : null
-    } catch {
-      return null
-    }
-  }
   return {
     name: data.name,
     id: data.id,
@@ -179,12 +198,12 @@ export function parseTeamPokemon(value: unknown): TeamPokemon {
     types,
     abilities,
     moves,
-    homeSprite: safeHomeSprite(home.front_default),
-    homeShinySprite: safeHomeSprite(home.front_shiny),
-    showdownFrontSprite: safeHomeSprite(showdown.front_default),
-    showdownBackSprite: safeHomeSprite(showdown.back_default),
-    showdownFrontShinySprite: safeHomeSprite(showdown.front_shiny),
-    showdownBackShinySprite: safeHomeSprite(showdown.back_shiny),
+    homeSprite: safePokemonMediaUrl(home.front_default),
+    homeShinySprite: safePokemonMediaUrl(home.front_shiny),
+    showdownFrontSprite: safePokemonMediaUrl(showdown.front_default),
+    showdownBackSprite: safePokemonMediaUrl(showdown.back_default),
+    showdownFrontShinySprite: safePokemonMediaUrl(showdown.front_shiny),
+    showdownBackShinySprite: safePokemonMediaUrl(showdown.back_shiny),
   }
 }
 export function parseTeamSpecies(value: unknown) {

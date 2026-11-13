@@ -16,7 +16,7 @@ export function usePokemonCatalogControls(pageSize: number) {
   const resetPagination = useCallback(() => setVisibleCount(pageSize), [pageSize])
   const { searchParams, updateSearchParam, clearSearchParams } = useSearchParamUpdater(resetPagination)
 
-  const query = searchParams.get('q') ?? ''
+  const query = (searchParams.get('q') ?? '').slice(0, 100)
   const deferredQuery = useDeferredValue(query)
   const types = parsePokemonTypes(searchParams.get('type'))
   const selectType = (type: PokemonType | 'all') =>

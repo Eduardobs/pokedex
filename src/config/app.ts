@@ -12,6 +12,10 @@ export const POKEAPI_ALTERNATE_POKEMON_ID_START = 10_001
 
 export const NETWORK = {
   cacheMaxEntries: 250,
+  cacheMaxBytes: 16 * 1024 * 1024,
+  maxRestResponseBytes: 2 * 1024 * 1024,
+  maxConcurrentRequests: 8,
+  maxQueuedRequests: 512,
   cacheTtlMs: 5 * 60 * 1000,
   requestTimeoutMs: 15_000,
   maxResponseBytes: 8 * 1024 * 1024,

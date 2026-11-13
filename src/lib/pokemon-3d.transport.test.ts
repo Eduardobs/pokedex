@@ -25,6 +25,7 @@ it('shares transport, omits credentials and caches only within the configured li
   expect(fetch).toHaveBeenCalledExactlyOnceWith(POKEMON_3D_API_URL, {
     signal: expect.any(AbortSignal),
     credentials: 'omit',
+    redirect: 'error',
     referrerPolicy: 'no-referrer',
   })
   await load(new AbortController().signal)

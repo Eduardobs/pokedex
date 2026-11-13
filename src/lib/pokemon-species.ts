@@ -66,15 +66,18 @@ export function captureRatePercentage(captureRate: number) {
 }
 
 export function pokemonColorHex(color: string) {
-  return POKEMON_COLOR_HEX[color] ?? POKEMON_COLOR_HEX.gray
+  return Object.hasOwn(POKEMON_COLOR_HEX, color) ? POKEMON_COLOR_HEX[color] : POKEMON_COLOR_HEX.gray
 }
 
 export function defaultPokemonNameForSpecies(speciesName: string) {
-  return DEFAULT_VARIETY_BY_SPECIES[speciesName] ?? speciesName
+  return Object.hasOwn(DEFAULT_VARIETY_BY_SPECIES, speciesName) ? DEFAULT_VARIETY_BY_SPECIES[speciesName] : speciesName
 }
 
 export function pokemonVariantForSpeciesGender(speciesName: string, speciesId: number, gender?: 'female' | 'male') {
-  const femaleVariety = gender === 'female' ? FEMALE_VARIETY_BY_SPECIES[speciesName] : undefined
+  const femaleVariety =
+    gender === 'female' && Object.hasOwn(FEMALE_VARIETY_BY_SPECIES, speciesName)
+      ? FEMALE_VARIETY_BY_SPECIES[speciesName]
+      : undefined
   return (
     femaleVariety ?? {
       name: defaultPokemonNameForSpecies(speciesName),

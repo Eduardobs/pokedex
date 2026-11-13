@@ -1,3 +1,4 @@
+import { parseResourceList } from '../lib/rest-validation'
 import { ChevronRight } from 'lucide-react'
 import { Pagination } from '../components/Pagination'
 import { Database, Search, Swords, TriangleAlert, Zap } from 'lucide-react'
@@ -53,7 +54,7 @@ export function ResourceListPage() {
     retry,
   } = useApi<ApiList<NamedResource | { url: string }>>(
     valid ? `${resource}?limit=${searching ? RESOURCE_SEARCH_LIMIT : LIMIT}&offset=${searching ? 0 : offset}` : null,
-    searching ? parseResourceDirectory : undefined,
+    searching ? parseResourceDirectory : parseResourceList,
   )
   const data = response ?? { results: [], count: 0, next: null, previous: null }
   const items = data.results.map((item) => {

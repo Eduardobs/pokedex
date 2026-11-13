@@ -11,7 +11,7 @@ describe('production content security policy', () => {
     )
 
     expect(html).toContain(
-      "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co https://pokemon-3d-api.onrender.com https://raw.githubusercontent.com blob:;",
+      "connect-src 'self' https://pokeapi.co https://graphql.pokeapi.co https://pokemon-3d-api.onrender.com https://raw.githubusercontent.com/Pokemon-3D-api/assets/ blob:;",
     )
     expect(html).not.toContain('ws://localhost:')
     expect(html).not.toContain('ws://127.0.0.1:')

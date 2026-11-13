@@ -1,3 +1,4 @@
+import { ApiError } from './api-client'
 import type { EvolutionDetail, EvolutionNode } from '../types'
 import { defaultPokemonNameForSpecies } from './pokemon-species'
 
@@ -100,7 +101,7 @@ function compatible(parent: string, child: string, species: string, detail?: Evo
   if (parent === 'burmy' && species === 'wormadam' && detail?.required_pokemon_form?.name.startsWith('burmy-'))
     return child === detail.required_pokemon_form.name.replace('burmy-', 'wormadam-')
   if (detail?.required_pokemon_form) return detail.required_pokemon_form.name === parent
-  if (exclusiveParents[species]) return exclusiveParents[species] === parent
+  if (Object.hasOwn(exclusiveParents, species)) return exclusiveParents[species] === parent
   const parentRegion = regionOf(parent),
     childRegion = regionOf(child)
   if (parentRegion) return parentRegion === childRegion
@@ -111,6 +112,7 @@ function compatible(parent: string, child: string, species: string, detail?: Evo
 
 /** Expand species into routable varieties before laying out their actual evolution edges. */
 export function evolutionVarietyRoots(root: EvolutionNode): EvolutionNode[] {
+  let expanded = 0
   function expand(node: EvolutionNode, parent?: string, parentGender?: 1 | 2): EvolutionNode[] {
     const name = node.species.name
     const genders: (1 | 2 | undefined)[] =
@@ -132,6 +134,7 @@ export function evolutionVarietyRoots(root: EvolutionNode): EvolutionNode[] {
         )
         if (parent && !compatible(parent, route, name) && !details.length) return []
         if (parent && node.evolution_details.length && !details.length) return []
+        if (++expanded > 250) throw new ApiError('Evolution tree is too large.', undefined, 'invalid-response')
         return [
           {
             ...node,

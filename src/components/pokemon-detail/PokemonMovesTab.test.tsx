@@ -79,7 +79,7 @@ describe('PokemonMovesTab', () => {
           id: 13,
           name: 'electric',
           damage_relations: { double_damage_from: [], half_damage_from: [], no_damage_from: [] },
-          moves: [{ name: 'thunder-shock' }],
+          moves: [resource('move', 84, 'thunder-shock')],
         }),
       )
     vi.stubGlobal('fetch', fetchMock)

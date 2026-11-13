@@ -86,6 +86,8 @@ export default defineConfig(({ mode }) => {
         },
       },
     ],
+    server: { headers: { 'Content-Security-Policy': "frame-ancestors 'none'", 'X-Frame-Options': 'DENY' } },
+    preview: { headers: { 'Content-Security-Policy': "frame-ancestors 'none'", 'X-Frame-Options': 'DENY' } },
     base: historyRouting ? (siteUrl?.pathname ?? '/') : './',
     test: {
       environment: 'jsdom',

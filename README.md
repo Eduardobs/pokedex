@@ -187,20 +187,26 @@ Atlas Pokémon reads data from the following default endpoints:
 
 Set `VITE_POKEAPI_REST_URL` and `VITE_POKEAPI_GRAPHQL_URL` in `.env.local` to use compatible HTTPS APIs. Restart the dev server or rebuild after changing them. REST paths and response shapes, and the GraphQL schema, must remain compatible with PokéAPI. Default endpoints are defined once in `src/config/api-defaults.json`. The Python fixture refresh scripts share these defaults and accept an exported `VITE_POKEAPI_REST_URL` environment variable (they do not load `.env.local`). The build automatically updates CSP connection origins and the REST preconnect from this configuration. REST URLs returned by the alternative API must use its configured origin and base path.
 
-REST responses use an in-memory LRU-style cache with a maximum of 250 entries and a five-minute TTL. Concurrent requests for the same URL share one underlying request, while each consumer retains independent cancellation. Requests time out after 15 seconds.
-REST payloads are limited to 8 MiB and checked for a JSON content type and bounded nesting, collection sizes, object keys, and strings before being cached or rendered.
+REST responses use an in-memory LRU-style cache with a maximum of 250 entries, a 16 MiB aggregate serialized-data budget, and a five-minute TTL. Expired entries are removed when inserting new responses. Up to eight REST transports run concurrently, with a bounded waiting queue. Concurrent requests for the same URL share one underlying request, while each consumer retains independent cancellation. Requests time out after 15 seconds.
+REST payloads are limited to 2 MiB (fixed GraphQL catalogs retain an 8 MiB limit) and checked for a JSON content type and bounded nesting, collection sizes, object keys, and strings before being cached or rendered.
 
-The browser's `localStorage` stores favorites, language, and theme preferences. Stored values are validated before use, and storage failures gracefully fall back to in-memory defaults. Clearing site data removes these preferences and favorites.
+The browser's `localStorage` stores favorites, language, and theme preferences. Stored values use allowlisted keys and per-key size limits before JSON parsing. Team records are reconstructed from known fields on import, read, and write. Stored values are validated before use, and storage failures gracefully fall back to in-memory defaults. Clearing site data removes these preferences and favorites.
 
 ## Security and reliability
 
-- API URLs are restricted to the configured HTTPS REST origin and API path.
+- API URLs are restricted to the configured HTTPS REST origin and API path. REST, GraphQL, model-catalog, and model downloads reject redirects.
+- Pokémon, species, form, evolution, type, move-card, and directory data have runtime validation at their consumers; schema-invalid cached responses are evicted so retry can recover. Evolution trees and variety expansion have explicit work limits.
+- Remote media URLs from API payloads are restricted to the expected Pokémon asset repositories.
 - Route parameters are encoded before being used in requests.
 - The Content Security Policy limits scripts, connections, images, media, fonts, and forms to the origins required by the application.
 - Invalid API responses, timeouts, and unavailable resources produce user-facing error states.
 - A top-level error boundary prevents an isolated rendering failure from taking down the whole page.
 - The application does not require API keys or expose private configuration.
 - GitHub Actions are pinned to exact commits, and Pages/OIDC write permissions are isolated to the deployment job.
+
+The Vite development and preview servers send `frame-ancestors 'none'` and `X-Frame-Options: DENY`. The built `dist/_headers` file provides equivalent headers for static hosts that support that format. GitHub Pages does not apply `_headers`; on Pages, the application refuses to render its interface inside a frame. For browser-enforced frame protection on Pages, configure these response headers through a reverse proxy or CDN. The HTML meta CSP alone cannot enforce `frame-ancestors`.
+
+Dependencies are installed reproducibly from the lockfile. Run `npm run audit:dependencies` to check advisories; deployment also runs this audit before building. The `minimatch` override selects the patched 11.0.1 release until the lint tooling adopts it; recheck compatibility and `npm audit` when removing this override. Keep TypeScript below 6.1 until the parser's peer dependency supports newer versions.
 
 ## Deployment to GitHub Pages
 
@@ -222,7 +228,7 @@ Because routing uses hash URLs and assets are built by Vite, no additional base-
 ## Technology stack
 
 - React 19 and React DOM
-- TypeScript 7
+- TypeScript 6.0 (the current ESLint parser requires TypeScript < 6.1)
 - Vite 8
 - React Router 7
 - Lucide React icons
@@ -247,7 +253,7 @@ The `/teams` route supports multiple locally saved teams of up to six Pokémon. 
 
 The `/battle` route consumes that same validated team model. A complete saved team faces a generated six-Pokémon Random Battle opponent in a local singles simulation. Six selectable difficulties range from random moves without voluntary switching to tactical switching, revealed-move threat assessment, field management and coverage of previously revealed reserves. The opponent never reads the pending player action, unrevealed Pokémon or moves, or private build data; difficulty changes decisions rather than stats or resources. The engine covers the core turn loop, priority and Speed order, accuracy, damage variation, STAB and type effectiveness, critical hits, PP, common non-volatile status conditions, stat stages, recovery and drain, voluntary and forced switching, Terastallization, and battle completion. All 314 catalogued abilities are classified: 295 have singles battle hooks and 19 apply exclusively to doubles or wild encounters. Ability rules follow the bundled current Pokémon Showdown reference rather than historical PokéAPI descriptions. Hooks cover entry and switch effects, damage and status reactions, move properties, copied and suppressed abilities, form changes, berries, and once-per-battle state. This coverage does not certify every possible interaction among moves, abilities, and items.
 
-Pokémon details include a lazy-loaded **3D** tab powered by the public [Pokemon3D API](https://github.com/Pokemon-3D-api/api-server). It shares the existing shiny toggle, supports rotation and zoom, and reports unavailable forms without substituting a base model. The catalog is cached for five minutes; models come from the project’s GitHub assets. Google model-viewer renders GLB files with locally hosted Draco decoders. CSP permits these two data origins, blob textures/workers, and WebAssembly compilation for Draco.
+Pokémon details include a lazy-loaded **3D** tab powered by the public [Pokemon3D API](https://github.com/Pokemon-3D-api/api-server). It shares the existing shiny toggle, supports rotation and zoom, and reports unavailable forms without substituting a base model. The catalog is cached for five minutes; models come from the project’s GitHub assets. Models are downloaded with cancellation, a 15-second timeout, and a 20 MiB limit before rendering from a revocable local blob. GLB validation rejects external resource URIs and bounds declared geometry, scene graphs, and PNG/JPEG/WebP texture dimensions. Google model-viewer renders GLB files with locally hosted Draco decoders. CSP permits these two data origins, blob textures/workers, and WebAssembly compilation for Draco.
 
 
 The ability audit is regenerated with `npm run audit:battle-abilities`; its report is in [`docs/battle-ability-audit.md`](docs/battle-ability-audit.md). The behavioral tests are in `src/lib/battle-abilities.test.ts`. To refresh the compact move-property, ability-flag, form and weight snapshot, download `data/moves.ts`, `data/pokedex.ts`, and `data/abilities.ts` from the same Pokémon Showdown revision, then run `node scripts/extract-battle-facts.mjs /path/to/moves.ts /path/to/pokedex.ts /path/to/abilities.ts`. The extractor parses TypeScript syntax without executing upstream callbacks, includes SHA-256 provenance, and uses the bundled Showdown MIT license. Refresh the detailed ability reference with `node scripts/extract-ability-reference.mjs /path/to/abilities.ts` at the same time.

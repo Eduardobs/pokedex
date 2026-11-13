@@ -1,3 +1,4 @@
+import { safePokemonMediaUrl } from './media-url'
 import { supplementalMoveMetadata } from './battle-move-effects'
 import { multistrikeMoves } from './battle-multistrike'
 import { canonicalMoveSecondaries } from '../data/third-party/battle-move-secondaries'
@@ -49,11 +50,7 @@ function parseBattleResource(value: unknown, includeSprite = false): BattleResou
       : []
   })
   const sprite = includeSprite ? record(data.sprites).default : null
-  if (
-    sprite !== null &&
-    sprite !== undefined &&
-    (typeof sprite !== 'string' || !sprite.startsWith('https://raw.githubusercontent.com/'))
-  )
+  if (sprite !== null && sprite !== undefined && !safePokemonMediaUrl(sprite))
     throw new Error('Invalid battle resource sprite.')
   return { name: data.name, names, descriptions, sprite: typeof sprite === 'string' ? sprite : null }
 }

@@ -1,3 +1,4 @@
+import { resolvePokemonModelUrl } from './pokemon-model'
 import { NETWORK, POKEMON_3D_API_URL } from '../config/app'
 import { ApiError, readBoundedJsonResponse } from './api-client'
 
@@ -35,27 +36,18 @@ export function parsePokemon3D(value: unknown): Pokemon3D[] {
           typeof form !== 'object' ||
           !('name' in form) ||
           typeof form.name !== 'string' ||
+          form.name.length > 200 ||
           !('formName' in form) ||
           typeof form.formName !== 'string' ||
+          form.formName.length > 100 ||
           !('model' in form) ||
           typeof form.model !== 'string'
         )
           throw new ApiError('Invalid 3D form', undefined, 'invalid-response')
-        const url = new URL(form.model)
-        if (
-          url.origin !== 'https://raw.githubusercontent.com' ||
-          url.username ||
-          url.password ||
-          url.search ||
-          url.hash ||
-          !/^\/Pokemon-3D-api\/assets\/(?:refs\/heads\/)?main\/models\/(?:opt|glb)\/[a-zA-Z0-9/_-]+(?:\.glb)?$/.test(
-            url.pathname,
-          )
-        )
-          throw new ApiError('Unsafe model URL', undefined, 'unsafe-url')
+        const url = resolvePokemonModelUrl(form.model, true)
         // The public catalog contains incomplete links; omit them without losing valid models.
-        if (!url.pathname.endsWith('.glb')) return []
-        return [{ name: form.name, formName: form.formName, model: url.href }]
+        if (!url.endsWith('.glb')) return []
+        return [{ name: form.name, formName: form.formName, model: url }]
       }),
     }
   })
@@ -79,9 +71,13 @@ export async function fetchPokemon3D(signal: AbortSignal): Promise<Pokemon3D[]> 
         const response = await fetch(POKEMON_3D_API_URL, {
           signal: controller.signal,
           credentials: 'omit',
+          redirect: 'error',
           referrerPolicy: 'no-referrer',
         })
-        if (!response.ok) throw new ApiError('3D API request failed', response.status)
+        if (!response.ok) {
+          await response.body?.cancel()
+          throw new ApiError('3D API request failed', response.status)
+        }
         const data = parsePokemon3D(await readBoundedJsonResponse(response))
         controller.signal.throwIfAborted()
         cache = { data, expires: Date.now() + NETWORK.cacheTtlMs }

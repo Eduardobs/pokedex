@@ -1,3 +1,4 @@
+import { pokemonFixture } from './test/pokemon-fixtures'
 import { API_BASE_URL } from './config/app'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -6,6 +7,7 @@ import { STORAGE_KEYS } from './config/app'
 
 const apiBase = API_BASE_URL
 const pokemon = {
+  ...pokemonFixture,
   id: 25,
   name: 'pikachu',
   sprites: {

@@ -182,7 +182,11 @@ export async function mockEvolutionFamilies(page: Page) {
           name: entry.species.name,
           evolution_chain: { url: `${api}/evolution-chain/${family}/` },
           flavor_text_entries: [
-            { flavor_text: 'Uma família Pokémon com diferentes caminhos evolutivos.', language: { name: 'pt-br' } },
+            {
+              flavor_text: 'Uma família Pokémon com diferentes caminhos evolutivos.',
+              language: ref('language', 'pt-br', 9),
+              version: ref('version', 'red', 1),
+            },
           ],
           genera: [],
           color: ref('pokemon-color', 'brown', 3),
@@ -196,6 +200,8 @@ export async function mockEvolutionFamilies(page: Page) {
           base_happiness: 50,
           hatch_counter: 10,
           varieties: [],
+          has_gender_differences: false,
+          forms_switchable: false,
           is_baby: false,
           is_legendary: false,
           is_mythical: false,
@@ -210,6 +216,8 @@ export async function mockEvolutionFamilies(page: Page) {
           height: 3,
           weight: 65,
           base_experience: 65,
+          order: id,
+          is_default: true,
           sprites: {
             front_default: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
             front_shiny: null,

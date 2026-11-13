@@ -260,3 +260,73 @@ describe('PokéAPI utilities', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 })
+
+it('keeps the REST cache within its aggregate byte budget and purges expired entries', async () => {
+  const { clearApiCache } = await import('./api-client')
+  clearApiCache()
+  vi.useFakeTimers()
+  const payload = { padding: Array.from({ length: 20 }, () => 'x'.repeat(100000)) }
+  const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => Response.json(payload))
+  for (let i = 0; i < 9; i++) await apiFetch(`item/cache-budget-${i}`)
+  await apiFetch('item/cache-budget-0')
+  expect(fetch).toHaveBeenCalledTimes(10)
+  vi.setSystemTime(Date.now() + 300001)
+  await apiFetch('item/cache-budget-new')
+  await apiFetch('item/cache-budget-0')
+  expect(fetch).toHaveBeenCalledTimes(12)
+  clearApiCache()
+})
+
+it('rejects responses exceeding the tighter REST body limit while streaming', async () => {
+  const { NETWORK } = await import('../config/app')
+  const cancel = vi.fn()
+  const stream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(new Uint8Array(NETWORK.maxRestResponseBytes + 1))
+    },
+    cancel,
+  })
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(stream, { headers: { 'content-type': 'application/json' } }),
+  )
+  await expect(apiFetch('item/oversized-stream')).rejects.toMatchObject({ code: 'invalid-response' })
+  expect(cancel).toHaveBeenCalled()
+})
+
+it('does not attach a new consumer to an already aborted transport', async () => {
+  const { clearApiCache } = await import('./api-client')
+  clearApiCache()
+  const fetch = vi.spyOn(globalThis, 'fetch').mockImplementation(
+    (_url, init) =>
+      new Promise((_resolve, reject) => {
+        init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason))
+      }),
+  )
+  const consumer = new AbortController()
+  const first = apiFetch('item/fresh-transport', consumer.signal)
+  const rejected = expect(first).rejects.toMatchObject({ name: 'AbortError' })
+  consumer.abort()
+  await rejected
+  await Promise.resolve()
+  fetch.mockResolvedValueOnce(Response.json({ name: 'fresh' }))
+  await expect(apiFetch('item/fresh-transport')).resolves.toEqual({ name: 'fresh' })
+  expect(fetch).toHaveBeenCalledTimes(2)
+})
+
+it('rejects oversized and ambiguously encoded API paths', () => {
+  expect(() => resolveApiUrl('pokemon/' + 'x'.repeat(2048))).toThrow(ApiError)
+  for (const path of ['pokemon/%2f..%2fadmin', 'pokemon/%5cadmin', 'pokemon/%00'])
+    expect(() => resolveApiUrl(path)).toThrow(ApiError)
+})
+
+it('ignores inherited properties in externally selected term and species dictionaries', async () => {
+  const { localizedApiTerm } = await import('./api')
+  const { defaultPokemonNameForSpecies, pokemonColorHex, pokemonVariantForSpeciesGender } =
+    await import('./pokemon-species')
+  for (const name of ['constructor', 'toString', '__proto__']) {
+    expect(typeof localizedApiTerm(name, 'en')).toBe('string')
+    expect(defaultPokemonNameForSpecies(name)).toBe(name)
+    expect(typeof pokemonColorHex(name)).toBe('string')
+    expect(pokemonVariantForSpeciesGender(name, 1, 'female').name).toBe(name)
+  }
+})

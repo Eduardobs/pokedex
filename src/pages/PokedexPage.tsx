@@ -1,3 +1,4 @@
+import { parseApiList } from '../lib/rest-validation'
 import { Search } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { EmptyState, InlineRetryError } from '../components/FeedbackState'
@@ -56,7 +57,7 @@ export function PokedexPage() {
   const sortError = sorting.error
   const rarityError = rarity.error
   const regionError = regions.error
-  const list = useApi<ApiList>(types.length ? null : `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0`)
+  const list = useApi<ApiList>(types.length ? null : `pokemon?limit=${POKEMON_CATALOG_LIMIT}&offset=0`, parseApiList)
   const typeFilter = usePokemonTypeFilter(types)
   const { loading, error, retry } = types.length ? typeFilter : list
   const resources = types.length ? typeFilter.data : list.data?.results

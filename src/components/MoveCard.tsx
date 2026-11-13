@@ -1,3 +1,4 @@
+import { parseMoveCard } from '../lib/rest-validation'
 import { BookOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useApi } from '../hooks/useApi'
@@ -46,21 +47,21 @@ export function moveLearningLabel(method: string, level: number, t: Translate) {
 
 export function moveLearningMethodLabel(method: string, t: Translate) {
   if (method === 'level-up') return t('move.method.levelUp')
-  const translationKey = learningMethodKeys[method]
+  const translationKey = Object.hasOwn(learningMethodKeys, method) ? learningMethodKeys[method] : undefined
   return translationKey ? t(translationKey) : prettyName(method)
 }
 
 export function MoveCard({ move, method, level }: Props) {
   const { apiLanguage, t } = useLanguage()
   const { targetRef: cardRef, visible } = useIntersectionVisibility<HTMLAnchorElement>(false, '250px')
-  const { data } = useApi<MoveDetail>(visible ? move.url : null)
+  const { data } = useApi<MoveDetail>(visible ? move.url : null, parseMoveCard)
 
   const learning = moveLearningLabel(method, level, t)
   return (
     <Link
       ref={cardRef}
       className={`move-card ${data ? `damage-border-${data.damage_class.name}` : ''}`}
-      to={`/explore/move/${move.name}`}
+      to={`/explore/move/${encodeURIComponent(move.name)}`}
     >
       <div className="move-card-title">
         <b>{localizedName(data?.names, apiLanguage) || prettyName(move.name)}</b>

@@ -28,6 +28,7 @@ export type PokemonType = (typeof POKEMON_TYPES)[number]
 
 export function parsePokemonTypes(value: string | null): PokemonType[] {
   const types = (value ?? '')
+    .slice(0, 200)
     .split(',')
     .filter((type): type is PokemonType => POKEMON_TYPES.some((supported) => supported === type))
   return [...new Set(types)].slice(-2)

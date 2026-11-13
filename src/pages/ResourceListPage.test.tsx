@@ -101,7 +101,7 @@ describe('ResourceListPage pagination', () => {
 
     await waitFor(() => expect(screen.getAllByText('Página 3').length).toBeGreaterThan(0))
     expect(screen.getAllByText('81–100 de 100').length).toBeGreaterThan(0)
-    expect(useApiMock).toHaveBeenLastCalledWith('ability?limit=40&offset=80', undefined)
+    expect(useApiMock).toHaveBeenLastCalledWith('ability?limit=40&offset=80', expect.any(Function))
   })
 })
 
