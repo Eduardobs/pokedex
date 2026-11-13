@@ -240,7 +240,7 @@ export function Layout() {
     writeStorageString(STORAGE_KEYS.theme, nextTheme)
     document
       .querySelector('meta[name="theme-color"]')
-      ?.setAttribute('content', nextTheme === 'dark' ? '#101419' : '#e33535')
+      ?.setAttribute('content', nextTheme === 'dark' ? '#0d1419' : '#f5f7f8')
   }
 
   const submit = (event: React.FormEvent) => {

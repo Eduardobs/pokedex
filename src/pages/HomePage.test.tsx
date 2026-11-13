@@ -1,9 +1,11 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, expect, it } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { STORAGE_KEYS } from '../config/app'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { HomePage } from './HomePage'
+
+vi.mock('../components/FeaturedPokemon', () => ({ FeaturedPokemon: () => null }))
 
 function CatalogLocation() {
   const location = useLocation()

@@ -24,7 +24,7 @@ export function ResourceFields({
 }) {
   const { language, t } = useLanguage()
   return (
-    <div className="resource-detail-grid structured-field-grid">
+    <div className="resource-detail-grid structured-field-grid fact-ledger">
       {entries.map(([key, value]) => {
         const FieldIcon = fieldIcon(key)
         const label = resourceFieldLabel(key, language)

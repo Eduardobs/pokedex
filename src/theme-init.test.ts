@@ -16,9 +16,9 @@ async function initialize() {
 
 describe('theme initialization before React mounts', () => {
   it.each([
-    ['dark', 'dark', '#101419'],
-    ['light', 'light', '#e33535'],
-    ['invalid', 'light', '#e33535'],
+    ['dark', 'dark', '#0d1419'],
+    ['light', 'light', '#f5f7f8'],
+    ['invalid', 'light', '#f5f7f8'],
   ])('applies stored %s as %s to the document and browser chrome', async (stored, theme, color) => {
     const meta = document.createElement('meta')
     meta.name = 'theme-color'

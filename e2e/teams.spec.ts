@@ -87,8 +87,12 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await expect(page.getByRole('radio', { name: 'Feminino' }).locator('xpath=..').locator('svg')).toBeVisible()
   const genderBox = await page.locator('.team-build .radio-selection').boundingBox()
   const teraBox = await page.locator('.team-build .tera-type-select .catalog-select-trigger').boundingBox()
-  expect(Math.abs((genderBox?.y ?? 0) - (teraBox?.y ?? 0))).toBeLessThanOrEqual(1)
-  expect(Math.abs((genderBox?.height ?? 0) - (teraBox?.height ?? 0))).toBeLessThanOrEqual(1)
+  for (const box of [genderBox, teraBox]) {
+    expect(box).not.toBeNull()
+    expect(box!.height).toBeGreaterThanOrEqual(44)
+    expect(box!.x).toBeGreaterThanOrEqual(0)
+    expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width)
+  }
   await page.getByRole('combobox', { name: 'Tipo Tera' }).click()
   const fireType = page.getByRole('option', { name: 'Fogo' })
   await expect(fireType.locator('use')).toHaveAttribute('href', /#type-fire$/)
@@ -105,9 +109,12 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   expect(moveTriggerBoxes.every(({ right }) => right <= viewportWidth)).toBe(true)
   const teamControls = page.locator('.team-toolbar > .catalog-select, .team-toolbar > label, .team-toolbar > button')
   const controlBoxes = await teamControls.evaluateAll((elements) =>
-    elements.map((element) => element.getBoundingClientRect().bottom),
+    elements.map((element) => {
+      const box = element.getBoundingClientRect()
+      return { left: box.left, right: box.right, height: box.height }
+    }),
   )
-  expect(Math.max(...controlBoxes) - Math.min(...controlBoxes)).toBeLessThanOrEqual(2)
+  expect(controlBoxes.every((box) => box.left >= 0 && box.right <= viewportWidth && box.height >= 44)).toBe(true)
   const tabImage = page.getByRole('tab', { name: 'Pikachu' }).locator('img')
   await expect(tabImage).toHaveAttribute('src', /\/other\/home\/shiny\/25\.png$/)
   await page.getByRole('button', { name: 'Item equipado' }).click()

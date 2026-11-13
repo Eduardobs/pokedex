@@ -1151,10 +1151,10 @@
   color: var(--muted);
 }
 .battle-tooltip-description > span {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  display: block;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.5;
 }
 .battle-tooltip-description b {
   color: var(--ink);

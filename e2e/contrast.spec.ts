@@ -61,8 +61,36 @@ async function textContrastFailures(root: Locator) {
   })
 }
 
+// The glass surface must remain transparent behind text as well as around it.
+async function expectGlassTooltip(tooltip: Locator) {
+  const appearance = await tooltip.evaluate((root) => {
+    const canvas = document.createElement('canvas')
+    canvas.width = canvas.height = 1
+    const context = canvas.getContext('2d')!
+    const alpha = (element: Element) => {
+      context.clearRect(0, 0, 1, 1)
+      context.fillStyle = getComputedStyle(element).backgroundColor
+      context.fillRect(0, 0, 1, 1)
+      return context.getImageData(0, 0, 1, 1).data[3] / 255
+    }
+    return {
+      surfaceAlpha: alpha(root),
+      textBackgrounds: [
+        ...root.children,
+        ...root.querySelectorAll('.battle-tooltip-stats > span, .battle-switch-stats > span'),
+      ]
+        .filter((element) => !element.matches('.type-badge, .tera-type-badge, .damage-badge, .battle-major-status'))
+        .map(alpha),
+      opacity: getComputedStyle(root).opacity,
+    }
+  })
+  expect(appearance.surfaceAlpha).toBeCloseTo(0.5, 2)
+  expect(appearance.opacity).toBe('1')
+  expect(appearance.textBackgrounds.every((alpha) => alpha === 0)).toBe(true)
+}
+
 for (const theme of ['light', 'dark']) {
-  test(`battle tooltip text remains readable over extreme backdrops in ${theme} theme`, async ({ page }, testInfo) => {
+  test(`battle tooltips preserve glass behind text in ${theme} theme`, async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 1440, height: 1000 })
     await prepareMobileBattle(page)
     await page.evaluate((theme) => (document.documentElement.dataset.theme = theme), theme)
@@ -74,21 +102,21 @@ for (const theme of ['light', 'dark']) {
       await page
         .locator('.battle-field')
         .evaluate((el, color) => ((el as HTMLElement).style.background = color), backdrop)
-      expect(await textContrastFailures(tooltip)).toEqual([])
+      await expectGlassTooltip(tooltip)
     }
     await page.locator('.battle-field').evaluate((el) => (el as HTMLElement).style.removeProperty('background'))
     const move = page.getByRole('button', { name: 'Thunderbolt', exact: true })
     await move.focus()
     const moveTooltip = page.locator('.battle-move-tooltip').filter({ visible: true })
     await expect(moveTooltip).toBeVisible()
-    expect(await textContrastFailures(moveTooltip)).toEqual([])
+    await expectGlassTooltip(moveTooltip)
     await page.getByRole('button', { name: 'Trocar Pokémon', exact: true }).click()
     const replacement = page.locator('.battle-switch-button').first()
     await page.keyboard.press('Tab')
     await replacement.focus()
     const replacementTooltip = replacement.locator('.battle-switch-tooltip')
     await expect(replacementTooltip).toBeVisible()
-    expect(await textContrastFailures(replacementTooltip)).toEqual([])
+    await expectGlassTooltip(replacementTooltip)
     await testInfo.attach('battle-tooltip', { body: await page.screenshot(), contentType: 'image/png' })
     expect(await replacement.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe('solid')
     await page.locator('.battle-cancel-switch').click()
@@ -99,7 +127,7 @@ for (const theme of ['light', 'dark']) {
     await logMove.focus()
     const logTooltip = logMove.locator('.battle-log-move-tooltip')
     await expect(logTooltip).toBeVisible()
-    expect(await textContrastFailures(logTooltip)).toEqual([])
+    await expectGlassTooltip(logTooltip)
   })
 }
 
@@ -115,6 +143,13 @@ for (const theme of ['light', 'dark']) {
         /\/(pokemon-form|pokemon-species|move)$/.test(url.pathname) &&
         Boolean(url.search),
       (route) => route.fulfill({ json: { count: 0, next: null, previous: null, results: [] } }),
+    )
+    await page.route(
+      (url) => url.href.startsWith(`${API_BASE_URL}/pokemon/`) && /\/pokemon\/\d+$/.test(url.pathname),
+      (route) => {
+        const id = Number(new URL(route.request().url()).pathname.split('/').at(-1))
+        return route.fulfill({ json: { id, name: `test-pokemon-${id}` } })
+      },
     )
     for (const route of [
       '',

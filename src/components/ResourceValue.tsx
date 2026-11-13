@@ -1,4 +1,5 @@
 import { Check, ChevronRight, X } from 'lucide-react'
+import { RecordCell } from './RecordCell'
 import { Pagination } from './Pagination'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -219,7 +220,7 @@ function ResourceRecordTable({
         aria-label={label ?? t('resource.structuredRecords')}
         tabIndex={0}
       >
-        <table className="resource-record-table">
+        <table className="resource-record-table responsive-record-table">
           <caption className="sr-only">{label ?? t('resource.structuredRecords')}</caption>
           <thead>
             <tr>
@@ -234,9 +235,9 @@ function ResourceRecordTable({
             {values.slice(pagination.start, pagination.end).map((row, index) => (
               <tr key={pagination.start + index}>
                 {columns.map((key) => (
-                  <td key={key}>
+                  <RecordCell key={key} label={resourceFieldLabel(key, language)}>
                     <ResourceValue value={row[key]} depth={depth + 1} />
-                  </td>
+                  </RecordCell>
                 ))}
               </tr>
             ))}

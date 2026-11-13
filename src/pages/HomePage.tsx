@@ -14,23 +14,25 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { RESOURCE_COLLECTION_COUNT } from '../data/resource-summary'
 import { formatNumber } from '../lib/api'
+import { FeaturedPokemon } from '../components/FeaturedPokemon'
+import { NotebookSection } from '../components/NotebookSection'
 
 export function HomePage() {
   const { language, t } = useLanguage()
   const navigate = useNavigate()
   return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
+    <div className="home-notebook content-width">
+      <section className="hero discovery-register">
+        <header className="hero-copy">
           <span className="eyebrow">
-            <Sparkles size={15} /> {t('home.eyebrow')}
+            <Sparkles size={15} aria-hidden="true" /> {t('home.eyebrow')}
           </span>
           <h1>
-            {t('home.title')}
-            <br />
-            <em>{t('home.titleAccent')}</em>
+            {t('home.title')} <em>{t('home.titleAccent')}</em>
           </h1>
           <p>{t('home.description')}</p>
+        </header>
+        <div className="discovery-command">
           <form
             className="home-search search-field"
             role="search"
@@ -45,7 +47,7 @@ export function HomePage() {
             <input
               name="query"
               aria-label={t('nav.searchLabel')}
-              placeholder={t('nav.searchPlaceholder')}
+              placeholder={t('notebook.searchPlaceholder')}
               maxLength={64}
               autoComplete="off"
               enterKeyHint="search"
@@ -56,42 +58,29 @@ export function HomePage() {
           </form>
           <div className="hero-actions">
             <Link to="/pokemon" className="button primary">
-              {t('home.openPokedex')} <ArrowRight size={18} />
+              {t('home.openPokedex')} <ArrowRight size={18} aria-hidden="true" />
             </Link>
             <Link to="/explore" className="button secondary">
               {t('home.explore')}
             </Link>
           </div>
-          <div className="hero-stats">
-            <span>
-              <b>{t('home.pokemonCount', { count: formatNumber(1_000, language) })}</b>
-            </span>
-            <span>
-              <b>18</b> {t('home.types')}
-            </span>
-            <span>
-              <b>9</b> {t('home.generations')}
-            </span>
-          </div>
+          <dl className="discovery-totals">
+            <div>
+              <dt>{t('nav.pokedex')}</dt>
+              <dd>{t('home.pokemonCount', { count: formatNumber(1_000, language) })}</dd>
+            </div>
+            <div>
+              <dt>{t('home.types')}</dt>
+              <dd>18</dd>
+            </div>
+            <div>
+              <dt>{t('home.generations')}</dt>
+              <dd>9</dd>
+            </div>
+          </dl>
         </div>
         <div className="hero-visual" aria-label={t('home.featured')}>
-          <span className="hero-specimen-number" aria-hidden="true">
-            006
-          </span>
-          <div className="hero-orbit" aria-hidden="true" />
-          <Link to="/pokemon/charizard" className="hero-featured-pokemon">
-            <img
-              src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png"
-              alt="Charizard"
-              width="475"
-              height="475"
-              fetchPriority="high"
-              decoding="async"
-            />
-            <span className="hero-specimen-caption">
-              <span>#0006</span> Charizard <ArrowRight size={20} aria-hidden="true" />
-            </span>
-          </Link>
+          <FeaturedPokemon />
           <div className="hero-starters">
             {[
               { id: 1, name: 'Bulbasaur' },
@@ -101,7 +90,7 @@ export function HomePage() {
               <Link to={`/pokemon/${pokemon.name.toLowerCase()}`} key={pokemon.id}>
                 <img
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`}
-                  alt={pokemon.name}
+                  alt=""
                   width="64"
                   height="64"
                   loading="lazy"
@@ -112,80 +101,41 @@ export function HomePage() {
           </div>
         </div>
       </section>
-
-      <section className="quick-section content-width">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">{t('home.start')}</span>
-            <h2>{t('home.allInOne')}</h2>
-          </div>
+      <NotebookSection
+        index={1}
+        title={t('home.allInOne')}
+        description={t('home.start')}
+        className="discovery-index"
+        actions={
           <Link to="/explore">
-            {t('home.allCategories')} <ArrowRight size={17} />
+            {t('home.allCategories')} <ArrowRight size={18} aria-hidden="true" />
           </Link>
-        </div>
-        <div className="quick-grid">
-          <Link to="/pokemon" className="quick-card red">
-            <span className="quick-card-index" aria-hidden="true">
-              01
-            </span>
-            <div className="quick-icon">
-              <BookOpen />
-            </div>
-            <div>
-              <h3>{t('home.nationalDex')}</h3>
-              <p>{t('home.nationalDexDesc')}</p>
-            </div>
-            <ArrowRight />
-          </Link>
-          <Link to="/explore/move" className="quick-card purple">
-            <span className="quick-card-index" aria-hidden="true">
-              02
-            </span>
-            <div className="quick-icon">
-              <Swords />
-            </div>
-            <div>
-              <h3>{t('home.moves')}</h3>
-              <p>{t('home.movesDesc')}</p>
-            </div>
-            <ArrowRight />
-          </Link>
-          <Link to="/explore/region" className="quick-card green">
-            <span className="quick-card-index" aria-hidden="true">
-              03
-            </span>
-            <div className="quick-icon">
-              <MapPin />
-            </div>
-            <div>
-              <h3>{t('home.regions')}</h3>
-              <p>{t('home.regionsDesc')}</p>
-            </div>
-            <ArrowRight />
-          </Link>
-          <Link to="/explore" className="quick-card blue">
-            <span className="quick-card-index" aria-hidden="true">
-              04
-            </span>
-            <div className="quick-icon">
-              <Database />
-            </div>
-            <div>
-              <h3>{t('home.encyclopedia')}</h3>
-              <p>{t('home.collections', { count: RESOURCE_COLLECTION_COUNT })}</p>
-            </div>
-            <ArrowRight />
-          </Link>
-        </div>
-      </section>
-      <section className="home-workflows content-width" aria-labelledby="home-workflows-title">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">{t('ui.quickTools')}</span>
-            <h2 id="home-workflows-title">{t('home.workflows')}</h2>
-          </div>
-        </div>
-        <div className="home-workflow-grid">
+        }
+      >
+        <nav className="discovery-links" aria-label={t('home.allInOne')}>
+          {(
+            [
+              { to: '/pokemon', icon: BookOpen, title: 'home.nationalDex', description: 'home.nationalDexDesc' },
+              { to: '/explore/move', icon: Swords, title: 'home.moves', description: 'home.movesDesc' },
+              { to: '/explore/region', icon: MapPin, title: 'home.regions', description: 'home.regionsDesc' },
+              { to: '/explore', icon: Database, title: 'home.encyclopedia', description: null },
+            ] as const
+          ).map(({ to, icon: Icon, title, description }) => (
+            <Link key={title} to={to}>
+              <Icon size={24} aria-hidden="true" />
+              <span>
+                <strong>{t(title)}</strong>
+                <small>
+                  {description ? t(description) : t('home.collections', { count: RESOURCE_COLLECTION_COUNT })}
+                </small>
+              </span>
+              <ArrowRight size={20} aria-hidden="true" />
+            </Link>
+          ))}
+        </nav>
+      </NotebookSection>
+      <NotebookSection index={2} title={t('home.workflows')} description={t('ui.quickTools')}>
+        <nav className="discovery-links" aria-label={t('home.workflows')}>
           {(
             [
               { to: '/teams', icon: UsersRound, title: 'teams.title', description: 'home.planTeam' },
@@ -193,15 +143,17 @@ export function HomePage() {
               { to: '/maps', icon: MapPinned, title: 'maps.title', description: 'home.findPlaces' },
             ] as const
           ).map(({ to, icon: Icon, title, description }) => (
-            <Link key={to} to={to} className="home-workflow-card">
+            <Link key={to} to={to}>
               <Icon size={24} aria-hidden="true" />
-              <h3>{t(title)}</h3>
-              <p>{t(description)}</p>
+              <span>
+                <strong>{t(title)}</strong>
+                <small>{t(description)}</small>
+              </span>
               <ArrowRight size={20} aria-hidden="true" />
             </Link>
           ))}
-        </div>
-      </section>
-    </>
+        </nav>
+      </NotebookSection>
+    </div>
   )
 }

@@ -1,6 +1,8 @@
 import { ArrowRight, Search, Swords, Zap, Package } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import type { CSSProperties } from 'react'
 import { EmptyState } from '../components/FeedbackState'
+import { NotebookSection } from '../components/NotebookSection'
 import { PageHeader } from '../components/PageHeader'
 import { SearchField } from '../components/SearchField'
 import { DamageClassIconSet } from '../components/SemanticBadges'
@@ -100,22 +102,20 @@ export function ExplorePage() {
         </p>
       </div>
       <div className="resource-groups">
-        {groups.map((group) => (
-          <article
-            className="resource-group"
+        {groups.map((group, index) => (
+          <NotebookSection
+            index={index + 1}
+            title={
+              <>
+                <group.icon size={22} aria-hidden="true" /> {group.title}
+              </>
+            }
+            description={group.description}
+            actions={<span className="resource-total">{group.resources.length}</span>}
+            className="resource-group directory-chapter"
+            style={{ '--group-color': group.color } as CSSProperties}
             key={group.title}
-            style={{ '--group-color': group.color } as React.CSSProperties}
           >
-            <header>
-              <span className="group-icon">
-                <group.icon />
-              </span>
-              <div>
-                <h2>{group.title}</h2>
-                <p>{group.description}</p>
-              </div>
-              <span className="resource-total">{group.resources.length}</span>
-            </header>
             <div className="resource-links">
               {group.resources.map((resource) => {
                 const ResourceIcon = resource.icon
@@ -130,7 +130,7 @@ export function ExplorePage() {
                 )
               })}
             </div>
-          </article>
+          </NotebookSection>
         ))}
       </div>
       {!groups.length && (

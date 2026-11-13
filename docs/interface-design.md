@@ -1,23 +1,27 @@
 # Atlas interface design
 
-[Stitch design project](https://stitch.withgoogle.com/projects/1567854827663085291)
+The current information architecture is documented in [the complete screen presentation inventory](screen-presentation-audit.md). Screens use visually grouped content panels and labeled attributes, with responsive artwork-led cards for Pokémon catalogs and native desktop tables for comparisons.
 
-## Expedition art direction
+[Current Stitch design project](https://stitch.withgoogle.com/projects/13217619331164250601)
 
-The application uses a bold Pokémon atlas visual system: midnight navy title bands, vivid crimson actions and artwork stages, warm ivory canvas, oversized Outfit headlines, and readable DM Sans controls. Numbered task cards, subtle technical dot patterns, large specimen artwork and generous rounded frames give each page a recognizable identity. The direction replaces the earlier restrained white-card treatment.
+See [the field guide design decisions](field-guide-design.md) for the current palette, shared geometry, evidence and evaluation of the generated reference.
 
-The shared implementation lives in `src/styles/redesign.css`. `PageHeader` provides consistent title and action composition. `PrimaryShortcuts` exposes five localized destinations in a mobile bottom bar and a large-screen side rail, with native links and current-route semantics.
+## Field guide art direction
+
+The application uses a mineral neutral canvas, teal actions, direct editorial page titles, Outfit headlines and readable DM Sans controls. Compact 4px controls and 6px panels, separators, restrained elevation and prominent Pokémon artwork create a consistent reference workspace in light and dark themes.
+
+The current shared presentation lives in `src/styles/field-guide.css`, layered after the existing page composition styles. `PageHeader` provides consistent title and action composition. `PrimaryShortcuts` exposes five localized destinations in a mobile bottom bar and a large-screen side rail, with native links and current-route semantics.
 
 ## Page treatments
 
-- Home: asymmetric navy/crimson stage featuring Charizard, a direct search entry, starter links, numbered task tiles and planning shortcuts.
-- Pokédex, forms and favorites: navy collection headers, a separate filter workspace, and type-tinted artwork cards with prominent names and dex numbers.
-- Pokémon details: a compact identity and artwork header, a mobile grid of six tabs, and a separate overview with description and physical metrics. The evolution workspace is a connected flowchart designed with Stitch: compact species nodes, measured orthogonal SVG arrows, and requirements on parent-child connections. It flows left to right on desktop and top to bottom on mobile, with a common distribution rail for sibling branches. Zoom, fit and native keyboard scrolling keep larger families explorable without whole-page overflow. Alternative methods stay separated by OR and the current species is highlighted.
+- Home: asymmetric neutral/dark artwork stage featuring a random national Pokémon on each visit or refresh, a direct search entry, starter links, destination cards and planning shortcuts.
+- Pokédex, forms and favorites: direct editorial collection headers, a separate filter workspace, and type-tinted artwork cards with prominent names and dex numbers.
+- Pokémon details: a compact identity and artwork header, a mobile grid of six tabs, and quick physical facts beside identity and a separate overview dashboard with description, stats, biology and abilities. The evolution workspace is a connected flowchart designed with Stitch: compact species nodes, measured orthogonal SVG arrows, and requirements on parent-child connections. It flows left to right on desktop and top to bottom on mobile, with a common distribution rail for sibling branches. Zoom, fit and native keyboard scrolling keep larger families explorable without whole-page overflow. Alternative methods stay separated by OR and the current species is highlighted.
 - Explore: colorful category headers, compact directory rows, and a dedicated search and shortcut area.
 - Resource lists and details: a strong record header above neutral, readable reference rows and detail panels.
-- Teams: trainer workspace banner, separate toolbar, prominent roster tabs, and grouped member-editing panels.
+- Teams: trainer workspace heading, separate toolbar, prominent roster tabs, and grouped member-editing panels.
 - Battle: a framed preparation console and arena, cohesive trainer summaries and log surfaces, preserving sprite dimensions, field geometry and mobile action order.
-- Type tools and move comparison: title bands above separated control and comparison workspaces, preserving intentional table scrolling and keyboard matrix navigation.
+- Type tools and move comparison: editorial headings above separated control and comparison workspaces, preserving intentional table scrolling and keyboard matrix navigation.
 - Maps: larger image-led regional cards and clear map entry points; explorer filters retain overlay behavior and the original geography.
 - Feedback: distinct empty-state panels and readable retry surfaces in both themes.
 

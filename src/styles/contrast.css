@@ -110,16 +110,15 @@
   color: #ff9db2;
 }
 
-/* Preserve 50% glass around opaque content islands, including over sprites.
-   Blur alone cannot guarantee text contrast on an arbitrary backdrop. */
+/* Text shares the tooltip's glass surface instead of adding opaque rectangles. */
 :root[data-theme]
   :is(.battle-active-tooltip, .battle-move-tooltip, .battle-switch-tooltip, .battle-log-move-tooltip)
   > * {
-  background-color: var(--surface);
+  background-color: transparent;
   border-radius: 3px;
 }
 :root[data-theme] :is(.battle-tooltip-stats, .battle-switch-stats) > span {
-  background: var(--surface-soft);
+  background: transparent;
 }
 :root[data-theme] :is(.battle-tooltip-stats, .battle-switch-stats) > .is-increased,
 :root[data-theme] .battle-stat-modifiers .raised,

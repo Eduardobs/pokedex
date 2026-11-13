@@ -15,7 +15,7 @@ type Props = {
 export function ErrorState({ title, message, titleKey, messageKey, retry, home = false }: Props) {
   const { t } = useLanguage()
   return (
-    <section className="state-page" role="alert">
+    <section className="state-page notebook-state" role="alert">
       <div className="state-icon">
         <AlertTriangle />
       </div>

@@ -116,7 +116,7 @@ export function PokedexPage() {
   const isFilterPending = isRarityPending || isRegionPending
 
   return (
-    <section className="page content-width">
+    <section className="page content-width catalog-page">
       <PageHeader
         eyebrow={t('pokedex.eyebrow')}
         title={t('pokedex.title')}

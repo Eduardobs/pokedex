@@ -5,6 +5,8 @@ export const API_BASE_URL = api.restUrl
 export const API_ORIGIN = api.restOrigin
 export const GRAPHQL_API_URL = api.graphqlUrl
 
+export const FEATURED_POKEMON_MAX_ID = 1_025
+
 export const POKEMON_CATALOG_LIMIT = 2_000
 export const POKEAPI_ALTERNATE_POKEMON_ID_START = 10_001
 
@@ -25,6 +27,7 @@ export const STORAGE_KEYS = {
   favorites: 'atlas-pokemon-favorites',
   language: 'atlas-language',
   theme: 'atlas-theme',
+  featuredPokemon: 'atlas-featured-pokemon',
 } as const
 
 export const FAVORITES_LIMIT = 200

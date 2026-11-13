@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FEATURE_FLAGS } from '../config/feature-flags'
 import { isBattleReadyTeam } from '../lib/battle'
-import { Dices, Swords, Users } from 'lucide-react'
+import { Dices, Download, Plus, Swords, Upload, Users } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { TEAM_IMPORT_MAX_BYTES, TEAM_LIMITS } from '../config/app'
@@ -14,6 +14,7 @@ import { prettyName } from '../lib/api'
 import { isTeamPokemonEligible } from '../lib/team-pokemon-eligibility'
 import { moveIdentifier } from '../lib/move-comparison'
 import { array, record, reference } from '../lib/resource-data'
+import { NotebookSection } from '../components/NotebookSection'
 import { PageHeader } from '../components/PageHeader'
 import { SearchField } from '../components/SearchField'
 import { SelectMenu } from '../components/SelectMenu'
@@ -140,44 +141,38 @@ export function TeamsPage() {
   }
   return (
     <section className="page content-width teams-page">
-      <PageHeader
-        eyebrow={<Users size={18} />}
-        title={t('teams.title')}
-        description={t('teams.description')}
-        aside={
-          <div className="team-page-actions">
-            <button className="button secondary" onClick={exportTeam} disabled={!team}>
-              {t('teams.export')}
-            </button>
-            <input
-              ref={importInputRef}
-              type="file"
-              accept="application/json,.json"
-              aria-label={t('teams.importFile')}
-              hidden
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                event.target.value = ''
-                if (file) importFile(file)
-              }}
-            />
-            <button className="button secondary" onClick={selectImportFile}>
-              {t('teams.import')}
-            </button>
-            <button
-              className="button secondary"
-              onClick={createRandom}
-              disabled={teams.length >= TEAM_LIMITS.teams || randomState === 'loading'}
-            >
-              <Dices size={18} aria-hidden="true" />
-              {t('teams.randomCreate')}
-            </button>
-            <button className="button primary" onClick={create} disabled={teams.length >= TEAM_LIMITS.teams}>
-              {t('teams.create')}
-            </button>
-          </div>
-        }
-      />
+      <PageHeader eyebrow={<Users size={18} />} title={t('teams.title')} description={t('teams.description')} />
+      <div className="team-page-actions" role="group" aria-label={t('teams.title')}>
+        <button className="button secondary" onClick={exportTeam} disabled={!team}>
+          <Download size={18} aria-hidden="true" /> {t('teams.export')}
+        </button>
+        <input
+          ref={importInputRef}
+          type="file"
+          accept="application/json,.json"
+          aria-label={t('teams.importFile')}
+          hidden
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            event.target.value = ''
+            if (file) importFile(file)
+          }}
+        />
+        <button className="button secondary" onClick={selectImportFile}>
+          <Upload size={18} aria-hidden="true" /> {t('teams.import')}
+        </button>
+        <button
+          className="button secondary"
+          onClick={createRandom}
+          disabled={teams.length >= TEAM_LIMITS.teams || randomState === 'loading'}
+        >
+          <Dices size={18} aria-hidden="true" />
+          {t('teams.randomCreate')}
+        </button>
+        <button className="button primary" onClick={create} disabled={teams.length >= TEAM_LIMITS.teams}>
+          <Plus size={18} aria-hidden="true" /> {t('teams.create')}
+        </button>
+      </div>
       {transferMessage && (
         <p role={transferMessage === 'exported' || transferMessage === 'imported' ? 'status' : 'alert'}>
           {t(
@@ -212,33 +207,39 @@ export function TeamsPage() {
       )}
       {team && (
         <div key={team.id}>
-          <div className="team-toolbar">
-            <SelectMenu
-              icon={<Users size={18} />}
-              label={t('teams.select')}
-              value={selected}
-              options={teams.map((v) => ({ value: v.id, label: v.name }))}
-              onChange={setSelected}
-            />
-            <label>
-              {t('teams.name')}
-              <input maxLength={80} value={team.name} onChange={(e) => change({ ...team, name: e.target.value })} />
-            </label>
-            <button ref={deleteButtonRef} className="button secondary" onClick={() => setDeleteConfirmationOpen(true)}>
-              {t('teams.delete')}
-            </button>
-            {FEATURE_FLAGS.battle && (
+          <NotebookSection index={1} title={t('teams.select')}>
+            <div className="team-toolbar">
+              <SelectMenu
+                icon={<Users size={18} />}
+                label={t('teams.select')}
+                value={selected}
+                options={teams.map((v) => ({ value: v.id, label: v.name }))}
+                onChange={setSelected}
+              />
+              <label>
+                {t('teams.name')}
+                <input maxLength={80} value={team.name} onChange={(e) => change({ ...team, name: e.target.value })} />
+              </label>
               <button
-                className="button primary"
-                disabled={!isBattleReadyTeam(team) || saved === false}
-                title={!isBattleReadyTeam(team) ? t('battle.chooseTeamDescription') : undefined}
-                onClick={() => navigate(`/battle?${new URLSearchParams({ team: team.id })}`)}
+                ref={deleteButtonRef}
+                className="button secondary"
+                onClick={() => setDeleteConfirmationOpen(true)}
               >
-                <Swords size={18} aria-hidden="true" /> {t('teams.battle')}
+                {t('teams.delete')}
               </button>
-            )}
-            <strong>{team.members.length} / 6</strong>
-          </div>
+              {FEATURE_FLAGS.battle && (
+                <button
+                  className="button primary"
+                  disabled={!isBattleReadyTeam(team) || saved === false}
+                  title={!isBattleReadyTeam(team) ? t('battle.chooseTeamDescription') : undefined}
+                  onClick={() => navigate(`/battle?${new URLSearchParams({ team: team.id })}`)}
+                >
+                  <Swords size={18} aria-hidden="true" /> {t('teams.battle')}
+                </button>
+              )}
+              <strong>{team.members.length} / 6</strong>
+            </div>
+          </NotebookSection>
           {team.members.length < TEAM_LIMITS.members ? (
             <PokemonAdder
               onAdd={(pokemon, genderRate) => {
@@ -250,7 +251,9 @@ export function TeamsPage() {
             <p role="status">{t('teams.full')}</p>
           )}
           {!team.members.length && <p>{t('teams.addHint')}</p>}
-          <TeamTabs team={team} onChange={change} />
+          <NotebookSection index={2} title={t('teams.members')}>
+            <TeamTabs team={team} onChange={change} />
+          </NotebookSection>
         </div>
       )}
       {deleteConfirmationOpen && team && (

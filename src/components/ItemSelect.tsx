@@ -9,7 +9,7 @@ import { sortByLocalizedLabel } from '../lib/alphabetical-sort'
 import { SearchField } from './SearchField'
 import { ItemImage } from './ItemImage'
 
-function ItemRow({ name, onError }: { name: string; onError: () => void }) {
+function ItemRow({ name, onError, descriptionId }: { name: string; onError: () => void; descriptionId?: string }) {
   const { apiLanguage, t } = useLanguage()
   const state = useApi(`item/${name}`, parseTeamItem)
   useEffect(() => {
@@ -27,7 +27,13 @@ function ItemRow({ name, onError }: { name: string; onError: () => void }) {
       <ItemImage name={name} preferredSource={item?.sprite} alt="" width={40} height={40} />
       <span>
         <strong>{displayName}</strong>
-        <small>{description || t(state.error ? 'teams.itemUnavailable' : 'common.loadingShort')}</small>
+        <small
+          id={descriptionId}
+          role={descriptionId ? 'tooltip' : undefined}
+          className={descriptionId ? 'move-select-description-tooltip' : undefined}
+        >
+          {description || t(state.error ? 'teams.itemUnavailable' : 'common.loadingShort')}
+        </small>
       </span>
     </span>
   )
@@ -100,6 +106,7 @@ export function ItemSelect({
         ref={trigger}
         type="button"
         className="move-select-trigger item-select-trigger"
+        aria-describedby={value ? `${id}-description` : undefined}
         aria-label={label}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -115,7 +122,11 @@ export function ItemSelect({
           }
         }}
       >
-        {value ? <ItemRow key={retry} name={value} onError={reportError} /> : <span>{t('teams.none')}</span>}
+        {value ? (
+          <ItemRow key={retry} name={value} onError={reportError} descriptionId={`${id}-description`} />
+        ) : (
+          <span>{t('teams.none')}</span>
+        )}
         <ChevronDown size={16} aria-hidden="true" />
       </button>
       {open && (

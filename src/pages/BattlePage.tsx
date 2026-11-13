@@ -12,7 +12,6 @@ import {
   Check,
   CircleDotDashed,
   CircleSlash2,
-  Dices,
   Flame,
   Mars,
   Mountain,
@@ -31,6 +30,7 @@ import { BattleDetails, BattleTooltipContent, usesBattleDetailsPanel } from '../
 import { BattleSprite } from '../components/BattleSprite'
 import { SelectMenu } from '../components/SelectMenu'
 import { ItemImage } from '../components/ItemImage'
+import { NotebookSection } from '../components/NotebookSection'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge } from '../components/TypeBadge'
 import { TeraTypeBadge } from '../components/TeraTypeBadge'
@@ -1436,14 +1436,13 @@ export function BattlePage() {
       />
 
       {screen !== 'battle' && (
-        <div className="battle-lobby">
-          <div>
-            <span className="eyebrow">
-              <Dices size={16} aria-hidden="true" /> {t('battle.format')}
-            </span>
-            <h2>{t('battle.chooseTeam')}</h2>
-            <p>{t('battle.chooseTeamDescription')}</p>
-          </div>
+        <NotebookSection
+          index={1}
+          className="battle-lobby"
+          title={t('battle.chooseTeam')}
+          actions={<span className="eyebrow">{t('battle.format')}</span>}
+          description={t('battle.chooseTeamDescription')}
+        >
           {teams.length ? (
             <div className="battle-lobby-actions">
               <SelectMenu
@@ -1511,7 +1510,7 @@ export function BattlePage() {
               </button>
             </div>
           )}
-        </div>
+        </NotebookSection>
       )}
 
       {battle && player && screen === 'battle' && (

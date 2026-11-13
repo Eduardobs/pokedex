@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes, useSearchParams } from 'react-router-dom'
 import { FavoritesProvider } from '../contexts/FavoritesContext'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { Layout } from './Layout'
+import { STORAGE_KEYS } from '../config/app'
 
 function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -46,6 +47,41 @@ describe('Layout focus management', () => {
   afterEach(() => {
     cleanup()
     vi.restoreAllMocks()
+  })
+
+  it('switches both themes and restores the saved preference after remounting', () => {
+    const previousTheme = localStorage.getItem(STORAGE_KEYS.theme)
+    const previousDocumentTheme = document.documentElement.dataset.theme
+    const previousColorScheme = document.documentElement.style.colorScheme
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    document.head.append(meta)
+    localStorage.setItem(STORAGE_KEYS.theme, 'light')
+    document.documentElement.dataset.theme = 'light'
+
+    try {
+      const first = renderLayout()
+      fireEvent.click(screen.getByRole('button', { name: 'Ativar tema escuro' }))
+      expect(screen.getByRole('button', { name: 'Ativar tema claro' })).toHaveAttribute('aria-pressed', 'true')
+      expect(document.documentElement.dataset.theme).toBe('dark')
+      expect(meta.content).toBe('#0d1419')
+      expect(localStorage.getItem(STORAGE_KEYS.theme)).toBe('dark')
+
+      first.unmount()
+      renderLayout()
+      fireEvent.click(screen.getByRole('button', { name: 'Ativar tema claro' }))
+      expect(screen.getByRole('button', { name: 'Ativar tema escuro' })).toHaveAttribute('aria-pressed', 'false')
+      expect(document.documentElement.dataset.theme).toBe('light')
+      expect(meta.content).toBe('#f5f7f8')
+      expect(localStorage.getItem(STORAGE_KEYS.theme)).toBe('light')
+    } finally {
+      meta.remove()
+      if (previousTheme === null) localStorage.removeItem(STORAGE_KEYS.theme)
+      else localStorage.setItem(STORAGE_KEYS.theme, previousTheme)
+      if (previousDocumentTheme === undefined) delete document.documentElement.dataset.theme
+      else document.documentElement.dataset.theme = previousDocumentTheme
+      document.documentElement.style.colorScheme = previousColorScheme
+    }
   })
 
   it('keeps the search field focused when only the query string changes', async () => {

@@ -25,25 +25,31 @@ function MoveRow({ name, onError, descriptionId }: { name: string; onError: () =
     : ''
   return (
     <span className="move-select-row">
-      <strong>{move ? localizedName(move.names, apiLanguage) || prettyName(name) : prettyName(name)}</strong>
-      {move ? (
-        <>
-          <TypeBadge type={reference(move.type)!.name} />
-          <DamageClassBadge value={reference(move.damage_class)!.name} compact />
+      <span className="move-select-identity">
+        <strong>{move ? localizedName(move.names, apiLanguage) || prettyName(name) : prettyName(name)}</strong>
+        {move ? (
+          <span className="move-select-badges">
+            <TypeBadge type={reference(move.type)!.name} />
+            <DamageClassBadge value={reference(move.damage_class)!.name} compact />
+          </span>
+        ) : (
+          <span className="muted">{t(state.error ? 'teams.moveUnavailable' : 'common.loadingShort')}</span>
+        )}
+      </span>
+      {move && (
+        <span className="move-select-metrics">
           {(['power', 'accuracy', 'pp'] as const).map((field) => (
             <span className="move-select-stat" key={field}>
               <small>{t(field === 'power' ? 'move.power' : field === 'accuracy' ? 'move.accuracy' : 'move.pp')}</small>
               <span>{String(move[field] ?? '—')}</span>
             </span>
           ))}
-          {descriptionId && (
-            <span id={descriptionId} role="tooltip" className="move-select-description-tooltip">
-              {description}
-            </span>
-          )}
-        </>
-      ) : (
-        <span className="muted">{t(state.error ? 'teams.moveUnavailable' : 'common.loadingShort')}</span>
+        </span>
+      )}
+      {move && descriptionId && (
+        <span id={descriptionId} role="tooltip" className="move-select-description-tooltip">
+          {description}
+        </span>
       )}
     </span>
   )

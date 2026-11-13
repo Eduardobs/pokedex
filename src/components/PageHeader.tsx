@@ -10,13 +10,15 @@ type PageHeaderProps = {
 
 export function PageHeader({ eyebrow, title, description, aside, className }: PageHeaderProps) {
   return (
-    <div className={`page-title${className ? ` ${className}` : ''}`}>
+    <header className={`page-title notebook-title${className ? ` ${className}` : ''}`}>
       <div className="page-heading-copy">
-        <span className="eyebrow">{eyebrow}</span>
+        <div className="notebook-title-index">
+          <span className="eyebrow">{eyebrow}</span>
+        </div>
         <h1>{title}</h1>
         {description !== undefined && <p>{description}</p>}
       </div>
       {aside && <div className="page-heading-aside">{aside}</div>}
-    </div>
+    </header>
   )
 }

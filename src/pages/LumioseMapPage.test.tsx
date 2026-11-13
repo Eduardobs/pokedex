@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -23,7 +23,9 @@ describe('LumioseMapPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Mapa interativo de Lumiose City' })).toBeVisible()
     expect(screen.getByText('1.979 pins visíveis')).toBeVisible()
-    expect(screen.getByLabelText('Resumo do catálogo do mapa')).toHaveTextContent('24 categorias')
+    expect(
+      within(screen.getByLabelText('Resumo do catálogo do mapa')).getByRole('definition', { name: 'categorias' }),
+    ).toHaveTextContent('24')
 
     fireEvent.click(screen.getByRole('checkbox', { name: /Parafuso colorido/ }))
     expect(screen.getByText('1.879 pins visíveis')).toBeVisible()

@@ -4,6 +4,12 @@ This document contains lasting definitions that every change to Atlas Pokémon m
 
 ## Definitions
 
+- Information screens use a reference-notebook presentation with chapter indexes and labeled attribute records; Pokémon catalogs use responsive cards with prominent artwork, names, types, and favorite actions; on narrow screens, names and labels stay complete, words are never split, and prose may wrap only at natural boundaries.
+
+- The home page features a randomly selected national Pokémon on each visit or refresh, avoiding the previous highlight in the same tab when session storage is available; Bulbasaur, Charmander, and Squirtle remain fixed secondary highlights.
+
+- The shared interface uses a mineral neutral palette with teal interaction accents, compact 4–6px corners, restrained elevation, and mobile-first layouts in both light and dark themes; Pokémon type colors and existing interaction behavior remain unchanged.
+
 - PokéAPI REST and GraphQL endpoints are centrally configurable at build time; alternative APIs must preserve the expected data contracts.
 
 - All interfaces follow a bold, attractive, intuitive, mobile-first design direction developed with Stitch, using strong visual hierarchy and prominent Pokémon artwork.

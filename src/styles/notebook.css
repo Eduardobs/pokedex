@@ -1,0 +1,1486 @@
+/* Shared reading patterns: visual catalogs, grouped details and responsive tools. */
+:root {
+  --notebook-gutter: 16px;
+}
+#main-content :where(h1, h2, h3, h4, p, dt, dd, label, summary, button, a) {
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+}
+#main-content [hidden] {
+  display: none;
+}
+#main-content :is(.page, .home-notebook) {
+  padding-block: 28px 64px;
+}
+:root[data-theme] #main-content :is(.page-title, .resource-detail-header) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 0 0 20px;
+  margin-bottom: 20px;
+  border: 0;
+  background: transparent;
+}
+#main-content .notebook-title-index {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#main-content .notebook-title-index::before {
+  content: none;
+}
+:root[data-theme] #main-content :is(.page-title h1, .resource-detail-header h1) {
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+  margin-block: 8px;
+  max-width: 24ch;
+}
+#main-content .page-heading-aside {
+  width: 100%;
+}
+:root[data-theme] #main-content .result-count {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  text-align: left;
+}
+#main-content .result-count b {
+  font-size: 24px;
+}
+#main-content :is(.notebook-section, .info-card) {
+  min-width: 0;
+  margin-block: 0 24px;
+}
+#main-content .notebook-section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  padding-block: 0 16px;
+  border: 0;
+}
+#main-content .notebook-coordinate {
+  display: none;
+}
+#main-content .notebook-section-copy {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+#main-content .notebook-section-copy :is(h2, h3) {
+  margin: 0;
+  font:
+    600 22px/1.25 Outfit,
+    sans-serif;
+  letter-spacing: -0.4px;
+}
+#main-content .notebook-section-copy p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+#main-content .notebook-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#main-content .notebook-section-actions a {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  font-weight: 600;
+  font-size: 14px;
+}
+#main-content .notebook-section-content {
+  min-width: 0;
+  padding: 0;
+}
+/* Search and selection values grow vertically; they never use an ellipsis. */
+:root[data-theme] #main-content :is(.catalog-select-trigger, .move-select-trigger, .search-field) {
+  height: auto;
+  min-height: 56px;
+}
+#main-content :is(.catalog-select, .pokemon-search, .catalog-select-copy, .catalog-select-custom-selected) {
+  min-width: 0;
+  max-width: 100%;
+}
+#main-content
+  :is(
+    .catalog-select-copy strong,
+    .catalog-select-copy small,
+    .catalog-select-option-copy strong,
+    .catalog-select-option-copy small,
+    .item-select-row strong,
+    .item-select-row small,
+    .move-select-identity > strong,
+    .related-pokemon-copy > strong,
+    .forms-category-tabs button small,
+    .detail-nav-pokemon strong,
+    .data-list b,
+    .data-slug,
+    .battle-team-option-name,
+    .battle-switch-name,
+    .battle-move-name
+  ) {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.5;
+}
+#main-content :is(.catalog-select-copy small, .move-select-label, .item-select-row small) {
+  font-size: 12px;
+}
+#main-content .catalog-select-trigger {
+  padding-block: 10px;
+}
+#main-content .catalog-select-trigger:has(.catalog-select-custom-selected) {
+  grid-template-columns: minmax(0, 1fr) 18px;
+}
+#main-content .filter-primary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+#main-content .filter-primary .sort-controls {
+  display: contents;
+}
+:root[data-theme] #main-content .filter-primary .search-field {
+  height: 100%;
+}
+:root[data-theme] #main-content :is(.filter-panel, .forms-directory-toolbar) {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: none;
+}
+#main-content :is(.filter-secondary, .rarity-filter, .filter-actions) {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-inline: 0;
+}
+#main-content .rarity-filter > span {
+  flex-basis: 100%;
+}
+/* Discovery pairs a clear starting task with a prominent Pokémon feature. */
+:root[data-theme] #main-content .discovery-register {
+  width: 100%;
+  margin: 0 0 32px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  overflow: visible;
+}
+#main-content .discovery-register .hero-copy {
+  padding: 0;
+}
+#main-content .discovery-register h1 {
+  font-size: clamp(30px, 5vw, 54px);
+  line-height: 1.12;
+  letter-spacing: -1.3px;
+  margin-block: 16px;
+  max-width: 20ch;
+}
+#main-content .discovery-register .hero-copy > p {
+  max-width: 64ch;
+  font-size: 16px;
+  margin-bottom: 0;
+}
+#main-content .discovery-command {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+#main-content .discovery-register .hero-actions {
+  margin-block: 12px 20px;
+}
+#main-content .discovery-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin: 0;
+}
+#main-content .discovery-totals dt {
+  font-size: 12px;
+  color: var(--muted);
+}
+#main-content .discovery-totals dd {
+  margin: 6px 0 0;
+  font:
+    600 20px Outfit,
+    sans-serif;
+  color: var(--ink);
+}
+:root[data-theme] #main-content .discovery-register .hero-visual {
+  min-height: 0;
+  border-radius: 6px;
+  padding-top: 8px;
+}
+#main-content .hero-specimen-name {
+  font-size: 22px;
+}
+#main-content .hero-starters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+:root[data-theme] #main-content .hero-starters a {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px;
+  border: 1px solid #ffffff30;
+  border-radius: 4px;
+  background: #ffffff08;
+  font-size: 14px;
+}
+#main-content .hero-starters img {
+  width: 48px;
+  height: 48px;
+}
+#main-content .discovery-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+#main-content .discovery-links > a {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 20px;
+  align-items: start;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+#main-content .discovery-links > a > svg {
+  color: var(--red);
+}
+#main-content .discovery-links strong {
+  font:
+    600 22px/1.3 Outfit,
+    sans-serif;
+  display: block;
+}
+#main-content .discovery-links small {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+/* Catalog cards keep artwork prominent and leave names room to wrap naturally. */
+#main-content :is(.pokemon-grid, .forms-directory-grid) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+}
+:root[data-theme] #main-content .pokemon-card:not(.skeleton):not(.pokemon-card-error) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: none;
+  content-visibility: visible;
+}
+#main-content .specimen-artwork {
+  height: 180px;
+  width: 100%;
+  margin: 0;
+}
+#main-content .specimen-artwork .pokemon-image-link {
+  width: 100%;
+  height: 100%;
+}
+#main-content .specimen-artwork img {
+  width: 165px;
+  height: 165px;
+  object-fit: contain;
+}
+:root[data-theme] #main-content .specimen-artwork .card-orb {
+  border-radius: 4px;
+}
+#main-content .specimen-register {
+  min-width: 0;
+  width: 100%;
+}
+#main-content .pokemon-card .card-top {
+  gap: 8px;
+  min-height: 32px;
+}
+#main-content .pokemon-card .pokemon-number {
+  font-size: 13px;
+}
+#main-content .specimen-register h3 {
+  font:
+    600 21px/1.3 Outfit,
+    sans-serif;
+  margin: 8px 0;
+  letter-spacing: -0.4px;
+}
+#main-content .specimen-register .type-row {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+#main-content .pokemon-card .favorite-button {
+  position: static;
+  width: 44px;
+  height: 44px;
+}
+#main-content .specimen-register .pokemon-card-variation {
+  margin: 8px 0;
+  color: var(--muted);
+}
+#main-content .specimen-metric {
+  margin: 12px 0 0;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+#main-content .specimen-metric > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+}
+#main-content .specimen-metric dd {
+  margin: 0;
+  font-weight: 700;
+}
+#main-content .card-skeleton {
+  height: 340px;
+  border-radius: 6px;
+}
+#main-content .pokemon-card .card-retry {
+  grid-column: 1 / -1;
+}
+/* Explore groups related destinations into recognizable category panels. */
+#main-content .resource-groups {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+:root[data-theme] #main-content .directory-chapter {
+  padding: 20px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--group-color, var(--brand));
+  background: var(--surface);
+  box-shadow: none;
+}
+:root[data-theme] #main-content .directory-chapter > header {
+  margin: 0;
+  padding: 0 0 16px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+}
+#main-content .directory-chapter h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#main-content .directory-chapter .resource-total {
+  color: var(--muted);
+  background: transparent;
+  font-size: 18px;
+}
+#main-content .directory-chapter .resource-links {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+  margin: 0;
+}
+#main-content .directory-chapter .resource-links a {
+  grid-template-columns: 24px minmax(0, 1fr) 18px;
+  padding: 12px 8px;
+  font-size: 15px;
+  gap: 12px;
+}
+#main-content .resource-link-icon {
+  color: var(--group-color, var(--red));
+}
+#main-content .fact-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: stretch;
+}
+:root[data-theme] #main-content .fact-ledger .structured-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 16px;
+  gap: 12px;
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+:root[data-theme] #main-content .structured-field-heading {
+  border: 0;
+  padding: 0;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+#main-content .structured-field-heading h3 {
+  font:
+    600 15px/1.5 'DM Sans',
+    sans-serif;
+  color: var(--muted);
+}
+#main-content .structured-field-body {
+  min-width: 0;
+  max-width: 100%;
+  font-size: 15px;
+  line-height: 1.65;
+  padding: 0;
+}
+#main-content .structured-field[data-kind='metric'] .structured-field-body {
+  font:
+    600 24px/1.3 Outfit,
+    sans-serif;
+}
+#main-content :is(.nested-row, .info-card dl > div, .comparison-fields > div) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  text-align: left;
+}
+#main-content :is(.nested-row dd, .info-card dd, .comparison-fields dd) {
+  margin: 0;
+  text-align: left;
+  min-width: 0;
+}
+#main-content :is(.value-list, .resource-value-list, .related-pokemon-list) {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+#main-content .related-pokemon-card {
+  grid-template-columns: 58px minmax(0, 1fr) 18px;
+}
+#main-content .related-pokemon-details > div {
+  padding: 4px 0;
+  background: transparent;
+  border-radius: 0;
+}
+#main-content .resource-value-meta {
+  display: block;
+  white-space: normal;
+  line-height: 1.6;
+}
+/* Detail views distinguish identity, overview, metrics and deeper reference data. */
+:root[data-theme] #main-content .specimen-dossier {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'identity' 'artwork';
+  margin-block: 24px;
+  padding: 20px;
+  gap: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: visible;
+}
+#main-content .specimen-dossier .detail-copy {
+  padding: 0;
+}
+#main-content .specimen-dossier .detail-copy h1 {
+  font-size: clamp(30px, 5vw, 50px);
+  padding-right: 44px;
+}
+:root[data-theme] #main-content .specimen-dossier .detail-visual {
+  background: color-mix(in srgb, var(--theme) 10%, var(--surface-soft));
+  min-height: 240px;
+}
+#main-content :is(.about-grid, .technical-data-grid, .forms-grid, .moves-grid, .encounter-list) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+:root[data-theme] #main-content .pokemon-detail .info-card {
+  margin: 0;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+#main-content .pokemon-detail .detail-summary {
+  display: block;
+  grid-column: auto;
+}
+#main-content .physical-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 8px;
+  padding: 0;
+  margin-top: 24px;
+  background: transparent;
+}
+:root[data-theme] #main-content .physical-stats > span {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--surface-soft);
+}
+#main-content .physical-stats small {
+  text-transform: none;
+}
+#main-content .stats-visualization {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+#main-content .stat-row {
+  grid-template-columns: minmax(0, 1fr) 36px 74px;
+  gap: 12px;
+}
+#main-content .stat-row > div {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+#main-content .stat-row > span {
+  font-size: 13px;
+}
+#main-content .stat-list-heading {
+  grid-template-columns: minmax(0, 1fr) 36px 74px;
+  gap: 12px;
+}
+#main-content .stat-list-heading > span:nth-child(3) {
+  display: none;
+}
+#main-content .tabs {
+  display: grid;
+  height: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: var(--surface-soft);
+  border: 1px solid var(--line);
+}
+#main-content .tabs button {
+  white-space: normal;
+  min-height: 48px;
+  line-height: 1.5;
+  padding: 12px 8px;
+}
+#main-content :is(.move-toolbar, .encounter-heading) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+#main-content .move-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+#main-content :is(.move-card-title, .move-card-meta, .move-learning) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#main-content .move-numbers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+#main-content .move-numbers span {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+}
+#main-content .encounter-card summary {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) 18px;
+  gap: 12px;
+}
+#main-content .encounter-max-chance {
+  grid-column: 2;
+}
+#main-content .encounter-chevron {
+  grid-column: 3;
+  grid-row: 1;
+}
+/* The team workbench separates roster, build, moves and training tasks. */
+:root[data-theme] #main-content :is(.team-toolbar, .team-member, .team-editor-section, .team-training, .team-adder) {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+#main-content .team-toolbar {
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+#main-content .team-toolbar > label {
+  max-width: none;
+}
+#main-content :is(.team-toolbar > label, .team-toolbar > strong) {
+  grid-column: auto;
+}
+#main-content .team-editor-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+#main-content .team-section-title {
+  font:
+    600 21px/1.4 Outfit,
+    sans-serif;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+#main-content .team-editor-grid .team-fields {
+  grid-template-columns: minmax(0, 1fr);
+}
+#main-content .team-primary-fields {
+  grid-column: 1 / -1;
+}
+#main-content .team-section-header {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+#main-content .team-section-header > .catalog-select {
+  flex-basis: 100%;
+  width: 100%;
+}
+#main-content .team-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  gap: 8px;
+  overflow: visible;
+}
+:root[data-theme] #main-content .team-tabs > button {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 8px;
+  min-height: 112px;
+  white-space: normal;
+}
+#main-content .team-tabs > button > span:last-child {
+  font-size: 14px;
+  line-height: 1.5;
+}
+#main-content .team-tabs-row {
+  display: block;
+}
+#main-content .team-training-content {
+  grid-template-columns: minmax(0, 1fr);
+}
+#main-content .team-calculated-radar {
+  order: 0;
+}
+#main-content .move-select-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+#main-content .move-select-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  min-width: 0;
+}
+#main-content .move-select-identity > strong {
+  flex: 1 1 100px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+#main-content .move-select-badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#main-content .move-select-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+#main-content .move-select-stat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+#main-content .move-select-stat small {
+  font-size: 10px;
+}
+#main-content .item-select-trigger .item-select-row {
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 8px;
+}
+#main-content .item-select-trigger .item-select-row > :is(img, .item-image-fallback) {
+  width: 32px;
+  height: 32px;
+}
+:root[data-theme] #main-content .move-select-trigger {
+  min-height: 56px;
+  padding: 8px 10px;
+  align-items: center;
+}
+#main-content .move-select-row .move-select-stat {
+  min-width: 0;
+}
+#main-content .item-select-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+#main-content .estimated-spread-button {
+  width: 100%;
+  height: auto;
+  text-align: left;
+  align-items: flex-start;
+  padding: 16px;
+  white-space: normal;
+}
+/* Tables become complete labeled records on small screens, keeping native semantics. */
+#main-content :is(.responsive-record-table, .comparison-lanes) {
+  width: 100%;
+  min-width: 0;
+  border-collapse: collapse;
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) tbody {
+  display: block;
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) tr {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) :is(th, td) {
+  display: block;
+  width: auto;
+  min-width: 0;
+  padding: 10px 12px;
+  text-align: left;
+  border: 0;
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) td::before {
+  content: attr(data-label);
+  display: block;
+  color: var(--muted);
+  font:
+    500 12px/1.5 'DM Sans',
+    sans-serif;
+  margin-bottom: 6px;
+}
+#main-content .training-ledger tr {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+#main-content .training-ledger th {
+  grid-column: 1 / -1;
+  font-size: 16px;
+}
+#main-content .team-table {
+  overflow: visible;
+}
+#main-content .resource-record-scroll {
+  overflow: visible;
+  border: 0;
+}
+#main-content .comparison-lanes tr > th {
+  padding-bottom: 16px;
+  font-size: 16px;
+  grid-column: 1 / -1;
+}
+#main-content .comparison-page .comparison-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+:root[data-theme] #main-content :is(.comparison-page .move-picker, .type-calculator) {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px;
+  background: var(--surface);
+}
+/* Maps use visual game covers while preserving the geography viewport. */
+#main-content .game-map-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+:root[data-theme] #main-content .game-map-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border: 1px solid var(--line);
+  padding: 0;
+  border-radius: 6px;
+  background: var(--surface);
+}
+:root[data-theme] #main-content .game-map-cover {
+  width: 100%;
+  height: 220px;
+  min-height: 0;
+  padding: 12px;
+  border-radius: 4px;
+}
+#main-content .game-map-cover img {
+  max-height: 196px;
+  max-width: 100%;
+  object-fit: contain;
+}
+#main-content .game-map-card-copy {
+  min-width: 0;
+  padding: 20px;
+}
+#main-content .game-map-card h2 {
+  font:
+    600 25px/1.3 Outfit,
+    sans-serif;
+}
+#main-content .game-map-platform {
+  white-space: normal;
+  line-height: 1.5;
+}
+#main-content .map-page-header {
+  display: block;
+  padding-left: 0;
+  border: 0;
+}
+#main-content .map-title-row h1 {
+  font-size: clamp(25px, 4vw, 36px);
+  line-height: 1.2;
+}
+#main-content .map-fact-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 16px 0;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+#main-content .map-fact-strip > div {
+  display: grid;
+  gap: 4px;
+}
+#main-content .map-fact-strip dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+#main-content .map-fact-strip dd {
+  margin: 0;
+  font:
+    600 17px/1.4 Outfit,
+    sans-serif;
+}
+#main-content .map-category-list label {
+  min-height: 44px;
+  height: auto;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 10px;
+  font-size: 14px;
+}
+#main-content .map-category-list label > span {
+  white-space: normal;
+}
+#main-content .map-marker-detail {
+  max-width: calc(100% - 24px);
+}
+/* Battle uses an instrument-style command console without changing its field model. */
+:root[data-theme] #main-content .battle-lobby {
+  padding: 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+:root[data-theme] #main-content .battle-lobby-actions {
+  padding: 16px;
+  background: var(--surface-soft);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+#main-content .battle-team-option {
+  min-width: 0;
+  width: 100%;
+}
+#main-content .battle-move-button {
+  min-width: 0;
+  height: auto;
+  min-height: 116px;
+}
+#main-content
+  :is(
+    .battle-move-button > strong,
+    .battle-switch-copy strong,
+    .battle-active-name,
+    .battle-log-event,
+    .battle-details-dialog
+  ) {
+  white-space: normal;
+  text-overflow: clip;
+  overflow-wrap: normal;
+  word-break: normal;
+  -webkit-line-clamp: unset;
+}
+#main-content .battle-move-button > strong {
+  display: block;
+  width: 100%;
+  grid-column: 1 / -1;
+}
+#main-content .battle-details-dialog {
+  max-width: calc(100vw - 32px);
+}
+:root[data-theme] #main-content .notebook-state {
+  width: 100%;
+  max-width: 680px;
+  min-height: 260px;
+  margin: 24px auto;
+  padding: 32px 16px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  text-align: center;
+  align-items: center;
+}
+#main-content .notebook-state :is(h1, h2) {
+  font-size: 28px;
+  line-height: 1.25;
+}
+#main-content .state-actions {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+#main-content .notebook-loading {
+  min-height: 260px;
+  border-block: 1px solid var(--line);
+  margin-block: 24px;
+}
+#main-content .page-title p {
+  max-width: 64ch;
+  margin-bottom: 0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+#main-content .page-heading-aside .search-field {
+  width: 100%;
+}
+#main-content .directory-chapter h2 > svg {
+  flex-shrink: 0;
+  color: var(--group-color, var(--red));
+}
+#main-content .directory-chapter::before {
+  content: none;
+}
+:root[data-theme] #main-content .structured-field[data-kind='metric'] {
+  background: var(--surface-soft);
+}
+#main-content .structured-field[data-kind='text'] {
+  grid-column: 1 / -1;
+}
+#main-content .physical-stats > span > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+}
+#main-content .physical-stats > span > small {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+#main-content .physical-stats > span > b {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  font-size: 20px;
+  text-align: left;
+}
+@media (max-width: 720px) {
+  :root[data-theme] #main-content .team-member {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  :root[data-theme] #main-content .team-editor-section {
+    padding: 12px;
+  }
+  #main-content .team-member-header {
+    padding: 12px;
+  }
+  :root[data-theme] #main-content .physical-stats > span {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 10px 12px;
+  }
+  #main-content .physical-stats > span > svg {
+    display: none;
+  }
+  #main-content .physical-stats > span > small {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  #main-content .physical-stats > span > b {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 18px;
+  }
+}
+#main-content .stats-radar {
+  max-width: 260px;
+  justify-self: center;
+}
+#main-content .move-numbers b {
+  color: var(--ink);
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+:root[data-theme] #main-content .team-member {
+  background: var(--surface-soft);
+}
+#main-content .team-member-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+#main-content .comparison-lanes tr {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-block: 8px;
+}
+#main-content .page-heading-aside:has(.result-count) {
+  width: fit-content;
+}
+:root[data-theme] #main-content .pokemon-card:not(.skeleton):not(.pokemon-card-error):hover {
+  border-color: var(--red);
+}
+#main-content .discovery-links > a:hover {
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 3%, var(--surface));
+}
+#main-content .directory-chapter .resource-links a:hover {
+  background: var(--surface-soft);
+}
+:root[data-theme] #main-content .detail-resource-page .resource-detail-header {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+#main-content .map-category-list label b {
+  min-width: 28px;
+  text-align: right;
+  font-size: 12px;
+  padding-left: 4px;
+}
+#main-content .evolution-family-facts {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+  gap: 8px;
+}
+:root[data-theme] #main-content .evolution-family-facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--surface-soft);
+}
+#main-content .evolution-family-facts dt {
+  font-size: 12px;
+  line-height: 1.4;
+}
+#main-content .evolution-family-facts dd {
+  margin: 0;
+  line-height: 1.2;
+}
+#main-content .overview-column {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+#main-content .about-grid > .forms-card {
+  grid-column: 1 / -1;
+}
+#main-content .forms-card .forms-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+#main-content .pokemon-detail .detail-summary {
+  grid-column: 1 / -1;
+}
+#main-content .catalog-select-trigger {
+  padding: 8px 10px;
+  column-gap: 8px;
+}
+#main-content .catalog-select-copy small {
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+#main-content .catalog-select-copy strong {
+  font-size: 14px;
+  line-height: 20px;
+}
+@media (min-width: 1100px) {
+  #main-content .hero-starters {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  :root[data-theme] #main-content .hero-starters a {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+@media (min-width: 721px) {
+  :root[data-theme] #main-content .page-title {
+    grid-template-columns: minmax(0, 1fr) minmax(200px, 0.4fr);
+    align-items: center;
+  }
+  :root[data-theme] #main-content .page-title:not(:has(.page-heading-aside)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #main-content .page-heading-aside:has(.result-count) {
+    justify-self: end;
+  }
+  #main-content .filter-primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  :root[data-theme] #main-content .discovery-register {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+    grid-template-areas: 'intro artwork' 'command artwork';
+    gap: 20px 32px;
+    padding: 32px;
+    align-items: start;
+  }
+  #main-content .discovery-register .hero-copy {
+    grid-area: intro;
+  }
+  #main-content .discovery-command {
+    grid-area: command;
+  }
+  #main-content .discovery-register .hero-visual {
+    grid-area: artwork;
+  }
+  #main-content .discovery-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  #main-content .fact-ledger {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content :is(.nested-row, .info-card dl > div, .comparison-fields > div) {
+    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
+    gap: 24px;
+  }
+  :root[data-theme] #main-content .specimen-dossier {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: 'artwork identity';
+    align-items: center;
+    gap: 32px;
+  }
+  #main-content .tabs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  #main-content .stats-visualization {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #main-content .move-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content :is(.team-toolbar, .team-editor-grid .team-fields) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content .team-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  #main-content .comparison-page .comparison-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content .comparison-lanes tr {
+    grid-template-columns: minmax(0, 0.7fr) repeat(2, minmax(0, 1fr));
+  }
+  #main-content .comparison-lanes tr > th {
+    grid-column: auto;
+  }
+  #main-content .training-ledger tr {
+    grid-template-columns: minmax(0, 1fr) repeat(4, minmax(0, 1fr));
+  }
+  #main-content .training-ledger th {
+    grid-column: auto;
+    align-self: center;
+  }
+  :root[data-theme] #main-content .game-map-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  #main-content .game-map-card-copy {
+    padding: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  #main-content .about-grid {
+    grid-template-areas: 'summary summary' 'reference stats';
+    align-items: start;
+  }
+  #main-content .detail-summary {
+    grid-area: summary;
+  }
+  #main-content .overview-reference {
+    grid-area: reference;
+  }
+  #main-content .overview-stats {
+    grid-area: stats;
+  }
+  #main-content .detail-summary-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+    align-items: center;
+    gap: 12px 24px;
+  }
+  #main-content .detail-summary-intro > :is(p, small) {
+    grid-column: 1 / -1;
+    max-width: 90ch;
+    margin: 0;
+  }
+
+  #main-content :is(.resource-groups, .game-map-grid, .about-grid, .technical-data-grid, .forms-grid, .moves-grid) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content .fact-ledger {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  :root[data-theme] #main-content .specimen-dossier {
+    padding: 24px;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+}
+@media (min-width: 1100px) {
+  #main-content .team-tabs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  #main-content .filter-primary {
+    grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  }
+  #main-content .resource-record-table tr {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+  #main-content .team-editor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  #main-content .team-training {
+    grid-column: 1 / -1;
+  }
+  #main-content .team-training-content {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 0.45fr);
+    align-items: center;
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) {
+    display: table;
+    table-layout: fixed;
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) thead {
+    display: table-header-group;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+    background: var(--surface-soft);
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) tbody {
+    display: table-row-group;
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) tr {
+    display: table-row;
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) :is(th, td) {
+    display: table-cell;
+    padding: 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  #main-content :is(.training-ledger, .comparison-lanes) .record-cell-label {
+    display: none;
+  }
+}
+#main-content .battle-trainer-copy b {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  line-height: 1.5;
+}
+#main-content .battle-moves .battle-move-button > span:first-child {
+  grid-column: 1 / -1;
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  overflow-wrap: normal;
+  word-break: normal;
+  font-size: 14px;
+  line-height: 1.5;
+}
+#main-content .discovery-register :is(.hero-specimen-number, .hero-orbit) {
+  display: none;
+}
+#main-content .native-value-control {
+  position: relative;
+  display: block;
+  min-height: 56px;
+  width: 100%;
+  border: 1px solid var(--control-edge);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+}
+#main-content .native-value-copy {
+  display: block;
+  padding: 12px 36px 12px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+#main-content .native-value-control > svg {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+#main-content .native-value-control > select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+#main-content .native-value-control:has(select:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+#main-content .tera-type-select .catalog-select-trigger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 18px;
+}
+#main-content :is(.responsive-record-table, .comparison-lanes) td::before {
+  content: none;
+  display: none;
+}
+#main-content .record-cell-label {
+  display: block;
+  color: var(--muted);
+  font:
+    500 12px/1.5 'DM Sans',
+    sans-serif;
+  margin-bottom: 6px;
+}
+#main-content .battle-switch-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+#main-content .battle-switch-copy {
+  width: 100%;
+  min-width: 0;
+}
+#main-content .battle-switch-copy b {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: normal;
+  word-break: normal;
+  line-height: 1.5;
+}
+#main-content .breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  overflow: visible;
+  white-space: normal;
+  line-height: 1.6;
+}
+#main-content .breadcrumbs > :is(a, span) {
+  max-width: 100%;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+:root[data-theme] #main-content .resource-detail-header {
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 16px;
+}
+#main-content .resource-detail-header::before,
+#main-content .resource-detail-header::after {
+  display: none;
+}
+#main-content .resource-detail-header > :nth-child(2) {
+  justify-self: end;
+}
+#main-content .resource-detail-header > div,
+#main-content .resource-detail-header > .api-link {
+  grid-column: 1 / -1;
+}
+#main-content .resource-detail-header > .api-link {
+  justify-self: start;
+}
+#main-content .resource-detail-header > .resource-detail-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  box-shadow: none;
+}
+#main-content .resource-detail-header > img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}

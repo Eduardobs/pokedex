@@ -202,7 +202,7 @@ export function PokemonDetailPage() {
             )}
           </div>
         </div>
-        <div className="detail-showcase">
+        <div className="detail-showcase specimen-dossier">
           <div className="detail-copy">
             <span className="pokemon-number">#{String(pokemon.id).padStart(4, '0')}</span>
             <h1>{prettyName(pokemon.name)}</h1>
@@ -211,6 +211,23 @@ export function PokemonDetailPage() {
               {pokemon.types.map(({ type }) => (
                 <TypeBadge key={type.name} type={type.name} />
               ))}
+            </div>
+            <div className="physical-stats">
+              <span>
+                <Ruler />
+                <small>{t('detail.height')}</small>
+                <b>{formatDecimal(pokemon.height / 10, language)} m</b>
+              </span>
+              <span>
+                <Weight />
+                <small>{t('detail.weight')}</small>
+                <b>{formatDecimal(pokemon.weight / 10, language)} kg</b>
+              </span>
+              <span>
+                <Sparkles />
+                <small>{t('detail.baseExp')}</small>
+                <b>{pokemon.base_experience == null ? '—' : formatNumber(pokemon.base_experience, language)}</b>
+              </span>
             </div>
           </div>
           <div className="detail-visual">
@@ -287,7 +304,7 @@ export function PokemonDetailPage() {
             ))}
         </nav>
         {tab === 'about' && (
-          <div className="about-grid" role="tabpanel" id="panel-about" aria-labelledby="tab-about">
+          <div className="about-grid dossier-register" role="tabpanel" id="panel-about" aria-labelledby="tab-about">
             <article className="info-card detail-summary">
               <div className="detail-summary-intro">
                 <h2>{t('detail.overview')}</h2>
@@ -313,165 +330,154 @@ export function PokemonDetailPage() {
                   <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
                 )}
               </div>
-              <div className="physical-stats">
-                <span>
-                  <Ruler /> <b>{formatDecimal(pokemon.height / 10, language)} m</b>
-                  <small>{t('detail.height')}</small>
-                </span>
-                <span>
-                  <Weight /> <b>{formatDecimal(pokemon.weight / 10, language)} kg</b>
-                  <small>{t('detail.weight')}</small>
-                </span>
-                <span>
-                  <Sparkles />{' '}
-                  <b>{pokemon.base_experience == null ? '—' : formatNumber(pokemon.base_experience, language)}</b>
-                  <small>{t('detail.baseExp')}</small>
-                </span>
-              </div>
             </article>
 
-            <article className="info-card stats-card">
-              <header>
-                <h2>{t('detail.baseStats')}</h2>
-                <span>
-                  {t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b>
-                </span>
-              </header>
-              <div className="stats-visualization">
-                <BaseStatsRadar
-                  stats={pokemon.stats}
-                  statNames={statNames}
-                  label={t('detail.baseStats')}
-                  baseLabel={t('detail.base')}
-                />
-                <div className="stats-list">
-                  <div className="stat-list-heading" aria-hidden="true">
-                    <span />
-                    <b>{t('detail.base')}</b>
-                    <span />
-                    <b>{t('detail.level100')}</b>
-                  </div>
-                  {pokemon.stats.map(({ base_stat, stat }) => {
-                    const range = level100StatRange(base_stat, stat.name, pokemon.name)
-                    const rangeLabel =
-                      range.minimum === range.maximum ? String(range.minimum) : `${range.minimum}–${range.maximum}`
-                    return (
-                      <div className="stat-row" key={stat.name}>
-                        <span>{statNames[stat.name] ?? prettyName(stat.name)}</span>
-                        <b>{base_stat}</b>
-                        <div>
-                          <i style={{ width: `${Math.min(100, base_stat / 1.8)}%` }} />
+            <div className="overview-column overview-stats">
+              <article className="info-card stats-card">
+                <header>
+                  <h2>{t('detail.baseStats')}</h2>
+                  <span>
+                    {t('detail.total')} <b>{pokemon.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}</b>
+                  </span>
+                </header>
+                <div className="stats-visualization">
+                  <BaseStatsRadar
+                    stats={pokemon.stats}
+                    statNames={statNames}
+                    label={t('detail.baseStats')}
+                    baseLabel={t('detail.base')}
+                  />
+                  <div className="stats-list">
+                    <div className="stat-list-heading" aria-hidden="true">
+                      <span />
+                      <b>{t('detail.base')}</b>
+                      <span />
+                      <b>{t('detail.level100')}</b>
+                    </div>
+                    {pokemon.stats.map(({ base_stat, stat }) => {
+                      const range = level100StatRange(base_stat, stat.name, pokemon.name)
+                      const rangeLabel =
+                        range.minimum === range.maximum ? String(range.minimum) : `${range.minimum}–${range.maximum}`
+                      return (
+                        <div className="stat-row" key={stat.name}>
+                          <span>{statNames[stat.name] ?? prettyName(stat.name)}</span>
+                          <b>{base_stat}</b>
+                          <div>
+                            <i style={{ width: `${Math.min(100, base_stat / 1.8)}%` }} />
+                          </div>
+                          <strong
+                            aria-label={t('detail.level100Range', {
+                              minimum: range.minimum,
+                              maximum: range.maximum,
+                            })}
+                          >
+                            {rangeLabel}
+                          </strong>
                         </div>
-                        <strong
-                          aria-label={t('detail.level100Range', {
-                            minimum: range.minimum,
-                            maximum: range.maximum,
-                          })}
-                        >
-                          {rangeLabel}
-                        </strong>
-                      </div>
-                    )
-                  })}
-                  <p className="level-100-note">{t('detail.level100Note')}</p>
+                      )
+                    })}
+                    <p className="level-100-note">{t('detail.level100Note')}</p>
+                  </div>
                 </div>
-              </div>
-            </article>
-            <EvolutionPreview
-              chain={evolution}
-              onOpen={() => {
-                setTab('evolution')
-                window.requestAnimationFrame(() => document.getElementById('tab-evolution')?.focus())
-              }}
-            />
-            {speciesLoading ? (
-              <article className="info-card">
-                <h2>{t('detail.biology')}</h2>
-                <p className="muted">{t('detail.loadingSpecies')}</p>
               </article>
-            ) : speciesError || !species ? (
-              <article className="info-card">
-                <h2>{t('detail.biology')}</h2>
-                <p className="muted">{t('detail.speciesUnavailable')}</p>
+              <article className="info-card weaknesses-card">
+                <h2>
+                  <ShieldAlert />
+                  {t('detail.typeEffectiveness')}
+                </h2>
+                {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}
+                {typeRelationsError && <p className="muted">{t('detail.weaknessesUnavailable')}</p>}
+                {typeRelationsReady && !typeRelationsError && (
+                  <>
+                    <p>{t('detail.weaknessesDesc')}</p>
+                    <div className="effectiveness-groups">
+                      <section>
+                        <h3>{t('detail.weaknesses')}</h3>
+                        {weaknesses.length ? (
+                          <div className="effectiveness-list">
+                            {weaknesses.map(({ type, multiplier }) => (
+                              <span className="effectiveness-item" key={type}>
+                                <TypeBadge type={type} />
+                                <b>{formatNumber(multiplier, language)}×</b>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="muted">{t('detail.noWeaknesses')}</p>
+                        )}
+                      </section>
+                      <section>
+                        <h3>{t('detail.resistances')}</h3>
+                        {resistances.length ? (
+                          <div className="effectiveness-list">
+                            {resistances.map(({ type, multiplier }) => (
+                              <span className="effectiveness-item resistance" key={type}>
+                                <TypeBadge type={type} />
+                                <b>{formatNumber(multiplier, language)}×</b>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="muted">{t('detail.noResistances')}</p>
+                        )}
+                      </section>
+                      <section>
+                        <h3>{t('detail.immunities')}</h3>
+                        {immunities.length ? (
+                          <div className="effectiveness-list">
+                            {immunities.map(({ type, multiplier }) => (
+                              <span className="effectiveness-item immunity" key={type}>
+                                <TypeBadge type={type} />
+                                <b>{formatNumber(multiplier, language)}×</b>
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="muted">{t('detail.noImmunities')}</p>
+                        )}
+                      </section>
+                    </div>
+                  </>
+                )}
               </article>
-            ) : (
-              <PokemonBiologyCard species={species} />
-            )}
-            {species && <TrainingBreedingCard pokemon={pokemon} species={species} />}
-            <article className="info-card abilities-card">
-              <h2>{t('detail.abilities')}</h2>
-              {pokemon.abilities.map(({ ability, is_hidden }) => (
-                <Link key={ability.name} to={`/explore/ability/${ability.name}`}>
-                  <div>
-                    <b>
-                      <LocalizedResourceName resource={ability} />
-                    </b>
-                    <AbilityBadge hidden={is_hidden} />
-                  </div>
-                  <ChevronRight />
-                </Link>
-              ))}
-            </article>
-            <article className="info-card weaknesses-card">
-              <h2>
-                <ShieldAlert />
-                {t('detail.typeEffectiveness')}
-              </h2>
-              {!typeRelationsReady && !typeRelationsError && <p className="muted">{t('common.loading')}</p>}
-              {typeRelationsError && <p className="muted">{t('detail.weaknessesUnavailable')}</p>}
-              {typeRelationsReady && !typeRelationsError && (
-                <>
-                  <p>{t('detail.weaknessesDesc')}</p>
-                  <div className="effectiveness-groups">
-                    <section>
-                      <h3>{t('detail.weaknesses')}</h3>
-                      {weaknesses.length ? (
-                        <div className="effectiveness-list">
-                          {weaknesses.map(({ type, multiplier }) => (
-                            <span className="effectiveness-item" key={type}>
-                              <TypeBadge type={type} />
-                              <b>{formatNumber(multiplier, language)}×</b>
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="muted">{t('detail.noWeaknesses')}</p>
-                      )}
-                    </section>
-                    <section>
-                      <h3>{t('detail.resistances')}</h3>
-                      {resistances.length ? (
-                        <div className="effectiveness-list">
-                          {resistances.map(({ type, multiplier }) => (
-                            <span className="effectiveness-item resistance" key={type}>
-                              <TypeBadge type={type} />
-                              <b>{formatNumber(multiplier, language)}×</b>
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="muted">{t('detail.noResistances')}</p>
-                      )}
-                    </section>
-                    <section>
-                      <h3>{t('detail.immunities')}</h3>
-                      {immunities.length ? (
-                        <div className="effectiveness-list">
-                          {immunities.map(({ type, multiplier }) => (
-                            <span className="effectiveness-item immunity" key={type}>
-                              <TypeBadge type={type} />
-                              <b>{formatNumber(multiplier, language)}×</b>
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="muted">{t('detail.noImmunities')}</p>
-                      )}
-                    </section>
-                  </div>
-                </>
+            </div>
+            <div className="overview-column overview-reference">
+              <EvolutionPreview
+                chain={evolution}
+                onOpen={() => {
+                  setTab('evolution')
+                  window.requestAnimationFrame(() => document.getElementById('tab-evolution')?.focus())
+                }}
+              />
+              {speciesLoading ? (
+                <article className="info-card">
+                  <h2>{t('detail.biology')}</h2>
+                  <p className="muted">{t('detail.loadingSpecies')}</p>
+                </article>
+              ) : speciesError || !species ? (
+                <article className="info-card">
+                  <h2>{t('detail.biology')}</h2>
+                  <p className="muted">{t('detail.speciesUnavailable')}</p>
+                </article>
+              ) : (
+                <PokemonBiologyCard species={species} />
               )}
-            </article>
+              {species && <TrainingBreedingCard pokemon={pokemon} species={species} />}
+              <article className="info-card abilities-card">
+                <h2>{t('detail.abilities')}</h2>
+                {pokemon.abilities.map(({ ability, is_hidden }) => (
+                  <Link key={ability.name} to={`/explore/ability/${ability.name}`}>
+                    <div>
+                      <b>
+                        <LocalizedResourceName resource={ability} />
+                      </b>
+                      <AbilityBadge hidden={is_hidden} />
+                    </div>
+                    <ChevronRight />
+                  </Link>
+                ))}
+              </article>
+            </div>
             {species && <PokemonForms species={species} currentPokemon={pokemon} />}
           </div>
         )}

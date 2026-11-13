@@ -4,6 +4,8 @@ import { useApi } from '../hooks/useApi'
 import { useLanguage } from '../contexts/LanguageContext'
 import { localizedName, prettyName } from '../lib/api'
 import { comparisonFields, moveIdentifier, parseComparisonMove } from '../lib/move-comparison'
+import { RecordCell } from '../components/RecordCell'
+import { NotebookSection } from '../components/NotebookSection'
 import { PageHeader } from '../components/PageHeader'
 import { MovePicker } from '../components/MovePicker'
 import { MoveComparisonDetails } from '../components/MoveComparisonDetails'
@@ -24,20 +26,22 @@ export function MoveComparisonPage() {
   const firstName = nameFor(first.data, t('tools.firstMove'))
   const secondName = nameFor(second.data, t('tools.secondMove'))
   return (
-    <section className="page content-width">
+    <section className="page content-width comparison-page">
       <PageHeader
         eyebrow={<Swords size={18} />}
         title={t('tools.compare')}
         description={t('tools.compareDescription')}
       />
-      <div className="comparison-grid">
-        <MovePicker name={left} label={t('tools.firstMove')} onSelect={(value) => updateSearchParam('left', value)} />
-        <MovePicker
-          name={right}
-          label={t('tools.secondMove')}
-          onSelect={(value) => updateSearchParam('right', value)}
-        />
-      </div>
+      <NotebookSection index={1} title={t('tools.compare')}>
+        <div className="comparison-grid">
+          <MovePicker name={left} label={t('tools.firstMove')} onSelect={(value) => updateSearchParam('left', value)} />
+          <MovePicker
+            name={right}
+            label={t('tools.secondMove')}
+            onSelect={(value) => updateSearchParam('right', value)}
+          />
+        </div>
+      </NotebookSection>
       <div className="comparison-feedback">
         {(first.loading || second.loading) && <p role="status">{t('common.loading')}</p>}
         {first.error && (
@@ -58,7 +62,7 @@ export function MoveComparisonPage() {
       {(first.data || second.data) && (
         <>
           <div className="comparison-table-wrap">
-            <table className="comparison-table">
+            <table className="comparison-table comparison-lanes">
               <caption>{t('ui.attributeComparison')}</caption>
               <thead>
                 <tr>
@@ -77,7 +81,7 @@ export function MoveComparisonPage() {
                         {resourceFieldLabel(key, language)} {different && <small>{t('ui.different')}</small>}
                       </th>
                       {[first.data, second.data].map((data, index) => (
-                        <td key={index}>
+                        <RecordCell key={index} label={index === 0 ? firstName : secondName}>
                           {data ? (
                             key === 'accuracy' && typeof data[key] === 'number' ? (
                               `${data[key]}%`
@@ -87,7 +91,7 @@ export function MoveComparisonPage() {
                           ) : (
                             '—'
                           )}
-                        </td>
+                        </RecordCell>
                       ))}
                     </tr>
                   )

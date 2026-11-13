@@ -94,16 +94,11 @@ function PokemonCardView({
       data-type={types[0]?.type.name}
       className={`pokemon-card${category ? ` pokemon-card-${category}` : ''}`}
     >
-      <div className="card-top">
+      <header className="card-top">
         <span className="pokemon-number">#{String(id).padStart(4, '0')}</span>
-        {sortMetric && (
-          <span className="sort-metric" title={sortMetric.label}>
-            <b>{sortMetric.value}</b> {sortMetric.label}
-          </span>
-        )}
         {action}
-      </div>
-      <div className="pokemon-image-wrap">
+      </header>
+      <div className="specimen-artwork pokemon-image-wrap">
         <Link to={`/pokemon/${name}`} state={linkState} className="pokemon-image-link">
           <span
             className="card-orb"
@@ -114,14 +109,24 @@ function PokemonCardView({
           {artwork}
         </Link>
       </div>
-      <Link to={`/pokemon/${name}`} state={linkState} className="pokemon-card-link">
-        {category && <span className="pokemon-card-category">{categoryLabel}</span>}
-        <h3>{displayName}</h3>
-        {variation && <p className="pokemon-card-variation">{variation}</p>}
-        <div className="type-row">
+      <div className="specimen-register">
+        <Link to={`/pokemon/${name}`} state={linkState} className="pokemon-card-link">
+          {category && <span className="pokemon-card-category">{categoryLabel}</span>}
+          <h3>{displayName}</h3>
+          {variation && <p className="pokemon-card-variation">{variation}</p>}
+        </Link>
+        <div className="type-row specimen-types">
           {types.length ? types.map(({ type }) => <TypeBadge key={type.name} type={type.name} />) : typeFallback}
         </div>
-      </Link>
+        {sortMetric && (
+          <dl className="specimen-metric">
+            <div>
+              <dt>{sortMetric.label}</dt>
+              <dd>{sortMetric.value}</dd>
+            </div>
+          </dl>
+        )}
+      </div>
       {footer}
     </article>
   )

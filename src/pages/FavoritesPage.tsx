@@ -98,7 +98,7 @@ export function FavoritesPage() {
     updateSearchParam(filter, checked ? 'true' : '')
 
   return (
-    <section className="page content-width">
+    <section className="page content-width catalog-page favorites-page">
       <PageHeader
         eyebrow={t('favorites.eyebrow')}
         title={t('favorites.title')}

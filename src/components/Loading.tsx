@@ -3,7 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext'
 export function Loading({ label }: { label?: string }) {
   const { t } = useLanguage()
   return (
-    <div className="loading" role="status">
+    <div className="loading notebook-loading" role="status">
       <span className="pokeball-spinner" /> <p>{label ?? t('common.loading')}</p>
     </div>
   )

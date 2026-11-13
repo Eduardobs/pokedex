@@ -4,6 +4,7 @@ import { historicalMultiplier } from '../lib/type-history'
 import { InlineRetryError } from '../components/FeedbackState'
 import { useRef, useState, type KeyboardEvent } from 'react'
 import { ArrowDown, ArrowRight, Grid3X3, Shield, ShieldPlus, Swords } from 'lucide-react'
+import { NotebookSection } from '../components/NotebookSection'
 import { PageHeader } from '../components/PageHeader'
 import { TypeBadge, typeLabel } from '../components/TypeBadge'
 import { SelectMenu } from '../components/SelectMenu'
@@ -140,26 +141,28 @@ export function TypesTablePage() {
         description={t('typesTable.description')}
       />
 
-      <div className="tool-controls">
-        <SelectMenu
-          icon={<Grid3X3 size={18} />}
-          label={t('tools.generation')}
-          value={generation}
-          onChange={(value) => {
-            setGeneration(value)
-            setHoveredCell(null)
-            setSelectedCell(null)
-          }}
-          options={[
-            { value: 'current', label: t('tools.current') },
-            ...Array.from({ length: 9 }, (_, i) => ({
-              value: String(i + 1),
-              label: `${t('tools.generation')} ${i + 1}`,
-            })),
-          ]}
-          sortOptions={false}
-        />
-      </div>
+      <NotebookSection index={1} title={t('tools.generation')}>
+        <div className="tool-controls">
+          <SelectMenu
+            icon={<Grid3X3 size={18} />}
+            label={t('tools.generation')}
+            value={generation}
+            onChange={(value) => {
+              setGeneration(value)
+              setHoveredCell(null)
+              setSelectedCell(null)
+            }}
+            options={[
+              { value: 'current', label: t('tools.current') },
+              ...Array.from({ length: 9 }, (_, i) => ({
+                value: String(i + 1),
+                label: `${t('tools.generation')} ${i + 1}`,
+              })),
+            ]}
+            sortOptions={false}
+          />
+        </div>
+      </NotebookSection>
       {history.loading && <p role="status">{t('common.loading')}</p>}
       {generation !== 'current' && history.error && (
         <InlineRetryError message={t('error.message')} retryLabel={t('common.retry')} onRetry={history.retry} />

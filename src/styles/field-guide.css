@@ -1,0 +1,721 @@
+/* Unified field-guide presentation. Taxonomy and battle semantics retain their colors. */
+:root {
+  --page-bg: #f6f8fa;
+  --surface: #fff;
+  --surface-soft: #f0f4f7;
+  --ink: #182638;
+  --muted: #506174;
+  --line: #dce4eb;
+  --control-edge: #8a99a6;
+  --brand: #0f766e;
+  --red: #0c7068;
+  --focus: #0f766e;
+  --midnight: #14283a;
+  --on-midnight: #f4fafc;
+  --panel-radius: 6px;
+  --control-radius: 4px;
+  --panel-shadow: none;
+}
+:root[data-theme='dark'] {
+  --page-bg: #0e1622;
+  --surface: #172332;
+  --surface-soft: #1f2e40;
+  --ink: #eff5fa;
+  --muted: #b2c2d2;
+  --line: #35465a;
+  --control-edge: #8297ac;
+  --brand: #0f766e;
+  --red: #70ddcd;
+  --focus: #70ddcd;
+  --midnight: #14283a;
+  --panel-shadow: none;
+}
+body {
+  background-image: none;
+}
+/* Shared geometry is explicit: leave type badges, crystals, sprites and map pins intact. */
+:root[data-theme]
+  :is(
+    .hero,
+    .quick-card,
+    .home-workflow-card,
+    .filter-panel,
+    .pokemon-card,
+    .resource-group,
+    .resource-list-hero,
+    .info-card,
+    .form-card,
+    .detail-field,
+    .structured-field,
+    .detail-showcase,
+    .pokemon-detail .detail-showcase,
+    .pokemon-detail .detail-visual,
+    .team-toolbar,
+    .team-adder,
+    .team-member,
+    .team-editor-section,
+    .team-training,
+    .battle-lobby,
+    .battle-lobby-actions,
+    .battle-field,
+    .battle-trainer,
+    .battle-log,
+    .type-calculator,
+    .move-picker,
+    .comparison-table-wrap,
+    .type-chart-scroll,
+    .game-map-card,
+    .map-toolbar,
+    .map-filters,
+    .empty,
+    .forms-directory-toolbar,
+    .resource-record-scroll,
+    .resource-object-disclosure,
+    .nested-value,
+    .resource-value-item
+  ) {
+  border-radius: var(--panel-radius);
+  box-shadow: none;
+}
+:root[data-theme]
+  :is(
+    .button,
+    .button.primary,
+    .button.secondary,
+    .theme-toggle,
+    .global-search-toggle,
+    .language-select-trigger,
+    .global-search,
+    .search-field,
+    .catalog-select-trigger,
+    .catalog-select-options,
+    .language-options,
+    .language-options button,
+    .nav-group-trigger,
+    .nav-group-menu,
+    .nav-group-menu a,
+    .pokemon-suggestions,
+    .pokemon-suggestions li,
+    .favorite-button,
+    .detail-favorite,
+    .catalog-active-filters > button,
+    .explore-group-filters button,
+    .resource-section-nav button,
+    .forms-category-tabs button,
+    .page-navigation button,
+    .team-tabs > button,
+    .move-select-trigger,
+    .item-select-trigger,
+    .battle-move-button,
+    .battle-switch-button,
+    .battle-lobby select,
+    .teams-page input:not([type='range']):not([type='radio']):not([type='checkbox']),
+    .teams-page select,
+    .tool-controls input,
+    .resource-chip,
+    .data-list > a,
+    .primary-shortcuts a,
+    .tabs,
+    .tabs button
+  ) {
+  border-radius: var(--control-radius);
+}
+:root[data-theme] :is(.card-orb, .quick-icon, .group-icon, .data-resource-icon, .detail-field-icon) {
+  border-radius: var(--control-radius);
+}
+:root[data-theme] .topbar {
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.logo-mark {
+  transform: none;
+}
+:root[data-theme] :is(.theme-toggle, .global-search-toggle, .menu-button) {
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--ink);
+}
+:root[data-theme] .nav-group-trigger {
+  color: var(--muted);
+}
+:root[data-theme] .nav-group.has-active-item .nav-group-trigger,
+:root[data-theme] .nav-group-trigger:hover {
+  color: var(--red);
+}
+:root[data-theme] .primary-shortcuts a.active {
+  background: var(--surface-soft);
+  color: var(--red);
+  box-shadow: inset 0 -3px var(--red);
+}
+:root[data-theme] .primary-shortcuts a.active svg {
+  color: inherit;
+}
+/* Titles use the page itself, freeing the first viewport for the primary task. */
+:root[data-theme] :is(.page-title, .resource-detail-header) {
+  padding: 8px 0 24px;
+  margin-bottom: 24px;
+  gap: 20px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--ink);
+  box-shadow: none;
+}
+.page-title::before {
+  display: none;
+}
+:root[data-theme] :is(.page-title h1, .resource-detail-header h1) {
+  color: var(--ink);
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -1.3px;
+  margin-block: 10px;
+}
+:root[data-theme]
+  :is(
+    .page-title p,
+    .detail-resource-page .resource-detail-header p,
+    .resource-detail-header .language-fallback,
+    .page-title .result-count,
+    .page-title .result-count span,
+    .resource-page-search > small
+  ) {
+  color: var(--muted);
+}
+:root[data-theme] :is(.page-title .eyebrow, .resource-detail-header .eyebrow, .page-title .result-count b) {
+  color: var(--red);
+}
+:root[data-theme] .result-count {
+  background: transparent;
+  border: 0;
+  border-left: 2px solid var(--line);
+  border-radius: 0;
+  padding: 4px 16px;
+}
+:root[data-theme] .resource-detail-header :is(.api-link, .icon-button) {
+  background: var(--surface);
+  border-color: var(--control-edge);
+  color: var(--ink);
+}
+:root[data-theme] .resource-list-hero {
+  background: var(--surface-soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+:root[data-theme] .resource-list-hero :is(h1, h2, p, small) {
+  color: var(--ink);
+}
+:root[data-theme] .resource-page-icon {
+  background: var(--surface);
+  color: var(--red);
+  border-radius: 4px;
+}
+/* Mobile-first landing stage: a quiet reading column and a distinct artwork plate. */
+:root[data-theme] .hero {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.hero-copy {
+  padding: 24px;
+}
+:root[data-theme] .hero :is(.eyebrow, h1 em) {
+  color: var(--red);
+}
+:root[data-theme] .hero-copy > p,
+:root[data-theme] .hero-stats span {
+  color: var(--muted);
+}
+:root[data-theme] .hero-stats {
+  border-color: var(--line);
+}
+:root[data-theme] .hero-stats b {
+  color: var(--ink);
+}
+:root[data-theme] .hero .button.secondary {
+  background: var(--surface);
+  border-color: var(--control-edge);
+  color: var(--ink);
+}
+:root[data-theme] .home-search {
+  min-height: 56px;
+  background: var(--surface-soft);
+  border-color: var(--control-edge);
+  color: var(--muted);
+}
+:root[data-theme] .home-search input {
+  color: var(--ink);
+}
+:root[data-theme] .home-search input::placeholder {
+  color: var(--muted);
+}
+.home-search button {
+  border-radius: 4px;
+}
+:root[data-theme] .hero-visual {
+  background: var(--midnight);
+}
+:root[data-theme] .hero-starters a {
+  border-radius: 4px;
+  background: #213f4c;
+}
+:root[data-theme] .hero-starters a:hover {
+  background: #315462;
+}
+:root[data-theme] .hero-specimen-caption > span {
+  border-radius: 3px;
+  background: #213f4c;
+}
+:root[data-theme] .quick-card {
+  background: var(--surface);
+  border-color: var(--line);
+  border-top: 3px solid color-mix(in srgb, var(--tile-accent) 65%, var(--line));
+  padding: 20px;
+  gap: 14px;
+}
+.quick-card.red {
+  --tile-accent: var(--brand);
+}
+.quick-card h3 {
+  font-size: 22px;
+}
+.quick-card-index {
+  font-size: 44px;
+}
+:root[data-theme] .home-workflow-card {
+  border-top: 2px solid var(--line);
+}
+/* Preserve type-derived artwork plates, using straight frames and consistent metadata. */
+:root[data-theme] .pokemon-card {
+  border-color: var(--line);
+}
+.pokemon-card h3 {
+  font-size: 20px;
+  letter-spacing: -0.4px;
+}
+.pokemon-card .pokemon-number,
+.data-index,
+.page-navigation-summary {
+  font-variant-numeric: tabular-nums;
+}
+:root[data-theme] :is(.pokemon-card, .quick-card, .resource-group, .button):hover {
+  transform: none;
+  box-shadow: none;
+}
+:root[data-theme] :is(.pokemon-card, .quick-card, .resource-group):hover {
+  border-color: var(--red);
+}
+:root[data-theme] .button.primary:hover,
+:root[data-theme] .button:not(.secondary):not(:disabled):hover {
+  background: #0a6059;
+  color: #fff;
+}
+:root[data-theme] .button.secondary:hover {
+  border-color: var(--red);
+  background: var(--surface-soft);
+}
+:root[data-theme] :is(.search-field, .global-search):focus-within {
+  border-color: var(--focus);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--focus);
+}
+:root[data-theme] .tabs {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  padding-inline: 0;
+  background: transparent;
+}
+:root[data-theme] .tabs button.active {
+  background: var(--surface);
+  color: var(--red);
+  box-shadow: inset 0 -3px var(--red);
+}
+:root[data-theme] footer {
+  background: var(--midnight);
+  border-top: 1px solid var(--line);
+  color: var(--on-midnight);
+}
+:root[data-theme] footer a,
+:root[data-theme] footer .logo b {
+  color: #8ee2f0;
+}
+@media (min-width: 721px) {
+  .hero-copy {
+    padding: 40px;
+  }
+  :root[data-theme] :is(.page-title, .resource-detail-header) {
+    padding-block: 16px 28px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme] :is(.theme-toggle, .quick-card, .resource-group, .search-field, .global-search) {
+    transition: none;
+  }
+}
+:root[data-theme] .quick-card.red .quick-icon {
+  background: color-mix(in srgb, var(--brand) 10%, var(--surface));
+  color: var(--red);
+}
+:root[data-theme] .primary-shortcuts {
+  border-radius: var(--panel-radius);
+}
+
+/* Interior workspaces: task-specific composition beyond shared colors and corners. */
+:root[data-theme] .catalog-page .filter-panel,
+:root[data-theme] .forms-directory-toolbar {
+  padding: 16px;
+  border-top: 3px solid var(--brand);
+}
+.catalog-page .pokemon-grid,
+.forms-directory-grid {
+  gap: 12px;
+}
+:root[data-theme] .catalog-page .pokemon-card {
+  padding: 12px;
+}
+:root[data-theme] .forms-category-tabs button {
+  text-align: left;
+}
+:root[data-theme] .directory-summary {
+  padding-block: 12px;
+  border-bottom: 1px solid var(--line);
+}
+/* Reference records use a continuous reading surface with stable row alignment. */
+:root[data-theme] .resource-page .data-list {
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--surface);
+}
+:root[data-theme] .resource-page .data-list > a {
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
+}
+:root[data-theme] .resource-page .data-list > a:hover {
+  background: var(--surface-soft);
+  box-shadow: inset 3px 0 var(--red);
+}
+:root[data-theme] :is(.resource-list-heading, .move-list-heading, .ability-list-heading) {
+  background: var(--surface-soft);
+  color: var(--muted);
+  padding-block: 16px;
+}
+:root[data-theme] .resource-section-nav {
+  padding-block: 12px;
+  border-block: 1px solid var(--line);
+  gap: 8px;
+}
+:root[data-theme] .resource-section-nav button {
+  background: transparent;
+}
+:root[data-theme] .resource-section > h2 {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 22px;
+}
+:root[data-theme] .structured-field {
+  padding: 16px;
+  background: var(--surface);
+  border-color: var(--line);
+}
+:root[data-theme] .structured-field-heading {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+:root[data-theme] .structured-field-heading h3 {
+  font-size: 16px;
+  line-height: 1.4;
+}
+:root[data-theme] .structured-field[data-kind='metric'] {
+  border-top: 2px solid var(--line);
+  background: var(--surface-soft);
+}
+:root[data-theme] .structured-field[data-kind='text'] {
+  line-height: 1.75;
+}
+:root[data-theme] .resource-record-table :is(th, td) {
+  padding-block: 14px;
+}
+/* Pokémon detail: identity, artwork, then reference sections in reading order. */
+:root[data-theme] .pokemon-detail .detail-showcase {
+  padding: 20px;
+  gap: 20px;
+  border-top: 3px solid var(--theme);
+}
+:root[data-theme] .pokemon-detail .detail-visual {
+  min-height: 240px;
+  padding: 12px;
+  border: 0;
+}
+.pokemon-detail .detail-art {
+  min-height: 200px;
+}
+.pokemon-detail .detail-art img {
+  height: 230px;
+  object-fit: contain;
+}
+:root[data-theme] .pokemon-detail .detail-orb {
+  width: 190px;
+  height: 190px;
+  box-shadow: none;
+}
+.pokemon-detail .detail-copy h1 {
+  font-size: clamp(34px, 4.5vw, 58px);
+  line-height: 1.06;
+  letter-spacing: -1.5px;
+}
+:root[data-theme] .pokemon-detail .info-card {
+  padding: 20px;
+}
+:root[data-theme] .pokemon-detail .info-card h2 {
+  font-size: 22px;
+  line-height: 1.25;
+}
+:root[data-theme] .pokemon-detail .physical-stats {
+  gap: 0;
+  padding-block: 16px;
+  background: var(--surface-soft);
+  border-radius: 4px;
+}
+.pokemon-detail .physical-stats > span + span {
+  border-left: 1px solid var(--line);
+}
+:root[data-theme] .pokemon-detail .stats-card > header {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+:root[data-theme] .pokemon-detail .stats-card > header > span {
+  border-radius: 4px;
+}
+.pokemon-detail .stat-row {
+  padding-block: 8px;
+  border-bottom: 1px solid var(--line);
+}
+:root[data-theme] .evolution-family-facts > div {
+  border: 0;
+  border-left: 2px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+/* Teams: a dedicated action row leaves the title concise and the editor scannable. */
+.teams-page > .team-page-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-block: 0 20px;
+}
+.teams-page > .team-page-actions .button {
+  padding-inline: 10px;
+  min-width: 0;
+  white-space: normal;
+  line-height: 1.4;
+}
+:root[data-theme] .teams-page .team-toolbar {
+  padding: 16px;
+  gap: 12px;
+  border-top: 3px solid var(--brand);
+}
+:root[data-theme] .team-editor-section,
+:root[data-theme] .team-training {
+  background: var(--surface);
+  padding: 16px;
+}
+:root[data-theme] .team-section-header {
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+:root[data-theme] .team-tabs > button {
+  min-height: 96px;
+  background: var(--surface-soft);
+}
+:root[data-theme] .team-tabs > button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--red);
+  box-shadow: inset 0 -3px var(--red);
+}
+:root[data-theme] .team-tabs > button[aria-selected='true'] .team-icon-action {
+  color: var(--ink);
+}
+:root[data-theme] :is(.team-icon-action, .radio-selection > div, .move-select-option, .item-select-option) {
+  border-radius: 4px;
+}
+/* Calculators and comparison: a separate heading row, aligned inputs and a clear result. */
+:root[data-theme] .type-calculator {
+  grid-template-columns: minmax(0, 1fr);
+  padding: 16px;
+  gap: 12px;
+  border-top: 3px solid var(--brand);
+}
+.type-calculator > div:first-child {
+  grid-column: 1 / -1;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.type-calculator p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+:root[data-theme] .type-calculator output {
+  min-height: var(--field-control-height);
+  height: auto;
+  border-radius: 4px;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 12px;
+}
+:root[data-theme] .comparison-page .move-picker {
+  padding: 20px;
+  border-top: 3px solid var(--brand);
+}
+.comparison-page .move-picker h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+:root[data-theme] .comparison-table :is(th, td) {
+  padding: 16px;
+}
+:root[data-theme] .comparison-table tbody tr:nth-child(even) {
+  background: var(--surface-soft);
+}
+/* Map directory: put region selection beside the cover on larger screens. */
+:root[data-theme] .game-map-card {
+  min-height: 0;
+}
+:root[data-theme] .game-map-cover {
+  height: 200px;
+}
+.game-map-cover img {
+  max-height: 180px;
+}
+:root[data-theme] .game-map-card-copy {
+  padding: 20px;
+}
+.game-map-card h2 {
+  font-size: 25px;
+  line-height: 1.15;
+}
+:root[data-theme] .game-map-region-options a {
+  border-radius: 4px;
+  min-height: 52px;
+}
+:root[data-theme] .game-map-card[href]:hover {
+  transform: none;
+  box-shadow: none;
+}
+:root[data-theme] .map-toolbar {
+  border-top: 3px solid var(--brand);
+}
+/* Keep the battle field and action order stable; clarify the surrounding console. */
+:root[data-theme] .battle-lobby {
+  border-top: 3px solid var(--brand);
+}
+:root[data-theme] .battle-log h2 {
+  font-size: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+/* The home stage reserves the same image geometry for every random specimen. */
+.hero-featured-pokemon > img {
+  object-fit: contain;
+  aspect-ratio: 1;
+}
+:root[data-theme] .hero-specimen-caption > .hero-specimen-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  background: transparent;
+  color: var(--on-midnight);
+  padding: 0;
+  border: 0;
+  font: inherit;
+}
+.hero-featured-error {
+  position: relative;
+  margin: 0 20px 12px;
+  padding: 12px;
+  border: 1px solid #8fb8c6;
+  border-radius: 4px;
+  color: var(--on-midnight);
+  background: var(--midnight);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.hero-featured-error p {
+  margin: 0 0 8px;
+}
+.hero-featured-error button {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #8fb8c6;
+  border-radius: 4px;
+  background: #213f4c;
+  color: #fff;
+  font: inherit;
+}
+@media (min-width: 721px) {
+  :root[data-theme] .catalog-page .filter-panel {
+    padding: 20px;
+  }
+  :root[data-theme] .pokemon-detail .detail-showcase {
+    padding: 28px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+  .pokemon-detail .detail-art img {
+    height: 280px;
+  }
+  .teams-page > .team-page-actions {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .teams-page > .team-page-actions .button {
+    padding-inline: 16px;
+  }
+  :root[data-theme] .type-calculator {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    padding: 24px;
+  }
+  :root[data-theme] .type-calculator output {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1100px) {
+  :root[data-theme] .game-map-card {
+    grid-template-columns: minmax(140px, 0.65fr) minmax(0, 1fr);
+  }
+  :root[data-theme] .game-map-cover {
+    height: auto;
+    min-height: 280px;
+    align-self: stretch;
+  }
+  .game-map-cover img {
+    max-height: 230px;
+  }
+}
+.hero-featured-pokemon {
+  grid-template-rows: minmax(230px, 1fr) auto;
+}
+.hero-specimen-caption {
+  grid-row: 2;
+}
+:root[data-theme] .pokemon-detail .physical-stats > span {
+  border-radius: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+:root[data-theme] .pokemon-detail .shiny-toggle {
+  border-radius: 4px;
+}
+:root[data-theme] .resource-page .data-list > a:focus-visible {
+  outline-offset: -3px;
+}

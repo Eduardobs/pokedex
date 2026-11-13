@@ -11,7 +11,7 @@ import {
   Search,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useLanguage } from '../../contexts/LanguageContext'
 import type { GameMapDefinition, GameMapMarker } from '../../data/maps/game-map'
@@ -33,6 +33,7 @@ import {
 
 export function GameMapPage({ map }: { map: GameMapDefinition }) {
   const { language, t } = useLanguage()
+  const factsId = useId()
   const [searchParams, setSearchParams] = useSearchParams()
   const [zoom, setZoom] = useState(MIN_ZOOM)
   const [pan, setPan] = useState({ x: 0, y: 0 })
@@ -291,15 +292,20 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
             </div>
           </div>
         </div>
-        <div className="map-header-stats" aria-label={t('maps.catalogSummary')}>
-          <span>
-            <b>{formatNumber(map.markers.length, language)}</b> {t('maps.points')}
-          </span>
-          <span>
-            <b>{categories.length}</b> {t('maps.categories')}
-          </span>
-          <span className="map-region-chip">{map.regionName}</span>
-        </div>
+        <dl className="map-header-stats map-fact-strip" aria-label={t('maps.catalogSummary')}>
+          <div>
+            <dt id={`${factsId}-points`}>{t('maps.points')}</dt>
+            <dd aria-labelledby={`${factsId}-points`}>{formatNumber(map.markers.length, language)}</dd>
+          </div>
+          <div>
+            <dt id={`${factsId}-categories`}>{t('maps.categories')}</dt>
+            <dd aria-labelledby={`${factsId}-categories`}>{categories.length}</dd>
+          </div>
+          <div>
+            <dt id={`${factsId}-region`}>{t('notebook.region')}</dt>
+            <dd aria-labelledby={`${factsId}-region`}>{map.regionName}</dd>
+          </div>
+        </dl>
       </header>
 
       <div className={`map-explorer ${filtersOpen ? '' : 'filters-collapsed'}`}>

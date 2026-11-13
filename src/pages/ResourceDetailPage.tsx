@@ -9,6 +9,7 @@ import { Link, Navigate, useParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { Loading } from '../components/Loading'
 import { ItemImage } from '../components/ItemImage'
+import { NotebookSection } from '../components/NotebookSection'
 import { ResourceFields } from '../components/ResourceFields'
 import { DamageClassBadge, DamageClassIcon, GenderBadge, normalizedDamageClass } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
@@ -37,7 +38,9 @@ export function ResourceDetailPage() {
   }
   const title =
     localizedName(data.names, apiLanguage) ||
-    (typeof data.name === 'string' ? data.name : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
+    (typeof data.name === 'string'
+      ? prettyName(data.name)
+      : `${getResourceLabel(resource, language)} #${data.id ?? name}`)
   const localizedDescription = localizedTextResult(data.flavor_text_entries, undefined, apiLanguage)
   const effectDescription = localizedTextResult(data.effect_entries, undefined, apiLanguage)
   const descriptionResult = localizedDescription.text ? localizedDescription : effectDescription
@@ -80,7 +83,7 @@ export function ResourceDetailPage() {
         )}
         <Link to={`/explore/${resource}`}>{getResourceLabel(resource, language)}</Link>
         <span>/</span>
-        <span>{prettyName(String(title))}</span>
+        <span>{String(title)}</span>
       </div>
       <header className="resource-detail-header">
         <Link
@@ -117,7 +120,7 @@ export function ResourceDetailPage() {
           <span className="eyebrow">
             {getResourceLabel(resource, language)} · #{String(data.id ?? '—').padStart(3, '0')}
           </span>
-          <h1>{prettyName(String(title))}</h1>
+          <h1>{String(title)}</h1>
           {description && <p lang={descriptionResult.language}>{description}</p>}
           {descriptionResult.fallback && language !== 'en' && (
             <small className="language-fallback">{t('detail.fallbackLanguage')}</small>
@@ -175,17 +178,16 @@ export function ResourceDetailPage() {
       </nav>
       {sections
         .filter(({ entries }) => entries.length > 0)
-        .map(({ key, title, entries }) => (
-          <section
+        .map(({ key, title, entries }, index) => (
+          <NotebookSection
             className={`resource-section resource-${key}`}
             key={`${resourcePath}:${key}`}
-            aria-labelledby={`resource-${key}-title`}
+            titleId={`resource-${key}-title`}
+            index={index + 1}
+            title={title}
           >
-            <h2 id={`resource-${key}-title`} tabIndex={-1}>
-              {title}
-            </h2>
             <ResourceFields entries={entries} pokemonGender={pokemonGender} />
-          </section>
+          </NotebookSection>
         ))}
       {fields.technical.length > 0 && (
         <details className="technical-details">

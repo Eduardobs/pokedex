@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
@@ -23,7 +23,9 @@ describe('HisuiMapPage', () => {
 
     expect(screen.getByRole('heading', { name: 'Mapa interativo de Hisui' })).toBeVisible()
     expect(screen.getByText('2.525 pins visíveis')).toBeVisible()
-    expect(screen.getByLabelText('Resumo do catálogo do mapa')).toHaveTextContent('31 categorias')
+    expect(
+      within(screen.getByLabelText('Resumo do catálogo do mapa')).getByRole('definition', { name: 'categorias' }),
+    ).toHaveTextContent('31')
 
     fireEvent.click(screen.getByRole('checkbox', { name: /Chama perdida/ }))
     expect(screen.getByText('2.418 pins visíveis')).toBeVisible()

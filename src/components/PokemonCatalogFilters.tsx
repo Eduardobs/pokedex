@@ -164,7 +164,7 @@ export function PokemonCatalogFilters({
             onFocus={() => setSuggestionsOpen(true)}
             onBlur={() => setSuggestionsOpen(false)}
             onKeyDown={handleSearchKeyDown}
-            placeholder={searchLabel}
+            placeholder={t('notebook.searchPlaceholder')}
             autoComplete="off"
           />
           {suggestionsOpen && orderedSuggestions.length > 0 && (

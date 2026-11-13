@@ -26,6 +26,8 @@ import { EvSlider } from './EvSlider'
 import { FriendshipSlider } from './FriendshipSlider'
 import { ItemSelect } from './ItemSelect'
 import { RadioSelection } from './RadioSelection'
+import { RecordCell } from './RecordCell'
+import { NativeValueSelect } from './NativeValueSelect'
 import { SelectMenu } from './SelectMenu'
 import { ShinyToggle } from './ShinyToggle'
 import { TypeBadge, typeLabel } from './TypeBadge'
@@ -65,9 +67,12 @@ function ResourceDescription({ resource, name }: { resource: string; name: strin
   )
 }
 
-function SectionTitle({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+function SectionTitle({ icon, children, index }: { icon: ReactNode; children: ReactNode; index: number }) {
   return (
     <h4 className="team-section-title">
+      <span className="notebook-coordinate" aria-hidden="true">
+        {String(index).padStart(2, '0')}
+      </span>
       <span aria-hidden="true">{icon}</span>
       {children}
     </h4>
@@ -156,16 +161,15 @@ export function TeamMemberEditor({
     onSelect: (v: string) => void,
     display = (v: string) => localizedApiTerm(v, language),
   ) => (
-    <label>
-      {label}
-      <select aria-label={label} value={value} onChange={(e) => onSelect(e.target.value)}>
-        {sortByLocalizedLabel(values, (v) => (v ? display(v) : t('teams.none')), language).map((v) => (
-          <option key={v} value={v}>
-            {v ? display(v) : t('teams.none')}
-          </option>
-        ))}
-      </select>
-    </label>
+    <NativeValueSelect
+      label={label}
+      value={value}
+      onChange={onSelect}
+      options={sortByLocalizedLabel(values, (v) => (v ? display(v) : t('teams.none')), language).map((v) => ({
+        value: v,
+        label: v ? display(v) : t('teams.none'),
+      }))}
+    />
   )
   return (
     <article className="team-member">
@@ -198,7 +202,7 @@ export function TeamMemberEditor({
       <div className="team-editor-grid">
         <section className="team-editor-section team-build" aria-labelledby={`build-${m.id}`}>
           <header className="team-section-header">
-            <SectionTitle icon={<Settings2 size={18} />}>
+            <SectionTitle index={1} icon={<Settings2 size={18} />}>
               <span id={`build-${m.id}`}>{t('teams.build')}</span>
             </SectionTitle>
           </header>
@@ -313,7 +317,7 @@ export function TeamMemberEditor({
         <section className="team-editor-section team-moves-section" aria-labelledby={`moves-${m.id}`}>
           <header className="team-section-header team-moves-header">
             <div className="team-heading-with-help">
-              <SectionTitle icon={<Swords size={18} />}>
+              <SectionTitle index={2} icon={<Swords size={18} />}>
                 <span id={`moves-${m.id}`}>{t('teams.moves')}</span>
               </SectionTitle>
               <HelpTooltip label={t('teams.compatibility')}>{t('teams.movesNote')}</HelpTooltip>
@@ -343,7 +347,7 @@ export function TeamMemberEditor({
         <section className="team-editor-section team-training" aria-labelledby={`training-${m.id}`}>
           <header className="team-section-header team-training-header">
             <div className="team-heading-with-help">
-              <SectionTitle icon={<Dumbbell size={18} />}>
+              <SectionTitle index={3} icon={<Dumbbell size={18} />}>
                 <span id={`training-${m.id}`}>{t('teams.stats')}</span>
               </SectionTitle>
               <HelpTooltip label={t('teams.calculationHelp')}>{t('teams.statsNote')}</HelpTooltip>
@@ -372,7 +376,7 @@ export function TeamMemberEditor({
           />
           <div className="team-training-content">
             <div className="team-table" tabIndex={0} role="region" aria-label={t('teams.stats')}>
-              <table>
+              <table className="training-ledger responsive-record-table">
                 <caption className="sr-only">{t('teams.stats')}</caption>
                 <thead>
                   <tr>
@@ -387,8 +391,8 @@ export function TeamMemberEditor({
                   {statNames.map((stat, i) => (
                     <tr key={stat}>
                       <th scope="row">{statLabel(stat)}</th>
-                      <td>{p.stats[i]}</td>
-                      <td>
+                      <RecordCell label={t('teams.base')}>{p.stats[i]}</RecordCell>
+                      <RecordCell label={t('teams.ivMaximum')}>
                         <input
                           aria-label={`${t('teams.iv')} ${statLabel(stat)}`}
                           type="number"
@@ -403,26 +407,26 @@ export function TeamMemberEditor({
                             })
                           }
                         />
-                      </td>
-                      <td>
+                      </RecordCell>
+                      <RecordCell label={t('teams.ev')}>
                         <EvSlider
                           label={statLabel(stat)}
                           value={m.evs[i]}
                           max={Math.min(252, 510 - m.evs.reduce((a, b, j) => a + (j === i ? 0 : b), 0))}
                           onChange={(value) => patch({ evs: editEv(m.evs, i, value) })}
                         />
-                      </td>
-                      <td>
+                      </RecordCell>
+                      <RecordCell label={t('teams.calculated')}>
                         <strong>{stats[i]}</strong>
-                      </td>
+                      </RecordCell>
                     </tr>
                   ))}
                   <tr>
                     <th>{t('teams.total')}</th>
-                    <td>{p.stats.reduce((a, b) => a + b, 0)}</td>
-                    <td>—</td>
-                    <td>{m.evs.reduce((a, b) => a + b, 0)} / 510</td>
-                    <td>{stats.reduce((a, b) => a + b, 0)}</td>
+                    <RecordCell label={t('teams.base')}>{p.stats.reduce((a, b) => a + b, 0)}</RecordCell>
+                    <RecordCell label={t('teams.ivMaximum')}>—</RecordCell>
+                    <RecordCell label={t('teams.ev')}>{m.evs.reduce((a, b) => a + b, 0)} / 510</RecordCell>
+                    <RecordCell label={t('teams.calculated')}>{stats.reduce((a, b) => a + b, 0)}</RecordCell>
                   </tr>
                 </tbody>
               </table>
