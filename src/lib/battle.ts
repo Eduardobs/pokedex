@@ -1,3 +1,5 @@
+import { isBattleReadyTeam } from './teams'
+export { isBattleReadyTeam } from './teams'
 import {
   abilityMemory,
   abilityName,
@@ -656,13 +658,6 @@ function changesApplyToUser(move: BattleMove) {
 
 function changesApplyToTarget(move: BattleMove) {
   return targetStatChangeMoves.has(move.name)
-}
-
-export function isBattleReadyTeam(team: Team) {
-  return (
-    team.members.length === 6 &&
-    team.members.every((member) => member.moves.length === 4 && member.moves.every(Boolean))
-  )
 }
 
 const fallbackResource = (name: string): BattleResource => ({ name, names: [], descriptions: [], sprite: null })

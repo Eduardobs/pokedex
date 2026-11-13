@@ -307,3 +307,10 @@ export function calculatedStats(p: TeamPokemon, m: TeamMember): Stats {
   }
   return values
 }
+
+export function isBattleReadyTeam(team: Team) {
+  return (
+    team.members.length === 6 &&
+    team.members.every((member) => member.moves.length === 4 && member.moves.every(Boolean))
+  )
+}

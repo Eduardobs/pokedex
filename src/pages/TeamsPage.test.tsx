@@ -9,6 +9,11 @@ import { createTeamExport } from '../lib/team-transfer'
 import { validTeams } from '../lib/teams'
 import { clearApiCache } from '../lib/api-client'
 
+// Opening and editing teams must not load the battle simulator.
+vi.mock('../lib/battle', () => {
+  throw new Error('The team editor must not import the battle simulator.')
+})
+
 const render = (ui: Parameters<typeof renderTestingLibrary>[0]) => renderTestingLibrary(ui, { wrapper: MemoryRouter })
 
 afterEach(() => {
