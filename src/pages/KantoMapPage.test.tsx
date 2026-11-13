@@ -79,14 +79,14 @@ describe('KantoMapPage', () => {
     expect(zoom).toHaveTextContent('100%')
   })
 
-  it('zooms beyond 800 percent up to 3200 percent', () => {
+  it('zooms beyond 5000 percent up to 6400 percent', () => {
     renderPage()
     const zoomIn = screen.getByRole('button', { name: 'Ampliar mapa' })
     const zoom = screen.getByRole('status', { name: 'Nível de zoom' })
 
-    for (let index = 0; index < 11; index += 1) fireEvent.click(zoomIn)
+    for (let index = 0; index < 13; index += 1) fireEvent.click(zoomIn)
 
-    expect(zoom).toHaveTextContent('3200%')
+    expect(zoom).toHaveTextContent('6400%')
     expect(zoomIn).toBeDisabled()
   })
 

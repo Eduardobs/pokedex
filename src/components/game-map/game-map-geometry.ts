@@ -1,9 +1,9 @@
 import type { GameMapDefinition, GameMapMarker } from '../../data/maps/game-map'
 
 export const MIN_ZOOM = 1
-export const MAX_ZOOM = 32
+export const MAX_ZOOM = 64
 
-const ZOOM_LEVELS = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24, 32] as const
+const ZOOM_LEVELS = [1, 1.5, 2, 2.5, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64] as const
 const TILE_SIZE = 256
 
 export type ViewportSize = { width: number; height: number }
