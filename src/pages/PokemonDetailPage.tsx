@@ -9,11 +9,8 @@ import { LocalizedResourceName } from '../components/LocalizedResourceName'
 import { BaseStatsRadar } from '../components/pokemon-detail/BaseStatsRadar'
 import { EvolutionPreview, PokemonEvolution } from '../components/pokemon-detail/PokemonEvolution'
 import { PokemonBiologyCard } from '../components/pokemon-detail/PokemonBiologyCard'
-import { PokemonDataTab } from '../components/pokemon-detail/PokemonDataTab'
-import { PokemonEncounters } from '../components/pokemon-detail/PokemonEncounters'
 import { PokemonDetailBackLink } from '../components/pokemon-detail/PokemonDetailBackLink'
 import { PokemonForms } from '../components/pokemon-detail/PokemonForms'
-import { PokemonMovesTab } from '../components/pokemon-detail/PokemonMovesTab'
 import { SelectMenu } from '../components/SelectMenu'
 import { ShinyToggle } from '../components/ShinyToggle'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
@@ -29,12 +26,26 @@ import { calculateImmunities, calculateResistances, calculateWeaknesses } from '
 import type { ApiList, Encounter, EvolutionChain, Pokemon, PokemonType, Species } from '../types'
 
 const Pokemon3DTab = lazy(() => import('../components/pokemon-detail/Pokemon3DTab'))
+const PokemonMovesTab = lazy(() =>
+  import('../components/pokemon-detail/PokemonMovesTab').then((module) => ({ default: module.PokemonMovesTab })),
+)
+const PokemonEncounters = lazy(() =>
+  import('../components/pokemon-detail/PokemonEncounters').then((module) => ({ default: module.PokemonEncounters })),
+)
+const PokemonDataTab = lazy(() =>
+  import('../components/pokemon-detail/PokemonDataTab').then((module) => ({ default: module.PokemonDataTab })),
+)
 
 export function PokemonDetailPage() {
   const { apiLanguage, language, t } = useLanguage()
   const { name = '' } = useParams()
   const [tab, setTab] = useState<'about' | 'evolution' | 'moves' | 'encounters' | 'data' | '3d'>('about')
   const [shiny, setShiny] = useState(false)
+  const [movesPokemon, setMovesPokemon] = useState('')
+
+  useEffect(() => {
+    if (tab === 'moves') setMovesPokemon(name)
+  }, [tab, name])
   const [descriptionSelection, setDescriptionSelection] = useState({ speciesId: 0, version: '' })
   const [secondaryDataReady, setSecondaryDataReady] = useState(false)
   const { data: pokemon, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`)
@@ -490,7 +501,11 @@ export function PokemonDetailPage() {
             retry={speciesError ? retrySpecies : retryEvolution}
           />
         )}
-        <PokemonMovesTab key={pokemon.name} active={tab === 'moves'} pokemon={pokemon} />
+        {(tab === 'moves' || movesPokemon === name) && (
+          <Suspense fallback={<Loading />}>
+            <PokemonMovesTab key={pokemon.name} active={tab === 'moves'} pokemon={pokemon} />
+          </Suspense>
+        )}
         {tab === 'encounters' && (
           <article
             className="info-card wide-card"
@@ -503,7 +518,9 @@ export function PokemonDetailPage() {
             ) : encountersError ? (
               <InlineRetryError message={t('error.message')} retryLabel={t('common.retry')} onRetry={retryEncounters} />
             ) : (
-              <PokemonEncounters encounters={encounters ?? []} />
+              <Suspense fallback={<Loading />}>
+                <PokemonEncounters encounters={encounters ?? []} />
+              </Suspense>
             )}
           </article>
         )}
@@ -516,7 +533,9 @@ export function PokemonDetailPage() {
         )}
         {tab === 'data' && (
           <div role="tabpanel" id="panel-data" aria-labelledby="tab-data">
-            <PokemonDataTab pokemon={pokemon} species={species} speciesLoading={speciesLoading} />
+            <Suspense fallback={<Loading />}>
+              <PokemonDataTab pokemon={pokemon} species={species} speciesLoading={speciesLoading} />
+            </Suspense>
           </div>
         )}
       </div>

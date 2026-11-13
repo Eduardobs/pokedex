@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Pokemon } from '../types'
-import { groupMovesByLearningMethod } from './move-learning'
+import { groupMovesByLearningMethod, moveVersionGroups } from './move-learning'
 
 function pokemonMove(name: string, method: string, level = 0): Pokemon['moves'][number] {
   return {
@@ -16,6 +16,33 @@ function pokemonMove(name: string, method: string, level = 0): Pokemon['moves'][
 }
 
 describe('groupMovesByLearningMethod', () => {
+  it('deduplicates repeated records while preserving distinct levels and methods without mutating input', () => {
+    const moves = [
+      pokemonMove('thunder', 'level-up', 10),
+      pokemonMove('thunder', 'level-up', 10),
+      pokemonMove('thunder', 'level-up', 20),
+      pokemonMove('thunder', 'machine'),
+    ]
+    const original = structuredClone(moves)
+    expect(groupMovesByLearningMethod(moves, 'latest')).toMatchObject([
+      { method: 'level-up', moves: [{ level: 10 }, { level: 20 }] },
+      { method: 'machine', moves: [{ level: 0 }] },
+    ])
+    expect(moves).toEqual(original)
+  })
+
+  it('orders unique versions by numeric ID and preserves the last reference for duplicate names', () => {
+    const move = pokemonMove('thunder', 'machine')
+    const detail = move.version_group_details[0]
+    move.version_group_details = [
+      { ...detail, version_group: { name: 'old', url: '/version-group/1/' } },
+      { ...detail, version_group: { name: 'new', url: '/version-group/3/' } },
+      { ...detail, version_group: { name: 'old', url: '/version-group/2/' } },
+    ]
+    expect(moveVersionGroups([move, move])).toEqual(['new', 'old'])
+    expect(moveVersionGroups([])).toEqual([])
+  })
+
   it('groups methods in a useful order and sorts level-up moves by level', () => {
     const groups = groupMovesByLearningMethod([
       pokemonMove('thunder', 'machine'),

@@ -7,6 +7,7 @@ import { LanguageProvider } from '../contexts/LanguageContext'
 import type { Pokemon, PokemonType, Species } from '../types'
 import { FEATURE_FLAGS } from '../config/feature-flags'
 import { PokemonDetailPage } from './PokemonDetailPage'
+import * as moveLearning from '../lib/move-learning'
 
 const { useApiMock } = vi.hoisted(() => ({ useApiMock: vi.fn() }))
 vi.mock('../hooks/useApi', () => ({ useApi: useApiMock }))
@@ -240,7 +241,9 @@ describe('PokemonDetailPage', () => {
       return { data: null, loading: false, error: null, retry: vi.fn() }
     })
 
+    const versions = vi.spyOn(moveLearning, 'moveVersionGroups')
     renderPage()
+    expect(versions).not.toHaveBeenCalled()
 
     expect(screen.getByRole('heading', { level: 1, name: 'Pikachu' })).toBeVisible()
     expect(screen.getByText('Pokémon Rato')).toBeVisible()
@@ -260,12 +263,16 @@ describe('PokemonDetailPage', () => {
     expect(evolutions).toHaveFocus()
     fireEvent.keyDown(evolutions, { key: 'ArrowRight' })
     expect(screen.getByRole('tab', { name: 'Golpes 0' })).toHaveAttribute('aria-selected', 'true')
-    expect(screen.getByRole('heading', { name: 'Nenhum Pokémon encontrado' })).toBeVisible()
+    expect(await screen.findByRole('heading', { name: 'Nenhum Pokémon encontrado' })).toBeVisible()
+    expect(versions).toHaveBeenCalled()
+    fireEvent.change(screen.getByRole('textbox', { name: 'Buscar golpe...' }), { target: { value: 'thunder' } })
 
     fireEvent.click(screen.getByRole('tab', { name: 'Encontros' }))
-    expect(screen.getByRole('heading', { name: 'Nenhum encontro selvagem registrado' })).toBeVisible()
+    expect(await screen.findByRole('heading', { name: 'Nenhum encontro selvagem registrado' })).toBeVisible()
     fireEvent.click(screen.getByRole('tab', { name: 'Dados' }))
     expect(await screen.findByRole('heading', { name: 'Registro da PokéAPI' })).toBeVisible()
+    fireEvent.click(screen.getByRole('tab', { name: 'Golpes 0' }))
+    expect(screen.getByRole('textbox', { name: 'Buscar golpe...' })).toHaveValue('thunder')
   })
 
   it('offers retry when the requested Pokémon cannot be loaded', () => {

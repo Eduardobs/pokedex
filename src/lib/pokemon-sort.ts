@@ -31,15 +31,20 @@ export function sortPokemonList(
   details: Record<string, PokemonSortDetails>,
   locale: string,
 ): PokemonListItem[] {
-  const collator = new Intl.Collator(locale, { sensitivity: 'base' })
   const directionMultiplier = direction === 'asc' ? 1 : -1
 
-  return [...pokemon].sort((left, right) => {
-    if (sort === 'number') return (left.id - right.id) * directionMultiplier
-    if (sort === 'name') return collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id
+  if (sort === 'number') return [...pokemon].sort((left, right) => (left.id - right.id) * directionMultiplier)
+  if (sort === 'name') {
+    const collator = new Intl.Collator(locale, { sensitivity: 'base' })
+    return [...pokemon].sort(
+      (left, right) => collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id,
+    )
+  }
 
-    const leftValue = getPokemonSortValue(details[left.name], sort)
-    const rightValue = getPokemonSortValue(details[right.name], sort)
+  const values = new Map(pokemon.map((entry) => [entry.name, getPokemonSortValue(details[entry.name], sort)]))
+  return [...pokemon].sort((left, right) => {
+    const leftValue = values.get(left.name)
+    const rightValue = values.get(right.name)
     if (leftValue === undefined && rightValue === undefined) return left.id - right.id
     if (leftValue === undefined) return 1
     if (rightValue === undefined) return -1

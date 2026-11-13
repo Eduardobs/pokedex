@@ -15,18 +15,21 @@ export type MoveLearningGroup = {
 const methodOrder = ['level-up', 'machine', 'egg', 'tutor']
 
 export function moveVersionGroups(moves: Pokemon['moves']) {
-  const versions = new Map(
-    moves.flatMap(({ version_group_details }) =>
-      version_group_details.map(({ version_group }) => [version_group.name, version_group] as const),
-    ),
-  )
+  const versions = new Map<string, { name: string; url: string }>()
+  for (const { version_group_details } of moves) {
+    for (const { version_group } of version_group_details) {
+      versions.set(version_group.name, version_group)
+    }
+  }
   return [...versions.values()]
-    .sort((a, b) => (idFromUrl(b.url) || 0) - (idFromUrl(a.url) || 0))
+    .map(({ name, url }) => ({ name, id: idFromUrl(url) || 0 }))
+    .sort((a, b) => b.id - a.id)
     .map(({ name }) => name)
 }
 
 export function groupMovesByLearningMethod(moves: Pokemon['moves'], version?: string): MoveLearningGroup[] {
   const groups = new Map<string, MoveWithLearning[]>()
+  const seen = new Map<string, Set<string>>()
 
   moves.forEach(({ move, version_group_details }) => {
     const details = version
@@ -35,9 +38,17 @@ export function groupMovesByLearningMethod(moves: Pokemon['moves'], version?: st
     for (const detail of details) {
       const method = detail.move_learn_method.name
       const level = detail.level_learned_at
-      const existing = groups.get(method) ?? []
-      if (!existing.some((entry) => entry.move.name === move.name && entry.level === level)) {
-        groups.set(method, [...existing, { move, method, level }])
+      let existing = groups.get(method)
+      if (!existing) {
+        existing = []
+        groups.set(method, existing)
+        seen.set(method, new Set())
+      }
+      const key = `${move.name}:${level}`
+      const methodSeen = seen.get(method)!
+      if (!methodSeen.has(key)) {
+        methodSeen.add(key)
+        existing.push({ move, method, level })
       }
     }
   })
