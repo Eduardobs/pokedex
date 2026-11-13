@@ -808,6 +808,9 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+.item-select-row small[role='tooltip'] {
+  color: var(--page-bg);
+}
 .item-select-trigger .item-select-row {
   flex: 1;
 }

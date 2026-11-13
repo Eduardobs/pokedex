@@ -156,6 +156,9 @@
 #main-content .catalog-select-trigger:has(.catalog-select-custom-selected) {
   grid-template-columns: minmax(0, 1fr) 18px;
 }
+#main-content .catalog-select-custom-selected {
+  grid-column: 1;
+}
 #main-content .filter-primary {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
