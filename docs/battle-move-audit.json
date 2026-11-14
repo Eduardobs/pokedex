@@ -5017,7 +5017,12 @@
     {
       "id": 118,
       "singlesExclusion": null,
-      "verifiedScenarios": ["baseline-state-invariants"],
+      "verifiedScenarios": [
+        "baseline-state-invariants",
+        "gen9-eligible-pool-damage-boost-pp-and-charge-release",
+        "known-zero-pp-protect-and-sleep",
+        "called-side-condition"
+      ],
       "multistrike": null,
       "canonicalFlags": ["failencore", "nosleeptalk", "noassist", "failcopycat", "failmimic", "failinstruct"],
       "name": "metronome",
@@ -5047,6 +5052,7 @@
         "callsMove: true"
       ],
       "findings": [
+        "Gen 9 eligible pool, called damage/stat boosts, PP and charge release verified; remaining called-move callbacks and ability/item interactions require coverage",
         "Conditional callbacks require dedicated scenario coverage; presence of a local handler does not prove equivalence"
       ],
       "apiEffectDescriptions": [

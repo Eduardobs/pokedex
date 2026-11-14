@@ -1,3 +1,5 @@
+import { metronomeMovePool } from './battle-metronome'
+import metronomeEligibility from '../data/third-party/battle-metronome-moves.json'
 /// <reference types="node" />
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { describe, expect, it, afterAll } from 'vitest'
@@ -551,6 +553,64 @@ describe('requested battle rules', () => {
     } else state.opponent.roster[0].item = { name: 'choice-scarf', names: [], descriptions: [], sprite: null }
     expect(executeMove(state).state.opponent.roster[0].hp).toBeLessThan(10000)
   })
+  it('Metronome uses the complete Gen 9 eligible pool in ID order', () => {
+    const expected = referenceSnapshot.records
+      .filter(({ reference }) => {
+        const flags = reference?.flags as Record<string, number> | undefined
+        return flags?.metronome && (!reference?.isNonstandard || reference.isNonstandard === 'Unobtainable')
+      })
+      .map(({ name }) => name)
+    expect(metronomeMovePool().map(({ name }) => name)).toEqual(expected)
+    expect(metronomeEligibility.referenceSha256).toBe(referenceSnapshot.sha256)
+    expect(expected).not.toContain('metronome')
+    expect(expected).not.toContain('struggle')
+    expect(expected).not.toContain('protect')
+  })
+  it.each(['pound', 'swords-dance', 'solar-beam'])(
+    'Metronome calls %s without learned PP and preserves charging',
+    (name) => {
+      const state = setup(load('metronome'))
+      const pool = metronomeMovePool()
+      const roll = (pool.findIndex((move) => move.name === name) + 0.5) / pool.length
+      const initialPp = state.player.roster[0].moves[0].pp
+      const result = executeMove(state, roll)
+      expect(result.events).toContainEqual({ type: 'move', side: 'player', pokemon: 'user', move: name })
+      expect(result.state.player.roster[0].moves[0].pp).toBe(initialPp - 1)
+      expect(result.state.player.roster[0].lastMoveIndex).toBe(0)
+      if (name === 'swords-dance') expect(result.state.player.roster[0].stages.attack).toBe(2)
+      else if (name === 'pound') expect(result.state.opponent.roster[0].hp).toBeLessThan(10000)
+      else {
+        expect(result.state.opponent.roster[0].hp).toBe(10000)
+        const release = executeMove(result.state, 0.5)
+        expect(release.events).toContainEqual({ type: 'move', side: 'player', pokemon: 'user', move: name })
+        expect(release.state.opponent.roster[0].hp).toBeLessThan(10000)
+        expect(release.state.player.roster[0].moves[0].pp).toBe(initialPp - 1)
+      }
+    },
+  )
+  it('Metronome can call a known zero-PP move, respects Protect and cannot act asleep', () => {
+    const state = setup(load('metronome'))
+    state.player.roster[0].moves[1] = { data: load('pound'), pp: 0 }
+    const pool = metronomeMovePool()
+    const roll = (pool.findIndex((move) => move.name === 'pound') + 0.5) / pool.length
+    const hit = executeMove(state, roll)
+    expect(hit.state.opponent.roster[0].hp).toBeLessThan(10000)
+    expect(hit.state.player.roster[0].moves[1].pp).toBe(0)
+    state.opponent.roster[0].moves[0] = { data: load('protect'), pp: 10 }
+    const blocked = executeMove(state, roll)
+    expect(blocked.state.opponent.roster[0].hp).toBe(10000)
+    expect(blocked.events.some((event) => event.type === 'protected')).toBe(true)
+    state.player.roster[0].status = 'sleep'
+    state.player.roster[0].sleepTurns = 2
+    const asleep = executeMove(state, roll)
+    expect(asleep.events.some((event) => event.type === 'move' && event.side === 'player')).toBe(false)
+  })
+  it('Metronome applies called side conditions through the shared post-move handler', () => {
+    const state = setup(load('metronome'))
+    const pool = metronomeMovePool()
+    const roll = (pool.findIndex((move) => move.name === 'stealth-rock') + 0.5) / pool.length
+    expect(executeMove(state, roll).state.opponent.hazards.stealthRock).toBe(true)
+  })
   it('Sleep Talk may call a move with zero PP without spending its PP or changing the recorded move', () => {
     const state = setup(load('sleep-talk'))
     state.player.roster[0].status = 'sleep'
@@ -922,6 +982,9 @@ afterAll(() => {
     ['target-eligibility', ['dream-eater', 'poltergeist']],
     ['specified-offensive-or-defensive-stat', ['body-press', 'foul-play', 'psyshock', 'psystrike', 'secret-sword']],
     ['ignore-defensive-stages', ['sacred-sword', 'chip-away', 'darkest-lariat']],
+    ['gen9-eligible-pool-damage-boost-pp-and-charge-release', ['metronome']],
+    ['known-zero-pp-protect-and-sleep', ['metronome']],
+    ['called-side-condition', ['metronome']],
     ['calling-zero-pp-without-consuming-called-pp', ['sleep-talk']],
     ['passing-stages-substitute-and-copyable-conditions', ['baton-pass']],
     ['substitute-cost-transfer-and-failure', ['shed-tail']],
@@ -966,6 +1029,10 @@ afterAll(() => {
     if (move.name === 'dragon-ascent' || move.name === 'close-combat')
       gaps.push(
         'User Defense and Special Defense drops after damage, Substitute and knockout, and no drops on miss/Protect verified; remaining ability/item interactions require coverage',
+      )
+    if (move.name === 'metronome')
+      gaps.push(
+        'Gen 9 eligible pool, called damage/stat boosts, PP and charge release verified; remaining called-move callbacks and ability/item interactions require coverage',
       )
     if (move.name === 'clangorous-soul')
       gaps.push(

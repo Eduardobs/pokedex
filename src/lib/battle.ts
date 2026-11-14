@@ -1,3 +1,4 @@
+import { metronomeMovePool } from './battle-metronome'
 import { isBattleReadyTeam } from './teams'
 export { isBattleReadyTeam } from './teams'
 import {
@@ -161,6 +162,7 @@ export type BattlePokemon = {
   skyDropTargetId?: string
   skyDropSourceId?: string
   previousMoveExecution?: { name: string; turn: number; succeeded: boolean }
+  chargingCalledMove?: BattleMove
   chargingMoveIndex?: number
   recharging?: boolean
   receivedMove?: { amount: number; sourceId: string; damageClass: BattleMove['damageClass'] }
@@ -316,7 +318,7 @@ export type BattleEvent =
 
 type RandomSource = () => number
 type BattleHazard = 'stealth-rock' | 'spikes' | 'toxic-spikes' | 'sticky-web'
-type MoveOutcome = { hit: boolean; succeeded: boolean; hitSubstitute?: boolean } | null
+type MoveOutcome = { hit: boolean; succeeded: boolean; hitSubstitute?: boolean; calledMove?: BattleMove } | null
 
 const emptyStages = (): BattleStages => ({
   attack: 0,
@@ -1126,7 +1128,9 @@ function applyEntryAbility(
 }
 
 function semiInvulnerableMove(pokemon: BattlePokemon) {
-  return pokemon.chargingMoveIndex === undefined ? undefined : pokemon.moves[pokemon.chargingMoveIndex]?.data.name
+  return pokemon.chargingMoveIndex === undefined
+    ? undefined
+    : (pokemon.chargingCalledMove ?? pokemon.moves[pokemon.chargingMoveIndex]?.data)?.name
 }
 function semiInvulnerableMultiplier(defender: BattlePokemon, move: BattleMove) {
   const charging = semiInvulnerableMove(defender)
@@ -1530,6 +1534,7 @@ function applyMove(
   calledMove?: BattleMove,
   moveSide: 'player' | 'opponent' = 'player',
 ): MoveOutcome {
+  if (attacker.chargingMoveIndex === moveSlot) calledMove ??= attacker.chargingCalledMove
   const slot = calledMove ? { data: calledMove, pp: 1 } : battleMoveSlot(attacker, moveSlot)
   const releasing = attacker.chargingMoveIndex === moveSlot
   if (!slot || (!releasing && slot.pp <= 0) || attacker.hp <= 0 || defender.hp <= 0) return null
@@ -1588,6 +1593,7 @@ function applyMove(
     }
   }
   delete attacker.chargingMoveIndex
+  delete attacker.chargingCalledMove
   const curse = supplementalMoveEffect(move.name)?.kind === 'curse'
   const ghostCurse = curse && effectiveTypes(attacker).includes('ghost')
   if (!calledMove && moveSlot !== STRUGGLE_INDEX) attacker.lastMoveIndex = moveSlot
@@ -1656,12 +1662,35 @@ function applyMove(
       if (usesPowerHerb) activateItem(attacker, events, true)
       if (!instant) {
         attacker.chargingMoveIndex = moveSlot
+        if (calledMove) attacker.chargingCalledMove = calledMove
         events.push({ type: 'charging', pokemon: battlePokemonName(attacker) })
         return { hit: false, succeeded: true }
       }
     }
     if (sleepUsableMoves.has(move.name) && attacker.status !== 'sleep' && abilityName(attacker) !== 'comatose')
       return { hit: true, succeeded: false }
+    if (move.name === 'metronome') {
+      const choices = metronomeMovePool()
+      const selected = choices[Math.floor(random() * choices.length)]
+      const outcome = selected
+        ? applyMove(
+            attacker,
+            defender,
+            defendingSide,
+            field,
+            moveSlot,
+            random,
+            events,
+            true,
+            false,
+            false,
+            attackingSide,
+            selected,
+            moveSide,
+          )
+        : null
+      return outcome ? { ...outcome, calledMove: outcome.calledMove ?? selected } : { hit: true, succeeded: false }
+    }
     if (move.name === 'sleep-talk') {
       const choices = attacker.moves.flatMap((candidate, index) =>
         index !== moveSlot && !moveHasFlag(candidate.data, 'nosleeptalk') ? [index] : [],
@@ -1804,6 +1833,7 @@ function applyMove(
     if (!releasing && timing?.carriesTarget) {
       if (defender.substituteHp > 0 || abilityWeight(defender) >= 200) return { hit: true, succeeded: false }
       attacker.chargingMoveIndex = moveSlot
+      if (calledMove) attacker.chargingCalledMove = calledMove
       attacker.skyDropTargetId = defender.member.id
       defender.skyDropSourceId = attacker.member.id
       events.push({ type: 'charging', pokemon: battlePokemonName(attacker) })
@@ -2722,6 +2752,7 @@ function performChoice(
     for (const target of foe.roster) {
       if (target.skyDropSourceId === leaving.member.id) delete target.skyDropSourceId
     }
+    delete leaving.chargingCalledMove
     delete leaving.chargingMoveIndex
     delete leaving.recharging
     delete leaving.receivedMove
@@ -2861,11 +2892,13 @@ function performChoice(
   if (abilityUsedMove?.type === 'electric' && outcome) abilityMemory(attacker).charged = false
   if (!outcome) return
   let succeeded = outcome.succeeded
-  const move = battleMoveSlot(attacker, selectedMoveIndex)?.data
+  const move = outcome.calledMove ?? battleMoveSlot(attacker, selectedMoveIndex)?.data
   if (outcome.hit && move) {
     if (outcome.succeeded && supplementalMoveTimings[move.name]?.rechargeTurns) attacker.recharging = true
-    if (move.name === 'smack-down' && ['fly', 'bounce'].includes(semiInvulnerableMove(defender) ?? ''))
+    if (move.name === 'smack-down' && ['fly', 'bounce'].includes(semiInvulnerableMove(defender) ?? '')) {
+      delete defender.chargingCalledMove
       delete defender.chargingMoveIndex
+    }
     const supplemental = supplementalMoveEffect(move.name)
     if (supplemental?.kind === 'revive-ally' && !attacker.volatile['heal-block']) {
       const target = own.roster.find((pokemon) => pokemon.hp === 0)
