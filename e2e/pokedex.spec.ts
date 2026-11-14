@@ -1,6 +1,7 @@
 import { triangleModel } from './fixtures/model'
 import { API_BASE_PATH, API_BASE_URL } from './fixtures/api-config'
-import { expect, test, type Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
+import { test } from './fixtures/browser-diagnostics'
 
 const apiBase = API_BASE_URL
 
