@@ -1510,3 +1510,37 @@
   height: 48px;
   object-fit: contain;
 }
+
+/* Keep the Data tab's short item and game records dense at every width. */
+#main-content .compact-data-card .nested-value {
+  margin: 0;
+  gap: 4px;
+}
+#main-content .compact-data-card .nested-row {
+  grid-template-columns: minmax(0, 0.65fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 4px 12px;
+  padding: 4px 0;
+}
+#main-content .compact-data-card .nested-row[data-complex='true'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+#main-content .compact-data-card .resource-record-table tr {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+  padding: 6px 0;
+}
+#main-content .compact-data-card .resource-record-table :is(th, td) {
+  padding: 4px 0;
+  line-height: 1.4;
+}
+#main-content .compact-data-card .record-cell-label {
+  margin-bottom: 2px;
+}
+#main-content .compact-data-card .resource-chip {
+  min-height: 32px;
+  padding: 4px 6px;
+}
+#main-content .compact-data-card .resource-value-item {
+  padding: 8px;
+}

@@ -91,7 +91,7 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
       <SpriteGallery sprites={pokemon.sprites} />
       {species && <PokemonSpeciesDetails species={species} />}
 
-      <article className="info-card technical-card">
+      <article className="info-card technical-card compact-data-card">
         <h2>
           <PackageOpen />
           {t('detail.heldItems')}
@@ -103,7 +103,7 @@ export function PokemonDataTab({ pokemon, species, speciesLoading }: Props) {
         )}
       </article>
 
-      <article className="info-card technical-card">
+      <article className="info-card technical-card compact-data-card">
         <h2>
           <Gamepad2 />
           {t('detail.gameIndices')}
