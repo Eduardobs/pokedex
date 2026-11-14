@@ -465,6 +465,7 @@ export const ptBR = {
   'home.openPokedex': 'Abrir Pokédex',
   'home.explore': 'Explorar universo',
   'home.openFeatured': 'Abrir ficha de {name}',
+  'home.randomizeFeatured': 'Sortear Pokémon',
   'home.featuredError': 'O nome do destaque não pôde ser carregado. Você ainda pode abrir sua ficha.',
   'notebook.searchPlaceholder': 'Nome ou número',
   'notebook.region': 'Região',

@@ -719,3 +719,14 @@ body {
 :root[data-theme] .resource-page .data-list > a:focus-visible {
   outline-offset: -3px;
 }
+
+.hero-featured-randomize {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: fit-content;
+  max-width: calc(100% - 40px);
+  min-height: 44px;
+  margin: 12px auto;
+  white-space: normal;
+}

@@ -466,6 +466,7 @@ export const es = {
   'home.openPokedex': 'Abrir Pokédex',
   'home.explore': 'Explorar el universo',
   'home.openFeatured': 'Abrir ficha de {name}',
+  'home.randomizeFeatured': 'Sortear Pokémon',
   'home.featuredError': 'No se pudo cargar el nombre destacado. Aún puedes abrir su ficha.',
   'notebook.searchPlaceholder': 'Nombre o número',
   'notebook.region': 'Región',

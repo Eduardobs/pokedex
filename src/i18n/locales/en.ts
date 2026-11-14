@@ -463,6 +463,7 @@ export const en = {
   'home.openPokedex': 'Open Pokédex',
   'home.explore': 'Explore the universe',
   'home.openFeatured': 'Open {name} details',
+  'home.randomizeFeatured': 'Random Pokémon',
   'home.featuredError': 'The featured name could not be loaded. You can still open its details.',
   'notebook.searchPlaceholder': 'Name or number',
   'notebook.region': 'Region',

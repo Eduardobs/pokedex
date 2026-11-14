@@ -79,3 +79,28 @@ it('works without session storage and falls back when artwork fails', async () =
   fireEvent.error(artwork)
   await waitFor(() => expect(artwork).toHaveAttribute('src', expect.stringContaining('/home/1.png')))
 })
+
+it('randomizes the highlight repeatedly without repeating the current Pokémon', async () => {
+  vi.stubGlobal(
+    'fetch',
+    vi.fn().mockImplementation((url: string) => {
+      const id = Number(url.split('/').pop())
+      return Promise.resolve(Response.json({ id, name: id === 1 ? 'bulbasaur' : 'ivysaur' }))
+    }),
+  )
+  renderFeatured()
+  await screen.findByRole('link', { name: 'Abrir ficha de Bulbasaur' })
+  const button = screen.getByRole('button', { name: 'Sortear Pokémon' })
+  button.focus()
+  fireEvent.click(button)
+  expect(await screen.findByRole('link', { name: 'Abrir ficha de Ivysaur' })).toHaveAttribute(
+    'href',
+    '/pokemon/ivysaur',
+  )
+  expect(screen.getByRole('img', { name: 'Ivysaur' })).toHaveAttribute('src', expect.stringContaining('/2.png'))
+  expect(sessionStorage.getItem(STORAGE_KEYS.featuredPokemon)).toBe('2')
+  expect(button).toHaveFocus()
+  fireEvent.click(button)
+  await screen.findByRole('link', { name: 'Abrir ficha de Bulbasaur' })
+  expect(sessionStorage.getItem(STORAGE_KEYS.featuredPokemon)).toBe('1')
+})

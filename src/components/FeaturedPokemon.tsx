@@ -1,4 +1,4 @@
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Shuffle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useFeaturedPokemon } from '../hooks/useFeaturedPokemon'
@@ -7,7 +7,7 @@ import { FallbackImage } from './FallbackImage'
 
 export function FeaturedPokemon() {
   const { t } = useLanguage()
-  const { id, data, loading, error, retry } = useFeaturedPokemon()
+  const { id, data, loading, error, retry, randomize } = useFeaturedPokemon()
   const number = `#${String(id).padStart(4, '0')}`
   const name = data ? prettyName(data.name) : number
   return (
@@ -38,6 +38,10 @@ export function FeaturedPokemon() {
           <ArrowRight size={20} aria-hidden="true" />
         </span>
       </Link>
+      <button type="button" className="button hero-featured-randomize" onClick={randomize}>
+        <Shuffle size={18} aria-hidden="true" />
+        {t('home.randomizeFeatured')}
+      </button>
       {error && (
         <div className="hero-featured-error">
           <p role="status">{t('home.featuredError')}</p>

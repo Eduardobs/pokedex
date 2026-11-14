@@ -4,7 +4,7 @@ import { parseFeaturedPokemon, randomFeaturedPokemonId } from '../lib/featured-p
 import { useApi } from './useApi'
 
 export function useFeaturedPokemon() {
-  const [id] = useState(() => {
+  const [id, setId] = useState(() => {
     let previous: number | null = null
     try {
       const stored = sessionStorage.getItem(STORAGE_KEYS.featuredPokemon)
@@ -26,5 +26,6 @@ export function useFeaturedPokemon() {
     if (pokemon.id !== id) throw new Error('Unexpected featured Pokémon')
     return pokemon
   })
-  return { ...state, id }
+  const randomize = () => setId((previous) => randomFeaturedPokemonId(previous, Math.random()))
+  return { ...state, id, randomize }
 }
