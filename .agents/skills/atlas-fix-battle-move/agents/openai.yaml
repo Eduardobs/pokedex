@@ -1,0 +1,4 @@
+interface:
+  display_name: "Atlas · Corrigir golpe"
+  short_description: "Corrige golpes e atualiza os relatórios de auditoria"
+  default_prompt: "Use $atlas-fix-battle-move para corrigir o golpe [nome] conforme o comportamento esperado: [descrição]."
