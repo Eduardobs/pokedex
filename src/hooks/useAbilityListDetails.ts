@@ -1,3 +1,4 @@
+import { fetchCatalogBatches } from '../lib/catalog-batches'
 import { useCallback, useEffect, useState } from 'react'
 import { fetchAbilityListDetails, type AbilityListDetails } from '../lib/ability-catalog'
 import type { NamedResource } from '../types'
@@ -35,7 +36,7 @@ export function useAbilityListDetails(
     const controller = new AbortController()
     const ids = idsKey.split(',').map(Number)
     setState({ key, data: null, error: null, loading: true })
-    fetchAbilityListDetails(ids, apiLanguage, controller.signal)
+    fetchCatalogBatches(ids, (page, signal) => fetchAbilityListDetails(page, apiLanguage, signal), controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) setState({ key, data, error: null, loading: false })
       })

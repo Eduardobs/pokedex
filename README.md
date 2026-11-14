@@ -17,6 +17,7 @@ The application is a client-side static site: it has no application server or da
 - **Interactive game maps** for FireRed/LeafGreen's Kanto, Scarlet/Violet's Paldea, Kitakami, and Terarium, and Legends: Arceus's Hisui, with cataloged pins, clustering, category filters, search, panning, and progressive-resolution zoom.
 - **Favorites** saved locally in the browser, including search and sorting. Up to 200 favorites can be stored per device.
 - **Local Random Battle** with a generated Gen 9 opponent, turn order, damage, PP, switching, status conditions, stat stages, Terastallization, forced replacements, and win/loss states.
+- **Explore collection controls** filter and sort every displayed data column from the list header, across the entire collection before pagination. Filters combine with the existing search and persist in the URL.
 - **API explorer** covering PokéAPI v2 collections such as moves, abilities, items, berries, regions, locations, generations, versions, evolution chains, evolution variables, currencies, encounters, contests, and languages.
 - **Internationalization** for Portuguese (Brazil), English, and Spanish. The selected language is remembered locally.
 - **Shared pagination** with numbered pages, first/last shortcuts, and responsive keyboard-accessible controls across Explore collections and related-data lists.

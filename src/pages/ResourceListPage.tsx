@@ -1,3 +1,5 @@
+import { ResourceListHeader } from '../components/ResourceListHeader'
+import { filterAndSortResourceRows, type ResourceListSort } from '../lib/resource-list-controls'
 import { parseResourceList } from '../lib/rest-validation'
 import { ChevronRight } from 'lucide-react'
 import { Pagination } from '../components/Pagination'
@@ -37,6 +39,38 @@ export function ResourceListPage() {
   const ResourceIcon = meta?.icon ?? Database
   const GroupIcon = meta?.groupIcon
   const [searchParams, setSearchParams] = useSearchParams()
+  const columns = [
+    { key: 'number', label: '#' },
+    {
+      key: 'displayName',
+      label:
+        resource === 'move'
+          ? t('move.name')
+          : resource === 'ability'
+            ? t('ability.name')
+            : getResourceLabel(resource, language),
+    },
+    ...(resource === 'move'
+      ? [
+          { key: 'type', label: t('move.type') },
+          { key: 'damageClass', label: t('move.damageClass') },
+          { key: 'power', label: t('move.power') },
+          { key: 'accuracy', label: t('move.accuracy') },
+          { key: 'pp', label: t('move.pp') },
+        ]
+      : resource === 'ability'
+        ? [{ key: 'description', label: t('ability.description') }]
+        : []),
+  ]
+  const filters = Object.fromEntries(
+    columns.map(({ key }) => [key, (searchParams.get(`filter.${key}`) ?? '').slice(0, MAX_QUERY_LENGTH)]),
+  )
+  const sortKey = searchParams.get('sort')
+  const sort: ResourceListSort =
+    sortKey && columns.some(({ key }) => key === sortKey)
+      ? { key: sortKey, direction: searchParams.get('direction') === 'descending' ? 'descending' : 'ascending' }
+      : null
+  const columnMode = Boolean(sort || Object.values(filters).some((value) => value.trim()))
   const rawOffset = searchParams.get('offset') ?? ''
   const parsedOffset = Number(rawOffset || 0)
   const offset =
@@ -47,14 +81,17 @@ export function ResourceListPage() {
   const query = rawQuery.slice(0, MAX_QUERY_LENGTH)
   const firstRender = useRef(true)
   const searching = Boolean(query.trim())
+  const fullDirectory = searching || columnMode
   const {
     data: response,
     loading,
     error,
     retry,
   } = useApi<ApiList<NamedResource | { url: string }>>(
-    valid ? `${resource}?limit=${searching ? RESOURCE_SEARCH_LIMIT : LIMIT}&offset=${searching ? 0 : offset}` : null,
-    searching ? parseResourceDirectory : parseResourceList,
+    valid
+      ? `${resource}?limit=${fullDirectory ? RESOURCE_SEARCH_LIMIT : LIMIT}&offset=${fullDirectory ? 0 : offset}`
+      : null,
+    fullDirectory ? parseResourceDirectory : parseResourceList,
   )
   const data = response ?? { results: [], count: 0, next: null, previous: null }
   const items = data.results.map((item) => {
@@ -62,16 +99,55 @@ export function ResourceListPage() {
     return { ...item, id, name: 'name' in item && item.name ? item.name : id }
   })
   const matches = searching ? items.filter((item) => matchesResource(item.name, item.url, query)) : items
-  const collectionKey = JSON.stringify([resource, query])
+  const detailItems = columnMode ? items : searching ? matches.slice(offset, offset + LIMIT) : matches
+  const moveDetails = useMoveListDetails(resource === 'move' ? detailItems : [], apiLanguage)
+  const abilityDetails = useAbilityListDetails(resource === 'ability' ? detailItems : [], apiLanguage)
+  const detailsPending =
+    columnMode &&
+    ((resource === 'move' && (moveDetails.loading || !!moveDetails.error)) ||
+      (resource === 'ability' && (abilityDetails.loading || !!abilityDetails.error)))
+  const rows = matches.map((item) => {
+    const move = moveDetails.data?.[item.name]
+    const ability = abilityDetails.data?.[item.name]
+    const damageClass = normalizedDamageClass(item.name)
+    const displayName =
+      resource === 'move'
+        ? localizedName(move?.names, apiLanguage) || prettyName(item.name)
+        : resource === 'type'
+          ? typeLabel(item.name, language)
+          : resource === 'gender' && ['male', 'female', 'genderless'].includes(item.name)
+            ? t(
+                item.name === 'male'
+                  ? 'gender.maleLabel'
+                  : item.name === 'female'
+                    ? 'gender.femaleLabel'
+                    : 'gender.none',
+              )
+            : resource === 'move-damage-class' && damageClass
+              ? t(`damage.${damageClass}`)
+              : prettyName(item.name)
+    return {
+      ...item,
+      number: `#${item.id.padStart(3, '0')}`,
+      displayName,
+      type: move ? typeLabel(move.type, language) : null,
+      damageClass: move ? t(`damage.${move.damageClass}`) : null,
+      power: move?.power ?? null,
+      accuracy: move?.accuracy == null ? null : `${move.accuracy}%`,
+      pp: move?.pp ?? null,
+      description: localizedTextResult(ability?.effectEntries, ['short_effect'], apiLanguage).text || '—',
+    }
+  })
+  const selectedRows = columnMode ? filterAndSortResourceRows(rows, filters, sort, language) : rows
+  const collectionKey = JSON.stringify([resource, query, filters, sort, language])
   const [knownCount, setKnownCount] = useState({ key: collectionKey, total: 0 })
-  const responseCount = searching ? matches.length : data.count
-  if (response && (knownCount.key !== collectionKey || knownCount.total !== responseCount)) {
+  const responseCount = fullDirectory ? selectedRows.length : data.count
+  if (response && !detailsPending && (knownCount.key !== collectionKey || knownCount.total !== responseCount)) {
     setKnownCount({ key: collectionKey, total: responseCount })
   }
-  const resultCount = response ? responseCount : knownCount.key === collectionKey ? knownCount.total : 0
-  const filtered = searching ? matches.slice(offset, offset + LIMIT) : matches
-  const moveDetails = useMoveListDetails(resource === 'move' ? filtered : [], apiLanguage)
-  const abilityDetails = useAbilityListDetails(resource === 'ability' ? filtered : [], apiLanguage)
+  const resultCount =
+    response && !detailsPending ? responseCount : knownCount.key === collectionKey ? knownCount.total : 0
+  const filtered = detailsPending ? [] : fullDirectory ? selectedRows.slice(offset, offset + LIMIT) : selectedRows
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false
@@ -90,17 +166,35 @@ export function ResourceListPage() {
     setSearchParams(next, { replace: true })
   }, [offset, query, rawOffset, rawQuery, searchParams, setSearchParams])
   useEffect(() => {
-    if (!response || offset === 0 || offset < resultCount) return
+    if (!response || detailsPending || offset === 0 || offset < resultCount) return
     const lastOffset = resultCount > 0 ? Math.floor((resultCount - 1) / LIMIT) * LIMIT : 0
     const next = new URLSearchParams(searchParams)
     if (lastOffset > 0) next.set('offset', String(lastOffset))
     else next.delete('offset')
     setSearchParams(next, { replace: true })
-  }, [response, resultCount, offset, searchParams, setSearchParams])
+  }, [response, detailsPending, resultCount, offset, searchParams, setSearchParams])
   const updateParams = (nextOffset: number, nextQuery = query) => {
-    const next = new URLSearchParams()
+    const next = new URLSearchParams(searchParams)
+    next.delete('offset')
+    next.delete('q')
     if (nextOffset > 0) next.set('offset', String(nextOffset))
     if (nextQuery) next.set('q', nextQuery)
+    setSearchParams(next, { replace: true })
+  }
+  const updateColumns = (nextFilters: Record<string, string>, nextSort: ResourceListSort) => {
+    const next = new URLSearchParams(searchParams)
+    next.delete('offset')
+    for (const { key } of columns) {
+      if (nextFilters[key]) next.set(`filter.${key}`, nextFilters[key])
+      else next.delete(`filter.${key}`)
+    }
+    if (nextSort) {
+      next.set('sort', nextSort.key)
+      next.set('direction', nextSort.direction)
+    } else {
+      next.delete('sort')
+      next.delete('direction')
+    }
     setSearchParams(next, { replace: true })
   }
   if (!valid) return <ErrorState title={t('resource.unknown')} message={t('resource.unknownDesc')} />
@@ -190,7 +284,7 @@ export function ResourceListPage() {
         {query && <span>{t('resource.searchQuery', { query })}</span>}
       </p>
       {resultCount > LIMIT && pagination('top')}
-      {loading && (
+      {(loading || (detailsPending && (moveDetails.loading || abilityDetails.loading))) && (
         <div className="resource-list-skeleton" role="status" aria-label={t('common.loadingShort')}>
           {Array.from({ length: 8 }, (_, index) => (
             <div className="data-row-skeleton skeleton" key={index} />
@@ -199,11 +293,15 @@ export function ResourceListPage() {
       )}
       {error && <InlineRetryError message={t('resource.loadError')} retryLabel={t('common.retry')} onRetry={retry} />}
       {resource === 'move' && moveDetails.error && (
-        <InlineRetryError message={t('move.detailsError')} retryLabel={t('common.retry')} onRetry={moveDetails.retry} />
+        <InlineRetryError
+          message={t(columnMode ? 'resource.columnDetailsError' : 'move.detailsError')}
+          retryLabel={t('common.retry')}
+          onRetry={moveDetails.retry}
+        />
       )}
       {resource === 'ability' && abilityDetails.error && (
         <InlineRetryError
-          message={t('ability.detailsError')}
+          message={t(columnMode ? 'resource.columnDetailsError' : 'ability.detailsError')}
           retryLabel={t('common.retry')}
           onRetry={abilityDetails.retry}
         />
@@ -212,34 +310,13 @@ export function ResourceListPage() {
         className={`data-list${resource === 'move' ? ' move-data-list' : ''}${resource === 'ability' ? ' ability-data-list' : ''}`}
         aria-busy={(resource === 'move' && moveDetails.loading) || (resource === 'ability' && abilityDetails.loading)}
       >
-        {resource !== 'move' && resource !== 'ability' && (
-          <div className="resource-list-heading" aria-hidden="true">
-            <span>#</span>
-            <span>{getResourceLabel(resource, language)}</span>
-            <span />
-          </div>
-        )}
-        {resource === 'move' && (
-          <div className="move-list-heading" aria-hidden="true">
-            <span>#</span>
-            <span>{t('move.name')}</span>
-            <span>{t('move.type')}</span>
-            <span>{t('move.damageClass')}</span>
-            <span>{t('move.power')}</span>
-            <span>{t('move.accuracy')}</span>
-            <span>{t('move.pp')}</span>
-            <span />
-          </div>
-        )}
-        {resource === 'ability' && (
-          <div className="ability-list-heading" aria-hidden="true">
-            <span>#</span>
-            <span />
-            <span>{t('ability.name')}</span>
-            <span>{t('ability.description')}</span>
-            <span />
-          </div>
-        )}
+        <ResourceListHeader
+          columns={columns}
+          filters={filters}
+          sort={sort}
+          onFilter={(key, value) => updateColumns({ ...filters, [key]: value }, sort)}
+          onSort={(next) => updateColumns(filters, next)}
+        />
         {filtered.map((item) => {
           const numericId = /^\d+$/.test(item.id) ? Number(item.id) : 0
           const hasValidId = Number.isSafeInteger(numericId) && numericId > 0
@@ -388,9 +465,20 @@ export function ResourceListPage() {
           )
         })}
       </div>
-      {!loading && !error && !filtered.length && (
+      {!loading && !detailsPending && !error && !filtered.length && (
         <EmptyState icon={<Search />} title={t('resource.emptyPage')}>
-          <button className="button secondary" onClick={() => updateParams(0, '')}>
+          <button
+            className="button secondary"
+            onClick={() => {
+              const next = new URLSearchParams(searchParams)
+              next.delete('q')
+              next.delete('offset')
+              next.delete('sort')
+              next.delete('direction')
+              columns.forEach(({ key }) => next.delete(`filter.${key}`))
+              setSearchParams(next, { replace: true })
+            }}
+          >
             {t('ui.clearSearch')}
           </button>
         </EmptyState>

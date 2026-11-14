@@ -1,0 +1,96 @@
+.resource-list-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  padding: 8px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-soft);
+}
+.resource-list-column {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  align-content: start;
+}
+.resource-list-sort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  min-height: 28px;
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.resource-list-sort:hover,
+.resource-list-sort[aria-pressed='true'] {
+  color: var(--red);
+}
+.resource-list-sort svg {
+  flex-shrink: 0;
+}
+:root[data-theme] #main-content .resource-list-column .search-field.compact {
+  height: 32px;
+  min-height: 32px;
+  border-radius: 4px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding-inline: 6px;
+}
+.resource-list-column .search-field input {
+  width: 0;
+  padding-inline: 4px;
+}
+.resource-list-column .search-clear {
+  width: 24px;
+  min-width: 24px;
+  height: 30px;
+  min-height: 30px;
+  padding: 0;
+}
+@media (max-width: 720px) {
+  .move-data-list .resource-list-controls,
+  .ability-data-list .resource-list-controls {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .resource-list-column .search-field > svg {
+    display: none;
+  }
+}
+@media (min-width: 721px) {
+  .move-data-list .resource-list-controls {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .ability-data-list .resource-list-controls {
+    grid-template-columns: minmax(90px, 0.3fr) minmax(160px, 0.7fr) minmax(200px, 1fr);
+  }
+}
+@media (min-width: 1280px) {
+  .move-data-list .resource-list-controls,
+  .resource-page .data-list.move-data-list .move-list-row {
+    grid-template-columns: 88px minmax(150px, 1fr) 100px 100px 90px 90px 80px 24px;
+    gap: 8px;
+    padding-inline: 20px;
+  }
+  .ability-data-list .resource-list-controls,
+  .resource-page .data-list.ability-data-list .ability-list-row {
+    grid-template-columns: 88px 38px minmax(160px, 0.65fr) minmax(240px, 1.35fr) 24px;
+    gap: 8px;
+    padding-inline: 20px;
+  }
+  .ability-data-list .resource-list-column-displayName {
+    grid-column: 3;
+  }
+  .ability-data-list .resource-list-column-description {
+    grid-column: 4;
+  }
+}

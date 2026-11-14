@@ -136,7 +136,7 @@ describe('ResourceListPage item presentation', () => {
       retry: vi.fn(),
     })
 
-    const { container } = render(
+    render(
       <MemoryRouter initialEntries={['/explore/ability']}>
         <LanguageProvider>
           <Routes>
@@ -146,7 +146,7 @@ describe('ResourceListPage item presentation', () => {
       </MemoryRouter>,
     )
 
-    const heading = container.querySelector('.ability-list-heading')
+    const heading = screen.getByLabelText('Controles das colunas')
     expect(heading).toHaveTextContent('Habilidade')
     expect(heading).toHaveTextContent('Descrição')
     expect(screen.getByText('Pode fazer o alvo recuar a cada golpe.')).toHaveAttribute('lang', 'pt-br')
@@ -486,5 +486,137 @@ describe('ResourceListPage collection search', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Limpar busca' }))
     expect(search).toHaveValue('')
     expect(screen.getAllByText('Página 1').length).toBeGreaterThan(0)
+  })
+})
+
+describe('ResourceListPage column controls', () => {
+  const moves = Array.from({ length: 45 }, (_, i) => ({ name: `move-${i + 1}`, url: `${API_BASE_URL}/move/${i + 1}/` }))
+  function setupMoves() {
+    useApiMock.mockReturnValue({ data: { count: 45, results: moves }, loading: false, error: null, retry: vi.fn() })
+    useMoveListDetailsMock.mockReturnValue({
+      data: Object.fromEntries(
+        moves.map((move, i) => [
+          move.name,
+          {
+            names: [{ name: `Golpe ${i + 1}`, language: { name: 'pt-br' } }],
+            type: i === 44 ? 'fire' : 'water',
+            damageClass: i === 44 ? 'special' : 'physical',
+            power: i + 1,
+            accuracy: i + 1,
+            pp: i + 1,
+          },
+        ]),
+      ),
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+  }
+  function show(resource: string, search = '') {
+    return render(
+      <MemoryRouter initialEntries={[`/explore/${resource}${search}`]}>
+        <LanguageProvider>
+          <Routes>
+            <Route path="explore/:resource" element={<ResourceListPage />} />
+          </Routes>
+        </LanguageProvider>
+      </MemoryRouter>,
+    )
+  }
+
+  it('combines filters on every move column across all pages', () => {
+    setupMoves()
+    show('move')
+    for (const [column, value] of Object.entries({
+      '#': '#045',
+      Golpe: 'Golpe 45',
+      Tipo: 'Fogo',
+      Classe: 'Especial',
+      Poder: '45',
+      Precisão: '45%',
+      PP: '45',
+    })) {
+      fireEvent.change(screen.getByRole('textbox', { name: `Filtrar ${column}` }), { target: { value } })
+    }
+    expect(screen.getByRole('link', { name: /Abrir detalhes de Golpe 45\./ })).toBeVisible()
+    expect(screen.queryByRole('link', { name: /Abrir detalhes de Golpe 1\./ })).not.toBeInTheDocument()
+    expect(useApiMock).toHaveBeenLastCalledWith('move?limit=10000&offset=0', expect.any(Function))
+    expect(useMoveListDetailsMock.mock.lastCall?.[0]).toHaveLength(45)
+  })
+
+  it.each(['#', 'Golpe', 'Tipo', 'Classe', 'Poder', 'Precisão', 'PP'])(
+    'sorts %s before pagination and preserves sorting when changing pages',
+    (column) => {
+      setupMoves()
+      const { container } = show('move')
+      const button = screen.getByRole('button', { name: `Ordenar por ${column}` })
+      fireEvent.click(button)
+      if (column !== 'Classe') fireEvent.click(button)
+      expect(container.querySelector('.move-list-row b')).toHaveTextContent('Golpe 45')
+      expect(container.querySelectorAll('.move-list-row')).toHaveLength(40)
+      fireEvent.click(screen.getAllByRole('button', { name: 'Próxima' })[0])
+      expect(container.querySelectorAll('.move-list-row')).toHaveLength(5)
+      expect(button).toHaveAttribute('aria-pressed', 'true')
+    },
+  )
+
+  it('filters localized ability descriptions and combines with the existing collection search', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 2,
+        results: [
+          { name: 'alpha', url: `${API_BASE_URL}/ability/1/` },
+          { name: 'beta', url: `${API_BASE_URL}/ability/2/` },
+        ],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    useAbilityListDetailsMock.mockReturnValue({
+      data: {
+        alpha: { effectEntries: [{ short_effect: 'Aumenta a potência.', language: { name: 'pt-br' } }] },
+        beta: { effectEntries: [{ short_effect: 'Reduz a defesa.', language: { name: 'pt-br' } }] },
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    show('ability', '?q=alpha&filter.description=potencia')
+    expect(screen.getByRole('link', { name: /Alpha/ })).toBeVisible()
+    expect(screen.queryByRole('link', { name: /Beta/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Buscar em toda a coleção…' })).toHaveValue('alpha')
+  })
+
+  it('sorts ordinary collections and clears filters with no matches', () => {
+    useApiMock.mockReturnValue({
+      data: {
+        count: 2,
+        results: [
+          { name: 'zeta', url: `${API_BASE_URL}/item/1/` },
+          { name: 'alpha', url: `${API_BASE_URL}/item/2/` },
+        ],
+      },
+      loading: false,
+      error: null,
+      retry: vi.fn(),
+    })
+    const { container } = show('item', '?sort=displayName')
+    expect(container.querySelector('.data-list > a b')).toHaveTextContent('Alpha')
+    fireEvent.change(screen.getByRole('textbox', { name: 'Filtrar Itens' }), { target: { value: 'missing' } })
+    expect(container.querySelectorAll('.data-list > a')).toHaveLength(0)
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar busca' }))
+    expect(container.querySelectorAll('.data-list > a')).toHaveLength(2)
+    expect(container.querySelector('.data-list > a b')).toHaveTextContent('Zeta')
+  })
+
+  it('waits for complete details and offers retry instead of showing incomplete filtered results', () => {
+    setupMoves()
+    const retry = vi.fn()
+    useMoveListDetailsMock.mockReturnValue({ data: null, loading: false, error: new Error('Unavailable'), retry })
+    const { container } = show('move', '?filter.type=Fogo')
+    expect(container.querySelectorAll('.move-list-row')).toHaveLength(0)
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
+    expect(retry).toHaveBeenCalledOnce()
   })
 })

@@ -1,3 +1,4 @@
+import { fetchCatalogBatches } from '../lib/catalog-batches'
 import { useCallback, useEffect, useState } from 'react'
 import type { NamedResource } from '../types'
 import { fetchMoveListDetails, type MoveListDetails } from '../lib/move-catalog'
@@ -35,7 +36,7 @@ export function useMoveListDetails(
     const controller = new AbortController()
     const ids = idsKey.split(',').map(Number)
     setState({ key, data: null, error: null, loading: true })
-    fetchMoveListDetails(ids, apiLanguage, controller.signal)
+    fetchCatalogBatches(ids, (page, signal) => fetchMoveListDetails(page, apiLanguage, signal), controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) setState({ key, data, error: null, loading: false })
       })
