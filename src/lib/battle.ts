@@ -417,6 +417,7 @@ const ownHazardRemovalMoves = new Set(['rapid-spin', 'mortal-spin', 'tidy-up'])
 const selfStatChangeMoves = new Set([
   'close-combat',
   'draco-meteor',
+  'dragon-ascent',
   'fleur-cannon',
   'hammer-arm',
   'headlong-rush',

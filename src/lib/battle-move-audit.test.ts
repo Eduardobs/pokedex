@@ -852,10 +852,53 @@ describe('requested battle rules', () => {
   })
 })
 
+describe('damaging moves that lower their user defenses', () => {
+  it.each(['dragon-ascent', 'close-combat'])(
+    '%s lowers only the user defenses after damage, including Substitute and knockout',
+    (name) => {
+      for (const outcome of ['hit', 'substitute', 'knockout']) {
+        const state = setup(load(name))
+        const target = state.opponent.roster[0]
+        if (outcome === 'substitute') target.substituteHp = 10000
+        if (outcome === 'knockout') target.hp = 1
+        const result = executeMove(state).state
+        const user = result.player.roster[0]
+        const defender = result.opponent.roster[0]
+        expect(user.stages).toEqual({ ...state.player.roster[0].stages, defense: -1, specialDefense: -1 })
+        expect(defender.stages).toEqual(target.stages)
+        expect(user.moves[0].pp).toBe(state.player.roster[0].moves[0].pp - 1)
+        if (outcome === 'substitute') {
+          expect(defender.hp).toBe(target.hp)
+          expect(defender.substituteHp).toBeLessThan(target.substituteHp)
+        } else {
+          expect(defender.hp).toBeLessThan(target.hp)
+          if (outcome === 'knockout') expect(defender.hp).toBe(0)
+        }
+      }
+    },
+  )
+
+  it.each(['dragon-ascent', 'close-combat'])('%s does not lower stages on a miss or Protect', (name) => {
+    for (const failure of ['miss', 'protect']) {
+      const state = setup(load(name))
+      if (failure === 'miss') state.player.roster[0].moves[0].data.accuracy = 1
+      else {
+        state.opponent.roster[0].moves[0].data = load('protect')
+      }
+      const result = executeMove(state).state
+      expect(result.player.roster[0].stages).toEqual(state.player.roster[0].stages)
+      expect(result.opponent.roster[0].stages).toEqual(state.opponent.roster[0].stages)
+      expect(result.opponent.roster[0].hp).toBe(state.opponent.roster[0].hp)
+      expect(result.player.roster[0].moves[0].pp).toBe(state.player.roster[0].moves[0].pp - 1)
+    }
+  })
+})
+
 // Report generation is opt-in and cannot turn unresolved mechanics into passing assertions.
 afterAll(() => {
   if (!process.env.BATTLE_AUDIT_REPORT) return
   const scenarioGroups: [string, string[]][] = [
+    ['user-defense-drops-after-hit-substitute-and-knockout-not-miss-or-protect', ['dragon-ascent', 'close-combat']],
     ['generation-ix-multistrike-counts-power-accuracy-and-hit-log', Object.keys(multistrikeMoves)],
     ['ohko-level-accuracy-and-survival', ['guillotine', 'horn-drill', 'fissure', 'sheer-cold']],
     ['carrying-release-and-switch-restriction', ['sky-drop']],
@@ -920,6 +963,10 @@ afterAll(() => {
     const gaps: string[] = []
     if (formatExclusion) gaps.push(`Singles restriction verified: ${formatExclusion}; move fails without an effect`)
     if (!reference) gaps.push('Reference ID unavailable')
+    if (move.name === 'dragon-ascent' || move.name === 'close-combat')
+      gaps.push(
+        'User Defense and Special Defense drops after damage, Substitute and knockout, and no drops on miss/Protect verified; remaining ability/item interactions require coverage',
+      )
     if (move.name === 'clangorous-soul')
       gaps.push(
         '33% maximum-HP cost rounded down, five-stat boost, Magic Guard bypass and insufficient-HP/maximized-stat failures verified; remaining interactions require coverage',

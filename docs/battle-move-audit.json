@@ -16382,7 +16382,10 @@
     {
       "id": 370,
       "singlesExclusion": null,
-      "verifiedScenarios": ["baseline-state-invariants"],
+      "verifiedScenarios": [
+        "baseline-state-invariants",
+        "user-defense-drops-after-hit-substitute-and-knockout-not-miss-or-protect"
+      ],
       "multistrike": null,
       "canonicalFlags": ["contact", "protect", "mirror", "metronome"],
       "name": "close-combat",
@@ -16420,7 +16423,7 @@
         "self: {\"boosts\":{\"def\":-1,\"spd\":-1}}"
       ],
       "findings": [
-        "Baseline execution tested; full interaction parity with items, abilities, target rules and cartridge rounding is not certified"
+        "User Defense and Special Defense drops after damage, Substitute and knockout, and no drops on miss/Protect verified; remaining ability/item interactions require coverage"
       ],
       "apiEffectDescriptions": [
         "Inflicts regular damage, then lowers the user’s Defense and Special Defense by one stage each."
@@ -27793,7 +27796,10 @@
     {
       "id": 620,
       "singlesExclusion": null,
-      "verifiedScenarios": ["baseline-state-invariants"],
+      "verifiedScenarios": [
+        "baseline-state-invariants",
+        "user-defense-drops-after-hit-substitute-and-knockout-not-miss-or-protect"
+      ],
       "multistrike": null,
       "canonicalFlags": ["contact", "protect", "mirror", "distance"],
       "name": "dragon-ascent",
@@ -27831,7 +27837,7 @@
         "self: {\"boosts\":{\"def\":-1,\"spd\":-1}}"
       ],
       "findings": [
-        "Baseline execution tested; full interaction parity with items, abilities, target rules and cartridge rounding is not certified"
+        "User Defense and Special Defense drops after damage, Substitute and knockout, and no drops on miss/Protect verified; remaining ability/item interactions require coverage"
       ],
       "apiEffectDescriptions": [
         "Inflicts regular damage, then lowers the user’s Defense and Special Defense by one stage each."
