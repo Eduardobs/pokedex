@@ -243,6 +243,29 @@
   min-height: 0;
   border-radius: 6px;
   padding-top: 8px;
+  background: var(--surface-soft);
+  color: var(--ink);
+}
+:root[data-theme] #main-content .hero-specimen-caption,
+:root[data-theme] #main-content .hero-specimen-caption > .hero-specimen-name {
+  color: var(--ink);
+}
+:root[data-theme] #main-content .hero-specimen-caption > span {
+  border-color: var(--line);
+  background: var(--surface);
+}
+:root[data-theme] #main-content .hero-specimen-caption > .hero-specimen-name {
+  background: transparent;
+}
+:root[data-theme] #main-content .hero-featured-error {
+  border-color: var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+:root[data-theme] #main-content .hero-featured-error button {
+  border-color: var(--control-edge);
+  background: var(--surface-soft);
+  color: var(--ink);
 }
 #main-content .hero-specimen-name {
   font-size: 22px;
@@ -261,10 +284,15 @@
   gap: 12px;
   min-height: 60px;
   padding: 8px;
-  border: 1px solid #ffffff30;
+  border: 1px solid var(--line);
   border-radius: 4px;
-  background: #ffffff08;
+  background: var(--surface);
+  color: var(--ink);
   font-size: 14px;
+}
+:root[data-theme] #main-content .hero-starters a:hover {
+  background: var(--surface-soft);
+  border-color: var(--control-edge);
 }
 #main-content .hero-starters img {
   width: 48px;
