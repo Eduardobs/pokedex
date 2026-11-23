@@ -4,7 +4,7 @@ import { parseResourceList } from '../lib/rest-validation'
 import { ChevronRight } from 'lucide-react'
 import { Pagination } from '../components/Pagination'
 import { Database, Search, Swords, TriangleAlert, Zap } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { ErrorState } from '../components/ErrorState'
 import { EmptyState, InlineRetryError } from '../components/FeedbackState'
@@ -39,37 +39,45 @@ export function ResourceListPage() {
   const ResourceIcon = meta?.icon ?? Database
   const GroupIcon = meta?.groupIcon
   const [searchParams, setSearchParams] = useSearchParams()
-  const columns = [
-    { key: 'number', label: '#' },
-    {
-      key: 'displayName',
-      label:
-        resource === 'move'
-          ? t('move.name')
-          : resource === 'ability'
-            ? t('ability.name')
-            : getResourceLabel(resource, language),
-    },
-    ...(resource === 'move'
-      ? [
-          { key: 'type', label: t('move.type') },
-          { key: 'damageClass', label: t('move.damageClass') },
-          { key: 'power', label: t('move.power') },
-          { key: 'accuracy', label: t('move.accuracy') },
-          { key: 'pp', label: t('move.pp') },
-        ]
-      : resource === 'ability'
-        ? [{ key: 'description', label: t('ability.description') }]
-        : []),
-  ]
-  const filters = Object.fromEntries(
-    columns.map(({ key }) => [key, (searchParams.get(`filter.${key}`) ?? '').slice(0, MAX_QUERY_LENGTH)]),
+  const columns = useMemo(
+    () => [
+      { key: 'number', label: '#' },
+      {
+        key: 'displayName',
+        label:
+          resource === 'move'
+            ? t('move.name')
+            : resource === 'ability'
+              ? t('ability.name')
+              : getResourceLabel(resource, language),
+      },
+      ...(resource === 'move'
+        ? [
+            { key: 'type', label: t('move.type') },
+            { key: 'damageClass', label: t('move.damageClass') },
+            { key: 'power', label: t('move.power') },
+            { key: 'accuracy', label: t('move.accuracy') },
+            { key: 'pp', label: t('move.pp') },
+          ]
+        : resource === 'ability'
+          ? [{ key: 'description', label: t('ability.description') }]
+          : []),
+    ],
+    [language, resource, t],
   )
+  const filterSignature = columns
+    .map(({ key }) => (searchParams.get(`filter.${key}`) ?? '').slice(0, MAX_QUERY_LENGTH))
+    .join('\0')
+  const filters = useMemo(() => {
+    const values = filterSignature.split('\0')
+    return Object.fromEntries(columns.map(({ key }, index) => [key, values[index] ?? '']))
+  }, [columns, filterSignature])
   const sortKey = searchParams.get('sort')
-  const sort: ResourceListSort =
-    sortKey && columns.some(({ key }) => key === sortKey)
-      ? { key: sortKey, direction: searchParams.get('direction') === 'descending' ? 'descending' : 'ascending' }
-      : null
+  const sortDirection = searchParams.get('direction') === 'descending' ? 'descending' : 'ascending'
+  const sort = useMemo<ResourceListSort>(
+    () => (sortKey && columns.some(({ key }) => key === sortKey) ? { key: sortKey, direction: sortDirection } : null),
+    [columns, sortDirection, sortKey],
+  )
   const columnMode = Boolean(sort || Object.values(filters).some((value) => value.trim()))
   const rawOffset = searchParams.get('offset') ?? ''
   const parsedOffset = Number(rawOffset || 0)
@@ -93,52 +101,69 @@ export function ResourceListPage() {
       : null,
     fullDirectory ? parseResourceDirectory : parseResourceList,
   )
-  const data = response ?? { results: [], count: 0, next: null, previous: null }
-  const items = data.results.map((item) => {
-    const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
-    return { ...item, id, name: 'name' in item && item.name ? item.name : id }
-  })
-  const matches = searching ? items.filter((item) => matchesResource(item.name, item.url, query)) : items
-  const detailItems = columnMode ? items : searching ? matches.slice(offset, offset + LIMIT) : matches
+  const data = useMemo(() => response ?? { results: [], count: 0, next: null, previous: null }, [response])
+  const items = useMemo(
+    () =>
+      data.results.map((item) => {
+        const id = item.url.split('/').filter(Boolean).at(-1) ?? ''
+        return { ...item, id, name: 'name' in item && item.name ? item.name : id }
+      }),
+    [data.results],
+  )
+  const matches = useMemo(
+    () => (searching ? items.filter((item) => matchesResource(item.name, item.url, query)) : items),
+    [items, query, searching],
+  )
+  const detailItems = useMemo(
+    () => (columnMode ? items : searching ? matches.slice(offset, offset + LIMIT) : matches),
+    [columnMode, items, matches, offset, searching],
+  )
   const moveDetails = useMoveListDetails(resource === 'move' ? detailItems : [], apiLanguage)
   const abilityDetails = useAbilityListDetails(resource === 'ability' ? detailItems : [], apiLanguage)
   const detailsPending =
     columnMode &&
     ((resource === 'move' && (moveDetails.loading || !!moveDetails.error)) ||
       (resource === 'ability' && (abilityDetails.loading || !!abilityDetails.error)))
-  const rows = matches.map((item) => {
-    const move = moveDetails.data?.[item.name]
-    const ability = abilityDetails.data?.[item.name]
-    const damageClass = normalizedDamageClass(item.name)
-    const displayName =
-      resource === 'move'
-        ? localizedName(move?.names, apiLanguage) || prettyName(item.name)
-        : resource === 'type'
-          ? typeLabel(item.name, language)
-          : resource === 'gender' && ['male', 'female', 'genderless'].includes(item.name)
-            ? t(
-                item.name === 'male'
-                  ? 'gender.maleLabel'
-                  : item.name === 'female'
-                    ? 'gender.femaleLabel'
-                    : 'gender.none',
-              )
-            : resource === 'move-damage-class' && damageClass
-              ? t(`damage.${damageClass}`)
-              : prettyName(item.name)
-    return {
-      ...item,
-      number: `#${item.id.padStart(3, '0')}`,
-      displayName,
-      type: move ? typeLabel(move.type, language) : null,
-      damageClass: move ? t(`damage.${move.damageClass}`) : null,
-      power: move?.power ?? null,
-      accuracy: move?.accuracy == null ? null : `${move.accuracy}%`,
-      pp: move?.pp ?? null,
-      description: localizedTextResult(ability?.effectEntries, ['short_effect'], apiLanguage).text || '—',
-    }
-  })
-  const selectedRows = columnMode ? filterAndSortResourceRows(rows, filters, sort, language) : rows
+  const rows = useMemo(
+    () =>
+      matches.map((item) => {
+        const move = moveDetails.data?.[item.name]
+        const ability = abilityDetails.data?.[item.name]
+        const damageClass = normalizedDamageClass(item.name)
+        const displayName =
+          resource === 'move'
+            ? localizedName(move?.names, apiLanguage) || prettyName(item.name)
+            : resource === 'type'
+              ? typeLabel(item.name, language)
+              : resource === 'gender' && ['male', 'female', 'genderless'].includes(item.name)
+                ? t(
+                    item.name === 'male'
+                      ? 'gender.maleLabel'
+                      : item.name === 'female'
+                        ? 'gender.femaleLabel'
+                        : 'gender.none',
+                  )
+                : resource === 'move-damage-class' && damageClass
+                  ? t(`damage.${damageClass}`)
+                  : prettyName(item.name)
+        return {
+          ...item,
+          number: `#${item.id.padStart(3, '0')}`,
+          displayName,
+          type: move ? typeLabel(move.type, language) : null,
+          damageClass: move ? t(`damage.${move.damageClass}`) : null,
+          power: move?.power ?? null,
+          accuracy: move?.accuracy == null ? null : `${move.accuracy}%`,
+          pp: move?.pp ?? null,
+          description: localizedTextResult(ability?.effectEntries, ['short_effect'], apiLanguage).text || '—',
+        }
+      }),
+    [abilityDetails.data, apiLanguage, language, matches, moveDetails.data, resource, t],
+  )
+  const selectedRows = useMemo(
+    () => (columnMode ? filterAndSortResourceRows(rows, filters, sort, language) : rows),
+    [columnMode, filters, language, rows, sort],
+  )
   const collectionKey = JSON.stringify([resource, query, filters, sort, language])
   const [knownCount, setKnownCount] = useState({ key: collectionKey, total: 0 })
   const responseCount = fullDirectory ? selectedRows.length : data.count

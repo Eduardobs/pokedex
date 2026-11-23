@@ -100,8 +100,8 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     setFiltersOpen(false)
     requestAnimationFrame(() => filterTriggerRef.current?.focus())
   }
-  const query = searchParams.get('q') ?? ''
-  const categoryParam = searchParams.get('categories')
+  const query = (searchParams.get('q') ?? '').slice(0, 100)
+  const categoryParam = searchParams.get('categories')?.slice(0, 2000) ?? null
   const categories = useMemo(() => map.groups.flatMap((group) => group.categories), [map.groups])
   const activeCategories = useMemo(() => {
     if (categoryParam === null) return new Set(categories.map((category) => category.id))
@@ -111,15 +111,27 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
   }, [categories, categoryParam])
 
   const categoryById = useMemo(() => new Map(categories.map((category) => [category.id, category])), [categories])
-  const normalizedQuery = normalizeSearchText(query)
-  const visibleMarkers = map.markers.filter((marker) => {
-    if (!activeCategories.has(marker.category)) return false
-    if (!normalizedQuery) return true
-    const category = categoryById.get(marker.category)
-    return normalizeSearchText(`${marker.name} ${marker.area} ${category ? t(category.labelKey) : ''}`).includes(
-      normalizedQuery,
-    )
-  })
+  const searchableMarkers = useMemo(
+    () =>
+      map.markers.map((marker) => {
+        const category = categoryById.get(marker.category)
+        return {
+          marker,
+          searchText: normalizeSearchText(`${marker.name} ${marker.area} ${category ? t(category.labelKey) : ''}`),
+        }
+      }),
+    [categoryById, map.markers, t],
+  )
+  const normalizedQuery = useMemo(() => normalizeSearchText(query), [query])
+  const visibleMarkers = useMemo(
+    () =>
+      searchableMarkers.flatMap(({ marker, searchText }) => {
+        if (!activeCategories.has(marker.category)) return []
+        if (normalizedQuery && !searchText.includes(normalizedQuery)) return []
+        return [marker]
+      }),
+    [activeCategories, normalizedQuery, searchableMarkers],
+  )
 
   const fitScale = getFitScale(viewport, map)
   const displayScale = fitScale * zoom
@@ -128,14 +140,15 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     () => getVisibleTiles(map, viewport, pan, displayScale, sourceZoom),
     [displayScale, map, pan, sourceZoom, viewport],
   )
-  const clusters = getMarkerClusters(
-    map,
-    visibleMarkers,
-    viewport,
-    pan,
-    displayScale,
-    Boolean(normalizedQuery) || zoom >= 6,
+  const separateMarkers = Boolean(normalizedQuery) || zoom >= 6
+  const clusters = useMemo(
+    () => getMarkerClusters(map, visibleMarkers, viewport, pan, displayScale, separateMarkers),
+    [displayScale, map, pan, separateMarkers, viewport, visibleMarkers],
   )
+  const viewStateRef = useRef({ fitScale, pan, viewport, zoom })
+  useEffect(() => {
+    viewStateRef.current = { fitScale, pan, viewport, zoom }
+  }, [fitScale, pan, viewport, zoom])
 
   useEffect(() => {
     const element = viewportRef.current
@@ -143,7 +156,11 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     const updateSize = () => {
       const bounds = element.getBoundingClientRect()
       if (bounds.width > 0 && bounds.height > 0) {
-        setViewport({ width: bounds.width, height: bounds.height })
+        setViewport((current) =>
+          current.width === bounds.width && current.height === bounds.height
+            ? current
+            : { width: bounds.width, height: bounds.height },
+        )
       }
     }
     updateSize()
@@ -209,23 +226,29 @@ export function GameMapPage({ map }: { map: GameMapDefinition }) {
     const handleWheel = (event: WheelEvent) => {
       event.preventDefault()
       element.focus({ preventScroll: true })
+      const {
+        fitScale: currentFitScale,
+        pan: currentPan,
+        viewport: currentViewport,
+        zoom: currentZoom,
+      } = viewStateRef.current
       const bounds = element.getBoundingClientRect()
-      const nextZoom = getAdjacentZoom(zoom, event.deltaY < 0 ? 1 : -1)
-      if (nextZoom === zoom) return
+      const nextZoom = getAdjacentZoom(currentZoom, event.deltaY < 0 ? 1 : -1)
+      if (nextZoom === currentZoom) return
 
-      const oldScale = fitScale * zoom
-      const nextScale = fitScale * nextZoom
-      const relativeX = event.clientX - bounds.left - viewport.width / 2
-      const relativeY = event.clientY - bounds.top - viewport.height / 2
-      const mapX = (relativeX - pan.x) / oldScale
-      const mapY = (relativeY - pan.y) / oldScale
+      const oldScale = currentFitScale * currentZoom
+      const nextScale = currentFitScale * nextZoom
+      const relativeX = event.clientX - bounds.left - currentViewport.width / 2
+      const relativeY = event.clientY - bounds.top - currentViewport.height / 2
+      const mapX = (relativeX - currentPan.x) / oldScale
+      const mapY = (relativeY - currentPan.y) / oldScale
       setPan({ x: relativeX - mapX * nextScale, y: relativeY - mapY * nextScale })
       setZoom(nextZoom)
     }
 
     element.addEventListener('wheel', handleWheel, { passive: false })
     return () => element.removeEventListener('wheel', handleWheel)
-  }, [fitScale, pan.x, pan.y, viewport.height, viewport.width, zoom])
+  }, [])
 
   const focusCluster = (cluster: MarkerCluster) => {
     const nextZoom = clampZoom(Math.max(zoom + 1, zoom * 1.7))

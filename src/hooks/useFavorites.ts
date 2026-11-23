@@ -39,7 +39,8 @@ export function useFavorites() {
     setFavorites(next)
     setNotice({ name, action: 'added' })
   }, [])
-  const isFavorite = useCallback((name: string) => favorites.includes(name), [favorites])
+  const favoriteSet = useMemo(() => new Set(favorites), [favorites])
+  const isFavorite = useCallback((name: string) => favoriteSet.has(name), [favoriteSet])
   const clearNotice = useCallback(() => setNotice(null), [])
 
   return useMemo(

@@ -11,9 +11,13 @@ type PendingRequest = {
 
 const cache = new Map<string, CacheEntry>()
 const pendingRequests = new Map<string, PendingRequest>()
+const API_PATH = `${new URL(API_BASE_URL).pathname.replace(/\/+$/, '')}/`
+const textEncoder = new TextEncoder()
+let totalCacheBytes = 0
 
 export function clearApiCache() {
   cache.clear()
+  totalCacheBytes = 0
 }
 
 export class ApiError extends Error {
@@ -40,11 +44,10 @@ export function resolveApiUrl(pathOrUrl: string): string {
     throw new ApiError('Invalid API URL.', undefined, 'unsafe-url')
   }
 
-  const apiPath = `${new URL(API_BASE_URL).pathname.replace(/\/+$/, '')}/`
   if (
     url.protocol !== 'https:' ||
     url.origin !== API_ORIGIN ||
-    !url.pathname.startsWith(apiPath) ||
+    !url.pathname.startsWith(API_PATH) ||
     url.username ||
     url.password ||
     /%(?:2f|5c|00)/i.test(url.pathname)
@@ -56,29 +59,45 @@ export function resolveApiUrl(pathOrUrl: string): string {
 }
 
 export function evictApiCache(pathOrUrl: string) {
-  cache.delete(resolveApiUrl(pathOrUrl))
+  const url = resolveApiUrl(pathOrUrl)
+  const existing = cache.get(url)
+  if (!existing) return
+  totalCacheBytes -= existing.bytes
+  cache.delete(url)
 }
 
-function cacheResponse(url: string, data: unknown) {
+function cacheResponse(url: string, data: unknown, measuredBytes?: number) {
   const now = Date.now()
-  for (const [key, entry] of cache) if (entry.expiresAt <= now) cache.delete(key)
-  const bytes = new TextEncoder().encode(JSON.stringify(data)).byteLength
+  for (const [key, entry] of cache) {
+    if (entry.expiresAt <= now) {
+      totalCacheBytes -= entry.bytes
+      cache.delete(key)
+    }
+  }
+  const bytes = measuredBytes ?? textEncoder.encode(JSON.stringify(data)).byteLength
   if (bytes > NETWORK.cacheMaxBytes) return
-  cache.delete(url)
-  let total = [...cache.values()].reduce((sum, entry) => sum + entry.bytes, 0)
-  while (cache.size && (cache.size >= NETWORK.cacheMaxEntries || total + bytes > NETWORK.cacheMaxBytes)) {
+  const existing = cache.get(url)
+  if (existing) {
+    totalCacheBytes -= existing.bytes
+    cache.delete(url)
+  }
+  while (cache.size && (cache.size >= NETWORK.cacheMaxEntries || totalCacheBytes + bytes > NETWORK.cacheMaxBytes)) {
     const key = cache.keys().next().value!
-    total -= cache.get(key)!.bytes
+    totalCacheBytes -= cache.get(key)!.bytes
     cache.delete(key)
   }
   cache.set(url, { data, bytes, expiresAt: now + NETWORK.cacheTtlMs })
+  totalCacheBytes += bytes
 }
 
 function readCache<T>(url: string): T | undefined {
   const entry = cache.get(url)
   if (!entry) return undefined
   cache.delete(url)
-  if (entry.expiresAt <= Date.now()) return undefined
+  if (entry.expiresAt <= Date.now()) {
+    totalCacheBytes -= entry.bytes
+    return undefined
+  }
   cache.set(url, entry)
   return entry.data as T
 }
@@ -109,10 +128,10 @@ function validateJsonBounds(value: unknown) {
   visit(value, 0)
 }
 
-export async function readBoundedJsonResponse(
+async function readBoundedJsonResponseWithSize(
   response: Response,
   maximumBytes: number = NETWORK.maxResponseBytes,
-): Promise<unknown> {
+): Promise<{ data: unknown; bytes: number }> {
   const contentType = response.headers.get('content-type')
   if (contentType && !/\b(?:application|text)\/[\w.+-]*json\b/i.test(contentType)) {
     await response.body?.cancel()
@@ -125,10 +144,10 @@ export async function readBoundedJsonResponse(
   }
 
   const reader = response.body?.getReader()
-  const decoder = new TextDecoder()
   let received = 0
   let text = ''
   if (reader) {
+    const decoder = new TextDecoder()
     while (true) {
       const { done, value } = await reader.read()
       if (done) break
@@ -142,7 +161,8 @@ export async function readBoundedJsonResponse(
     text += decoder.decode()
   } else {
     text = await response.text()
-    if (new TextEncoder().encode(text).byteLength > maximumBytes) {
+    received = textEncoder.encode(text).byteLength
+    if (received > maximumBytes) {
       throw new ApiError('PokéAPI returned a response that is too large.', response.status, 'invalid-response')
     }
   }
@@ -156,7 +176,14 @@ export async function readBoundedJsonResponse(
   if (data === null || typeof data !== 'object')
     throw new ApiError('PokéAPI returned invalid data.', response.status, 'invalid-response')
   validateJsonBounds(data)
-  return data
+  return { data, bytes: received }
+}
+
+export async function readBoundedJsonResponse(
+  response: Response,
+  maximumBytes: number = NETWORK.maxResponseBytes,
+): Promise<unknown> {
+  return (await readBoundedJsonResponseWithSize(response, maximumBytes)).data
 }
 
 function observeWithSignal<T>(request: Promise<T>, signal?: AbortSignal, onFinish?: () => void): Promise<T> {
@@ -232,9 +259,9 @@ export function apiFetch<T>(pathOrUrl: string, signal?: AbortSignal): Promise<T>
               response.status,
             )
           }
-          const data = await readBoundedJsonResponse(response, NETWORK.maxRestResponseBytes)
+          const { data, bytes } = await readBoundedJsonResponseWithSize(response, NETWORK.maxRestResponseBytes)
           controller.signal.throwIfAborted()
-          cacheResponse(url, data)
+          cacheResponse(url, data, bytes)
           return data
         }),
       controller.signal,

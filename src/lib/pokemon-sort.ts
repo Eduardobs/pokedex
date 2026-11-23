@@ -24,6 +24,18 @@ export function getPokemonSortValue(pokemon: PokemonSortDetails | undefined, sor
   return pokemon.stats.find((stat) => stat.stat.name === sort)?.base_stat
 }
 
+const collators = new Map<string, Intl.Collator>()
+
+function nameCollator(locale: string) {
+  let collator = collators.get(locale)
+  if (!collator) {
+    if (collators.size >= 16) collators.delete(collators.keys().next().value as string)
+    collator = new Intl.Collator(locale, { sensitivity: 'base' })
+    collators.set(locale, collator)
+  }
+  return collator
+}
+
 export function sortPokemonList(
   pokemon: PokemonListItem[],
   sort: PokemonSortKey,
@@ -35,7 +47,7 @@ export function sortPokemonList(
 
   if (sort === 'number') return [...pokemon].sort((left, right) => (left.id - right.id) * directionMultiplier)
   if (sort === 'name') {
-    const collator = new Intl.Collator(locale, { sensitivity: 'base' })
+    const collator = nameCollator(locale)
     return [...pokemon].sort(
       (left, right) => collator.compare(left.name, right.name) * directionMultiplier || left.id - right.id,
     )

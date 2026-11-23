@@ -1,8 +1,8 @@
-import { metronomeMovePool } from './battle-metronome'
+import { metronomeMovePool, preloadMetronomeMovePool } from './battle-metronome'
 import metronomeEligibility from '../data/third-party/battle-metronome-moves.json'
 /// <reference types="node" />
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { describe, expect, it, afterAll } from 'vitest'
+import { describe, expect, it, afterAll, beforeAll } from 'vitest'
 import { apiMoves } from '../test/battle-move-fixtures'
 import singlesExclusions from '../data/third-party/battle-move-singles-exclusions.json'
 import moveFlags from '../data/third-party/battle-move-flags.json'
@@ -553,6 +553,10 @@ describe('requested battle rules', () => {
     } else state.opponent.roster[0].item = { name: 'choice-scarf', names: [], descriptions: [], sprite: null }
     expect(executeMove(state).state.opponent.roster[0].hp).toBeLessThan(10000)
   })
+  beforeAll(async () => {
+    await preloadMetronomeMovePool()
+  })
+
   it('Metronome uses the complete Gen 9 eligible pool in ID order', () => {
     const expected = referenceSnapshot.records
       .filter(({ reference }) => {

@@ -1,5 +1,6 @@
 import { GRAPHQL_API_URL, NETWORK } from '../config/app'
 import { ApiError, readBoundedJsonResponse } from './api-client'
+import { withNetworkSlot } from './network-limits'
 
 const MAX_ABILITY_PAGE_SIZE = 40
 const NAME_PATTERN = /^[a-z0-9-]{1,100}$/
@@ -127,24 +128,26 @@ async function requestAbilityListDetails(
   }, NETWORK.requestTimeoutMs)
 
   try {
-    const response = await fetch(GRAPHQL_API_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: ABILITY_LIST_DETAILS_QUERY,
-        variables: { ids, languages },
-        operationName: 'AbilityListDetails',
-      }),
-      credentials: 'omit',
-      redirect: 'error',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-    if (!response.ok) {
-      await response.body?.cancel()
-      throw new ApiError('PokéAPI did not respond as expected.', response.status)
-    }
-    return parseAbilityListDetails(await readBoundedJsonResponse(response), ids)
+    return await withNetworkSlot(async () => {
+      const response = await fetch(GRAPHQL_API_URL, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: ABILITY_LIST_DETAILS_QUERY,
+          variables: { ids, languages },
+          operationName: 'AbilityListDetails',
+        }),
+        credentials: 'omit',
+        redirect: 'error',
+        referrerPolicy: 'no-referrer',
+        signal: controller.signal,
+      })
+      if (!response.ok) {
+        await response.body?.cancel()
+        throw new ApiError('PokéAPI did not respond as expected.', response.status)
+      }
+      return parseAbilityListDetails(await readBoundedJsonResponse(response), ids)
+    }, controller.signal)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error

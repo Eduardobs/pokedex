@@ -1,7 +1,77 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { loadEnv } from 'vite'
 import { getApiConfig } from './src/config/api'
+
+const METRONOME_VIRTUAL_ID = 'virtual:battle-metronome-moves'
+const METRONOME_RESOLVED_ID = `\0${METRONOME_VIRTUAL_ID}`
+
+type RawBundledMove = {
+  name: string
+  type: { name: string }
+  damage_class: { name: string }
+  power: number | null
+  accuracy: number | null
+  priority: number
+  pp: number | null
+  target: { name: string }
+  effect_chance: number | null
+  meta: {
+    healing: number
+    drain: number
+    ailment: { name: string } | null
+    ailment_chance: number
+    min_hits: number | null
+    max_hits: number | null
+    crit_rate: number
+    flinch_chance: number
+    stat_chance: number
+  } | null
+  stat_changes: { stat: { name: string }; change: number }[]
+  flavor_text_entries: { language: { name: string }; flavor_text: string }[]
+}
+
+function buildCompactMetronomeMoves() {
+  const movesPath = resolve('src/data/third-party/pokeapi-battle-moves.json')
+  const eligibilityPath = resolve('src/data/third-party/battle-metronome-moves.json')
+  const bundledMoves = JSON.parse(readFileSync(movesPath, 'utf8')) as RawBundledMove[]
+  const eligibility = JSON.parse(readFileSync(eligibilityPath, 'utf8')) as { moves: string[] }
+  const eligible = new Set(eligibility.moves)
+
+  return bundledMoves
+    .filter((move) => eligible.has(move.name))
+    .map((move) => ({
+      name: move.name,
+      type: move.type.name,
+      damageClass: move.damage_class.name,
+      power: move.power,
+      accuracy: move.accuracy,
+      priority: move.priority,
+      pp: move.pp,
+      target: move.target.name,
+      effectChance: move.effect_chance,
+      meta: move.meta
+        ? {
+            healing: move.meta.healing,
+            drain: move.meta.drain,
+            ailment: move.meta.ailment?.name ?? 'none',
+            ailmentChance: move.meta.ailment_chance,
+            minHits: move.meta.min_hits,
+            maxHits: move.meta.max_hits,
+            critRate: move.meta.crit_rate,
+            flinchChance: move.meta.flinch_chance,
+            statChance: move.meta.stat_chance,
+          }
+        : null,
+      statChanges: move.stat_changes.map((entry) => ({ stat: entry.stat.name, change: entry.change })),
+      flavorTexts: move.flavor_text_entries.map((entry) => ({
+        language: entry.language.name,
+        text: entry.flavor_text,
+      })),
+    }))
+}
 
 export default defineConfig(({ mode }) => {
   const env = { ...loadEnv(mode, process.cwd(), 'VITE_'), ...process.env }
@@ -31,6 +101,17 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
+      {
+        name: 'battle-metronome-data',
+        resolveId(id) {
+          if (id === METRONOME_VIRTUAL_ID) return METRONOME_RESOLVED_ID
+          return undefined
+        },
+        load(id) {
+          if (id !== METRONOME_RESOLVED_ID) return undefined
+          return `export default ${JSON.stringify(buildCompactMetronomeMoves())}`
+        },
+      },
       {
         name: 'api-endpoints',
         transformIndexHtml(html) {

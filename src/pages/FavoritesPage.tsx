@@ -7,7 +7,7 @@ import { FavoritePokemonCard } from '../components/FavoritePokemonCard'
 import { CardSkeleton } from '../components/Loading'
 import { PageHeader } from '../components/PageHeader'
 import { PokemonCatalogFilters } from '../components/PokemonCatalogFilters'
-import { useFavoritesContext } from '../contexts/FavoritesContext'
+import { useFavoritesData } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { usePokemonCatalogControls } from '../hooks/usePokemonCatalogControls'
@@ -24,7 +24,7 @@ import { POKEMON_CATALOG_LIMIT } from '../config/app'
 import type { ApiList, PokemonListItem } from '../types'
 
 export function FavoritesPage() {
-  const { favorites } = useFavoritesContext()
+  const { favorites } = useFavoritesData()
   const { language, t } = useLanguage()
   const {
     query,

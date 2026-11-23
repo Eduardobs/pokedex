@@ -87,10 +87,15 @@ function parseShowdownSets(value: unknown): Readonly<Record<string, ShowdownSpec
   return catalog
 }
 
-const showdownSets = parseShowdownSets(showdownSetsJson)
+let cachedShowdownSets: Readonly<Record<string, ShowdownSpecies>> | undefined
+
+function getShowdownSets() {
+  if (!cachedShowdownSets) cachedShowdownSets = parseShowdownSets(showdownSetsJson)
+  return cachedShowdownSets
+}
 
 function compatibleSets(pokemon: TeamPokemon, teraBlastUsed: boolean) {
-  const species = showdownSets[showdownId(pokemon.name)]
+  const species = getShowdownSets()[showdownId(pokemon.name)]
   if (!species) return []
   return species.sets.filter(
     (set) =>
@@ -183,7 +188,7 @@ function randomMember(pokemon: TeamPokemon, set: ShowdownSet, random: RandomSour
   return {
     id: crypto.randomUUID(),
     pokemon: pokemon.name,
-    level: showdownSets[showdownId(pokemon.name)]!.level,
+    level: getShowdownSets()[showdownId(pokemon.name)]!.level,
     friendship: 255,
     shiny: random() < SHOWDOWN_SHINY_CHANCE,
     gender: genderForRate(pokemon.genderRate ?? 4, random),
@@ -201,6 +206,7 @@ function randomMember(pokemon: TeamPokemon, set: ShowdownSet, random: RandomSour
 
 async function loadRandomCandidates(signal?: AbortSignal, random: RandomSource = Math.random) {
   const directory = await apiFetch<unknown>(`pokemon?limit=${POKEMON_CATALOG_LIMIT}`, signal)
+  const showdownSets = getShowdownSets()
   const candidates = pokemonListItems(
     array(record(directory).results, POKEMON_CATALOG_LIMIT)
       .map(reference)
@@ -212,7 +218,7 @@ async function loadRandomCandidates(signal?: AbortSignal, random: RandomSource =
     random,
   )
   const pokemon = await Promise.all(
-    names.map(async (name) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${name}`, signal))),
+    names.map(async (name) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${encodeURIComponent(name)}`, signal))),
   )
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
   return pokemon
@@ -222,7 +228,9 @@ async function loadGenderRates(selected: readonly TeamPokemon[], signal?: AbortS
   const withGenderRates = await Promise.all(
     selected.map(async (entry) => ({
       ...entry,
-      genderRate: parseTeamSpecies(await apiFetch<unknown>(`pokemon-species/${entry.species}`, signal)).genderRate,
+      genderRate: parseTeamSpecies(
+        await apiFetch<unknown>(`pokemon-species/${encodeURIComponent(entry.species)}`, signal),
+      ).genderRate,
     })),
   )
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
@@ -264,7 +272,9 @@ export async function loadRandomTeamMember(
   const [candidates, existingPokemon] = await Promise.all([
     loadRandomCandidates(signal, random),
     Promise.all(
-      members.map(async (member) => parseTeamPokemon(await apiFetch<unknown>(`pokemon/${member.pokemon}`, signal))),
+      members.map(async (member) =>
+        parseTeamPokemon(await apiFetch<unknown>(`pokemon/${encodeURIComponent(member.pokemon)}`, signal)),
+      ),
     ),
   ])
   const teraBlastUsed = members.some((member) => member.moves.includes('tera-blast'))

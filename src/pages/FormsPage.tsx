@@ -100,50 +100,37 @@ export function FormsPage() {
     () => new Map(speciesData?.results.map((species) => [species.name, idFromUrl(species.url)]) ?? []),
     [speciesData],
   )
-  const grouped = useMemo(() => {
-    const groups: Record<FormCategory, NamedResource[]> = { regional: [], mega: [], gmax: [] }
+  const { grouped, specialForms, categoryByName } = useMemo(() => {
+    type IndexedForm = { resource: NamedResource; category: FormCategory; id: number }
+    const groups: Record<FormCategory, IndexedForm[]> = { regional: [], mega: [], gmax: [] }
+    const categoriesMap = new Map<string, FormCategory>()
     data?.results.forEach((resource) => {
       const resourceCategory = formCategory(resource.name)
-      if (resourceCategory) groups[resourceCategory].push(resource)
+      if (!resourceCategory) return
+      const id = nationalDex.get(formLabels(resource.name, resourceCategory).baseName) ?? Number.MAX_SAFE_INTEGER
+      groups[resourceCategory].push({ resource, category: resourceCategory, id })
+      categoriesMap.set(resource.name, resourceCategory)
     })
-    const byNationalDex = (left: NamedResource, right: NamedResource) => {
-      const leftCategory = formCategory(left.name)
-      const rightCategory = formCategory(right.name)
-      const leftId = leftCategory
-        ? (nationalDex.get(formLabels(left.name, leftCategory).baseName) ?? Number.MAX_SAFE_INTEGER)
-        : Number.MAX_SAFE_INTEGER
-      const rightId = rightCategory
-        ? (nationalDex.get(formLabels(right.name, rightCategory).baseName) ?? Number.MAX_SAFE_INTEGER)
-        : Number.MAX_SAFE_INTEGER
-      return leftId - rightId || left.name.localeCompare(right.name)
+    const byNationalDex = (left: IndexedForm, right: IndexedForm) =>
+      left.id - right.id || left.resource.name.localeCompare(right.resource.name)
+    Object.values(groups).forEach((entries) => entries.sort(byNationalDex))
+    const all = [...groups.regional, ...groups.mega, ...groups.gmax].sort(byNationalDex)
+    return {
+      grouped: {
+        regional: groups.regional.map((entry) => ({ ...entry.resource, id: entry.id })),
+        mega: groups.mega.map((entry) => ({ ...entry.resource, id: entry.id })),
+        gmax: groups.gmax.map((entry) => ({ ...entry.resource, id: entry.id })),
+      },
+      specialForms: all.map((entry) => ({ ...entry.resource, id: entry.id })),
+      categoryByName: categoriesMap,
     }
-    Object.values(groups).forEach((resources) => resources.sort(byNationalDex))
-    return groups
   }, [data, nationalDex])
 
-  const specialForms = useMemo(
-    () =>
-      [...grouped.regional, ...grouped.mega, ...grouped.gmax].sort((left, right) => {
-        const leftCategory = formCategory(left.name)!
-        const rightCategory = formCategory(right.name)!
-        const leftId = nationalDex.get(formLabels(left.name, leftCategory).baseName) ?? Number.MAX_SAFE_INTEGER
-        const rightId = nationalDex.get(formLabels(right.name, rightCategory).baseName) ?? Number.MAX_SAFE_INTEGER
-        return leftId - rightId || left.name.localeCompare(right.name)
-      }),
-    [grouped, nationalDex],
-  )
   const selectedForms = category === 'all' ? specialForms : grouped[category]
   const typeNames = useMemo(() => new Set(typeData?.map((entry) => entry.name) ?? []), [typeData])
   const typedForms = useMemo<PokemonListItem[]>(
-    () =>
-      selectedForms.flatMap((resource) => {
-        const resourceCategory = formCategory(resource.name)
-        if (!resourceCategory) return []
-        if (types.length > 0 && !typeNames.has(resource.name)) return []
-        const baseName = formLabels(resource.name, resourceCategory).baseName
-        return [{ ...resource, id: nationalDex.get(baseName) ?? Number.MAX_SAFE_INTEGER }]
-      }),
-    [nationalDex, selectedForms, types.length, typeNames],
+    () => (types.length > 0 ? selectedForms.filter((resource) => typeNames.has(resource.name)) : selectedForms),
+    [selectedForms, types.length, typeNames],
   )
   const filterableForms = useMemo(
     () =>
@@ -158,39 +145,44 @@ export function FormsPage() {
     [legendary, mythical, baby, rarityDetails, region, regionDetails, typedForms],
   )
   const normalizedQuery = normalizeSearchText(deferredQuery)
+  const formSearchValues = useMemo(() => {
+    const map = new Map<string, readonly string[]>()
+    for (const resource of filterableForms) {
+      const resourceCategory = categoryByName.get(resource.name)
+      const labels = resourceCategory ? formLabels(resource.name, resourceCategory, t) : null
+      map.set(resource.name, [resource.name, labels?.pokemon ?? '', labels?.variation ?? ''])
+    }
+    return map
+  }, [categoryByName, filterableForms, t])
   const filtered = useMemo(
     () =>
-      filterableForms.filter((resource) => {
-        const resourceCategory = formCategory(resource.name)
-        const labels = resourceCategory ? formLabels(resource.name, resourceCategory, t) : null
-        return (
-          !normalizedQuery ||
-          String(resource.id) === normalizedQuery ||
-          [resource.name, labels?.pokemon ?? '', labels?.variation ?? ''].some((value) =>
-            normalizeSearchText(value).includes(normalizedQuery),
-          )
-        )
-      }),
-    [filterableForms, normalizedQuery, t],
+      !normalizedQuery
+        ? filterableForms
+        : filterableForms.filter((resource) => {
+            const values = formSearchValues.get(resource.name) ?? [resource.name]
+            return (
+              String(resource.id) === normalizedQuery ||
+              values.some((value) => normalizeSearchText(value).includes(normalizedQuery))
+            )
+          }),
+    [filterableForms, formSearchValues, normalizedQuery],
   )
   const suggestions = useMemo(
     () =>
-      pokemonSearchSuggestions(filterableForms, deferredQuery, (resource) => {
-        const resourceCategory = formCategory(resource.name)
-        const labels = resourceCategory ? formLabels(resource.name, resourceCategory, t) : null
-        return [resource.name, labels?.pokemon ?? '', labels?.variation ?? '']
-      }),
-    [deferredQuery, filterableForms, t],
+      pokemonSearchSuggestions(
+        filterableForms,
+        deferredQuery,
+        (resource) => formSearchValues.get(resource.name) ?? [resource.name],
+      ),
+    [deferredQuery, filterableForms, formSearchValues],
   )
   const sorted = useMemo(
     () => sortPokemonList(filtered, sort, direction, pokemonDetails, language),
     [direction, filtered, language, pokemonDetails, sort],
   )
   const visible = useMemo(() => sorted.slice(0, visibleCount), [sorted, visibleCount])
-  const cardDetails = usePokemonCardDetails(
-    visible.map((resource) => resource.name),
-    'form',
-  )
+  const visibleNames = useMemo(() => visible.map((resource) => resource.name), [visible])
+  const cardDetails = usePokemonCardDetails(visibleNames, 'form')
   const hasMore = visibleCount < sorted.length
   const filteredLength = sorted.length
   const loadMore = useCallback(() => {
@@ -350,7 +342,7 @@ export function FormsPage() {
       ) : visible.length ? (
         <div className="forms-directory-grid">
           {visible.map((resource) => {
-            const resourceCategory = formCategory(resource.name)
+            const resourceCategory = categoryByName.get(resource.name)
             const value = getPokemonSortValue(pokemonDetails[resource.name], sort)
             const sortMetric = value === undefined ? undefined : { label: selectedSortMetric, value }
             return resourceCategory ? (

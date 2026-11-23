@@ -3,7 +3,7 @@ import { useApi } from '../hooks/useApi'
 import type { Pokemon } from '../types'
 import { Loading } from './Loading'
 import { PokemonCard } from './PokemonCard'
-import { useFavoritesContext } from '../contexts/FavoritesContext'
+import { useFavoritesData } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { prettyName } from '../lib/api'
 
@@ -15,7 +15,7 @@ type FavoritePokemonCardProps = {
 
 export function FavoritePokemonCard({ name, shiny, sortMetric }: FavoritePokemonCardProps) {
   const { data, loading, error, retry } = useApi<Pokemon>(`pokemon/${encodeURIComponent(name)}`, parsePokemon)
-  const { toggle } = useFavoritesContext()
+  const { toggle } = useFavoritesData()
   const { t } = useLanguage()
   if (loading)
     return (

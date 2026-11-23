@@ -159,6 +159,63 @@ describe('Pokédex stat catalog', () => {
     controller.abort()
     await cancelAssertion
   })
+
+  it('deduplicates concurrent catalog fetches and preserves independent consumer cancellation', async () => {
+    let resolveFetch!: (response: Response) => void
+    let transportSignal: AbortSignal | null | undefined
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation(
+      (_input, init) =>
+        new Promise<Response>((resolve, reject) => {
+          transportSignal = init?.signal
+          resolveFetch = resolve
+          init?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+            once: true,
+          })
+        }),
+    )
+    const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
+
+    const firstController = new AbortController()
+    const secondController = new AbortController()
+    const first = fetchPokemonSortDetails(firstController.signal)
+    const second = fetchPokemonSortDetails(secondController.signal)
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    firstController.abort()
+    await expect(first).rejects.toMatchObject({ name: 'AbortError' })
+    await Promise.resolve()
+    expect(transportSignal?.aborted).toBe(false)
+
+    resolveFetch(
+      new Response(JSON.stringify({ data: { pokemon: [{ name: 'pikachu', pokemonstats: stats }] } }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      }),
+    )
+    const catalog = await second
+    expect(catalog.pikachu.stats).toHaveLength(6)
+  })
+
+  it('aborts the shared transport when every consumer cancels', async () => {
+    let transportSignal: AbortSignal | null | undefined
+    vi.spyOn(globalThis, 'fetch').mockImplementation(
+      (_input, init) =>
+        new Promise<Response>((_resolve, reject) => {
+          transportSignal = init?.signal
+          init?.signal?.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+            once: true,
+          })
+        }),
+    )
+    const { fetchPokemonSortDetails } = await import('./pokemon-catalog')
+
+    const controller = new AbortController()
+    const pending = fetchPokemonSortDetails(controller.signal)
+    controller.abort()
+    await expect(pending).rejects.toMatchObject({ name: 'AbortError' })
+    await Promise.resolve()
+    expect(transportSignal?.aborted).toBe(true)
+  })
 })
 
 describe('Pokédex rarity catalog', () => {

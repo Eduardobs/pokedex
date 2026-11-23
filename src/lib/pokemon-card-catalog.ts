@@ -1,6 +1,7 @@
 import { GRAPHQL_API_URL, NETWORK, POKEMON_CATALOG_LIMIT } from '../config/app'
 import { ApiError, readBoundedJsonResponse } from './api-client'
 import { apiFetch } from './api'
+import { withNetworkSlot } from './network-limits'
 
 const MAX_CARD_BATCH_SIZE = 32
 const NAME_PATTERN = /^[a-z0-9-]{1,100}$/
@@ -119,7 +120,7 @@ async function requestRestCardDetails(kind: CardKind, names: string[], signal: A
   const entries: unknown[] = new Array(names.length)
   let nextIndex = 0
   await Promise.all(
-    Array.from({ length: Math.min(4, names.length) }, async () => {
+    Array.from({ length: Math.min(6, names.length) }, async () => {
       while (nextIndex < names.length) {
         const index = nextIndex++
         const name = names[index]
@@ -159,27 +160,34 @@ async function requestCardDetails(kind: CardKind, names: string[], controller: A
   try {
     // The Pokédex only needs the visible Pokémon; REST avoids relying on the beta GraphQL service.
     if (kind === 'pokemon') return await requestRestCardDetails(kind, names, controller.signal)
-    const response = await fetch(GRAPHQL_API_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        query: FORM_CARD_QUERY,
-        variables: { names },
-        operationName: 'PokemonFormCardDetails',
-      }),
-      credentials: 'omit',
-      redirect: 'error',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-    if (response.status === 404 || response.status >= 500) {
+    const fallbackOrPayload = await withNetworkSlot(async () => {
+      const response = await fetch(GRAPHQL_API_URL, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: FORM_CARD_QUERY,
+          variables: { names },
+          operationName: 'PokemonFormCardDetails',
+        }),
+        credentials: 'omit',
+        redirect: 'error',
+        referrerPolicy: 'no-referrer',
+        signal: controller.signal,
+      })
+      if (response.status === 404 || response.status >= 500) {
+        await response.body?.cancel()
+        return null
+      }
+      if (!response.ok) {
+        await response.body?.cancel()
+        throw new ApiError('PokéAPI did not respond as expected.', response.status)
+      }
+      return readBoundedJsonResponse(response)
+    }, controller.signal)
+    if (fallbackOrPayload === null) {
       return await requestRestCardDetails(kind, names, controller.signal)
     }
-    if (!response.ok) {
-      await response.body?.cancel()
-      throw new ApiError('PokéAPI did not respond as expected.', response.status)
-    }
-    return parsePokemonCardDetails(await readBoundedJsonResponse(response), names, kind)
+    return parsePokemonCardDetails(fallbackOrPayload, names, kind)
   } catch (error) {
     if (timedOut) throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
     throw error

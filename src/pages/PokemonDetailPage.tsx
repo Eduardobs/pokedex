@@ -17,7 +17,7 @@ import { ShinyToggle } from '../components/ShinyToggle'
 import { TrainingBreedingCard } from '../components/pokemon-detail/TrainingBreedingCard'
 import { AbilityBadge } from '../components/SemanticBadges'
 import { TypeBadge } from '../components/TypeBadge'
-import { useFavoritesContext } from '../contexts/FavoritesContext'
+import { useFavoritesData } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useApi } from '../hooks/useApi'
 import { formatDecimal, formatNumber, idFromUrl, localizedTextResult, pokemonArtwork, prettyName } from '../lib/api'
@@ -95,7 +95,7 @@ export function PokemonDetailPage() {
     secondaryDataReady && pokemon?.types[1] ? `type/${encodeURIComponent(pokemon.types[1].type.name)}` : null,
     parsePokemonType,
   )
-  const { isFavorite, toggle } = useFavoritesContext()
+  const { isFavorite, toggle } = useFavoritesData()
 
   useEffect(() => {
     setSecondaryDataReady(false)

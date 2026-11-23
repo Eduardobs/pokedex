@@ -1,4 +1,5 @@
 import { safePokemonMediaUrl } from './media-url'
+import { preloadMetronomeMovePool } from './battle-metronome'
 import { supplementalMoveMetadata } from './battle-move-effects'
 import { multistrikeMoves } from './battle-multistrike'
 import { canonicalMoveSecondaries } from '../data/third-party/battle-move-secondaries'
@@ -127,25 +128,32 @@ export function parseBattleMove(value: unknown): BattleMove {
 }
 
 export async function loadBattleRoster(team: Team, signal?: AbortSignal): Promise<BattlePokemon[]> {
-  return Promise.all(
-    team.members.map(async (member) => {
-      const [pokemon, ...moves] = await Promise.all([
-        apiFetch<unknown>(`pokemon/${member.pokemon}`, signal).then(parseTeamPokemon),
-        ...member.moves.map((move) => apiFetch<unknown>(`move/${move}`, signal).then(parseBattleMove)),
-      ])
-      const abilityName = pokemon.abilities.includes(member.ability) ? member.ability : pokemon.abilities[0]
-      const fallback = (name: string): BattleResource => ({ name, names: [], descriptions: [], sprite: null })
-      const [ability, item] = await Promise.all([
-        apiFetch<unknown>(`ability/${abilityName}`, signal)
-          .then(parseBattleAbility)
-          .catch(() => fallback(abilityName)),
-        member.item
-          ? apiFetch<unknown>(`item/${member.item}`, signal)
-              .then(parseBattleItem)
-              .catch(() => fallback(member.item))
-          : Promise.resolve(null),
-      ])
-      return createBattlePokemon(member, pokemon, moves, { ability, item })
-    }),
-  )
+  const needsMetronome = team.members.some((member) => member.moves.includes('metronome'))
+  const [roster] = await Promise.all([
+    Promise.all(
+      team.members.map(async (member) => {
+        const [pokemon, ...moves] = await Promise.all([
+          apiFetch<unknown>(`pokemon/${encodeURIComponent(member.pokemon)}`, signal).then(parseTeamPokemon),
+          ...member.moves.map((move) =>
+            apiFetch<unknown>(`move/${encodeURIComponent(move)}`, signal).then(parseBattleMove),
+          ),
+        ])
+        const abilityName = pokemon.abilities.includes(member.ability) ? member.ability : pokemon.abilities[0]
+        const fallback = (name: string): BattleResource => ({ name, names: [], descriptions: [], sprite: null })
+        const [ability, item] = await Promise.all([
+          apiFetch<unknown>(`ability/${encodeURIComponent(abilityName)}`, signal)
+            .then(parseBattleAbility)
+            .catch(() => fallback(abilityName)),
+          member.item
+            ? apiFetch<unknown>(`item/${encodeURIComponent(member.item)}`, signal)
+                .then(parseBattleItem)
+                .catch(() => fallback(member.item))
+            : Promise.resolve(null),
+        ])
+        return createBattlePokemon(member, pokemon, moves, { ability, item })
+      }),
+    ),
+    needsMetronome ? preloadMetronomeMovePool() : Promise.resolve(),
+  ])
+  return roster
 }

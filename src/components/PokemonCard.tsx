@@ -1,7 +1,7 @@
 import { Globe2, Heart, Maximize2, Shield } from 'lucide-react'
-import type { CSSProperties, ReactNode, RefObject } from 'react'
+import { memo, type CSSProperties, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { useFavoritesContext } from '../contexts/FavoritesContext'
+import { useFavoritesData } from '../contexts/FavoritesContext'
 import { useLanguage } from '../contexts/LanguageContext'
 import { pokemonArtwork, prettyName } from '../lib/api'
 import type { PokemonCardDetails } from '../lib/pokemon-card-catalog'
@@ -42,7 +42,6 @@ type PokemonFormProps = {
 type Props = PokemonProps | PokemonFormProps
 
 type PokemonCardViewProps = {
-  cardRef: RefObject<HTMLElement | null>
   id: number
   name: string
   displayName: string
@@ -65,7 +64,6 @@ const categoryConfig = {
 } as const
 
 function PokemonCardView({
-  cardRef,
   id,
   name,
   displayName,
@@ -89,11 +87,7 @@ function PokemonCardView({
   } as CSSProperties
 
   return (
-    <article
-      ref={cardRef}
-      data-type={types[0]?.type.name}
-      className={`pokemon-card${category ? ` pokemon-card-${category}` : ''}`}
-    >
+    <article data-type={types[0]?.type.name} className={`pokemon-card${category ? ` pokemon-card-${category}` : ''}`}>
       <header className="card-top">
         <span className="pokemon-number">#{String(id).padStart(4, '0')}</span>
         {action}
@@ -142,9 +136,8 @@ function PokemonSummaryCard({
   sortMetric,
   shiny = false,
 }: PokemonProps) {
-  const { isFavorite, toggle } = useFavoritesContext()
+  const { isFavorite, toggle } = useFavoritesData()
   const { t } = useLanguage()
-  const cardRef = { current: null }
   const detail = pokemon ?? details
   const favorite = isFavorite(name)
   const displayName = prettyName(name)
@@ -159,7 +152,6 @@ function PokemonSummaryCard({
 
   return (
     <PokemonCardView
-      cardRef={cardRef}
       id={id}
       name={name}
       displayName={displayName}
@@ -245,11 +237,10 @@ function PokemonFormCard({
   sortMetric,
 }: PokemonFormProps) {
   const { t } = useLanguage()
-  const cardRef = { current: null }
 
   if (loadError)
     return (
-      <article ref={cardRef} className="pokemon-card pokemon-card-error" role="alert">
+      <article className="pokemon-card pokemon-card-error" role="alert">
         <Shield aria-hidden="true" />
         <h2>{prettyName(resource.name)}</h2>
         <p>{t('forms.cardUnavailable')}</p>
@@ -261,7 +252,6 @@ function PokemonFormCard({
   if (!details)
     return (
       <article
-        ref={cardRef}
         className="pokemon-card pokemon-card-skeleton skeleton"
         aria-label={`${t('common.loadingShort')} ${resource.name}`}
       />
@@ -275,7 +265,6 @@ function PokemonFormCard({
 
   return (
     <PokemonCardView
-      cardRef={cardRef}
       id={pokemonId}
       name={details.name}
       displayName={labels.pokemon}
@@ -311,6 +300,22 @@ function PokemonFormCard({
   )
 }
 
-export function PokemonCard(props: Props) {
-  return props.resource ? <PokemonFormCard {...props} /> : <PokemonSummaryCard {...props} />
+function arePokemonCardPropsEqual(previous: Props, next: Props) {
+  return (
+    previous.id === next.id &&
+    previous.name === next.name &&
+    previous.pokemon === next.pokemon &&
+    previous.resource === next.resource &&
+    previous.category === next.category &&
+    previous.details === next.details &&
+    previous.loadError === next.loadError &&
+    previous.onRetry === next.onRetry &&
+    previous.shiny === next.shiny &&
+    previous.sortMetric?.label === next.sortMetric?.label &&
+    previous.sortMetric?.value === next.sortMetric?.value
+  )
 }
+
+export const PokemonCard = memo(function PokemonCard(props: Props) {
+  return props.resource ? <PokemonFormCard {...props} /> : <PokemonSummaryCard {...props} />
+}, arePokemonCardPropsEqual)

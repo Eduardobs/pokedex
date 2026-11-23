@@ -1,5 +1,6 @@
 import { GRAPHQL_API_URL, NETWORK, POKEMON_CATALOG_LIMIT } from '../config/app'
 import { ApiError, readBoundedJsonResponse } from './api-client'
+import { withNetworkSlot } from './network-limits'
 import type { PokemonSortDetails } from './pokemon-sort'
 
 const SORT_DETAILS_QUERY = `query PokemonSortDetails {
@@ -221,43 +222,105 @@ export function parsePokemonRegionDetails(payload: unknown): Record<string, Poke
   return details
 }
 
+type InFlightCatalogRequest<T> = {
+  controller: AbortController
+  consumers: number
+  promise: Promise<T>
+  settled: boolean
+}
+
+const inFlight = new Map<string, InFlightCatalogRequest<unknown>>()
+
+function observeCatalogRequest<T>(entry: InFlightCatalogRequest<T>, operationName: string, signal?: AbortSignal) {
+  if (signal?.aborted) return Promise.reject(new DOMException('The operation was aborted.', 'AbortError'))
+  entry.consumers += 1
+
+  return new Promise<T>((resolve, reject) => {
+    let settled = false
+    const release = () => {
+      if (settled) return false
+      settled = true
+      signal?.removeEventListener('abort', abort)
+      entry.consumers -= 1
+      queueMicrotask(() => {
+        if (!entry.settled && entry.consumers === 0 && inFlight.get(operationName) === entry) {
+          entry.controller.abort()
+        }
+      })
+      return true
+    }
+    const abort = () => {
+      if (!release()) return
+      reject(new DOMException('The operation was aborted.', 'AbortError'))
+    }
+
+    signal?.addEventListener('abort', abort, { once: true })
+    entry.promise.then(
+      (value) => {
+        if (release()) resolve(value)
+      },
+      (error: unknown) => {
+        if (release()) reject(error)
+      },
+    )
+  })
+}
+
 async function fetchPokemonCatalogDetails<T>(
   query: string,
   operationName: string,
   parse: (payload: unknown) => T,
   signal?: AbortSignal,
-) {
+): Promise<T> {
   if (signal?.aborted) throw new DOMException('The operation was aborted.', 'AbortError')
 
-  const controller = new AbortController()
-  const abort = () => controller.abort()
-  signal?.addEventListener('abort', abort, { once: true })
-  const timeout = window.setTimeout(abort, NETWORK.requestTimeoutMs)
+  let entry = inFlight.get(operationName) as InFlightCatalogRequest<T> | undefined
+  if (!entry || entry.controller.signal.aborted) {
+    const controller = new AbortController()
+    let timedOut = false
+    const timeout = window.setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, NETWORK.requestTimeoutMs)
 
-  try {
-    const response = await fetch(GRAPHQL_API_URL, {
-      method: 'POST',
-      headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query, operationName }),
-      credentials: 'omit',
-      redirect: 'error',
-      referrerPolicy: 'no-referrer',
-      signal: controller.signal,
-    })
-    if (!response.ok) {
-      await response.body?.cancel()
-      throw new ApiError('PokéAPI did not respond as expected.', response.status)
+    const current: InFlightCatalogRequest<T> = {
+      controller,
+      consumers: 0,
+      promise: Promise.resolve(undefined as T),
+      settled: false,
     }
-    return parse(await readBoundedJsonResponse(response))
-  } catch (error) {
-    if (controller.signal.aborted && !signal?.aborted) {
-      throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
-    }
-    throw error
-  } finally {
-    window.clearTimeout(timeout)
-    signal?.removeEventListener('abort', abort)
+    current.promise = withNetworkSlot(async () => {
+      const response = await fetch(GRAPHQL_API_URL, {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, operationName }),
+        credentials: 'omit',
+        redirect: 'error',
+        referrerPolicy: 'no-referrer',
+        signal: controller.signal,
+      })
+      if (!response.ok) {
+        await response.body?.cancel()
+        throw new ApiError('PokéAPI did not respond as expected.', response.status)
+      }
+      return parse(await readBoundedJsonResponse(response))
+    }, controller.signal)
+      .catch((error: unknown) => {
+        if (timedOut) {
+          throw new ApiError('PokéAPI took too long to respond.', undefined, 'timeout')
+        }
+        throw error
+      })
+      .finally(() => {
+        window.clearTimeout(timeout)
+        current.settled = true
+        if (inFlight.get(operationName) === current) inFlight.delete(operationName)
+      })
+    inFlight.set(operationName, current)
+    entry = current
   }
+
+  return observeCatalogRequest(entry, operationName, signal)
 }
 
 /** Loads every sortable stat in one fixed, field-limited request. */

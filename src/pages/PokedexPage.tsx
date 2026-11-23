@@ -84,10 +84,8 @@ export function PokedexPage() {
     [direction, filteredPokemon, language, pokemonDetails, sort],
   )
   const visiblePokemon = useMemo(() => sortedPokemon.slice(0, visibleCount), [sortedPokemon, visibleCount])
-  const cardDetails = usePokemonCardDetails(
-    visiblePokemon.map((pokemon) => pokemon.name),
-    'pokemon',
-  )
+  const visibleNames = useMemo(() => visiblePokemon.map((pokemon) => pokemon.name), [visiblePokemon])
+  const cardDetails = usePokemonCardDetails(visibleNames, 'pokemon')
   const total = catalog.length
   const hasMore = visibleCount < sortedPokemon.length
 
@@ -177,7 +175,8 @@ export function PokedexPage() {
             return (
               <PokemonCard
                 key={pokemon.name}
-                {...pokemon}
+                id={pokemon.id}
+                name={pokemon.name}
                 details={cardDetails.data[pokemon.name]}
                 loadError={Boolean(cardDetails.error && !cardDetails.data[pokemon.name])}
                 onRetry={cardDetails.retry}
