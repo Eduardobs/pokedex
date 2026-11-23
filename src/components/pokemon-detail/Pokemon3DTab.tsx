@@ -8,7 +8,7 @@ import type { Pokemon } from '../../types'
 import { Loading } from '../Loading'
 import { InlineRetryError } from '../FeedbackState'
 
-function Model({ src, label }: { src: string; label: string }) {
+function Model({ src, label, viewerReady }: { src: string; label: string; viewerReady: boolean }) {
   const ref = useRef<ModelViewerElement>(null)
   const { t } = useLanguage()
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -36,6 +36,10 @@ function Model({ src, label }: { src: string; label: string }) {
   useEffect(() => {
     const viewer = ref.current
     if (!viewer) return
+    if (viewer.loaded) {
+      setStatus('ready')
+      return
+    }
     setStatus('loading')
     const loaded = () => {
       clearTimeout(timeout)
@@ -54,7 +58,7 @@ function Model({ src, label }: { src: string; label: string }) {
       viewer.removeEventListener('load', loaded)
       viewer.removeEventListener('error', failed)
     }
-  }, [attempt, modelUrl])
+  }, [attempt, modelUrl, viewerReady])
   return (
     <>
       {status === 'loading' && <Loading label={t('detail.modelLoading')} />}
@@ -65,7 +69,7 @@ function Model({ src, label }: { src: string; label: string }) {
           onRetry={() => setAttempt((value) => value + 1)}
         />
       )}
-      {modelUrl && (
+      {viewerReady && modelUrl && (
         <model-viewer
           key={attempt}
           ref={ref}
@@ -86,12 +90,27 @@ function Model({ src, label }: { src: string; label: string }) {
 export default function Pokemon3DTab({ pokemon, shiny }: { pokemon: Pokemon; shiny: boolean }) {
   const { t } = useLanguage()
   const [attempt, setAttempt] = useState(0)
+  const [viewerStatus, setViewerStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [state, setState] = useState<{ key: string; src: string | null; error: boolean } | null>(null)
   const key = `${pokemon.id}:${shiny}:${attempt}`
   useEffect(() => {
+    let active = true
+    setViewerStatus((current) => (current === 'ready' ? current : 'loading'))
+    import('../../lib/model-viewer')
+      .then(() => {
+        if (active) setViewerStatus('ready')
+      })
+      .catch(() => {
+        if (active) setViewerStatus('error')
+      })
+    return () => {
+      active = false
+    }
+  }, [attempt])
+  useEffect(() => {
     const controller = new AbortController()
-    Promise.all([fetchPokemon3D(controller.signal), import('../../lib/model-viewer')])
-      .then(([catalog]) => {
+    fetchPokemon3D(controller.signal)
+      .then((catalog) => {
         if (!controller.signal.aborted)
           setState({ key, src: selectPokemon3D(catalog, pokemon, idFromUrl(pokemon.species.url), shiny), error: false })
       })
@@ -101,7 +120,7 @@ export default function Pokemon3DTab({ pokemon, shiny }: { pokemon: Pokemon; shi
     return () => controller.abort()
   }, [key, pokemon, shiny])
   if (state?.key !== key) return <Loading label={t('detail.modelLoading')} />
-  if (state.error)
+  if (state.error || viewerStatus === 'error')
     return (
       <InlineRetryError
         message={t('detail.modelError')}
@@ -114,6 +133,7 @@ export default function Pokemon3DTab({ pokemon, shiny }: { pokemon: Pokemon; shi
     <Model
       key={state.src}
       src={state.src}
+      viewerReady={viewerStatus === 'ready'}
       label={t('detail.modelLabel', {
         name: prettyName(pokemon.name),
         version: shiny ? t('detail.shiny') : t('detail.modelRegular'),

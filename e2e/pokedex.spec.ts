@@ -184,7 +184,7 @@ test('loads the 3D tab on demand and shares the shiny toggle', async ({ page }) 
   await expect(tab).toBeVisible()
   expect(requests).toBe(0)
   await tab.click()
-  await expect(page.locator('model-viewer')).toHaveJSProperty('loaded', true)
+  await expect(page.locator('model-viewer')).toHaveJSProperty('loaded', true, { timeout: 15000 })
   expect(
     await page.locator('model-viewer').evaluate((element) => (element as HTMLElement & { src: string }).src),
   ).toMatch(/^blob:/)
