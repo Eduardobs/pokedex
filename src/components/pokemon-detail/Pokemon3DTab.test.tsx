@@ -50,6 +50,25 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 describe('Pokemon3D tab', () => {
+  it('handles a load event as soon as the viewer appears', async () => {
+    fetchCatalog.mockResolvedValue(catalog)
+    const { container } = render(view())
+    const observer = new MutationObserver(() => {
+      const viewer = container.querySelector('model-viewer')
+      if (viewer) {
+        observer.disconnect()
+        fireEvent.load(viewer)
+      }
+    })
+    observer.observe(container, { childList: true, subtree: true })
+    try {
+      await waitFor(() => expect(screen.queryByText('Carregando modelo 3D…')).not.toBeInTheDocument())
+      expect(container.querySelector('model-viewer')).toHaveAttribute('src', 'blob:model-1')
+    } finally {
+      observer.disconnect()
+    }
+  })
+
   it('changes the model with the shared shiny state and handles viewer errors', async () => {
     fetchCatalog.mockResolvedValue(catalog)
     const { container, rerender } = render(view())

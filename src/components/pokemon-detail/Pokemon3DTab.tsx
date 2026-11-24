@@ -1,5 +1,5 @@
 import { fetchPokemonModel } from '../../lib/pokemon-model'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ModelViewerElement } from '@google/model-viewer'
 import { useLanguage } from '../../contexts/LanguageContext'
 import { fetchPokemon3D, selectPokemon3D } from '../../lib/pokemon-3d'
@@ -33,7 +33,7 @@ function Model({ src, label, viewerReady }: { src: string; label: string; viewer
       if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
   }, [src, attempt])
-  useEffect(() => {
+  useLayoutEffect(() => {
     const viewer = ref.current
     if (!viewer) return
     if (viewer.loaded) {
