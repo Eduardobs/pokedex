@@ -1,3 +1,4 @@
+import { BATTLE_DIFFICULTIES, type BattleDifficulty } from '../config/app'
 import { abilityTypes, visibleBattlePokemon } from './battle-abilities'
 import {
   currentBattleStats,
@@ -12,9 +13,6 @@ import {
 } from './battle'
 import { supplementalMoveEffect } from './battle-move-effects'
 import { getDamageMultiplier, type BattleType } from './type-chart'
-
-export const BATTLE_DIFFICULTIES = ['very-easy', 'easy', 'medium', 'hard', 'very-hard', 'expert'] as const
-export type BattleDifficulty = (typeof BATTLE_DIFFICULTIES)[number]
 
 // This projection is the information boundary. Scoring never receives the player's
 // team builds, selected action, unrevealed moves, exact stats, ability or held item.
@@ -124,10 +122,10 @@ function incomingThreat(own: BattlePokemon, foe: ObservedPokemon, detailed: bool
   )
 }
 
-export function chooseBattleOpponentAction(
+export function chooseOpponentAction(
   state: BattleState,
-  difficulty: BattleDifficulty,
-  random: () => number,
+  random: () => number = Math.random,
+  difficulty: BattleDifficulty = 'medium',
 ): BattleChoice {
   const rank = BATTLE_DIFFICULTIES.indexOf(difficulty)
   const side = state.opponent

@@ -136,16 +136,21 @@ export function parseGameMapMarkers(
   })
 }
 
+export function summarizeMapCategories(groups: GameMapCategoryGroup[]) {
+  const categories = groups.flatMap((group) => group.categories)
+  const total = categories.reduce((sum, category) => sum + category.count, 0)
+  return { categories, total }
+}
+
 export function createGameMapCatalog(
   rawMarkers: unknown,
   groups: GameMapCategoryGroup[],
   bounds: MarkerBounds,
   mapName: string,
 ) {
-  const categories = groups.flatMap((group) => group.categories)
+  const { categories, total } = summarizeMapCategories(groups)
   const categoryIds = new Set(categories.map((category) => category.id))
   const markers = parseGameMapMarkers(rawMarkers, categoryIds, bounds, mapName)
-  const total = categories.reduce((sum, category) => sum + category.count, 0)
 
   return { categories, markers, total }
 }

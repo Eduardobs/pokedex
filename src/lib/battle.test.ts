@@ -1,11 +1,10 @@
-import { BATTLE_DIFFICULTIES } from './battle-ai'
+import { BATTLE_DIFFICULTIES } from '../config/app'
 import { describe, expect, it } from 'vitest'
 import {
   battleMoveEffectiveness,
   STRUGGLE_INDEX,
   STRUGGLE_MOVE,
   battleSameTypeAttackBonus,
-  chooseOpponentAction,
   createBattlePokemon,
   createBattleState,
   currentBattleStats,
@@ -15,6 +14,7 @@ import {
   resolveBattleTurn,
   type BattleMove,
 } from './battle'
+import { chooseOpponentAction } from './battle-ai'
 import type { Team, TeamMember, TeamPokemon } from './teams'
 
 const move = (overrides: Partial<BattleMove> = {}): BattleMove => ({

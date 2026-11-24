@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { Info, X } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext'
+import { useLanguage } from '../../contexts/LanguageContext'
 
 const compactQuery = '(max-width: 720px), (hover: none)'
 const PanelContext = createContext(false)

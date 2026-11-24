@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './lumiose-map-markers.json'
+import { summarizeMapCategories, gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type LumioseCategoryId =
+type LumioseCategoryId =
   | 'holovator'
   | 'point-of-interest'
   | 'wild-zone'
@@ -26,11 +25,6 @@ export type LumioseCategoryId =
   | 'npc'
   | 'alpha-pokemon'
   | 'mega-pokemon'
-
-export const LUMIOSE_MAP_WIDTH = 16_384
-export const LUMIOSE_MAP_HEIGHT = 16_384
-export const LUMIOSE_TILE_BASE_ZOOM = 14
-export const LUMIOSE_TILE_ORIGIN = { x: 8_128, y: 8_128 } as const
 
 const category = gameMapCategory<LumioseCategoryId>
 
@@ -193,25 +187,4 @@ export const LUMIOSE_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const mapData = createGameMap(rawMarkers, LUMIOSE_CATEGORY_GROUPS, 'Lumiose City', {
-  id: 'lumiose-city',
-  gameTitle: 'Pokémon Legends: Z-A',
-  regionName: 'Lumiose City',
-  titleKey: 'maps.lumioseTitle',
-  viewportLabelKey: 'maps.lumioseViewportLabel',
-  themeClassName: 'game-map-page--lumiose',
-  width: LUMIOSE_MAP_WIDTH,
-  height: LUMIOSE_MAP_HEIGHT,
-  tileBaseZoom: LUMIOSE_TILE_BASE_ZOOM,
-  tileMinZoom: 8,
-  tileMaxZoom: 14,
-  tileOrigin: LUMIOSE_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-legends-z-a/lumiose-city/day-v2',
-  tileExtension: 'jpg',
-  tileOrder: 'yx',
-  sourceUrl: 'https://mapgenie.io/pokemon-legends-z-a/maps/lumiose-city',
-})
-export const LUMIOSE_CATEGORIES = mapData.categories
-export const LUMIOSE_MARKERS = mapData.markers
-export const LUMIOSE_TOTAL = mapData.total
-export const LUMIOSE_MAP = mapData.map
+export const LUMIOSE_TOTAL = summarizeMapCategories(LUMIOSE_CATEGORY_GROUPS).total

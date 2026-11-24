@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './terrarium-map-markers.json'
+import { gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type TerrariumCategoryId =
+type TerrariumCategoryId =
   | 'fast-travel'
   | 'watchtower'
   | 'tm'
@@ -15,11 +14,6 @@ export type TerrariumCategoryId =
   | 'npc'
   | 'legendary-pokemon'
   | 'tera-pokemon'
-
-export const TERRARIUM_MAP_WIDTH = 16_384
-export const TERRARIUM_MAP_HEIGHT = 16_384
-export const TERRARIUM_TILE_BASE_ZOOM = 15
-export const TERRARIUM_TILE_ORIGIN = { x: 16_288, y: 16_288 } as const
 
 const category = gameMapCategory<TerrariumCategoryId>
 
@@ -114,26 +108,3 @@ export const TERRARIUM_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
     ],
   },
 ]
-
-const mapData = createGameMap(rawMarkers, TERRARIUM_CATEGORY_GROUPS, 'Terrarium', {
-  id: 'terrarium',
-  gameTitle: 'Pokémon Scarlet & Violet',
-  regionName: 'Terarium',
-  titleKey: 'maps.terrariumTitle',
-  viewportLabelKey: 'maps.terrariumViewportLabel',
-  themeClassName: 'game-map-page--terrarium',
-  width: TERRARIUM_MAP_WIDTH,
-  height: TERRARIUM_MAP_HEIGHT,
-  tileBaseZoom: TERRARIUM_TILE_BASE_ZOOM,
-  tileMinZoom: 10,
-  tileMaxZoom: 15,
-  tileOrigin: TERRARIUM_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-scarlet-violet/terrarium/default-v1',
-  tileExtension: 'jpg',
-  tileOrder: 'xy',
-  sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/terrarium',
-})
-export const TERRARIUM_CATEGORIES = mapData.categories
-export const TERRARIUM_MARKERS = mapData.markers
-export const TERRARIUM_TOTAL = mapData.total
-export const TERRARIUM_MAP = mapData.map

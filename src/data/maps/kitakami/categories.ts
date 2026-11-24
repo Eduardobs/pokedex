@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './kitakami-map-markers.json'
+import { gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type KitakamiCategoryId =
+type KitakamiCategoryId =
   | 'fast-travel'
   | 'general-store'
   | 'pokemon-center'
@@ -18,11 +17,6 @@ export type KitakamiCategoryId =
   | 'npc'
   | 'legendary-pokemon'
   | 'tera-pokemon'
-
-export const KITAKAMI_MAP_WIDTH = 16_384
-export const KITAKAMI_MAP_HEIGHT = 16_384
-export const KITAKAMI_TILE_BASE_ZOOM = 15
-export const KITAKAMI_TILE_ORIGIN = { x: 16_288, y: 16_288 } as const
 
 const category = gameMapCategory<KitakamiCategoryId>
 
@@ -127,26 +121,3 @@ export const KITAKAMI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
     ],
   },
 ]
-
-const mapData = createGameMap(rawMarkers, KITAKAMI_CATEGORY_GROUPS, 'Kitakami', {
-  id: 'kitakami',
-  gameTitle: 'Pokémon Scarlet & Violet',
-  regionName: 'Kitakami',
-  titleKey: 'maps.kitakamiTitle',
-  viewportLabelKey: 'maps.kitakamiViewportLabel',
-  themeClassName: 'game-map-page--kitakami',
-  width: KITAKAMI_MAP_WIDTH,
-  height: KITAKAMI_MAP_HEIGHT,
-  tileBaseZoom: KITAKAMI_TILE_BASE_ZOOM,
-  tileMinZoom: 10,
-  tileMaxZoom: 15,
-  tileOrigin: KITAKAMI_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-scarlet-violet/kitakami-region/default-v1',
-  tileExtension: 'jpg',
-  tileOrder: 'xy',
-  sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/kitakami-region',
-})
-export const KITAKAMI_CATEGORIES = mapData.categories
-export const KITAKAMI_MARKERS = mapData.markers
-export const KITAKAMI_TOTAL = mapData.total
-export const KITAKAMI_MAP = mapData.map

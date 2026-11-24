@@ -42,7 +42,6 @@ import {
   abilityNotifyFaint,
   type AbilityMemory,
 } from './battle-abilities'
-import { chooseBattleOpponentAction, type BattleDifficulty } from './battle-ai'
 import { multistrikeMoves } from './battle-multistrike'
 import { getDamageMultiplier, type BattleType } from './type-chart'
 import { calculatedCoreStats, calculatedStats, type Stats, type Team, type TeamMember, type TeamPokemon } from './teams'
@@ -3543,14 +3542,6 @@ function settlePhase(state: BattleState, events: BattleEvent[]) {
   else if (opponentFainted || state.opponent.switchRequested) state.phase = 'opponent-switch'
   else state.phase = 'choice'
   return state.phase
-}
-
-export function chooseOpponentAction(
-  state: BattleState,
-  random: RandomSource = Math.random,
-  difficulty: BattleDifficulty = 'medium',
-): BattleChoice {
-  return chooseBattleOpponentAction(state, difficulty, random)
 }
 
 export function resolveBattleTurnSteps(

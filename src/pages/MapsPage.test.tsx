@@ -1,8 +1,19 @@
 import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
 import { MapsPage } from './MapsPage'
+
+// The directory must render its totals even when regional marker data is unavailable.
+vi.mock('../data/maps/kanto/markers.json', () => {
+  throw new Error('Kanto markers loaded by directory')
+})
+vi.mock('../data/maps/hisui/markers.json', () => {
+  throw new Error('Hisui markers loaded by directory')
+})
+vi.mock('../data/maps/lumiose/markers.json', () => {
+  throw new Error('Lumiose markers loaded by directory')
+})
 
 afterEach(cleanup)
 
@@ -29,6 +40,7 @@ describe('MapsPage', () => {
       'src',
       '/maps/legends-arceus-map.jpg',
     )
+    expect(screen.getByText('1.963 pontos catalogados')).toBeVisible()
     expect(screen.getByText('2.525 pontos catalogados')).toBeVisible()
     expect(screen.getByRole('link', { name: /Pokémon Legends: Z-A/i })).toHaveAttribute('href', '/maps/lumiose-city')
     expect(screen.getByAltText(/arte de capa de Pokémon Legends: Z-A/i)).toHaveAttribute(

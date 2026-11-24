@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './kanto-map-markers.json'
+import { summarizeMapCategories, gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type MapCategoryId =
+type MapCategoryId =
   | 'area'
   | 'cave'
   | 'pokemon-center'
@@ -23,11 +22,6 @@ export type MapCategoryId =
   | 'elite-four'
   | 'gym-leader'
   | 'trainer'
-
-export const KANTO_MAP_WIDTH = 6912
-export const KANTO_MAP_HEIGHT = 8192
-export const KANTO_TILE_BASE_ZOOM = 14
-export const KANTO_TILE_ORIGIN = { x: 8134, y: 8140 } as const
 
 const category = gameMapCategory<MapCategoryId>
 
@@ -106,25 +100,4 @@ export const MAP_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const mapData = createGameMap(rawMarkers, MAP_CATEGORY_GROUPS, 'Kanto', {
-  id: 'kanto',
-  gameTitle: 'Pokémon FireRed & LeafGreen',
-  regionName: 'Kanto',
-  titleKey: 'maps.kantoTitle',
-  viewportLabelKey: 'maps.viewportLabel',
-  themeClassName: 'game-map-page--kanto',
-  width: KANTO_MAP_WIDTH,
-  height: KANTO_MAP_HEIGHT,
-  tileBaseZoom: KANTO_TILE_BASE_ZOOM,
-  tileMinZoom: 11,
-  tileMaxZoom: 16,
-  tileOrigin: KANTO_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-firered-leafgreen/kanto/firered-v2',
-  tileExtension: 'jpg',
-  tileOrder: 'yx',
-  sourceUrl: 'https://mapgenie.io/pokemon-firered-leafgreen/maps/kanto',
-})
-export const MAP_CATEGORIES = mapData.categories
-export const KANTO_MARKERS = mapData.markers
-export const MAP_TOTAL = mapData.total
-export const KANTO_MAP = mapData.map
+export const MAP_TOTAL = summarizeMapCategories(MAP_CATEGORY_GROUPS).total

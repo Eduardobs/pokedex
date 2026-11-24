@@ -117,6 +117,8 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   expect(controlBoxes.every((box) => box.left >= 0 && box.right <= viewportWidth && box.height >= 44)).toBe(true)
   const tabImage = page.getByRole('tab', { name: 'Pikachu' }).locator('img')
   await expect(tabImage).toHaveAttribute('src', /\/other\/home\/shiny\/25\.png$/)
+  // Exercise the manual fallback without auto-loading the next batch while the browser scrolls to the button.
+  await page.evaluate(() => Reflect.deleteProperty(window, 'IntersectionObserver'))
   await page.getByRole('button', { name: 'Item equipado' }).click()
   const choiceScarf = page.getByRole('option', { name: /Choice Scarf/ })
   await expect(choiceScarf).toContainText('Changes a battle stat.')
@@ -125,8 +127,7 @@ test('creates multiple teams, edits a member and preserves it after reload', asy
   await expect(page.getByRole('option', { name: /Test Item 8/ })).toBeVisible()
   await choiceScarf.click()
   await page.getByRole('button', { name: 'Golpe 1', exact: true }).click()
-  const loadMoreMoves = page.getByRole('button', { name: 'Carregar mais golpes' })
-  if (await loadMoreMoves.isVisible()) await loadMoreMoves.click()
+  await page.getByRole('button', { name: 'Carregar mais golpes' }).click()
   await expect(page.getByRole('option', { name: /Test Move 8/ })).toBeVisible()
   const moveOption = page.getByRole('option', { name: /Thunderbolt/ })
   await expect(moveOption).toContainText('90')

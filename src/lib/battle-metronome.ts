@@ -1,6 +1,6 @@
 import type { CompactMetronomeMove } from 'virtual:battle-metronome-moves'
 import { API_BASE_URL } from '../config/app'
-import { parseBattleMove } from './battle-data'
+import { parseBattleMove } from './battle-move-parser'
 import type { BattleMove } from './battle'
 
 let pool: readonly BattleMove[] | undefined

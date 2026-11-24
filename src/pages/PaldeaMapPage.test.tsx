@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { PALDEA_CATEGORIES, PALDEA_MARKERS } from '../data/maps/paldea-map'
+import { PALDEA_CATEGORIES, PALDEA_MARKERS } from '../data/maps/paldea/map'
 import { PaldeaMapPage } from './PaldeaMapPage'
 
 function renderPage() {

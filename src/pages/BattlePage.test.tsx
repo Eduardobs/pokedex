@@ -8,9 +8,12 @@ import { clearApiCache } from '../lib/api-client'
 import { createBattlePokemon, createBattleState, type BattleMove } from '../lib/battle'
 import * as battleData from '../lib/battle-data'
 import * as battleEngine from '../lib/battle'
+import * as battleAI from '../lib/battle-ai'
 import * as randomTeam from '../lib/random-team'
 import { statNames, type Team } from '../lib/teams'
-import { BattleFieldEffects, BattlePage, BattleSideHazards, MajorStatusBadge } from './BattlePage'
+import { BattleFieldEffects, BattleSideHazards } from '../components/battle/BattleFieldEffects'
+import { MajorStatusBadge } from '../components/battle/BattlePokemonTooltip'
+import { BattlePage } from './BattlePage'
 
 const completeTeam = (id: string, name: string): Team => ({
   id,
@@ -382,7 +385,32 @@ describe('BattlePage lobby', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
     expect(screen.getByRole('status')).toHaveTextContent('Gerando a equipe adversária')
     await waitFor(() => expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível preparar a batalha'))
-    expect(screen.getByRole('button', { name: 'Tentar novamente' })).toBeEnabled()
+    const opponent = completeTeam('opponent', 'Equipe adversária')
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
+    vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => battleRoster(team))
+    fireEvent.click(screen.getByRole('button', { name: 'Tentar novamente' }))
+    expect(await screen.findByRole('log')).toBeVisible()
+  })
+
+  it('cancels pending preparation when the player leaves the lobby', async () => {
+    const player = completeTeam('player', 'Minha equipe')
+    localStorage.setItem(STORAGE_KEYS.teams, JSON.stringify([player]))
+    let finishLoading!: (roster: ReturnType<typeof battleRoster>) => void
+    const pendingRoster = new Promise<ReturnType<typeof battleRoster>>((resolve) => {
+      finishLoading = resolve
+    })
+    const loadRoster = vi.spyOn(battleData, 'loadBattleRoster').mockReturnValue(pendingRoster)
+    vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
+    const createOpponent = vi.spyOn(randomTeam, 'createRandomTeam')
+    const { unmount } = show()
+    fireEvent.click(screen.getByRole('button', { name: 'Iniciar batalha' }))
+    await waitFor(() => expect(loadRoster).toHaveBeenCalledTimes(1))
+
+    unmount()
+    expect(loadRoster.mock.calls[0][1]?.aborted).toBe(true)
+    await act(async () => finishLoading(battleRoster(player)))
+    expect(createOpponent).not.toHaveBeenCalled()
   })
 
   it.each([
@@ -435,7 +463,7 @@ describe('BattlePage lobby', () => {
     localStorage.setItem(STORAGE_KEYS.language, language)
     vi.spyOn(randomTeam, 'loadRandomTeamPokemon').mockResolvedValue([])
     vi.spyOn(randomTeam, 'createRandomTeam').mockReturnValue(opponent)
-    vi.spyOn(battleEngine, 'chooseOpponentAction').mockReturnValue({ kind: 'move', index: 0 })
+    vi.spyOn(battleAI, 'chooseOpponentAction').mockReturnValue({ kind: 'move', index: 0 })
     vi.spyOn(battleData, 'loadBattleRoster').mockImplementation(async (team) => {
       const roster = battleRoster(team)
       roster[0].moves[0].data =

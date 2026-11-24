@@ -4,9 +4,9 @@ import { GameMapCard } from '../components/GameMapCard'
 import { PageHeader } from '../components/PageHeader'
 import { useLanguage } from '../contexts/LanguageContext'
 import { formatNumber } from '../lib/api'
-import { HISUI_TOTAL } from '../data/maps/hisui-map'
-import { MAP_TOTAL } from '../data/maps/kanto-map'
-import { LUMIOSE_TOTAL } from '../data/maps/lumiose-map'
+import { HISUI_TOTAL } from '../data/maps/hisui/categories'
+import { MAP_TOTAL } from '../data/maps/kanto/categories'
+import { LUMIOSE_TOTAL } from '../data/maps/lumiose/categories'
 
 export function MapsPage() {
   const { language, t } = useLanguage()

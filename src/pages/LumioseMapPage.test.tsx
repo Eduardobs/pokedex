@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { LUMIOSE_CATEGORIES, LUMIOSE_MARKERS } from '../data/maps/lumiose-map'
+import { LUMIOSE_CATEGORIES, LUMIOSE_MARKERS } from '../data/maps/lumiose/map'
 import { LumioseMapPage } from './LumioseMapPage'
 
 function renderPage() {

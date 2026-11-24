@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, describe, expect, it } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import { LanguageProvider } from '../contexts/LanguageContext'
-import { KITAKAMI_CATEGORIES, KITAKAMI_MARKERS } from '../data/maps/kitakami-map'
+import { KITAKAMI_CATEGORIES, KITAKAMI_MARKERS } from '../data/maps/kitakami/map'
 import { KitakamiMapPage } from './KitakamiMapPage'
 
 function renderPage() {

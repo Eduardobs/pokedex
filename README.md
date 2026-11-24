@@ -152,7 +152,7 @@ Each release command updates the package files, creates a version commit, and ad
 
 ```text
 src/
-├── components/       Reusable UI plus feature folders such as game-map and pokemon-detail
+├── components/       Reusable UI and feature folders for battles, maps, and Pokémon details
 ├── config/           API, network, storage, and catalog configuration
 ├── contexts/         Shared language and favorites state
 ├── data/             API resource catalogs, summary helpers, and local map catalogs
@@ -174,7 +174,10 @@ The main data flow is intentionally layered:
 - Pages compose screens, while components focus on presentation and user interaction.
 - `PageHeader` and the feedback-state components own the common page heading, empty, and retry presentations.
 - `PokemonCatalogFilters`, `usePokemonCatalogControls`, and `usePokemonCatalogDetails` centralize URL-backed controls and on-demand metadata used by the Pokédex and form directory; pure filtering and suggestion rules live in `src/lib/pokemon-directory.ts`.
-- `src/components/game-map/` owns shared map navigation, icons, and viewport geometry; each region provides a validated local marker catalog and tile configuration under `src/data/maps/`.
+- Each region under `src/data/maps/` keeps its category definitions in `categories.ts`, its marker catalog in `markers.json`, and its tile configuration in `map.ts`. The directory derives counts from the categories. Opening a regional route loads and validates its markers.
+- `src/components/game-map/` owns shared map navigation, icons, and viewport geometry.
+- `src/pages/BattlePage.tsx` owns team selection and starts a match. Starting loads `src/lib/prepare-battle.ts` for roster preparation and `src/components/battle/BattleArena.tsx` for turn presentation. The battle folder also contains the field, action buttons, tooltips, and event log.
+- The battle engine resolves actions in `src/lib/battle.ts`. Opponent decisions live in `src/lib/battle-ai.ts`. Roster loading and Metronome share the move parser in `src/lib/battle-move-parser.ts`.
 - `src/data/maps/game-map.ts` creates and validates the shared category, marker, total-count, and map-definition contract for every regional map.
 - `src/components/pokemon-detail/` groups the detail screen's focused cards, forms, statistics, encounters, evolution, and move browsing UI.
 

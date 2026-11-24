@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './hisui-map-markers.json'
+import { summarizeMapCategories, gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type HisuiCategoryId =
+type HisuiCategoryId =
   | 'area'
   | 'arena'
   | 'camp'
@@ -33,11 +32,6 @@ export type HisuiCategoryId =
   | 'unown-pokemon'
   | 'pokemon'
   | 'material'
-
-export const HISUI_MAP_WIDTH = 16_384
-export const HISUI_MAP_HEIGHT = 16_384
-export const HISUI_TILE_BASE_ZOOM = 14
-export const HISUI_TILE_ORIGIN = { x: 8_128, y: 8_128 } as const
 
 const category = gameMapCategory<HisuiCategoryId>
 
@@ -207,25 +201,4 @@ export const HISUI_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
   },
 ]
 
-const mapData = createGameMap(rawMarkers, HISUI_CATEGORY_GROUPS, 'Hisui', {
-  id: 'hisui-region',
-  gameTitle: 'Pokémon Legends: Arceus',
-  regionName: 'Hisui',
-  titleKey: 'maps.hisuiTitle',
-  viewportLabelKey: 'maps.hisuiViewportLabel',
-  themeClassName: 'game-map-page--hisui',
-  width: HISUI_MAP_WIDTH,
-  height: HISUI_MAP_HEIGHT,
-  tileBaseZoom: HISUI_TILE_BASE_ZOOM,
-  tileMinZoom: 9,
-  tileMaxZoom: 14,
-  tileOrigin: HISUI_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-legends-arceus/hisui-region/default-v3',
-  tileExtension: 'png',
-  tileOrder: 'xy',
-  sourceUrl: 'https://mapgenie.io/pokemon-legends-arceus/maps/hisui-region',
-})
-export const HISUI_CATEGORIES = mapData.categories
-export const HISUI_MARKERS = mapData.markers
-export const HISUI_TOTAL = mapData.total
-export const HISUI_MAP = mapData.map
+export const HISUI_TOTAL = summarizeMapCategories(HISUI_CATEGORY_GROUPS).total

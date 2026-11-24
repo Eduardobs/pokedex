@@ -1,7 +1,6 @@
-import { createGameMap, gameMapCategory, type GameMapCategoryGroup } from './game-map'
-import rawMarkers from './paldea-map-markers.json'
+import { gameMapCategory, type GameMapCategoryGroup } from '../game-map'
 
-export type PaldeaCategoryId =
+type PaldeaCategoryId =
   | 'chansey-supply'
   | 'clothing-store'
   | 'delibird-presents'
@@ -34,11 +33,6 @@ export type PaldeaCategoryId =
   | 'gimmighoul-chest'
   | 'legendary-pokemon'
   | 'tera-pokemon'
-
-export const PALDEA_MAP_WIDTH = 16_384
-export const PALDEA_MAP_HEIGHT = 16_384
-export const PALDEA_TILE_BASE_ZOOM = 15
-export const PALDEA_TILE_ORIGIN = { x: 16_288, y: 16_288 } as const
 
 const category = gameMapCategory<PaldeaCategoryId>
 
@@ -237,26 +231,3 @@ export const PALDEA_CATEGORY_GROUPS: GameMapCategoryGroup[] = [
     ],
   },
 ]
-
-const mapData = createGameMap(rawMarkers, PALDEA_CATEGORY_GROUPS, 'Paldea', {
-  id: 'paldea',
-  gameTitle: 'Pokémon Scarlet & Violet',
-  regionName: 'Paldea',
-  titleKey: 'maps.paldeaTitle',
-  viewportLabelKey: 'maps.paldeaViewportLabel',
-  themeClassName: 'game-map-page--paldea',
-  width: PALDEA_MAP_WIDTH,
-  height: PALDEA_MAP_HEIGHT,
-  tileBaseZoom: PALDEA_TILE_BASE_ZOOM,
-  tileMinZoom: 10,
-  tileMaxZoom: 15,
-  tileOrigin: PALDEA_TILE_ORIGIN,
-  tileBaseUrl: 'https://tiles.mapgenie.io/games/pokemon-scarlet-violet/paldea-region/default-v1',
-  tileExtension: 'jpg',
-  tileOrder: 'xy',
-  sourceUrl: 'https://mapgenie.io/pokemon-scarlet-violet/maps/paldea-region',
-})
-export const PALDEA_CATEGORIES = mapData.categories
-export const PALDEA_MARKERS = mapData.markers
-export const PALDEA_TOTAL = mapData.total
-export const PALDEA_MAP = mapData.map

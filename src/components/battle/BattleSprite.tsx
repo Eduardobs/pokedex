@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { CircleDot } from 'lucide-react'
-import { ItemImage } from './ItemImage'
-import { BATTLE_TIMING } from '../config/app'
+import { ItemImage } from '../ItemImage'
+import { BATTLE_TIMING } from '../../config/app'
 
 /** Keep transforms separate from the detail tooltip and preserve intrinsic sprite dimensions. */
 export function BattleSprite({
